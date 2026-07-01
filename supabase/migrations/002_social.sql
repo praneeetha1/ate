@@ -11,6 +11,9 @@ create table if not exists public.follows (
 
 alter table public.follows enable row level security;
 
+drop policy if exists "Users can manage own follows" on public.follows;
+drop policy if exists "Anyone can view follows" on public.follows;
+
 create policy "Users can manage own follows"
   on public.follows for all
   using (auth.uid() = follower_id)
@@ -32,6 +35,10 @@ create table if not exists public.activity (
 );
 
 alter table public.activity enable row level security;
+
+drop policy if exists "Users can insert own activity" on public.activity;
+drop policy if exists "Anyone can view activity" on public.activity;
+drop policy if exists "Users can delete own activity" on public.activity;
 
 create policy "Users can insert own activity"
   on public.activity for insert
