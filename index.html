@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeToCook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:     #FDF6E3;
+      --paper:     #FAF0D7;
+      --card:      #FFFDF7;
+      --warm-tan:  #E8D5B0;
+      --border:    #D9C99A;
+      --accent:    #C2885A;
+      --accent-dk: #A0673B;
+      --text:      #3D2B1F;
+      --muted:     #7A6047;
+      --heart:     #C0392B;
+      --shadow:    rgba(100, 70, 30, 0.12);
+    }
+
+    body {
+      background-color: var(--cream);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,150,90,0.07) 28px),
+        repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(180,150,90,0.04) 28px);
+      color: var(--text);
+      font-family: 'Lato', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--paper);
+      border-bottom: 2px solid var(--border);
+      padding: 28px 24px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px var(--shadow);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--accent-dk);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+    .logo span {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    .tagline {
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      padding: 18px 20px 14px;
+      background: var(--cream);
+      border-bottom: 1px solid var(--warm-tan);
+      position: sticky;
+      top: 102px;
+      z-index: 90;
+    }
+    .filter-btn {
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent-dk); }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .filter-btn.fav-btn { border-color: var(--heart); color: var(--heart); }
+    .filter-btn.fav-btn.active { background: var(--heart); border-color: var(--heart); color: #fff; }
+
+    /* ── Main grid ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+    .count-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: right;
+      margin-bottom: 16px;
+      letter-spacing: 0.06em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .empty-msg {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--muted);
+    }
+
+    /* ── Category tag colors ── */
+    .tag { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 12px; }
+    .tag-Breakfast      { background: #FDE9C5; color: #8B5C00; }
+    .tag-Dessert        { background: #F9D8E0; color: #8B2040; }
+    .tag-Main-Dish      { background: #D5EBD8; color: #2A6035; }
+    .tag-Side-Dish      { background: #D8EDF5; color: #1A5470; }
+    .tag-Soup--Stew     { background: #F5E2CB; color: #7A3D10; }
+    .tag-Salad          { background: #DFF2DA; color: #2A5E30; }
+    .tag-Quick-Meal     { background: #EDE2F5; color: #5A2A80; }
+    .tag-Vegetarian     { background: #D8F0E5; color: #1A6040; }
+    .tag-Snack--Appetizer { background: #FFF0C5; color: #7A5A00; }
+    .tag-Drink          { background: #D8E8FF; color: #1A3A80; }
+
+    /* ── Recipe card (preview only — details open in modal) ── */
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--warm-tan);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px var(--shadow);
+      overflow: hidden;
+      transition: box-shadow 0.22s, border-color 0.22s, transform 0.18s;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .card:hover {
+      box-shadow: 0 8px 24px var(--shadow);
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .card-header {
+      padding: 18px 18px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      user-select: none;
+    }
+    .card-header-text { flex: 1; min-width: 0; }
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.08rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .card-time {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .card-time::before { content: "\2023"; margin-right: 2px; font-size: 0.9em; }
+    .open-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      padding: 10px 18px 14px;
+      border-top: 1px dashed var(--warm-tan);
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+    .card:hover .open-hint { opacity: 1; }
+    .heart-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.3rem;
+      line-height: 1;
+      color: var(--warm-tan);
+      transition: color 0.2s, transform 0.15s;
+      padding: 2px 4px;
+      flex-shrink: 0;
+    }
+    .heart-btn:hover { transform: scale(1.2); color: #e8a0a0; }
+    .heart-btn.loved { color: var(--heart); }
+
+    /* ── Modal overlay ── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(60, 35, 15, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 500;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px 32px;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(60, 35, 15, 0.35);
+      width: 100%;
+      max-width: 640px;
+      margin: auto;
+      animation: modalIn 0.25s cubic-bezier(0.34, 1.3, 0.64, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.92) translateY(16px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
+    .modal-top {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--warm-tan);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .modal-title-block { flex: 1; }
+    .modal-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .modal-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .modal-time {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .modal-time::before { content: "\23F1  "; }
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .modal-heart {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--warm-tan);
+      cursor: pointer;
+      transition: color 0.2s, transform 0.15s;
+      padding: 4px;
+    }
+    .modal-heart:hover { transform: scale(1.15); color: #e8a0a0; }
+    .modal-heart.loved { color: var(--heart); }
+    .modal-close {
+      background: var(--paper);
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .modal-close:hover { background: var(--warm-tan); color: var(--text); }
+    .modal-body { padding: 22px 22px 26px; }
+
+    /* ── Ingredients ── */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-dk);
+      margin-bottom: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .ingredients-list {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .ingredient-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(200, 180, 130, 0.25);
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .ingredient-item:last-child { border-bottom: none; }
+    .ingredient-item.checked { opacity: 0.45; }
+    .ingredient-item input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+    }
+    .ingredient-amount {
+      color: var(--accent-dk);
+      font-weight: 700;
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+    .ingredient-item-name { color: var(--text); }
+
+    /* ── Steps ── */
+    .steps-list { list-style: none; }
+    .step-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .step-num {
+      background: var(--accent);
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .logo { font-size: 1.9rem; }
+      .filter-bar { top: 90px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  
+    /* ── Ingredient search panel ── */
+    .ing-search-panel {
+      display: none;
+      background: var(--paper);
+      border-bottom: 2px solid var(--warm-tan);
+      padding: 18px 20px 16px;
+    }
+    .ing-search-panel.visible { display: block; }
+
+    .ing-search-wrap {
+      max-width: 560px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .ing-search-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-dk);
+      margin-bottom: 10px;
+      display: block;
+    }
+    .ing-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .ing-input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.92rem;
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .ing-input:focus { border-color: var(--accent); }
+    .ing-input::placeholder { color: var(--muted); }
+
+    .ing-find-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.18s;
+      white-space: nowrap;
+    }
+    .ing-find-btn:hover { background: var(--accent-dk); }
+    .ing-find-btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* Autocomplete dropdown */
+    .ing-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 60px; /* don't cover the Find button */
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px var(--shadow);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 200;
+    }
+    .ing-dropdown.open { display: block; }
+    .ing-suggestion {
+      padding: 9px 14px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      color: var(--text);
+      border-bottom: 1px solid rgba(200,180,130,0.2);
+      transition: background 0.12s;
+    }
+    .ing-suggestion:last-child { border-bottom: none; }
+    .ing-suggestion:hover, .ing-suggestion.active { background: var(--paper); }
+    .ing-suggestion em {
+      color: var(--accent-dk);
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    /* Selected ingredient pills */
+    .ing-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+      min-height: 0;
+    }
+    .ing-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--warm-tan);
+      color: var(--accent-dk);
+      border-radius: 20px;
+      padding: 4px 10px 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .ing-pill-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+    }
+    .ing-pill-remove:hover { color: var(--heart); }
+
+    /* Clear link */
+    .ing-clear-row {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .ing-clear-btn {
+      background: none;
+      border: none;
+      font-size: 0.78rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: 'Lato', sans-serif;
+      transition: color 0.15s;
+    }
+    .ing-clear-btn:hover { color: var(--accent-dk); }
+
+    /* Match badge on results */
+    .match-badge {
+      font-size: 0.72rem;
+      color: var(--accent-dk);
+      background: var(--paper);
+      border-top: 1px dashed var(--border);
+      padding: 6px 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Time<span>To</span>Cook</div>
+  <div class="tagline">Your cozy recipe companion</div>
+</header>
+
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-filter="all">All Recipes</button>
+  <button class="filter-btn fav-btn" data-filter="favorites">♥ Favorites</button>
+  <button class="filter-btn" data-filter="ingredient-search" id="ingSearchTab">🔍 What can I make?</button>
+</div>
+
+<div class="ing-search-panel" id="ingSearchPanel">
+  <div class="ing-search-wrap">
+    <label class="ing-search-label" for="ingInput">What ingredients do you have?</label>
+    <div class="ing-input-row" style="position:relative">
+      <input class="ing-input" id="ingInput" type="text"
+             placeholder="e.g. garlic, eggs, butter…" autocomplete="off">
+      <button class="ing-find-btn" id="ingFindBtn">Find Recipes</button>
+      <div class="ing-dropdown" id="ingDropdown"></div>
+    </div>
+    <div class="ing-pills" id="ingPills"></div>
+    <div class="ing-clear-row">
+      <button class="ing-clear-btn" id="ingClearBtn">✕ Clear search &amp; go back</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="count-label" id="countLabel"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-top">
+      <div class="modal-title-block">
+        <div class="modal-name" id="modalName"></div>
+        <div class="modal-meta">
+          <span id="modalTag"></span>
+          <span class="modal-time" id="modalTime" style="display:none"></span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-heart" id="modalHeart" title="Favorite">&#9829;</button>
+        <button class="modal-close" id="modalClose" title="Close">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="section-title">Ingredients</div>
+      <ul class="ingredients-list" id="modalIngredients"></ul>
+      <div class="section-title">Steps</div>
+      <ol class="steps-list" id="modalSteps"></ol>
+    </div>
+  </div>
+</div>
+
+<script>
+const RECIPES = [{"name": "Baked Shrimp Scampi", "category": "Main Dish", "ingredients": [{"amount": "2/3", "unit": "cup", "item": "panko"}, {"amount": "1/4", "unit": "teaspoon", "item": "red pepper flakes"}, {"amount": "1/2", "unit": "", "item": "lemon, zested and juiced"}, {"amount": "1", "unit": "", "item": "extra-large egg yolk"}, {"amount": "1", "unit": "teaspoon", "item": "rosemary, minced"}, {"amount": "3", "unit": "tablespoon", "item": "parsley, minced"}, {"amount": "4", "unit": "clove", "item": "garlic, minced"}, {"amount": "1/4", "unit": "cup", "item": "shallots, minced"}, {"amount": "8", "unit": "tablespoon", "item": "unsalted butter, softened at room temperature"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "2", "unit": "tablespoon", "item": "dry white wine"}, {"amount": "", "unit": "", "item": "Freshly ground black pepper"}, {"amount": "", "unit": "", "item": "Kosher salt"}, {"amount": "3", "unit": "tablespoon", "item": "olive oil"}, {"amount": "2", "unit": "pound", "item": "frozen shrimp"}], "steps": ["Preheat the oven to 425 degrees F.", "Defrost shrimp by putting in cold water, then drain and toss with wine, oil, salt, and pepper. Place in oven-safe dish and allow to sit at room temperature while you make the butter and garlic mixture.", "In a small bowl, mash the softened butter with the rest of the ingredients and some salt and pepper.", "Spread the butter mixture evenly over the shrimp. Bake for 10 to 12 minutes until hot and bubbly. If you like the top browned, place under a broiler for 1-3 minutes (keep an eye on it). Serve with lemon wedges and French bread.", "Note: if using fresh shrimp, arrange for presentation. Starting from the outer edge of a 14-inch oval gratin dish, arrange the shrimp in a single layer cut side down with the tails curling up and towards the center of the dish. Pour the remaining marinade over the shrimp."]}, {"name": "Pot Roast Carbonnade", "category": "Main Dish", "ingredients": [{"amount": "1/2", "unit": "pound", "item": "bacon, cut into large lardons"}, {"amount": "2", "unit": "", "item": "medium onions, sliced"}, {"amount": "", "unit": "", "item": "Kosher salt and freshly ground black pepper"}, {"amount": "1", "unit": "tablespoon", "item": "vegetable oil"}, {"amount": "1 1/2", "unit": "pound", "item": "beef chuck, cut into large cubes"}, {"amount": "5", "unit": "", "item": "carrots, peeled and cut into large chunks"}, {"amount": "1", "unit": "tablespoon", "item": "all-purpose flour"}, {"amount": "12", "unit": "ounce", "item": "beer (dark or light)"}, {"amount": "6", "unit": "", "item": "prunes"}, {"amount": "1", "unit": "tablespoon", "item": "dried thyme"}, {"amount": "1", "unit": "cup", "item": "beef stock"}], "steps": ["Preheat the oven to 325 degrees F.", "In a large Dutch oven over medium-low heat, add the bacon and cook until it renders its fat and almost becomes crispy.", "Remove it with a slotted spoon to a plate.", "Add the onions, season with salt and pepper, to taste, and cook over low heat until they are deep in color and caramelized, about 30 minutes.", "Remove the onions to a plate, leaving as much fat in the pot as possible. Add the vegetable oil and mix it with the bacon fat. Raise the heat to high. Season the beef liberally with salt and pepper and sear, in batches, until nicely browned on both sides.", "Once the meat is browned, add the first batch of meat back to the pan along with the onions, carrots and bacon.", "Sprinkle in the flour and stir.", "Cook for 1 minute before deglazing the pan with the beer.", "Add the remaining ingredients and bring the mixture to a simmer.", "Cover the pot and put it in the oven to braise until the beef is tender, about 2 hours.", "Remove the pot from the oven and transfer the pot roast to a serving dish."]}, {"name": "Berry Sauce", "category": "Main Dish", "ingredients": [{"amount": "1/2", "unit": "cup", "item": "mixed berries"}, {"amount": "2", "unit": "tbsp", "item": "maple syrup"}], "steps": ["Lightly warm berries and maple syrup in a saucepan\n2. Pour over pancakes/dessert as desired"], "timeMinutes": 5}, {"name": "Emeril Essence Creole Seasoning", "category": "Main Dish", "ingredients": [{"amount": "2 1/2", "unit": "tablespoon", "item": "paprika"}, {"amount": "2", "unit": "tablespoon", "item": "salt"}, {"amount": "2", "unit": "tablespoon", "item": "garlic powder"}, {"amount": "1", "unit": "tablespoon", "item": "black pepper"}, {"amount": "1", "unit": "tablespoon", "item": "onion powder"}, {"amount": "1", "unit": "tablespoon", "item": "cayenne pepper"}, {"amount": "1", "unit": "tablespoon", "item": "dried oregano"}, {"amount": "1", "unit": "tablespoon", "item": "dried thyme"}], "steps": ["Combine all ingredients thoroughly."]}, {"name": "Schnitzel", "category": "Main Dish", "ingredients": [{"amount": "2 5.5", "unit": "oz", "item": "pork escalopes"}, {"amount": "", "unit": "", "item": "Salt and pepper"}, {"amount": "", "unit": "", "item": "Flour"}, {"amount": "1", "unit": "", "item": "large egg, beaten"}, {"amount": "1 1/2", "unit": "cup", "item": "breadcrumbs"}, {"amount": "", "unit": "", "item": "olive oil"}, {"amount": "10", "unit": "", "item": "cornichons, optional for garnish, drained and cut in to matchsticks"}, {"amount": "1", "unit": "bunch", "item": "watercress, washed and dried"}, {"amount": "1", "unit": "", "item": "lemon, optional for serving"}], "steps": ["To prepare your meat, put the escalopes on to a chopping board, put a piece of wax paper on top and bat the meat with the bottom of a saucepan to flatten in a little - you want to get it to about 1/4 inch thick.", "To breadcrumb your meat, get yourself four large plates and lay them out in a line in the front of you.", "From left to right, you want to have your slat and pepper in one, flour in the second, beaten egg in the third and your fine breadcrumbs in the fourth.", "It's very simple...season the pieces of meat and dip them into the flour, shaking off any excess, then put them into the egg, dripping off any excess, and into the breadcrumbs, patting them over both sides and pressing down quite firmly.", "Gently shake off any excess and put the meat on a board or clean plate ready to be cooked.", "Heat a heavy frying pan, add a couple of good glugs of olive oil and, when it's good and hot, put both pieces of pork into the pan.", "Cook for 2 minutes or so, then carefully start to shake and agitate the pan to cover them in the hot oil.", "Turn the pork over and continue to cook for a couple of minutes until both sides are crisp and golden brown.", "Remove to a tray line with paper towels and season with salt and pepper.", "Put a schnitzel on to each of your serving plates.", "Put a little pile of cornichon matchsticks and some watercress leaves on top and serve with a big lob of apple sauce, a squeeze of lemon juice and a drizzle of extra virgin olive oil."], "timeMinutes": 25}, {"name": "Oregano Marinated Chicken", "category": "Main Dish", "ingredients": [{"amount": "4", "unit": "", "item": "(6 to 7-ounce) boneless skinless chicken breasts"}, {"amount": "10", "unit": "", "item": "grinds black pepper"}, {"amount": "1/2", "unit": "tsp", "item": "salt"}, {"amount": "2", "unit": "tablespoon", "item": "extra-virgin olive oil"}, {"amount": "1", "unit": "teaspoon", "item": "dried oregano"}, {"amount": "1", "unit": "", "item": "lemon, juiced"}], "steps": ["To marinate the chicken: In a non-reactive dish, combine the lemon juice, olive oil, oregano, salt, and pepper and mix together.", "Add the chicken breasts to the dish and rub both sides in the mixture.", "Cover the dish with plastic wrap and let marinate in the refrigerator for at least 30 minutes and up to 4 hours.", "To cook the chicken: Heat a nonstick skillet or grill pan over high heat. Add the chicken breasts and cook, turning once, until well browned, about 4 to 5 minutes on each side or until cooked through. Let the chicken rest on a cutting board for a few minutes before slicing it into thin strips."], "timeMinutes": 45}, {"name": "Marinara Sauce", "category": "Main Dish", "ingredients": [{"amount": "2", "unit": "clove", "item": "garlic, minced"}, {"amount": "2", "unit": "tbsp", "item": "extra-virgin olive oil"}, {"amount": "2", "unit": "tsp", "item": "italian seasoning"}, {"amount": "1 15", "unit": "oz", "item": "can crushed Italian tomatoes"}, {"amount": "", "unit": "", "item": "Salt and freshly ground pepper"}], "steps": ["In a large frying pan over medium heat, saute the garlic in the olive oil until fragrant, about 1 minute. Stir in the red pepper flakes, basil, oregano, and tomatoes and bring to a simmer. Reduce the heat to low and simmer until thickened, about 20 minutes. Season to taste.", "Makes about 2 1/2 cups (20 fl oz/625mL)"], "timeMinutes": 25}, {"name": "Roasted Salmon with Walnut-Pepper Relish", "category": "Main Dish", "ingredients": [{"amount": "1/2", "unit": "cup", "item": "walnuts"}, {"amount": "", "unit": "", "item": "Pinch of cayenne pepper"}, {"amount": "1", "unit": "tbsp", "item": "lemon juice"}, {"amount": "1", "unit": "tsp", "item": "honey"}, {"amount": "2", "unit": "tbsp", "item": "diced roasted red pepper"}, {"amount": "1", "unit": "tbsp", "item": "walnut oil"}, {"amount": "1", "unit": "tbsp", "item": "extra-virgin olive oil"}, {"amount": "2", "unit": "tbsp", "item": "parsley, chopped"}, {"amount": "1/2", "unit": "tsp", "item": "salt"}, {"amount": "", "unit": "", "item": "black pepper"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1", "unit": "tbsp", "item": "extra-virgin olive oil"}, {"amount": "2", "unit": "tbsp", "item": "parsley, chopped"}, {"amount": "2", "unit": "tbsp", "item": "chives, chopped"}, {"amount": "1", "unit": "tsp", "item": "lemon zest"}, {"amount": "1/2", "unit": "tsp", "item": "salt"}, {"amount": "", "unit": "", "item": "black pepper"}, {"amount": "2", "unit": "lb", "item": "salmon filet (about 1.5 inches thick)"}], "steps": ["Make the relish: preheat the oven to 350.", "Spread the walnuts on a baking sheet and bake until toasted 7 to 10 minutes.", "Let cool, then finely chop and transfer to a bowl.", "Add the cayenne, lemon juice, honey, roasted red pepper, walnut oil, olive oil and parsley.", "Add salt and black pepper to taste and toss to combine. (The relish can be made up to 1 day ahead; cover and refrigerate.)", "Make the salmon: Raise the oven temperature to 425.", "Combine the remaining olive oil and parsley, the chives, lemon zest, salt and black pepper to taste in a bowl.", "Rub the herb mixture *all* over the salmon.", "Lay skin-side down in a baking dish and roast until just cooking through, 12 to 14 minutes (for 3 lbs).", "Let rest 5 minutes, then transfer to a platter and top with the relish."], "timeMinutes": 35}, {"name": "Strawberries Romanov (La Madeleine copycat)", "category": "Dessert", "ingredients": [{"amount": "2", "unit": "tbsp", "item": "powdered sugar"}, {"amount": "1/2", "unit": "pt", "item": "heavy whipping cream"}, {"amount": "1", "unit": "lb", "item": "strawberries, (2 pints)"}, {"amount": "4", "unit": "tbsp", "item": "brandy"}], "steps": ["Wash strawberries and cut the tops off. Let strawberries drain.  Mix together heavy whipping cream, powdered sugar, and the brandy. Beat with a mixer till this becomes thick.  Place strawberries into glasses and spoon over the sauce."]}, {"name": "John Thorne's Pecan Pie", "category": "Dessert", "ingredients": [{"amount": "1/4", "unit": "tsp", "item": "salt"}, {"amount": "3", "unit": "", "item": "eggs"}, {"amount": "4", "unit": "tbsp", "item": "butter"}, {"amount": "2", "unit": "tbsp", "item": "dark rum"}, {"amount": "2/3", "unit": "cup", "item": "golden syrup"}, {"amount": "1", "unit": "cup", "item": "dark brown sugar, well-packed"}, {"amount": "2", "unit": "cup", "item": "pecans, chopped"}, {"amount": "9", "unit": "", "item": "-inch unbaked pie shell"}], "steps": ["Preheat oven to 350F.", "In a large saucepan, heat the brown sugar, golden syrup and butter to the boiling point.", "Stirring constantly and scraping back any foam that clings to the side of the pan, let this mixture boil for about 1 minute.", "Remove from the heat and let cool while, in a separate bowl, you beat the eggs until creamy.", "When the boiled syrup has cooled, beat in the eggs, salt and pecans. Pour into the unbaked pie shell and bake for about 50 minutes.", "Notes:", "* A little cream (about 1/4 to 1/2 cup) mixed into a pecan pie filling before baking gives it a richer, lighter texture.", "* For a sweeter, lighter pie: add more sugar and use fewer pecans; for a denser, less sweet pie: add more pecans and use less sugar.", "* The buttery flavour and the lard-induced flakiness of a butter and lard crust make it the perfect one for a perfect pecan pie.", "And a Southern pecan pie authority I know suggests that you roll out the dough a little thicker than usual; a thick, richly shortened crust provides an appetizing balance to the sweetness of the filling."]}, {"name": "Godiva Angel Pie", "category": "Dessert", "ingredients": [{"amount": "4", "unit": "", "item": "(1 oz.) squares Godiva cooking chocolate or 4 oz. Baker's German sweet chocolate"}, {"amount": "1/2", "unit": "tsp", "item": "vanilla"}, {"amount": "1", "unit": "cup", "item": "pecans, finely chopped"}, {"amount": "1/2", "unit": "cup", "item": "sugar"}, {"amount": "1/8", "unit": "tsp", "item": "cream of tartar"}, {"amount": "1/8", "unit": "tsp", "item": "salt"}, {"amount": "2", "unit": "", "item": "egg whites, at room temperature"}, {"amount": "3", "unit": "tbsp", "item": "water"}, {"amount": "1", "unit": "tsp", "item": "vanilla"}, {"amount": "1", "unit": "cup", "item": "heavy cream, whipped"}], "steps": ["TO MAKE SHELL: Preheat oven to 300 degrees.", "In mixer bowl, beat egg whites until foamy.", "Beat in salt and cream of tartar and beat until soft peaks form.", "Add sugar, a tablespoon at a time, beating after each addition.", "Continue until very stiff peaks form.", "Fold in nuts and vanilla.", "Lightly butter a metal 8-inch pie plate. (Do NOT use glass.) Spoon meringue into pan lightly, building up the edges to come at least 1/2 inch above the side of the pan.", "Bake in preheated 300 degree oven for 35 to 40 minutes until light brown.", "Cool completely before adding filling.", "TO MAKE FILLING: Melt chocolate and water in a pan over hot, but not boiling, water, stirring occasionally, to blend.", "Add vanilla and chocolate mixture (cooled) to whipped cream and pile into meringue shell, swirling top with spatula.", "Be sure to cool the chocolate mixture before adding to the whipped cream.", "If it is too warm, the mixture will thin out.", "If this happens, chill until it is thick enough to put in shell."]}, {"name": "Onion Pie", "category": "Dessert", "ingredients": [{"amount": "1/2", "unit": "cup", "item": "grated Parmesan cheese"}, {"amount": "1/2", "unit": "", "item": "stack Keebler Club Crackers, crushed"}, {"amount": "2", "unit": "", "item": "eggs"}, {"amount": "1", "unit": "cup", "item": "milk"}, {"amount": "1/2", "unit": "teaspoon", "item": "crushed red pepper flakes, or to taste"}, {"amount": "1/2", "unit": "cup", "item": "butter, divided use"}, {"amount": "3", "unit": "", "item": "large onions"}], "steps": ["Preheat the oven to 400 degrees halfway through onion cooking.", "Slice the onions and saute in 4 tablespoons butter over medium-low heat; the longer you cook them - as long as 35 minutes - the sweeter they will be.  Sprinkle in crushed red pepper.", "Melt the remaining 4 tablespoons butter.  Mix with the crushed crackers, then press the mixture into the bottom and sides of a glass pie plate to form a crust.  Prebake crust for 10 minutes.", "Lightly beat the eggs and milk together in a small bowl.", "Spoon the onions into the crust, then pour the egg mixture over them.  Sprinkle with Parmesan.", "Bake for 30-40 minutes until set and golden."]}, {"name": "Godiva Dark Chocolate Cheesecake", "category": "Dessert", "ingredients": [{"amount": "2 1/2", "unit": "cup", "item": "cream cheese, room temperature"}, {"amount": "1/2", "unit": "cup", "item": "sugar"}, {"amount": "1 3/4", "unit": "tablespoon", "item": "cocoa powder"}, {"amount": "5", "unit": "tablespoon", "item": "Godiva 85% Dark Chocolate Callets"}, {"amount": "2", "unit": "", "item": "eggs"}, {"amount": "2", "unit": "", "item": "egg yolks"}, {"amount": "1 3/4", "unit": "tablespoon", "item": "cr\u00e8me faiche"}], "steps": ["In a food processor with a blade attachment, cream the cheese until smooth and then add in sugar.", "Pulse a couple times to incorporate sugar and cocoa powder.", "Add in eggs and yolks pulsing a couple times again and scrape down to ensure all is smooth and uniform.", "With machine running, pour in melted Godiva Chocolate in a steady stream until all in, and finish by pulsing in the cr\u00e8me fraiche.", "Pour batter into a 10\" x 10\" baking pan and bake at 325 for 30, minutes or until custard is set and a toothpick inserted in center can be removed cleanly.", "The top may caramelize or brown slightly, which is not an issue.", "Once set, remove from oven and allow cheesecake to cool completely.", "Wrap the pan with plastic and reserve in cooler to set and chill completely.", "Once the cheesecake is cold and firm, remove it from the pan and place in a mixer bowl with a paddle attachment.", "Beat the cake for a few moments to soften and smooth out the custard.", "Place smoothed custard into a piping bag with a plain tip and pipe into the bottom of a plastic lined half cylinder mold.", "Tap the mold to ensure the custard is solid and then flatten out to top.", "Freeze the mold to harden the custard for unmolding.", "Once the cake can be unmolded, remove from the pan and cut into 1\u00bd\" sections.", "Brush some tempered Godiva Dark Chocolate onto a strip of acetate and, while it is still fluid, smooth over the top of the molded cheesecake.", "Once the chocolate has cooled and completely crystallized, remove the acetate, revealing a shiny and textured chocolate finish."]}, {"name": "Sweet Mashed Potatoes", "category": "Dessert", "ingredients": [{"amount": "2", "unit": "", "item": "large sweet potatoes, peeled and chopped"}, {"amount": "1/2", "unit": "stick", "item": "butter"}, {"amount": "1", "unit": "cup", "item": "milk"}, {"amount": "", "unit": "", "item": "salt and pepper, to taste"}, {"amount": "1", "unit": "tsp", "item": "cinnamon (optional)"}], "steps": ["In a pot that covers the potatoes with water, bring to a boil.", "The sweet potatoes are done when they are fork tender.\n2.", "Mash the potatoes with a hand mixer (or fork or masher) and slowly add in butter and milk until potatoes are creamy and mashed to your preferred consistency.", "Add a touch of cinnamon for added flavour."]}, {"name": "Hot Cocoa", "category": "Dessert", "ingredients": [{"amount": "3/4", "unit": "cup", "item": "sugar"}, {"amount": "1/2", "unit": "cup", "item": "unsweetened cocoa powder"}, {"amount": "1", "unit": "tsp", "item": "vanilla extract"}, {"amount": "1/4", "unit": "tsp", "item": "salt"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "4", "unit": "cup", "item": "milk"}, {"amount": "4", "unit": "oz", "item": "chocolate, chopped fine"}], "steps": ["Prepare mix ahead of time. One serving is 1/4 cup mix per cup of milk.", "Bring milk to a simmer in a saucepan over medium heat.", "Whisk cocoa/sugar mix into the milk.", "Add the chopped chocolate and reduce heat to low and simmer, stirring, until the chocolate melts and the cocoa is thick, about 2 minutes.", "Divide among mugs and garnish each with homemade marshmallows or whipped cream."], "timeMinutes": 5}, {"name": "Tofu and Sweet Potato Jambalaya", "category": "Dessert", "ingredients": [{"amount": "14", "unit": "oz", "item": "firm tofu"}, {"amount": "1", "unit": "tablespoon", "item": "olive oil"}, {"amount": "1", "unit": "", "item": "large sweet potato, peeled and cut into 1/2-inch cubes"}, {"amount": "2", "unit": "clove", "item": "garlic, finely chopped"}, {"amount": "2", "unit": "cup", "item": "vegetable broth"}, {"amount": "3/4", "unit": "cup", "item": "uncooked regular long-grain white rice"}, {"amount": "2", "unit": "tablespoon", "item": "Worcestershire sauce"}, {"amount": "1/4", "unit": "teaspoon", "item": "ground red pepper"}, {"amount": "1", "unit": "can", "item": "black beans (15 oz), rinsed and drained"}, {"amount": "12", "unit": "", "item": "medium green onions, sliced"}], "steps": ["Drain tofu; cut into 3/4-inch cubes.", "Carefully press cubes between paper towels to remove as much water as possible.\n2.", "Heat oil in 12-inch skillet over medium heat.", "Cook tofu in oil 6 to 8 minutes, turning frequently, until light golden brown.", "Remove tofu from skillet; set aside.\n3.", "Add sweet potato and garlic to skillet.", "Cook 2 to 3 minutes, stirring occasionally, just until sweet potato begins to brown.", "Stir in broth, rice, Worcestershire sauce and red pepper.", "Heat to boiling; reduce heat.", "Cover and simmer 10 minutes.\n4.", "Stir in beans.", "Cover and cook 8 to 10 minutes, stirring occasionally, until rice is tender and liquid is absorbed.", "Stir in tofu and onions.", "Cook 1 to 2 minutes or until heated through."]}, {"name": "Smoked Salmon Ebelskivers", "category": "Breakfast", "ingredients": [{"amount": "1", "unit": "cup", "item": "all-purpose flour"}, {"amount": "1 1/2", "unit": "tsp", "item": "sugar"}, {"amount": "1/2", "unit": "tsp", "item": "baking powder"}, {"amount": "1/4", "unit": "tsp", "item": "salt"}, {"amount": "1/2", "unit": "tsp", "item": "pepper, freshly ground"}, {"amount": "2", "unit": "", "item": "large eggs, separated"}, {"amount": "1", "unit": "cup", "item": "milk"}, {"amount": "3", "unit": "tbsp", "item": "unsalted butter, melted and slightly cooled, divided use"}, {"amount": "1", "unit": "tsp", "item": "fresh lemon juice"}, {"amount": "1/4", "unit": "cup", "item": "fresh dill, chopped and firmly packed"}, {"amount": "3 1/2", "unit": "tbsp", "item": "smoked salmon, minced (about 4 oz)"}, {"amount": "3 1/2", "unit": "tbsp", "item": "whipped-style cream cheese, at room temperature"}, {"amount": "2", "unit": "servings", "item": "cocktail sauce"}], "steps": ["Preheat oven to 200F.", "In a large bowl, whisk together the flour, sugar, baking powder, salt, and pepper.", "In a small bowl, lightly whisk the egg yolks, then whisk in the milk, 2 tablespoons of melted butter and lemon juice.", "Add the yolk mixture to the flour mixture and, using a wooden spoon, stir until well blended.", "The batter will be lumpy.", "In a clean bowl, using an electric mixer on high speed, beat the egg whites until stiff, but not dry, peaks form. Using a silicone spatula, fold about one-third of the egg whites into the batter to lighten it, then fold in the rest just until no white streaks remain. Stir in fresh dill.", "Brush the wells of the ebelskiver pan with some of the remaining melted butter and place over medium heat.", "When the butter starts to bubble, add about 1 tablespoon batter to each well.", "Working quickly, carefully spoon about 1/2 teaspoon of the smoked salmon into the center of each pancake, then spoon about 1/2 teaspoon of the cream cheese on top.", "Top each with another 1 tablespoon batter. (Alternatively, gently mix the cream cheese and salmon together.", "Spoon about 1 teaspoon into the center of each pancake)", "Cook until the bottoms of the pancakes are lightly browned and crisp, 3-5 minutes. Use 2 short wooden skewers to turn all the  pancakes and cook until lightly browned on the second side, about 3 minutes longer.", "Transfer the finished pancakes to a platter and keep warm  in the oven while you repeat to make 2 more batches. Serve right away."], "timeMinutes": 33}, {"name": "The Shake", "category": "Breakfast", "ingredients": [{"amount": "1", "unit": "", "item": "scoop protein powder (optional)"}, {"amount": "1", "unit": "tbsp", "item": "ground flax seeds"}, {"amount": "2", "unit": "tbsp", "item": "hemp seeds"}, {"amount": "2", "unit": "tbsp", "item": "peanut butter"}, {"amount": "1", "unit": "", "item": "banana"}, {"amount": "1", "unit": "cup", "item": "raspberries"}, {"amount": "1", "unit": "cup", "item": "blueberries"}, {"amount": "1 1/2", "unit": "cup", "item": "milk"}], "steps": ["Combine all ingredients in blender. Blend until smooth."]}, {"name": "Breakfast Mediterranean Scramble", "category": "Breakfast", "ingredients": [{"amount": "1", "unit": "tsp", "item": "olive oil"}, {"amount": "1", "unit": "cup", "item": "chopped veggies, your choice"}, {"amount": "2", "unit": "", "item": "eggs, lightly beaten"}, {"amount": "1/2", "unit": "tsp", "item": "greek seasoning"}, {"amount": "1/4", "unit": "cup", "item": "feta cheese"}], "steps": ["Heat oil in a small non-stick skillet. Once hot, add veggies and saute until soft. Meanwhile, beat greek seasoning and feta into eggs. Once veggies are at desired doneness, add egg mixture to skillet and gently stir until cooked. Serve immediately."]}, {"name": "Best Oatmeal Ever", "category": "Breakfast", "ingredients": [{"amount": "1/2", "unit": "cup", "item": "quick-cooking oats, cooked to your liking"}, {"amount": "1/2", "unit": "", "item": "apple, diced"}, {"amount": "1/2", "unit": "tsp", "item": "cinnamon"}, {"amount": "1", "unit": "tbsp", "item": "maple syrup"}, {"amount": "1", "unit": "tbsp", "item": "nut butter"}, {"amount": "1", "unit": "tbsp", "item": "ground flax seed"}], "steps": ["To prepare, once oatmeal has been sufficiently cooked, add diced apples and nut butter. Stir for 2-3 minutes.\n2. Serve into a bowl and mix in cinnamon, flax seeds, maple syrup/agave. Stir and enjoy!"]}, {"name": "Spinach souffle", "category": "Breakfast", "ingredients": [{"amount": "4", "unit": "", "item": "eggs, separated"}, {"amount": "4", "unit": "cup", "item": "spinach, chopped fine"}, {"amount": "2", "unit": "", "item": "sundried tomatoes, chopped fine"}, {"amount": "1/4", "unit": "cup", "item": "feta or goat cheese, crumbled"}, {"amount": "1/4", "unit": "tsp", "item": "salt"}, {"amount": "1/4", "unit": "tsp", "item": "pepper, or to taste"}, {"amount": "1/2", "unit": "cup", "item": "pine nuts, toasted"}], "steps": ["Preheat the oven to 425F with the pan in the oven, and toast the pine nuts.", "Whisk the egg whites in a clean bowl to form stiff peaks. In a separate bowl, mix the egg yolks with the spinach, tomato, goat cheese, salt, and pepper to combine. Gently fold the egg whites into the spinach mixture.", "Spray the hot pan with oil, then spoon the mixture in and sprinkle with the pine nuts.", "Bake in the oven for 10 minutes, or until well risen, golden, and firm. Serve.", "Rather than fresh spinach, one can use 3.5oz per serving cooked spinach, chopped or pureed."]}, {"name": "Baked eggs and beans on toast", "category": "Breakfast", "ingredients": [{"amount": "1 1/2", "unit": "tbsp", "item": "extra-virgin olive oil, plus more for brushing"}, {"amount": "1/2", "unit": "", "item": "small onion, chopped"}, {"amount": "1", "unit": "tbsp", "item": "tomato paste"}, {"amount": "2", "unit": "tbsp", "item": "apple cider vinegar"}, {"amount": "1", "unit": "tbsp", "item": "honey mustard"}, {"amount": "2", "unit": "tsp", "item": "Worcestershire sauce"}, {"amount": "1/2", "unit": "cup", "item": "water"}, {"amount": "", "unit": "", "item": "Kosher salt and freshly ground pepper"}, {"amount": "2", "unit": "can", "item": "navy beans, 1 undrained; 1 drained and rinsed"}, {"amount": "8", "unit": "", "item": "large eggs"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "8", "unit": "", "item": "thick slices crusty bread"}, {"amount": "2", "unit": "cup", "item": "grape tomatoes, halved"}, {"amount": "1/4", "unit": "cup", "item": "fresh parsley, chopped"}, {"amount": "1/2", "unit": "tbsp", "item": "olive oil"}], "steps": ["Heat olive oil in a large skillet over medium-high heat.", "Add the onion and cook, stirring, until golden, about 5 minutes.", "Add the tomato paste and cook, stirring, 1 more minute.", "Stir in the vinegar, honey mustard, Worcestershire sauce, water, and salt and pepper to taste.", "Bring to a simmer, then add the beans, plus the liquid from one of the cans.", "Cook until the beans are soft, about 5 more minutes.", "Make indentations in the bean mixture and crack an egg into each.", "Sprinkle with salt and pepper, then cover and cook until the egg whites are set, 3 minutes or so. (Whites should still be slightly \"jiggly\" when you remove from heat, as they'll continue cooking for a bit and you want the yolks runny.)", "Meanwhile, make toast. Butter it when it comes out. (Or make skillet toast with butter over high heat, 1 minute per side or until browned.)", "Toss the tomatoes, parsley and remaining olive oil, and salt and pepper to taste in a bowl. Serve the beans and eggs topped with tomato salad, and toast on the side."]}, {"name": "Broccoli soup with cheddar toasts", "category": "Breakfast", "ingredients": [{"amount": "1 1/2", "unit": "tablespoon", "item": "extra-virgin olive oil"}, {"amount": "1", "unit": "", "item": "medium onion, coarsely chopped"}, {"amount": "2", "unit": "", "item": "garlic cloves, coarsely chopped"}, {"amount": "2", "unit": "bunches", "item": "broccoli (1 bunch \u2248 11/2lbs), stems and florets chopped separately into 1/2-inch pieces"}, {"amount": "7", "unit": "cup", "item": "low-sodium chicken stock"}, {"amount": "1", "unit": "teaspoon", "item": "coarse salt"}, {"amount": "1", "unit": "cup", "item": "skim milk"}, {"amount": "1/8", "unit": "teaspoon", "item": "cayenne pepper"}, {"amount": "2", "unit": "ounce", "item": "extra-sharp cheddar cheese, grated or crumbled (about 1/2 cup)"}, {"amount": "8", "unit": "", "item": "thin slices crusty baguette"}], "steps": ["Heat oil in a large pot over medium heat until hot but not smoking.", "Add onion, garlic, and broccoli stems; cover, and cook, stirring occasionally, until vegetables are soft, about 15 minutes.", "Add stock and salt; cover, raise heat to medium-high, and bring to a boil.", "Add broccoli florets; reduce heat, and simmer, uncovered, until florets are just tender, about 10 minutes.", "Remove soup from heat, and let cool, about 10 minutes. Fill a blender no more than halfway to puree soup in batches until smooth. Return soup to pot; stir in milk and cayenne. Cook over medium heat until heated through (do not boil).", "Heat broiler. Divide cheese among bread slices; toast under broiler until melted and golden brown, 45 to 60 seconds. Divide soup among bowls. Top each bowl with a cheese toast, and serve."]}, {"name": "Pasta with asparagus and egg", "category": "Breakfast", "ingredients": [{"amount": "3/4", "unit": "lb", "item": "angel hair pasta"}, {"amount": "3", "unit": "tbsp", "item": "unsalted butter"}, {"amount": "1/4", "unit": "cup", "item": "parmesan, grated, about 1/2 oz=1/4 cup"}, {"amount": "1", "unit": "bunch", "item": "thin asparagus (about 1 pound=1 bunch), trimmed to bite-size"}, {"amount": "4", "unit": "", "item": "large eggs"}], "steps": ["Cook pasta. Meanwhile, toss chopped asparagus with oil, salt, pepper, and whatever other seasoning you desire. Roast at 450F for 8 minutes.", "When pasta is done, drain it, reserving some pasta water. Return it to the pot, and add butter, parmesan, and enough pasta water to make a thin sauce. Also add asparagus.", "Fry eggs over easy. Dish the pasta, and top with egg and a little more parmesan."], "timeMinutes": 30}, {"name": "Spaetzle", "category": "Side Dish", "ingredients": [{"amount": "2", "unit": "teaspoon", "item": "fresh parsley, chopped"}, {"amount": "1", "unit": "teaspoon", "item": "garlic, minced"}, {"amount": "3", "unit": "tablespoon", "item": "butter"}, {"amount": "1", "unit": "pinch", "item": "nutmeg"}, {"amount": "1/4", "unit": "teaspoon", "item": "baking powder"}, {"amount": "1", "unit": "teaspoon", "item": "salt"}, {"amount": "1/2", "unit": "cup", "item": "milk"}, {"amount": "1 1/2", "unit": "cup", "item": "flour, sifted"}, {"amount": "2", "unit": "", "item": "eggs, slightly beaten"}, {"amount": "2", "unit": "tablespoon", "item": "finely grated Parmesan, plus extra for garnish"}, {"amount": "", "unit": "", "item": "Salt and freshly ground black pepper"}], "steps": ["Bring a saucepan of salted water it a boil, reduce the heat, and maintain a simmer.", "In a bowl, stir all the ingredients together (eggs, flour, milk, salt, baking powder, and nutmeg).", "Place a colander over the pan, pour about1/4 of the batter into the colander, and press through the holes with a plastic spatula into the hot water.", "When the spatzle starts to float to the surface, cover the pan and keep covered until the spatzle appears to swell and is fluffy.", "Remove the dumplings and repeat the procedure with the remaining batter.", "In a medium saute pan, add butter, and melt over medium heat until butter turns a light brown. Add garlic and cook until it becomes lightly colored. Add spaetzle to the pan to heat through. Add parsley, cheese, salt and pepper, to taste."]}, {"name": "Flaky Buttermilk Biscuits", "category": "Side Dish", "ingredients": [{"amount": "8", "unit": "tablespoon", "item": "unsalted butter, cold, lightly floured and cut into 1/8-inch slices"}, {"amount": "2", "unit": "tablespoon", "item": "vegetable shortening, cut into 1/2-inch chunks"}, {"amount": "1", "unit": "teaspoon", "item": "salt"}, {"amount": "1", "unit": "tablespoon", "item": "baking powder"}, {"amount": "1/2", "unit": "teaspoon", "item": "baking soda"}, {"amount": "2 1/2", "unit": "cup", "item": "unbleached all-purpose flour"}, {"amount": "2", "unit": "tablespoon", "item": "butter, melted"}, {"amount": "1 1/4", "unit": "cup", "item": "buttermilk, cold"}], "steps": ["Adjust oven rack to lower-middle position; heat oven to 450 degrees.", "Whisk flour, baking power, baking soda, and salt in large bowl.", "Add shortening to flour mixture; break up chunks with fingertips until only pea-sized pieces remain.", "Working in batches, drop butter slices into flour mixture and toss to coat; pick up each slice of butter and press between floured fingertips into flat, nickel-sized pieces.", "Repeat until all butter is incorporated; toss to combine.", "Freeze mixture (in bowl) until chilled, about 15 minutes.", "Spray 24-square-inch work surface with nonstick cooking spray; spread spray evenly across surface with kitchen towel or paper towel.", "Sprinkle 1/3 cup of extra flour across sprayed area; gently spread flour across work surface with palm to form thin, even coating.", "Add all but 2 tablespoons of buttermilk to flour mixture; stir briskly with fork until ball forms and no dry bits of flour are visible, adding remaining buttermilk as needed (dough will be sticky and shaggy but should clear sides of bowl).", "With rubber spatula, transfer dough onto center of prepared work surface, dust surface lightly with flour, and, with floured hands, bring dough together into cohesive ball.", "Pat dough into approximate 10-inch square; roll into 18- by 14-inch rectangle about 1/4 inch thick, dusting dough and rolling pin with flour as needed.", "Using bench scraper or thin metal spatula, fold dough into thirds, brushing any excess flour from surface; lift short end of dough and fold in thirds again to form approximate 6- by 4-inch rectangle.", "Rotate dough 90 degrees, dusting work surface underneath with flour; roll and fold dough again, dusting with flour as needed.", "Roll dough into 10-inch square about 1/2 inch thick; flip dough and cut nine 3-inch rounds with floured biscuit cutter, dipping cutter back into flour after each cut.", "Carefully invert and transfer rounds to ungreased baking sheet, spaced 1 inch apart.", "Gather dough scraps into ball; roll and fold once or twice until scraps form smooth dough.", "Roll dough into 1/2-inch-thick round; cut 3 more 3-inch rounds and transfer to baking sheet.", "Discard excess dough.", "Brush biscuit tops with melted butter.  Bake, without opening oven door, until tops are golden brown and crisp, 15 to 17 minutes.  Let cool on baking sheet 5 to 10 minutes before serving."]}, {"name": "Handmade Pasta", "category": "Side Dish", "ingredients": [{"amount": "1", "unit": "cup", "item": "all-purpose flour"}, {"amount": "1/2", "unit": "cup", "item": "semolina"}, {"amount": "1/4", "unit": "tsp", "item": "salt"}, {"amount": "2", "unit": "", "item": "eggs, at room temperature"}, {"amount": "2", "unit": "tsp", "item": "extra-virgin olive oil"}], "steps": ["Sift flour and semolina into a medium bow.", "Mix in salt.", "Add eggs and olive oil, and beginning in the center, mix with two fingers in a circular motion until flour is combined with eggs.", "Do not overmix.", "Remove dough from bowl and gather into a ball.", "On a lightly-floured board, knead gently with the heels of your hands, folding dough over onto itself until it forms a smooth mass.", "Pat into a ball, flatten slightly, wrap in waxed paper or plastic wrap, and refrigerate for 30 minutes or as long as overnight.", "Work on a lightly floured surface.", "Keep the dough lightly dusted with flour.", "Roll dough into a sheet about 1/16-inch thick.", "Gently roll dough up into a cylinder.", "With a slicing knife, cut crosswise in 1/4-inch slices.", "Dust dough with semolina and unwrap noodles.", "Cover with a tea towel until ready to cook.  (The past may be made an hour ahead of time or frozen for up to 1 month.", "Defrost in refrigerator.)  Fresh pasta will cook, in boiling salted water, in about 2-3 minutes."]}, {"name": "Pesto Orzo with Peas", "category": "Side Dish", "ingredients": [{"amount": "4", "unit": "oz", "item": "pancetta, diced"}, {"amount": "12", "unit": "oz", "item": "frozen peas"}, {"amount": "1", "unit": "cup", "item": "water"}, {"amount": "4", "unit": "servings", "item": "pesto"}, {"amount": "1", "unit": "cup", "item": "orzo, uncooked"}, {"amount": "2", "unit": "tbsp", "item": "Parmesan, grated"}], "steps": ["Cook pancetta in a skilled with olive oil until crisp.  Remove with slotted spoon.", "Meanwhile, bring 1 quart of water to a boil. Add 1 tbsp salt and orzo. Cook about 5 minutes or until al dente.", "Add frozen peas and water to the skillet; simmer until tender (about 5 minutes). Drain and return to skillet.", "Stir in pesto, orzo, pancetta, and parmesan, and heat through."]}, {"name": "Roasted potatoes and tomatoes", "category": "Side Dish", "ingredients": [{"amount": "1 1/2", "unit": "pound", "item": "red potatoes"}, {"amount": "2", "unit": "tbsp", "item": "olive oil"}, {"amount": "1", "unit": "pint", "item": "grape tomatoes"}, {"amount": "3", "unit": "sprig", "item": "rosemary"}, {"amount": "3", "unit": "", "item": "garlic cloves, smashed"}, {"amount": "", "unit": "", "item": "salt and pepper"}], "steps": ["Put a baking sheet in the oven and preheat to 450.", "Cut potatoes lengthwise into eighths. Toss with olive oil, tomatoes, rosemary, garlic cloves, salt and pepper. Put cut-side down on the hot baking sheet and roast 15 minutes. Flip the mixture and roast 10 more minutes."], "timeMinutes": 35}, {"name": "Spiced Apple Sauce", "category": "Side Dish", "ingredients": [{"amount": "1", "unit": "tbsp", "item": "unsalted butter"}, {"amount": "1/2", "unit": "", "item": "orange, zested and juiced"}, {"amount": "2", "unit": "tbsp", "item": "sugar"}, {"amount": "1/4", "unit": "tsp", "item": "ground cinnamon"}, {"amount": "1/4", "unit": "", "item": "nutmeg, grated"}, {"amount": "1/4", "unit": "tsp", "item": "ground cloves"}, {"amount": "2", "unit": "", "item": "good eating apples, peeled, cored and chopped into 1 inch dice"}, {"amount": "1", "unit": "", "item": "cooking apple, peeled, cored and chopped into 1 inch dice"}], "steps": ["In a small saucepan gently melt the butter for a minute with the orange zest and juice, the sugar, cinnamon, grated nutmeg and cloves.", "Stir until the butter foams, then stir in the apples.", "Place a lid on top and cook for 15-20 minutes on a medium to low heat until you have a soft, sludgy sauce.", "Taste and add a bit more sugar if you want.", "Serve warm or room temperature."]}, {"name": "Joan's Broccoli Madness", "category": "Side Dish", "ingredients": [{"amount": "1", "unit": "bunch", "item": "broccoli, raw"}, {"amount": "1/2", "unit": "cup", "item": "bacon, cooked and crumbled"}, {"amount": "1/2", "unit": "cup", "item": "cashews"}, {"amount": "1/3", "unit": "cup", "item": "raisins"}, {"amount": "1/4", "unit": "cup", "item": "red onion, chopped"}, {"amount": "1", "unit": "cup", "item": "mayonnaise"}, {"amount": "1/3", "unit": "cup", "item": "sugar"}, {"amount": "2", "unit": "tablespoon", "item": "apple cider vinegar"}], "steps": ["Mix the first five ingredients in a large bowl.\nIn a second bowl, beat dressing ingredients together gently until smooth.\nToss the salad with the dressing approximately 10 minutes before serving to allow flavors to meld. Serve on chilled salad dishes."]}, {"name": "Broccoli with Parmesan and Walnuts", "category": "Side Dish", "ingredients": [{"amount": "2", "unit": "tbsp", "item": "extra-virgin olive oil"}, {"amount": "1", "unit": "head", "item": "broccoli"}, {"amount": "1", "unit": "clove", "item": "garlic, thinly sliced"}, {"amount": "1/4", "unit": "tsp", "item": "red pepper flakes"}, {"amount": "", "unit": "", "item": "salt and pepper"}, {"amount": "2", "unit": "tsp", "item": "grated lemon zest"}, {"amount": "1", "unit": "tbsp", "item": "fresh lemon juice"}, {"amount": "1/4", "unit": "cup", "item": "parmesan, grated"}, {"amount": "1/2", "unit": "cup", "item": "walnuts, toasted and chopped"}], "steps": ["In a large skillet, heat olive oil over medium-high.  Add broccoli, trimmed and cut into florets, and cook until broccoli begins to brown, 4 minutes.  Add garlic and cook, stirring occasionally, until broccoli is crisp and tender and garlic begins to brown, 3 minutes.", "Add red pepper flakes, season with salt and pepper, and transfer to serving bowl.  Toss with lemon zest, lemon juice, parmesan, and walnuts.  Serve warm or at room temperature."], "timeMinutes": 20}, {"name": "Old Fashioned Vegetable Soup", "category": "Soup & Stew", "ingredients": [{"amount": "1", "unit": "pound", "item": "ground beef"}, {"amount": "1", "unit": "cup", "item": "onion, chopped"}, {"amount": "1", "unit": "cup", "item": "potatoes, diced"}, {"amount": "1", "unit": "cup", "item": "carrots, sliced"}, {"amount": "1", "unit": "cup", "item": "celery, diced"}, {"amount": "2 16", "unit": "oz", "item": "can diced tomatoes in juice (or substitute 2 small cans of tomato sauce)"}, {"amount": "4", "unit": "cup", "item": "water"}, {"amount": "1/4", "unit": "tsp", "item": "dried basil, crushed"}, {"amount": "1/4", "unit": "tsp", "item": "dried thyme"}, {"amount": "1", "unit": "", "item": "bay leaf"}, {"amount": "1/2", "unit": "tsp", "item": "salt"}, {"amount": "1/4", "unit": "tsp", "item": "pepper"}, {"amount": "1/2", "unit": "tsp", "item": "garlic powder"}, {"amount": "2", "unit": "tablespoon", "item": "beef bouillon"}, {"amount": "1 16", "unit": "oz", "item": "can corn"}, {"amount": "1 16", "unit": "oz", "item": "can green beans"}, {"amount": "1 16", "unit": "oz", "item": "can green peas"}], "steps": ["In a large soup pot, brown ground beef and onion, drain off fat.  Add remaining ingredients EXCEPT for last 3 items (canned vegetables).  Simmer on low heat until vegetables are tender, about an hour.  Add canned vegetables and simmer 5 minutes.  Remove bay leaf and serve."]}, {"name": "Vegetarian Chili", "category": "Soup & Stew", "ingredients": [{"amount": "2", "unit": "tablespoon", "item": "canola oil"}, {"amount": "1 1/2", "unit": "cup", "item": "yellow onions, chopped"}, {"amount": "1", "unit": "cup", "item": "red bell peppers, chopped"}, {"amount": "2", "unit": "tablespoon", "item": "garlic, minced"}, {"amount": "2", "unit": "", "item": "serrano peppers, stemmed, seeded, and minced"}, {"amount": "1", "unit": "", "item": "medium zucchini, stem ends trimmed and cut into small dice"}, {"amount": "5", "unit": "", "item": "large portobello mushrooms, stemmed, wiped clean and cubed"}, {"amount": "2", "unit": "tablespoon", "item": "chili powder"}, {"amount": "1", "unit": "", "item": "tablespooon ground cumin"}, {"amount": "1 1/4", "unit": "teaspoon", "item": "salt"}, {"amount": "1/4", "unit": "teaspoon", "item": "cayenne"}, {"amount": "4", "unit": "", "item": "large tomatoes, peeled, seeded and chopped"}, {"amount": "2", "unit": "can", "item": "black beans, rinsed and drained"}, {"amount": "1 15", "unit": "oz", "item": "can tomato sauce"}, {"amount": "1", "unit": "cup", "item": "vegetable stock, or water"}, {"amount": "1", "unit": "", "item": "lime, juiced"}, {"amount": "1/4", "unit": "cup", "item": "cilantro, chopped"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "", "unit": "", "item": "Cooked brown rice, accompaniment"}, {"amount": "", "unit": "", "item": "Sour cream or strained plain yogurt, garnish"}, {"amount": "", "unit": "", "item": "Diced avocado or guacamole, garnish"}, {"amount": "", "unit": "", "item": "Essence, garnish"}, {"amount": "", "unit": "", "item": "Chopped green onions, garnish"}], "steps": ["In a large (6qt), heavy pot, heat the oil over medium-high heat. Add the onions, bell peppers, garlic, and serrano peppers, and cook, stirring, until soft, about 3 minutes.", "Add the zucchini and mushrooms, and cook, stirring, until soft and the vegetables give off their liquid and start to brown around the edges, about 6 minutes. Add the chili powder, cumin, salt and cayenne, and cook, stirring, until fragrant, about 30 seconds.", "Add the tomatoes and stir well. Add the beans, tomato sauce, and vegetable stock, stir well, and bring to a boil. Reduce the heat to medium-low and simmer, stirring occasionally, for about 20 minutes.", "Remove from the heat and stir in the cilantro and lime juice. Adjust the seasoning, to taste.", "To serve, place 1/4 cup of brown rice in the bottom of each bowl.", "Ladle the chili into the bowls over the rice.", "Top each serving with a dollop of sour cream and spoonful of avocado or [guacamole](http://www.xanthir.com/recipes/showrecipe.php?id=28).", "Sprinkle with [Essence](http://www.xanthir.com/recipes/showrecipe.php?id=id4) and green onions and serve."]}, {"name": "Lentil Soup", "category": "Soup & Stew", "ingredients": [{"amount": "2", "unit": "tablespoon", "item": "olive oil"}, {"amount": "1", "unit": "cup", "item": "onion, chopped"}, {"amount": "1/2", "unit": "cup", "item": "carrot, finely chopped"}, {"amount": "1/2", "unit": "cup", "item": "celery, finely chopped"}, {"amount": "2", "unit": "teaspoon", "item": "kosher salt"}, {"amount": "1", "unit": "pound", "item": "lentils, picked and rinsed"}, {"amount": "1", "unit": "cup", "item": "tomatoes, peeled and chopped"}, {"amount": "2", "unit": "quart", "item": "vegetable broth"}, {"amount": "1/2", "unit": "teaspoon", "item": "coriander, freshly ground"}, {"amount": "1/2", "unit": "teaspoon", "item": "cumin, freshly ground and toasted"}, {"amount": "1/2", "unit": "teaspoon", "item": "black pepper, freshly ground"}], "steps": ["Place the olive oil into a large 6-quart Dutch oven and set over medium heat.", "Once hot, add the onion, carrot, celery and salt and sweat until the onions are translucent, approximately 6 to 7 minutes.", "Add the lentils, tomatoes, broth, coriander, cumin and pepper and stir to combine.", "Increase the heat to high and bring just to a boil.", "Reduce the heat to low, cover and cook at a low simmer until the lentils are tender, approximately 35 to 40 minutes.", "Using a stick blender, puree to your preferred consistency (optional).", "Serve immediately."]}, {"name": "Vegetable Stock", "category": "Soup & Stew", "ingredients": [{"amount": "2", "unit": "", "item": "leeks, white and pale-green parts only, cut into 1-inch rounds, rinsed well"}, {"amount": "2", "unit": "", "item": "carrots, cut into 1-inch rounds"}, {"amount": "1", "unit": "", "item": "small onion, cut into 1-inch pieces"}, {"amount": "3", "unit": "", "item": "garlic cloves"}, {"amount": "8", "unit": "cup", "item": "water"}, {"amount": "5", "unit": "sprig", "item": "flat-leaf parsley"}, {"amount": "2", "unit": "sprig", "item": "thyme"}, {"amount": "1", "unit": "", "item": "dried bay leaf"}, {"amount": "2", "unit": "teaspoon", "item": "whole black peppercorns, crushed"}], "steps": ["Cook leeks, carrots, onion, and garlic, covered stirring occasionally in a medium saucepan over medium heat for 10 minutes.\n2.", "Add water, parsley, thyme, bay leaf, and peppercorns.", "Raise heat to high.", "Bring to a boil, reduce heat.", "Simmer, uncovered, for 30 minutes.", "Pour through a cheesecloth-lined strainer; discard solids.", "Storage: stock can be refrigerated for up to 2 days or frozen for up to 3 months."]}, {"name": "Creamy tomato soup", "category": "Soup & Stew", "ingredients": [{"amount": "1/4", "unit": "cup", "item": "extra-virgin olive oil"}, {"amount": "1", "unit": "", "item": "medium onion, finely chopped"}, {"amount": "1", "unit": "clove", "item": "garlic, chopped"}, {"amount": "1", "unit": "", "item": "small inner stalk celery, chopped"}, {"amount": "2", "unit": "pound", "item": "tomatoes, chopped"}, {"amount": "1/2", "unit": "teaspoon", "item": "sugar"}, {"amount": "1", "unit": "tsp", "item": "salt"}, {"amount": "1", "unit": "tablespoon", "item": "fresh basil (or 1/2 teaspoon dried basil), chopped"}, {"amount": "1", "unit": "cup", "item": "milk, half-and-half, or cream"}, {"amount": "", "unit": "", "item": "Kosher salt and freshly ground black pepper"}], "steps": ["Combine the olive oil, onion, garlic, celery, tomatoes, sugar, and salt in a saucepan.", "Cook over medium heat, stirring occasionally, until the vegetables are tender, about 25 minutes.", "Puree until smooth (or desired consistency), or transfer to a regular blender in batches and puree.", "Pour back into saucepan and add milk and basil.", "Add salt and pepper to taste.", "For vegans or non-creamy soup, thin with water if needed."]}, {"name": "Parker's split pea soup", "category": "Soup & Stew", "ingredients": [{"amount": "1", "unit": "cup", "item": "yellow onions, chopped"}, {"amount": "2", "unit": "clove", "item": "garlic, minced"}, {"amount": "1/8", "unit": "cup", "item": "good olive oil"}, {"amount": "1/2", "unit": "teaspoon", "item": "dried oregano"}, {"amount": "1 1/2", "unit": "teaspoon", "item": "kosher salt"}, {"amount": "1", "unit": "teaspoon", "item": "freshly ground black pepper"}, {"amount": "4", "unit": "", "item": "carrots, medium-diced"}, {"amount": "3", "unit": "", "item": "small red boiling potatoes, unpeeled and medium-diced"}, {"amount": "1", "unit": "pound", "item": "dried split green peas"}, {"amount": "8", "unit": "cup", "item": "chicken stock"}], "steps": ["In a 4-quart stockpot on medium heat, saute the onions and garlic with the olive oil, oregano, salt, and pepper until the onions are translucent, 10 to 15 minutes.", "Add the carrots, potatoes, 1/2 pound of split peas, and chicken stock.", "Bring to a boil, then simmer uncovered for 40 minutes.", "Skim off the foam while cooking.", "Add the remaining split peas and continue to simmer for another 40 minutes, or until all the peas are soft.", "Stir frequently to keep the solids from burning on the bottom.", "Taste for salt and pepper.", "Serve hot."], "timeMinutes": 100}, {"name": "Heinz Chili Sauce", "category": "Soup & Stew", "ingredients": [{"amount": "1", "unit": "cup", "item": "tomato puree"}, {"amount": "2", "unit": "tablespoon", "item": "agave nectar"}, {"amount": "1/4", "unit": "cup", "item": "white vinegar"}, {"amount": "2", "unit": "teaspoon", "item": "dried onion flakes"}, {"amount": "2", "unit": "teaspoon", "item": "granulated sugar"}, {"amount": "1", "unit": "teaspoon", "item": "salt"}, {"amount": "1", "unit": "teaspoon", "item": "lemon juice"}, {"amount": "1/8", "unit": "teaspoon", "item": "garlic powder"}], "steps": ["Whisk all the ingredients together in a small saucepan, place over medium heat.", "When mixture begins to bubble reduce heat to low and simmer for 30 minutes. Cover and cool. Refrigerate when cold"]}, {"name": "French onion soup", "category": "Soup & Stew", "ingredients": [{"amount": "4", "unit": "tablespoon", "item": "unsalted butter"}, {"amount": "2", "unit": "pound", "item": "yellow onions, sliced 1/4-inch into half circles"}, {"amount": "1", "unit": "teaspoon", "item": "sugar"}, {"amount": "1", "unit": "tablespoon", "item": "all-purpose flour"}, {"amount": "1/2", "unit": "cup", "item": "dry sherry"}, {"amount": "3", "unit": "cup", "item": "beef stock"}, {"amount": "2", "unit": "teaspoon", "item": "fresh thyme, chopped or 3/4 teaspoon dried thyme"}, {"amount": "", "unit": "", "item": "Salt and freshly ground black pepper"}, {"amount": "1", "unit": "", "item": "small French baguette, sliced crosswise into 1/2-inch pieces"}, {"amount": "8", "unit": "ounce", "item": "Gruyere cheese, grated on the large holes of a box grater (about 3 cups)"}], "steps": ["Melt butter in a large Dutch oven or heavy pot on medium-low heat.", "Add onions.", "Spread them out in as thin a layer as possible.", "Sprinkle with sugar, and cook, stirring just as needed to keep onions from sticking, until they are melting and soft, golden brown, and beginning to caramelize, about 1 hour. (If doing 2 servings, cook for only 30-40 minutes.)", "Sprinkle flour over onions, and stir to coat. Add sherry, stock, and thyme, and bring to a simmer. Cook, partially covered, for about 30 minutes, to allow the flavors to combine. Season with salt and pepper to taste.  (If doing 2 servings, cook for only 15 minutes.)", "Meanwhile, lightly toast bread under a broiler; set aside.", "Ladle hot soup into six ovenproof bowls.", "Arrange the bowls on a baking pan.", "Place 1 or 2 slices of toasted bread over each bowl of soup.", "Sprinkle 1/2 cup grated cheese over bread in each bowl, and place under the broiler until cheese is melted and crusty brown around the edges.", "Watch carefully that bread doesn't burn.", "(If you don't have broiler-proof bowls, instead lightly toast the bread, then top with the cheese and broil until bubbly and browned, 4-5 minutes. Serve the soup in an ordinary bowl, topped with the bread slices.)", "Serve immediately."], "timeMinutes": 105}, {"name": "Greek Salad", "category": "Salad", "ingredients": [{"amount": "6", "unit": "tablespoon", "item": "lemon juice"}, {"amount": "2", "unit": "clove", "item": "garlic, minced"}, {"amount": "2", "unit": "teaspoon", "item": "kosher salt, plus more to taste"}, {"amount": "1", "unit": "cup", "item": "extra-virgin olive oil, preferably Greek"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1", "unit": "head", "item": "romaine lettuce, trimmed of tough stems and torn into bite-sized pieces"}, {"amount": "1", "unit": "cup", "item": "kalamata olives, about 6oz/cup"}, {"amount": "1/2", "unit": "pound", "item": "Feta cheese, crumbled"}, {"amount": "1", "unit": "", "item": "cucumber, trimmed, cut into 1 inch chunks"}, {"amount": "1 1/2", "unit": "cup", "item": "grape tomatoes, halved"}, {"amount": "1", "unit": "", "item": "small red onion, cut into 1/2-inch wedges, soaked in cold water for 5 minutes and drained"}, {"amount": "2", "unit": "teaspoon", "item": "dried oregano"}, {"amount": "", "unit": "", "item": "Freshly ground black pepper"}], "steps": ["In a small bowl, whisk together the lemon juice, garlic, salt, and oil. Set aside.   In a large bowl lightly toss the lettuce with the olives, cheese, cucumber, tomatoes, onion, oregano, and black pepper. Let sit up to 2 hours.  To serve, toss salad with dressing and place sliced chicken on top."]}, {"name": "Sherry Vinaigrette", "category": "Salad", "ingredients": [{"amount": "1", "unit": "", "item": "small shallot, finely chopped"}, {"amount": "1/4", "unit": "cup", "item": "sherry vinegar or balsamic vinegar"}, {"amount": "2", "unit": "teaspoon", "item": "Dijon mustard"}, {"amount": "1/4", "unit": "teaspoon", "item": "kosher salt"}, {"amount": "1/4", "unit": "teaspoon", "item": "freshly ground black pepper"}, {"amount": "1/2", "unit": "cup", "item": "olive oil"}], "steps": ["Whisk together the shallot, vinegar, mustard, salt, and pepper in a small bowl. Slowly whisk in the oil until emulsified."]}, {"name": "Margherita Salad", "category": "Salad", "ingredients": [{"amount": "1", "unit": "", "item": "plum tomato, halved"}, {"amount": "4", "unit": "", "item": "sun-dried tomatoes packed in oil"}, {"amount": "2", "unit": "tablespoon", "item": "oil from the sun-dried tomato jar"}, {"amount": "2", "unit": "tablespoon", "item": "red wine vinegar"}, {"amount": "1", "unit": "clove", "item": "garlic"}, {"amount": "1/2", "unit": "teaspoon", "item": "dried oregano"}, {"amount": "1/4", "unit": "bunch", "item": "fresh basil, torn"}, {"amount": "2", "unit": "tbsp", "item": "parmesan, grated"}, {"amount": "", "unit": "", "item": "Kosher salt and freshly ground pepper"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "2", "unit": "tablespoon", "item": "extra-virgin olive oil"}, {"amount": "1", "unit": "cup", "item": "breadcrumbs"}, {"amount": "2", "unit": "tablespoon", "item": "chopped fresh parsley"}, {"amount": "1/4", "unit": "cup", "item": "parmesan, grated"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "8", "unit": "cup", "item": "Italian-blend salad greens"}, {"amount": "3/4", "unit": "bunch", "item": "fresh basil, chiffonade"}, {"amount": "8", "unit": "ounce", "item": "bocconcini (mozzarella), quartered"}], "steps": ["Puree the plum tomato, sun-dried tomatoes, vinegar, garlic, oregano, a basil leaves and parmesan in a blender, drizzling in the sun-dried tomato oil until smooth. Add 2 to 3 tablespoons water, if needed to make a pour-able dressing; season with salt and pepper.", "Heat the olive oil in a large skillet over medium-high heat. Add the breadcrumbs, season with salt and pepper and cook, stirring occasionally, until golden, about 2 minutes. Add the remaining parmesan and the parsley and cook until toasted, about 1 more minute.", "Toss the salad greens, mozzarella, and remaining basil in a large bowl. Toss with the dressing, then sprinkle with the breadcrumb mixture."]}, {"name": "Mexican Ensalada", "category": "Salad", "ingredients": [{"amount": "1", "unit": "", "item": "lime, zested and juiced"}, {"amount": "1", "unit": "tablespoon", "item": "balsamic vinegar"}, {"amount": "1/4", "unit": "cup", "item": "basil leaves, chopped"}, {"amount": "1/2", "unit": "teaspoon", "item": "cumin"}, {"amount": "2", "unit": "tablespoon", "item": "extra-virgin olive oil"}, {"amount": "", "unit": "", "item": "Kosher salt and freshly ground black pepper"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1/2", "unit": "", "item": "cucumber, cubed"}, {"amount": "1", "unit": "", "item": "avocado, cubed"}, {"amount": "1", "unit": "", "item": "red bell pepper, cubed"}, {"amount": "1/2", "unit": "cup", "item": "black beans, rinsed and drained"}, {"amount": "1", "unit": "", "item": "tomato, cubed"}, {"amount": "1/2", "unit": "cup", "item": "brown rice, cooked"}], "steps": ["In small bowl, whisk together dressing ingredients.", "Chop up additional ingredients bite size and add to a medium bowl.", "Combine dressing and all ingredients in a large bowl, toss, and serve.", "Includes recipe for [basil-lime vinaigrette](http://www.xanthir.com/recipes/showrecipe.php?id=id6).", "Alternate dressing (for 2 servings):\n1/2 lemon, juiced; 1 tbsp apple cider vinegar; 2 tbsp olive oil; 2 tablespoons cilantro, chopped"]}, {"name": "Super Protein Salad", "category": "Salad", "ingredients": [{"amount": "2", "unit": "cup", "item": "salad greens"}, {"amount": "1/4", "unit": "", "item": "cucumber, sliced"}, {"amount": "1/2", "unit": "cup", "item": "grape tomatoes"}, {"amount": "1/4", "unit": "cup", "item": "black beans, drained and rinsed"}, {"amount": "1/4", "unit": "cup", "item": "chickpeas, drained and rinsed"}, {"amount": "1", "unit": "tbsp", "item": "pistachios"}, {"amount": "2", "unit": "tbsp", "item": "dried cranberries"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "", "unit": "", "item": "salt and pepper, to taste"}, {"amount": "2", "unit": "tbsp", "item": "olive oil"}, {"amount": "1", "unit": "tbsp", "item": "red wine vinegar"}, {"amount": "1", "unit": "tsp", "item": "Dijon mustard"}], "steps": ["Combine olive oil, vinegar, mustard, salt and pepper to taste. Toss with other ingredients in a bowl and serve."]}, {"name": "Extreme Green Salad", "category": "Salad", "ingredients": [{"amount": "4", "unit": "", "item": "handful baby spinach leaves"}, {"amount": "1", "unit": "cup", "item": "edamame"}, {"amount": "1", "unit": "", "item": "large avocado, diced"}, {"amount": "1/2", "unit": "", "item": "cucumber, finely sliced into half moons"}, {"amount": "3", "unit": "tablespoon", "item": "sesame seeds"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1/2", "unit": "", "item": "lime, juiced"}, {"amount": "1/2", "unit": "teaspoon", "item": "wasabi paste"}, {"amount": "1", "unit": "tablespoon", "item": "soy sauce"}, {"amount": "2", "unit": "teaspoon", "item": "sesame oil"}, {"amount": "", "unit": "", "item": "black pepper, to taste"}], "steps": ["Place all the salad ingredients, except the sesame seeds, into a large bowl or platter.", "Whisk together all the dressing ingredients in a small bowl. Drizzle over the salad and toss lightly to coat.", "Sprinkle with sesame seeds and serve."]}, {"name": "Popeye's Muscle Salad", "category": "Salad", "ingredients": [{"amount": "1", "unit": "cup", "item": "baby spinach"}, {"amount": "1", "unit": "cup", "item": "salad greens"}, {"amount": "1", "unit": "", "item": "carrots, shredded"}, {"amount": "1/2", "unit": "", "item": "avocado, diced"}, {"amount": "1", "unit": "", "item": "hard boiled eggs, peeled and carefully sliced"}, {"amount": "2", "unit": "tbsp", "item": "pecans, chopped"}, {"amount": "1/4", "unit": "cup", "item": "fresh berries"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1 1/2", "unit": "tbsp", "item": "olive oil"}, {"amount": "2", "unit": "tsp", "item": "balsamic vinegar"}, {"amount": "1", "unit": "tsp", "item": "dijon mustard"}, {"amount": "", "unit": "", "item": "salt and pepper"}], "steps": ["Combine all ingredients in a bowl, toss, and serve.", "Use whatever vinaigrette you want."]}, {"name": "Basil-Lime Vinaigrette", "category": "Salad", "ingredients": [{"amount": "2", "unit": "", "item": "limes, zested and juiced"}, {"amount": "2", "unit": "tablespoon", "item": "balsamic vinegar"}, {"amount": "1/2", "unit": "cup", "item": "basil, chopped"}, {"amount": "1", "unit": "teaspoon", "item": "ground cumin"}, {"amount": "1/4", "unit": "cup", "item": "extra-virgin olive oil"}, {"amount": "", "unit": "", "item": "Kosher salt and freshly ground black pepper"}], "steps": ["In a small bowl, combine the lime zest, lime juice, balsamic vinegar, basil, and cumin. Slowly add the oil, whisking constantly until the mixture thickens. Season with salt and pepper, to taste."]}, {"name": "Grilled Portobello Mushrooms Stacked with Fresh Spinach and Shaved Manchego Cheese", "category": "Vegetarian", "ingredients": [{"amount": "4", "unit": "ounce", "item": "manchego cheese, thinly sliced into 8 pieces"}, {"amount": "3", "unit": "cup", "item": "baby spinach, washed and dried"}, {"amount": "1", "unit": "teaspoon", "item": "freshly ground black pepper"}, {"amount": "1", "unit": "teaspoon", "item": "kosher salt"}, {"amount": "2", "unit": "tablespoon", "item": "olive oil"}, {"amount": "12", "unit": "", "item": "portobello mushroom caps, wiped clean"}, {"amount": "2", "unit": "tablespoon", "item": "fresh chives, finely chopped, for garnish, optional"}, {"amount": "1", "unit": "serving", "item": "Sherry Vinaigrette"}], "steps": ["Heat grill to high. Brush mushroom caps on both sides with oil and season with salt and pepper. Grill, cap side down, until slightly charred, about 4 to 5 minutes. Turn the mushrooms over and continue grilling until just cooked through, about 3 to 4 minutes longer.", "Stack the ingredients on each of 4 salad plates starting with a mushroom cap, a slice of cheese, some spinach, and a drizzle of Sherry Vinaigrette.", "Add another mushroom cap, more vinaigrette, spinach, and another slice of cheese.", "Place a third mushroom cap on top and finish by drizzling with additional vinaigrette and garnishing with chopped chives, if desired.", "[Sherry Vinaigrette](http://www.xanthir.com/recipes/showrecipe.php?id=18)"]}, {"name": "Lovely Lentils", "category": "Vegetarian", "ingredients": [{"amount": "1", "unit": "cup", "item": "green lentils, rinsed"}, {"amount": "2", "unit": "clove", "item": "garlic, minced"}, {"amount": "500", "unit": "ml", "item": "vegetable broth"}, {"amount": "250", "unit": "ml", "item": "water"}, {"amount": "2", "unit": "tbsp", "item": "coconut oil"}, {"amount": "1", "unit": "tsp", "item": "fresh or dried rosemary"}, {"amount": "1", "unit": "tbsp", "item": "olive oil"}], "steps": ["Pour coconut oil and chopped garlic into a saucepan, over medium heat, and saut\u00e9 the garlic until lightly browned.\n2.", "Add vegetable broth to the saucepan, allowing everything to simmer for about 5 minutes.\n3.", "Add 1 cup of water along with lentils and allow to simmer (uncovered) for about 20-30 minutes until they are soft.", "Add rosemary and drizzle olive oil near the end."]}, {"name": "Stove top mac and cheese", "category": "Vegetarian", "ingredients": [{"amount": "", "unit": "", "item": "Fresh black pepper"}, {"amount": "1", "unit": "teaspoon", "item": "kosher salt"}, {"amount": "1/2", "unit": "teaspoon", "item": "hot sauce"}, {"amount": "4", "unit": "ounce", "item": "evaporated milk"}, {"amount": "2", "unit": "", "item": "eggs"}, {"amount": "4", "unit": "tablespoon", "item": "butter"}, {"amount": "1/2", "unit": "pound", "item": "elbow macaroni"}, {"amount": "1/4", "unit": "teaspoon", "item": "dry mustard"}, {"amount": "10", "unit": "ounce", "item": "sharp cheddar, shredded"}], "steps": ["In a large pot of boiling, salted water cook the pasta to al dente and drain. Return to the pot and melt in the butter. Toss to coat.", "Whisk together the eggs, milk, hot sauce, salt, pepper, and mustard. Stir into the pasta and add the cheese. Over low heat continue to stir for 3 minutes or until creamy.", "(This recipe originally called for 6oz milk.  It is reduced as an experiment.)"]}, {"name": "Spicy Rice Casserole", "category": "Vegetarian", "ingredients": [{"amount": "1", "unit": "cup", "item": "brown rice (uncooked)"}, {"amount": "1/2", "unit": "cup", "item": "quick-cooking oats"}, {"amount": "1/2", "unit": "cup", "item": "onion, chopped"}, {"amount": "1/4", "unit": "cup", "item": "panko"}, {"amount": "1/4", "unit": "cup", "item": "milk"}, {"amount": "1", "unit": "tbsp", "item": "italian seasoning"}, {"amount": "1/8", "unit": "tsp", "item": "cayenne pepper"}, {"amount": "1", "unit": "", "item": "large egg, beaten"}, {"amount": "", "unit": "", "item": "salt and pepper"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "4", "unit": "serving", "item": "marinara sauce"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "2", "unit": "servings", "item": "toasted panko breadcrumbs"}], "steps": ["Preheat oven to 425 degrees. (If not already done, cook rice according to package directions. Ideally, use a rice cooker earlier in the day.)", "Mix rice, oats, onion, bread crumbs, milk, basil, oregano, cayenne, and egg.  Season to taste.  Press mixture into small baking dish.  Bake for 25 minutes, then let rest for 5 minutes out of the oven.", "As the rice goes into the oven, make the marinara sauce. Once the marinara is simmering, make the breadcrumbs.", "Serve rice, topped with marinara and then panko."], "timeMinutes": 35}, {"name": "Straw and Hay Fettuccine Tangle", "category": "Vegetarian", "ingredients": [{"amount": "4", "unit": "serving", "item": "asparagus pesto"}, {"amount": "1/4", "unit": "cup", "item": "toasted pine nuts"}, {"amount": "4", "unit": "tbsp", "item": "parmesan, grated"}, {"amount": "12", "unit": "oz", "item": "dried pasta"}], "steps": ["http://www.xanthir.com/recipes/showrecipe.php?id=id436 Asparagus pesto can be made in large batches ahead of time, and frozen in servings.", "Bring a large pot of water to a rolling boil.", "Meanwhile, make asparagus pesto.", "Salt the pasta water well and cook the pasta until just tender.", "Drain and toss immediately with the asparagus pesto (1/4 cup per serving), stirring in more afterward depending on how heavily coated you like your pasta.", "Serve sprinkled with the remaining toasted pine nuts, a dusting of Parmesan, and a quick drizzle of extra-virgin olive oil."], "timeMinutes": 30}, {"name": "Green-packed Stir Fry with Fresh Herbs", "category": "Vegetarian", "ingredients": [{"amount": "1", "unit": "cup", "item": "cooked rice"}, {"amount": "1", "unit": "tbsp", "item": "safflower oil"}, {"amount": "8", "unit": "oz", "item": "extra-firm tofu, cut into slices 1-inch long and as thick as a pencil"}, {"amount": "4", "unit": "clove", "item": "garlic, minced"}, {"amount": "5", "unit": "", "item": "green onions, chopped with white and green parts separated"}, {"amount": "1", "unit": "tbsp", "item": "fresh ginger, peeled and minced"}, {"amount": "1/2", "unit": "", "item": "jalapeno, deseeded and chopped"}, {"amount": "1/2", "unit": "bunch", "item": "thin asparagus (about 1/2 pound), trimmed and cut diagonally into 1-inch slices"}, {"amount": "1/2", "unit": "cup", "item": "cashews, coarsely chopped"}, {"amount": "2 1/2", "unit": "cup", "item": "spinach leaves, stemmed"}, {"amount": "2", "unit": "tablespoon", "item": "fresh mint, slivered"}, {"amount": "2", "unit": "tablespoon", "item": "fresh basil, slivered"}, {"amount": "2", "unit": "servings", "item": "stir-fry sauce"}], "steps": ["Cook the rice, if it is not already.", "When you have all your ingredients prepped, arrange them within arm's reach of the stove.", "Heat a small splash of safflower oil in a wok or large nonstick pan over medium-high heat.", "When the oil is hot, add the tofu and cook for a couple of minutes, until the tofu is golden.", "Remove from the pan. (You can also cook the tofu in a dry nonstick or well seasoned pan.)", "Add another splash of oil to the wok and, as soon as it's hot, add the asparagus and stir for 2 minutes.", "Add the white part of the green onions and chiles, and stir for another 2 minutes.", "Add the green part of the green onions, and stir for another 2 minutes.", "Add the garlic and ginger, and stir for 30 seconds, then add the cashews and spinach and stir for another minute, or until the spinach wilts and collapses.", "Return the tofu to the pan. Stir in the stir-fry sauce. Cook for another minute, stirring constantly.", "Remove from heat and stir in the mint and basil. Season with enough soy sauce to make the flavors pop, starting with a splash.", "Serve over cooked rice.", "Nutrition information does not include stir-fry sauce."]}, {"name": "Shredded Green Beans", "category": "Vegetarian", "ingredients": [{"amount": "3/4", "unit": "pound", "item": "green beans, tops and tails trimmed"}, {"amount": "2", "unit": "tablespoon", "item": "extra-virgin olive oil or clarified butter"}, {"amount": "2", "unit": "tablespoon", "item": "water"}, {"amount": "1", "unit": "", "item": "lemon, zested"}, {"amount": "1", "unit": "", "item": "lime, zested"}, {"amount": "1/4", "unit": "cup", "item": "chives, chopped"}, {"amount": "", "unit": "", "item": "Salt and freshly ground pepper"}], "steps": ["Slice the beans on a diagonal into roughly 1/8-inch pieces. If you are using a food processor, do them a handful at a time. Either way, the result should be tiny, angular zeroes.", "Heat the olive oil in a large skillet over medium-high heat.", "Add the beans and stir until coated with oil, then add the water.", "Cover and cook 2 or 3 minutes, until the beans are brightly colored and tender; give the pan a good shake midway through to ensure even cooking.", "Remove from the heat and stir in the zests and half of the chives.", "Season to taste with salt and pepper and serve garnished with the remaining chives."], "timeMinutes": 23}, {"name": "Black bean and cheese tacos", "category": "Vegetarian", "ingredients": [{"amount": "1", "unit": "tsp", "item": "extra-virgin olive oil"}, {"amount": "1/2", "unit": "", "item": "small yellow onion, diced small"}, {"amount": "2", "unit": "", "item": "garlic cloves, roughly chopped"}, {"amount": "1/2", "unit": "tsp", "item": "taco seasoning"}, {"amount": "1", "unit": "cup", "item": "black beans, ideally *not* drained"}, {"amount": "1/4", "unit": "cup", "item": "water"}, {"amount": "", "unit": "", "item": "coarse salt and ground pepper"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "4", "unit": "", "item": "flour tortillas, warmed or lightly toasted"}, {"amount": "2/3", "unit": "cup", "item": "Monterey Jack cheese, shredded (1 cup \u2248 3 oz)"}, {"amount": "1/2", "unit": "", "item": "avocado, pitted, peeled and thinly sliced"}, {"amount": "1", "unit": "cup", "item": "packed shredded romaine lettuce"}, {"amount": "2", "unit": "tbsp", "item": "pickled jalapeno"}], "steps": ["In a small pot, heat oil over medium.", "Add onion and garlic and cook until onion is soft and garlic is fragrant, 3 minutes.", "Add seasoning and cook until fragrant, 1 minute.", "Add beans, water (using bean water if possible), salt, and pepper, and simmer until beans are heated through, 5 minutes.", "Mash in pan with wooden spoon.", "Season to taste with salt and pepper if needed. Serve with tortillas, cheese, avocado, lettuce, and jalapenos."], "timeMinutes": 15}, {"name": "Guacamole", "category": "Snack & Appetizer", "ingredients": [{"amount": "4", "unit": "", "item": "ripe avocados"}, {"amount": "2", "unit": "", "item": "roma tomatoes, diced fine"}, {"amount": "1/2", "unit": "", "item": "red onion, minced"}, {"amount": "1/2", "unit": "", "item": "handful cilantro, minced"}, {"amount": "2", "unit": "clove", "item": "garlic, minced"}, {"amount": "1", "unit": "", "item": "lime, juiced"}, {"amount": "", "unit": "", "item": "Pinch of sea salt"}, {"amount": "1", "unit": "", "item": "jalapeno, seeded and minced fine"}], "steps": ["Place all ingredients in a bowl with a flat bottom and mash it with a potato masher.", "Alternatively, you can mix everything briefly in a food processor.\n2.", "Stir well and keep refrigerated.", "This dish will brown on the areas exposed to air within a few hours, so serve it shortly after making it or just stir again before serving."]}, {"name": "The Original Chex Party Mix", "category": "Snack & Appetizer", "ingredients": [{"amount": "3", "unit": "cup", "item": "Corn Chex\u00ae cereal"}, {"amount": "3", "unit": "cup", "item": "Rice Chex\u00ae cereal"}, {"amount": "3", "unit": "cup", "item": "Wheat Chex\u00ae cereal"}, {"amount": "1", "unit": "cup", "item": "mixed nuts"}, {"amount": "1", "unit": "cup", "item": "bite-size pretzels"}, {"amount": "1", "unit": "cup", "item": "garlic-flavor bite-size bagel chips or regular-size bagel chips, broken into 1-inch pieces"}, {"amount": "6", "unit": "tablespoon", "item": "butter or margarine"}, {"amount": "2", "unit": "tablespoon", "item": "Worcestershire sauce"}, {"amount": "1 1/2", "unit": "teaspoon", "item": "seasoned salt"}, {"amount": "3/4", "unit": "teaspoon", "item": "garlic powder"}, {"amount": "1/2", "unit": "teaspoon", "item": "onion powder"}], "steps": ["Heat oven to 250.", "Place butter in large roasting pan and melt in the oven.", "Mix together cereals, nuts, pretzels and bagel chips in a large bowl.", "Remove pan from oven and mix seasonings into the melted butter.", "Add cereal mix and stir well to coat with seasoned butter.", "Place in the oven and bake for 1 hour, stirring every 15 minutes.", "Spread mix out to cool before storing."]}, {"name": "Roasted salsa", "category": "Snack & Appetizer", "ingredients": [{"amount": "1 1/2", "unit": "lb", "item": "tomatoes"}, {"amount": "1", "unit": "", "item": "medium white onion, halved"}, {"amount": "3", "unit": "", "item": "jalapenos"}, {"amount": "3", "unit": "", "item": "garlic cloves, unpeeled"}, {"amount": "3", "unit": "tbsp", "item": "fresh lime juice"}, {"amount": "", "unit": "", "item": "salt and freshly ground pepper"}, {"amount": "1/4", "unit": "cup", "item": "fresh cilantro, chopped"}], "steps": ["Heat broiler, with rack in top position. Place tomatoes, onion halves, jalapenos, and garlic in a single layer on a rimmed baking sheet.", "Broil until vegetables are blistered and slightly softened, rotating sheet and flipping vegetables frequently, 6 to 8 minutes (garlic may need to be removed earlier if it is browning too quickly.)", "Discard garlic skins. In a food processor, pulse garlic and vegetables until coarsely pureed. Add lime juice, season with salt and pepper, and pulse to combine.", "Transfer salsa to a bowl and stir in cilantro.", "Yields 3 cups. Refrigerate up to 3 days or freeze up to 3 months.", "For green salsa, use 1 1/2 lbs tomatillos and omit lime juice."], "timeMinutes": 23}, {"name": "Avocado feta dip", "category": "Snack & Appetizer", "ingredients": [{"amount": "1/2", "unit": "", "item": "red onion, diced"}, {"amount": "1", "unit": "", "item": "jalapeno, seeded and diced"}, {"amount": "", "unit": "", "item": "extra-virgin olive oil"}, {"amount": "1", "unit": "", "item": "avocado, diced"}, {"amount": "1", "unit": "cup", "item": "cilantro"}, {"amount": "3/4", "unit": "cup", "item": "feta, crumbled"}, {"amount": "1/4", "unit": "cup", "item": "lemon juice"}, {"amount": "3", "unit": "tbsp", "item": "vegetable oil"}, {"amount": "", "unit": "", "item": "salt"}], "steps": ["Cook onion and jalapeno in olive oil 6 minutes. Puree with remaining ingredients and season with salt to taste.", "Serve with toasted bread and vegetable sticks."], "timeMinutes": 16}, {"name": "Salsa fresca", "category": "Snack & Appetizer", "ingredients": [{"amount": "4", "unit": "", "item": "tomatoes, chopped"}, {"amount": "1/4", "unit": "", "item": "red onion, chopped"}, {"amount": "1", "unit": "", "item": "jalapeno, minced"}, {"amount": "8", "unit": "sprig", "item": "cilantro, chopped"}, {"amount": "3", "unit": "", "item": "garlic cloves, minced"}, {"amount": "1", "unit": "", "item": "lime, juiced"}, {"amount": "1/4", "unit": "cup", "item": "olive oil"}, {"amount": "1/2", "unit": "teaspoon", "item": "salt"}], "steps": ["In a mixing bowl, combine all ingredients together. Toss thoroughly. Let stand 15 minutes before serving. Yields 2 cups."], "timeMinutes": 10}, {"name": "Spanakopita", "category": "Snack & Appetizer", "ingredients": [{"amount": "1/2", "unit": "cup", "item": "extra-virgin olive oil, plus more for baking dish"}, {"amount": "3 1/2", "unit": "lb", "item": "spinach, trimmed and washed"}, {"amount": "1 3/4", "unit": "lb", "item": "leeks, white and green parts only, halved lengthwise, rinsed well, and sliced crosswise"}, {"amount": "2", "unit": "", "item": "garlic cloves, minced"}, {"amount": "", "unit": "", "item": "salt and pepper"}, {"amount": "1/4", "unit": "tsp", "item": "ground nutmeg"}, {"amount": "24", "unit": "", "item": "sheets frozen phyllo dough, from a 16 oz package, thawed"}, {"amount": "3/4", "unit": "cup", "item": "crumbled feta, about 4 oz=3/4 cup"}], "steps": ["Preheat oven to 400F.", "With a pasry brush, brush bottom and sides of a 9x13-inch baking dish with oil.", "In a large skillet, heat 1/4 cup (for 8 servings) water over medium-high.", "Working in batches, add spinach and cook, tossing, until completely wilted, about 8 minutes.", "Transfer to a colander to drain, pressing out as much water as possible.", "Return skillet to heat and add 1 tablespoon oil (for 8 servings).", "Add leeks and cook until softened, about 8 minutes.", "Stir in garlic, season with salt and pepper, and cook until fragrant about 1 minute.", "Stir in nutmeg.", "Transfer spinach and leek mixture to a food processor; pulse until coarsely chopped.", "Cut phyllo sheets to fit baking dish.", "Place 1 sheet in dish (keeping remaining sheets covered with a damp towel) and brush lightly with oil.", "Stack 7 more phyllo sheets on top, brushing each with oil.", "Spread half the spinach mixture over phyllo and evenly sprinkle the feta on top.", "Add 8 more phyllo sheets, brushing each with oil.", "Spread with remaining spinach mixture and feta.", "Top with remaining 8 phyllo sheets, brushing each with oil.", "Bake until phyllo is golden and crisp on top, about 30 minutes. Let cool 15 minutes before cutting  into squares. Serve warm or at room temperature."], "timeMinutes": 70}, {"name": "Creamy artichoke dip", "category": "Snack & Appetizer", "ingredients": [{"amount": "3", "unit": "cup", "item": "day-old bread, crusts removed and torn into 2-inch pieces"}, {"amount": "2", "unit": "", "item": "anchovy fillets, drained"}, {"amount": "1", "unit": "", "item": "box frozen artichoke hearts, 9oz, thawed and drained"}, {"amount": "1/2", "unit": "tsp", "item": "sugar"}, {"amount": "2/3", "unit": "cup", "item": "extra-virgin olive oil"}, {"amount": "3", "unit": "tbsp", "item": "fresh lemon juice"}, {"amount": "", "unit": "", "item": "salt and pepper"}, {"amount": "", "unit": "", "item": "chives, chopped, for serving"}], "steps": ["In a medium bowl, pour 1 cup water over bread.", "Immediately squeeze as much water as possible from bread and transfer to a food processor along with anchovies, artichokes, and sugar.", "Process until a paste forms.", "With machine running, slowly add oil, scraping down bowl as needed.", "With machine still running, add lemon juice, 1 tablespoon at a time, until mixture is creamy.", "Season to taste with salt and pepper and transfer to a serving dish.", "To serve, top with chives and a drizzle of oil.", "Makes 2 cups."], "timeMinutes": 10}, {"name": "Cheese crackers", "category": "Snack & Appetizer", "ingredients": [{"amount": "1/2", "unit": "cup", "item": "unsalted butter, room temperature"}, {"amount": "1/2", "unit": "pound", "item": "sharp cheddar, grated (3 cups)"}, {"amount": "1", "unit": "", "item": "large egg"}, {"amount": "1", "unit": "teaspoon", "item": "Dijon mustard"}, {"amount": "1", "unit": "teaspoon", "item": "fine salt"}, {"amount": "3/4", "unit": "teaspoon", "item": "red-pepper flakes"}, {"amount": "1 1/4", "unit": "cup", "item": "all-purpose flour, spooned and leveled"}], "steps": ["In a food processor, pulse together butter, cheese, egg, mustard, salt, and red-pepper flakes until smooth. Add flour and pulse until combined. Transfer dough to a work surface and form into a 2-inch-wide log. Wrap in plastic and refrigerate until firm, 4 hours (or up to 1 day).", "Preheat oven to 350 degrees, with racks in upper and lower thirds. Slice dough into 1/4-inch rounds and arrange, 1 inch apart, on two parchment-lined baking sheets. Bake until edges are golden, 15 to 20 minutes, rotating sheets halfway through. Let cool completely on racks before serving.", "Cook's Note\nMix It Up: In place of red-pepper flakes, try stirring in 3 tablespoons tomato paste or 1/3 cup crumbled cooked bacon, finely chopped herbs, or finely diced fresh green chiles.", "Store crackers in an airtight container, up to 1 day."], "timeMinutes": 25}, {"name": "Steakhouse steaks", "category": "Drink", "ingredients": [{"amount": "1", "unit": "tablespoon", "item": "coarsely cracked black peppercorns"}, {"amount": "1", "unit": "tablespoon", "item": "fleur de sel"}, {"amount": "2", "unit": "tablespoon", "item": "vegetable oil"}, {"amount": "2", "unit": "", "item": "(10-ounce) filet mignon"}, {"amount": "2", "unit": "tablespoon", "item": "unsalted butter, at room temperature, optional"}, {"amount": "2", "unit": "servings", "item": "Roquefort Cheese Sauce"}], "steps": ["Preheat the oven to 400 degrees F.", "Heat a large, well-seasoned cast iron skillet over high heat until very hot, 5 to 7 minutes.", "Meanwhile, pat the steaks dry with a paper towel and brush them lightly with vegetable oil. Combine the fleur de sel and cracked pepper on a plate and roll the steaks in the mixture, pressing lightly to evenly coat all sides.", "When the skillet is ready, add the steaks and sear them evenly on all sides for about 2 minutes per side, for a total of 10 minutes.", "Top each steak with a tablespoon of butter, if using, and place the skillet in the oven.", "Cook the steaks until they reach 120 degrees F for rare or 125 degrees F for medium-rare on an instant-read thermometer. (To test the steaks, insert the thermometer sideways to be sure you're actually testing the middle of the steak.)", "Remove the steaks to a serving platter, cover tightly with aluminum foil and allow to rest at room temperature for 10 minutes. Serve hot with [Roquefort Cheese Sauce](http://www.xanthir.com/recipes/showrecipe.php?id=62) on the side."]}, {"name": "Vegetarian Steamed Dumplings", "category": "Drink", "ingredients": [{"amount": "1/2", "unit": "pound", "item": "firm tofu"}, {"amount": "1/2", "unit": "cup", "item": "carrots, coarsely grated"}, {"amount": "1/2", "unit": "cup", "item": "Napa cabbage, shredded"}, {"amount": "2", "unit": "tablespoon", "item": "red bell pepper, finely chopped"}, {"amount": "2", "unit": "tablespoon", "item": "green onions, finely chopped"}, {"amount": "2", "unit": "teaspoon", "item": "fresh ginger, finely minced"}, {"amount": "1", "unit": "tablespoon", "item": "cilantro, chopped"}, {"amount": "1", "unit": "tablespoon", "item": "soy sauce"}, {"amount": "1", "unit": "tablespoon", "item": "hoisin sauce"}, {"amount": "2", "unit": "teaspoon", "item": "sesame oil"}, {"amount": "1", "unit": "", "item": "egg, lightly beaten"}, {"amount": "1", "unit": "teaspoon", "item": "kosher salt"}, {"amount": "1/4", "unit": "teaspoon", "item": "freshly ground black pepper"}, {"amount": "", "unit": "", "item": "Bowl of water, plus additional water for steamer"}, {"amount": "40", "unit": "", "item": "small wonton wrappers"}, {"amount": "", "unit": "", "item": "Non-stick vegetable spray, for the steamer"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1 1/2", "unit": "tablespoon", "item": "soy sauce"}, {"amount": "1", "unit": "tablespoon", "item": "seasoned rice vinegar"}, {"amount": "1", "unit": "teaspoon", "item": "sesame oil"}, {"amount": "1/2", "unit": "teaspoon", "item": "sriracha"}], "steps": ["Preheat the oven to 200 degrees F.", "Cut the tofu in half horizontally and lay between layers of paper towels.", "Place on a plate, top with another plate, and place a weight on top (a 14-ounce can of vegetables works well).", "Let stand 20 minutes.", "After 20 minutes, cut the tofu into 1/4-inch cubes and place in a large mixing bowl.", "Add the carrots, cabbage, red pepper, scallions, ginger, cilantro, soy sauce, hoisin, sesame oil, egg, salt, and pepper.", "Lightly stir to combine.", "To form the dumplings, remove 1 wonton wrapper from the package, covering the others with a damp cloth.", "Brush the edges of the wrapper lightly with water.", "Place 1/2 rounded teaspoon of the tofu mixture in the center of the wrapper.", "Shape as desired.", "Set on a sheet pan and cover with a damp cloth.", "Repeat procedure until all of the filling is gone.", "Using a steaming apparatus of your choice, bring 1/4 to 1/2-inch of water to a simmer over medium heat.", "Spray the steamer's surface lightly with the non-stick vegetable spray to prevent sticking.", "Place as many dumplings as will fit into a steamer, without touching each other.", "Cover and steam for 10 to 12 minutes over medium heat.", "Remove the dumplings from the steamer to a heatproof platter and place in oven to keep warm.", "Repeat until all dumplings are cooked.", "To make dipping sauce, whisk together ingredients in a small bowl."]}, {"name": "Emeril's strawberry lemonade", "category": "Drink", "ingredients": [{"amount": "2", "unit": "cup", "item": "water"}, {"amount": "1", "unit": "cup", "item": "sugar"}, {"amount": "1", "unit": "cup", "item": "fresh lemon juice, (about 6 lemons=1 cup juice)"}, {"amount": "1", "unit": "", "item": "lemon, sliced for serving"}, {"amount": "1", "unit": "pound", "item": "strawberries, hulled and halved (about  cups)"}, {"amount": "16", "unit": "oz", "item": "seltzer, chilled"}, {"amount": "", "unit": "", "item": "mint, for serving"}], "steps": ["In a medium saucepan, bring water and sugar to a boil over medium-high. Reduce to a simmer and cook, stirring occasionally, until sugar dissolves, 2 minutes. Transfer to a pitcher and refrigerated until cool, about 45 minutes. Add lemon juice and stir to combine.", "In a blender, puree strawberries until smooth. Pour through a fine-mesh sieve into a pitcher with lemon syrup, pressing on solid. Stir well to combine.", "To serve, stir in seltzer and divide among ice-filled glasses. Trop with lemon slices and mint."], "timeMinutes": 12}, {"name": "Simple syrup", "category": "Drink", "ingredients": [{"amount": "1", "unit": "cup", "item": "sugar"}, {"amount": "1", "unit": "cup", "item": "water"}], "steps": ["Bring sugar and water to a boil in a small saucepan over high heat. Cook, stirring, until sugar dissolves, Let cool. Yields 1 cup.", "Storage: Can be refrigerated up to 1 month."], "timeMinutes": 30}, {"name": "Hot and nutty whiskey sours", "category": "Drink", "ingredients": [{"amount": "3/4", "unit": "cup", "item": "Nocello, or other walnut-flavored liquer"}, {"amount": "1 1/2", "unit": "cup", "item": "whiskey or bourbon, such as Maker's Mark"}, {"amount": "3/4", "unit": "serving", "item": "simple syrup"}, {"amount": "1/4", "unit": "cup", "item": "fresh lemon juice, from 2 lemons"}, {"amount": "4", "unit": "", "item": "cinnamon sticks"}], "steps": ["Bring Nocello, whiskey, simple syrup, and lemon juice to a simmer in a medium saucepan. Divide among 4 mugs, and garnish each with a cinnamon stick."], "timeMinutes": 35}, {"name": "Blood orange cocktails", "category": "Drink", "ingredients": [{"amount": "1 1/2", "unit": "cup", "item": "fresh blood orange juice, from 7-8 blood oranges, chilled"}, {"amount": "6", "unit": "tablespoon", "item": "Solerno or other blood orange liqueur"}], "steps": ["Combine blood orange juice and liqueur in a large pitcher. Refrigerate for at least 30 minutes. Pour into test tubes (indigo.com) or small glasses.", "Make ahead: Cocktails can be refrigerated in pitcher overnight. Stir before using."], "timeMinutes": 10}, {"name": "Red sangria", "category": "Drink", "ingredients": [{"amount": "1", "unit": "", "item": "bottle dry red wine, 750mL"}, {"amount": "1/4", "unit": "cup", "item": "brandy"}, {"amount": "1/4", "unit": "cup", "item": "orange liqueur"}, {"amount": "2", "unit": "tbsp", "item": "sugar"}, {"amount": "2", "unit": "", "item": "sliced oranges"}, {"amount": "1", "unit": "", "item": "sliced green apple"}, {"amount": "1 1/2", "unit": "cup", "item": "seltzer"}], "steps": ["Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."], "timeMinutes": 5}, {"name": "White sangria", "category": "Drink", "ingredients": [{"amount": "1", "unit": "", "item": "bottle 750mL dry white wine"}, {"amount": "1/4", "unit": "cup", "item": "light rum"}, {"amount": "3", "unit": "tbsp", "item": "elderflower liqueur"}, {"amount": "2", "unit": "tbsp", "item": "sugar"}, {"amount": "2", "unit": "", "item": "nectarines, sliced"}, {"amount": "2", "unit": "", "item": "plums, sliced"}, {"amount": "1", "unit": "", "item": "lemon, sliced"}, {"amount": "1 1/2", "unit": "cup", "item": "seltzer"}], "steps": ["Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."]}, {"name": "Apple-Brie Panini", "category": "Quick Meal", "ingredients": [{"amount": "1", "unit": "tbsp", "item": "Dijon mustard"}, {"amount": "1", "unit": "", "item": "Baguette roll"}, {"amount": "2", "unit": "oz", "item": "brie cheese, sliced"}, {"amount": "1/4", "unit": "", "item": "green apple, thinly sliced"}, {"amount": "2", "unit": "tablespoon", "item": "unsalted butter"}], "steps": ["Preheat a skillet with 1 tablespoon butter (or oil) on medium-low.", "Spread Dijon mustard on the inside of a split piece of baguette. Fill with the brie and apple slices.", "Add sandwich to skillet, the press a heavy pan on top to weigh it down. Cook until golden and crisp, 3 to 4 minutes per side. Add more butter to the skillet, if needed, for second side."]}, {"name": "Triple Grilled Cheese", "category": "Quick Meal", "ingredients": [{"amount": "1", "unit": "cup", "item": "shredded muenster cheese (about 4 oz)"}, {"amount": "1", "unit": "cup", "item": "shredded mozzarella cheese (about 4 oz)"}, {"amount": "1/2", "unit": "cup", "item": "grated Parmesan cheese (about 1 oz)"}, {"amount": "8", "unit": "slices", "item": "thick sandwich bread"}, {"amount": "2", "unit": "tablespoon", "item": "unsalted butter"}], "steps": ["Combine all three cheeses in a bowl.", "Divide evenly among 4 bread slices and top with the remaining bread.", "Heat 1 tablespoon butter in a large skillet or griddle over medium heat.", "Cook the sandwiches in batches, adding the remaining butter as needed, until the cheese melts and the bread is golden, 3-4 minutes per side.", "Serve the sandwiches with the soup."], "timeMinutes": 18}, {"name": "Baja fish tacos", "category": "Quick Meal", "ingredients": [{"amount": "", "unit": "", "item": "Vegetable oil, for frying"}, {"amount": "1/4", "unit": "", "item": "red cabbage, thinly sliced (about 1 1/2 cups)"}, {"amount": "1/2", "unit": "cup", "item": "fresh cilantro, roughly chopped"}, {"amount": "1", "unit": "", "item": "lime, juiced, plus wedges for serving"}, {"amount": "2", "unit": "tablespoon", "item": "honey or agave nectar"}, {"amount": "1/2", "unit": "cup", "item": "mayonnaise"}, {"amount": "", "unit": "", "item": "Kosher salt"}, {"amount": "12", "unit": "", "item": "corn tortillas"}, {"amount": "3/4", "unit": "cup", "item": "all-purpose flour"}, {"amount": "1/2", "unit": "teaspoon", "item": "chili powder"}, {"amount": "", "unit": "", "item": "Freshly ground pepper"}, {"amount": "1 1/4", "unit": "pound", "item": "skinless halibut fillet, cut into 2-by-1/2-inch pieces"}, {"amount": "1", "unit": "", "item": "avocado"}, {"amount": "1/2", "unit": "cup", "item": "fresh salsa"}], "steps": ["Heat about 3 inches vegetable oil in a medium pot over medium-low heat until a deep-fry thermometer registers 375 degrees F. Meanwhile, toss the cabbage, cilantro, lime juice, honey and mayonnaise in a bowl. Season the slaw with salt.", "Warm the tortillas in a skillet over medium-low heat or wrap in a damp cloth and microwave 25 seconds. Wrap in a towel to keep warm.", "Mix the flour, chili powder, and salt and pepper to taste in a shallow bowl. Dredge the fish in the flour mixture, then fry in batches until golden and just cooked through, 2 to 3 minutes. Transfer with a slotted spoon to a paper-towel-lined plate to drain. Season with salt.", "Halve, pit and slice the avocado. Fill the tortillas with the fish, avocado, slaw and salsa. Serve with lime wedges.", "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/baja-fish-tacos-recipe.html?oc=linkback"], "timeMinutes": 20}, {"name": "Pizza dough", "category": "Quick Meal", "ingredients": [{"amount": "2", "unit": "cup", "item": "lukewarm water"}, {"amount": "1", "unit": "tablespoon", "item": "sugar"}, {"amount": "1", "unit": "tablespoon", "item": "active dry yeast or instant yeast; or 1 packet active dry yeast"}, {"amount": "1", "unit": "tablespoon", "item": "salt"}, {"amount": "2", "unit": "tablespoon", "item": "olive oil, optional"}, {"amount": "1 1/2", "unit": "cup", "item": "semolina"}, {"amount": "4", "unit": "", "item": "to 4 1/2 cups Italian-style flour"}, {"amount": "1", "unit": "teaspoon", "item": "baking soda"}, {"amount": "2", "unit": "tablespoon", "item": "Pizza Dough Flavor, optional"}, {"amount": "2", "unit": "tablespoon", "item": "dough improver, optional"}], "steps": ["Dissolve the sugar, yeast, and salt in the lukewarm water (and olive oil, if you're using it).", "Add the flour and Pizza Dough Flavor, starting with 5 1/2 cups flour and adding more as necessary to make a soft, smooth dough.", "Knead the dough (with your hands, a mixer, or your bread machine set on the dough cycle) until it's smooth and elastic, about 7 to 10 minutes.", "Place the dough in a lightly greased bowl or other container, cover it, and let it rise for 1 to 2 hours, whatever fits your schedule.", "Gently deflate the dough, and divide it into four pieces.", "Use a rolling pin to roll each piece, on a lightly greased surface, into a circle to fit a 12\" pizza pan.", "Let the dough rest several times to relax it and make it more cooperative.", "If you prefer a more artisan look to your crust, with scattered random air pockets throughout, hand-stretch the dough to size.", "Again, letting it rest periodically makes the job easier.", "Place the rounds on pizza pans; on baking sheets; or, if you have a pizza stone in your oven, on parchment.", "Preheat your oven to 450\u00b0F. While it's heating, get out your toppings, which you've prepared ahead.", "Brush each crust with a bit of olive oil; spread pizza or spaghetti sauce lightly over the surface, and let your guests add their favorite toppings.", "Sprinkle the top with grated cheese.", "Bake the pizzas for 15 to 20 minutes, until they're golden brown, the toppings are hot and bubbly, and the cheese is melted.", "Remove the pizzas from the oven.", "Immediately transfer pizzas to a cooling rack, so their bottoms don't get soggy. After about 10 minutes (to allow the toppings to set), slice and serve; a pair of scissors is a great cutting tool.", "Yield: 4 12\" pizzas, 6 to 8 servings each.\nTo freeze: After dividing dough in step 5, wrap ball of dough in plastic wrap and freeze. Allow to defrost in refrigerator and then set out at room temperature for about 30 minutes before shaping crust."], "timeMinutes": 25}, {"name": "Quick pickled red onion", "category": "Quick Meal", "ingredients": [{"amount": "1", "unit": "", "item": "large red onion, thinly sliced"}, {"amount": "4", "unit": "", "item": "limes, juiced"}, {"amount": "1", "unit": "", "item": "small orange, juiced"}, {"amount": "1", "unit": "tbsp", "item": "apple cider vinegar"}, {"amount": "3/4", "unit": "tsp", "item": "salt"}], "steps": ["Do not use metal or plastic", "To a glass jar or bowl, add your onion slices.", "With a lemon/lime juice squeezer, squeeze as much juice out of your citrus fruits overtop of the onions.\nAdd your apple cider vinegar, salt and any extra add-ins you like to the onions.", "If using a bowl, carefully toss everything together to coat. If using a jar, seal the jar and give it a few good shakes to distribute the juice and salt evenly.", "Place the jar in the fridge to sit for at least 30 minutes before using. You can still taste and adjust the salt to preference once they are ready to eat."], "timeMinutes": 5}, {"name": "Pizza sauce from tomato paste", "category": "Quick Meal", "ingredients": [{"amount": "1 6", "unit": "oz", "item": "can tomato paste (6oz can is about 2/3 cup)"}, {"amount": "1/2", "unit": "cup", "item": "water"}, {"amount": "1", "unit": "tsp", "item": "dried oregano, crushed"}, {"amount": "1", "unit": "tsp", "item": "dried basil, crushed"}, {"amount": "1/2", "unit": "tsp", "item": "garlic powder"}, {"amount": "1/2", "unit": "tsp", "item": "onion powder"}, {"amount": "1/2", "unit": "tsp", "item": "sugar"}, {"amount": "1/2", "unit": "tsp", "item": "salt"}, {"amount": "1/4", "unit": "tsp", "item": "freshly ground black pepper"}], "steps": ["Makes enough for 1 full size pizza (1 lb. dough)", "Combine all ingredients in a small bowl; mix well. Set aside about 15 minutes for flavors to develop."], "timeMinutes": 5}, {"name": "Citrus Rice Salad", "category": "Salad", "ingredients": [{"amount": "3", "unit": "cup", "item": "cooked brown rice, hot"}, {"amount": "3", "unit": "cup", "item": "spinach leaves, stemmed and well rinsed"}, {"amount": "1", "unit": "cup", "item": "toasted pine nuts"}, {"amount": "1/2", "unit": "cup", "item": "crumbled feta cheese"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1", "unit": "", "item": "orange, zested and juiced"}, {"amount": "1", "unit": "tablespoon", "item": "fresh lemon juice"}, {"amount": "1", "unit": "tablespoon", "item": "shallot, minced"}, {"amount": "1/4", "unit": "cup", "item": "extra-virgin olive oil"}, {"amount": "", "unit": "", "item": "salt and freshly ground pepper"}], "steps": ["To make the dressing, combine the orange zest and juice, lemon juice, and shallot. Whisk in the olive oil and season with a few pinches of salt and a few grinds of pepper.", "Toss the hot rice with the spinach, pine nuts, citrus dressing, then top with the feta. Taste for seasoning and sprinkle with a bit more salt if needed."]}, {"name": "Almond Caesar salad with croutons", "category": "Salad", "ingredients": [{"amount": "4", "unit": "oz", "item": "Italian bread, cubed"}, {"amount": "2", "unit": "tbsp", "item": "olive oil"}, {"amount": "", "unit": "", "item": "salt and pepper"}, {"amount": "", "unit": "", "item": "<hr>"}, {"amount": "1/4", "unit": "cup", "item": "sliced almonds"}, {"amount": "1/4", "unit": "cup", "item": "Parmesan, grated"}, {"amount": "3", "unit": "", "item": "anchovies"}, {"amount": "1", "unit": "", "item": "garlic clove"}, {"amount": "2", "unit": "tsp", "item": "dijon mustard"}, {"amount": "1", "unit": "", "item": "lemon, juiced"}, {"amount": "1/4", "unit": "cup", "item": "olive oil"}, {"amount": "6", "unit": "cup", "item": "lettuce"}], "steps": ["For croutons: Toss bread with olive oil, season with salt and pepper. Spread on a baking sheet and bake at 425, about 8 minutes. Allow to cool.", "For dressing: Meanwhile, process almonds, parmesan, anchovies, and garlic in a food processor until finely chopped.", "Transfer to a large mixing bowl.", "Add dijon and lemon juice, whisk until just combined.", "Drizzle in olive oil and whisk constantly until thoroughly combined.", "Season with salt and pepper if needed.", "Toss dressing with lettuce and croutons."]}];
+
+// ── State ──────────────────────────────────────────────────────────────────
+let favorites = new Set();
+let activeFilter = "all";
+
+// ── Category CSS class helper ──────────────────────────────────────────────
+function tagClass(cat) {
+  return "tag tag-" + cat.replace(/\s+/g, "-").replace(/&/g, "-");
+}
+
+// ── Ingredient display ─────────────────────────────────────────────────────
+function ingredientLabel(ing) {
+  const parts = [ing.amount, ing.unit].filter(Boolean);
+  return { measure: parts.join(" "), item: ing.item };
+}
+
+// ── Modal state ────────────────────────────────────────────────────────────
+let modalIdx = null;
+
+function openModal(idx) {
+  const recipe = RECIPES[idx];
+  modalIdx = idx;
+
+  document.getElementById("modalName").textContent = recipe.name;
+  document.getElementById("modalTag").className = tagClass(recipe.category);
+  document.getElementById("modalTag").textContent = recipe.category;
+
+  const timeEl = document.getElementById("modalTime");
+  if (recipe.timeMinutes) {
+    timeEl.textContent = recipe.timeMinutes + " min";
+    timeEl.style.display = "";
+  } else {
+    timeEl.style.display = "none";
+  }
+
+  const heartEl = document.getElementById("modalHeart");
+  heartEl.classList.toggle("loved", favorites.has(idx));
+
+  // Ingredients
+  const ingList = document.getElementById("modalIngredients");
+  ingList.innerHTML = recipe.ingredients.map((ing, i) => {
+    const { measure, item } = ingredientLabel(ing);
+    return `<li class="ingredient-item" data-i="${i}">
+      <input type="checkbox" id="mchk-${idx}-${i}">
+      <span class="ingredient-amount">${measure}</span>
+      <span class="ingredient-item-name">${item}</span>
+    </li>`;
+  }).join("");
+
+  ingList.querySelectorAll(".ingredient-item").forEach(li => {
+    li.addEventListener("click", (e) => {
+      const cb = li.querySelector("input");
+      if (e.target !== cb) cb.checked = !cb.checked;
+      li.classList.toggle("checked", cb.checked);
+    });
+  });
+  ingList.querySelectorAll("input[type='checkbox']").forEach(cb => {
+    cb.addEventListener("click", e => e.stopPropagation());
+    cb.addEventListener("change", () => cb.closest(".ingredient-item").classList.toggle("checked", cb.checked));
+  });
+
+  // Steps
+  document.getElementById("modalSteps").innerHTML = recipe.steps.map((step, i) => `
+    <li class="step-item">
+      <span class="step-num">${i + 1}</span>
+      <span>${step}</span>
+    </li>`).join("");
+
+  document.getElementById("modalBackdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("modalBackdrop").classList.remove("open");
+  document.body.style.overflow = "";
+  modalIdx = null;
+}
+
+// Modal event listeners
+document.getElementById("modalClose").addEventListener("click", closeModal);
+document.getElementById("modalBackdrop").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("modalBackdrop")) closeModal();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+document.getElementById("modalHeart").addEventListener("click", () => {
+  if (modalIdx === null) return;
+  const heartEl = document.getElementById("modalHeart");
+  if (favorites.has(modalIdx)) {
+    favorites.delete(modalIdx);
+    heartEl.classList.remove("loved");
+  } else {
+    favorites.add(modalIdx);
+    heartEl.classList.add("loved");
+  }
+  // Also update the card in the grid if visible
+  const gridCard = document.querySelector(`.card[data-idx="${modalIdx}"] .heart-btn`);
+  if (gridCard) gridCard.classList.toggle("loved", favorites.has(modalIdx));
+  if (activeFilter === "favorites") { closeModal(); renderGrid(); }
+});
+
+// ── Build a single card (preview only) ─────────────────────────────────────
+function buildCard(recipe, idx) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.dataset.idx = idx;
+
+  const timeStr = recipe.timeMinutes
+    ? `<span class="card-time">${recipe.timeMinutes} min</span>` : "";
+  const isFav = favorites.has(idx);
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="card-header-text">
+        <div class="card-name">${recipe.name}</div>
+        <div class="card-meta">
+          <span class="${tagClass(recipe.category)}">${recipe.category}</span>
+          ${timeStr}
+        </div>
+      </div>
+      <button class="heart-btn ${isFav ? "loved" : ""}" title="Favorite" aria-label="Toggle favorite">&#9829;</button>
+    </div>
+    <div class="open-hint">Tap to open recipe &rarr;</div>
+  `;
+
+  // Click card body → open modal
+  card.addEventListener("click", (e) => {
+    if (e.target.closest(".heart-btn")) return;
+    openModal(idx);
+  });
+
+  // Heart button on card
+  card.querySelector(".heart-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const btn = e.currentTarget;
+    if (favorites.has(idx)) {
+      favorites.delete(idx);
+      btn.classList.remove("loved");
+    } else {
+      favorites.add(idx);
+      btn.classList.add("loved");
+    }
+    if (activeFilter === "favorites") renderGrid();
+  });
+
+  return card;
+}
+
+// ── Build filter bar categories ────────────────────────────────────────────
+function buildCategoryFilters() {
+  const bar = document.getElementById("filterBar");
+  const cats = [...new Set(RECIPES.map(r => r.category))].sort();
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn";
+    btn.dataset.filter = cat;
+    btn.textContent = cat;
+    bar.appendChild(btn);
+  });
+}
+
+// ── Render grid ────────────────────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const label = document.getElementById("countLabel");
+
+  if (activeFilter === "ingredient-search") {
+    if (!ingredientResults) {
+      label.textContent = "";
+      grid.innerHTML = `<div class="empty-msg" style="font-style:normal;font-size:1rem">Pick ingredients above, then click <strong>Find Recipes</strong> &#x1F373;</div>`;
+      return;
+    }
+    const results = ingredientResults.filter(({ matchCount }) => matchCount > 0);
+    label.textContent = `${results.length} recipe${results.length !== 1 ? "s" : ""} found`;
+    if (results.length === 0) {
+      grid.innerHTML = `<div class="empty-msg">No recipes found. Try removing an ingredient or two.</div>`;
+      return;
+    }
+    results.forEach(({ r, i, matchCount, total }) => {
+      const card = buildCard(r, i);
+      const badge = document.createElement("div");
+      badge.className = "match-badge";
+      badge.textContent = `\u2713 matches ${matchCount} of ${total} ingredient${total !== 1 ? "s" : ""} you have`;
+      card.appendChild(badge);
+      grid.appendChild(card);
+    });
+    return;
+  }
+
+  let shown = [];
+  if (activeFilter === "all") {
+    shown = RECIPES.map((r, i) => ({ r, i }));
+  } else if (activeFilter === "favorites") {
+    shown = [...favorites].map(i => ({ r: RECIPES[i], i }));
+  } else {
+    shown = RECIPES.map((r, i) => ({ r, i })).filter(({ r }) => r.category === activeFilter);
+  }
+
+  label.textContent = `${shown.length} recipe${shown.length !== 1 ? "s" : ""}`;
+  if (shown.length === 0) {
+    grid.innerHTML = `<div class="empty-msg">No recipes here yet — add some favorites first! ♥</div>`;
+    return;
+  }
+  shown.forEach(({ r, i }) => grid.appendChild(buildCard(r, i)));
+}
+
+// ── Ingredient search feature ──────────────────────────────────────────────
+
+// Build a deduplicated list of all ingredient names from every recipe.
+// We strip everything after the first comma so "garlic, minced" → "garlic".
+// That way the suggestions stay clean, but matching is still fuzzy (see scoreRecipe).
+const ALL_INGREDIENTS = (() => {
+  const seen = new Set();
+  RECIPES.forEach(recipe => {
+    recipe.ingredients.forEach(ing => {
+      if (!ing.item) return;
+      const core = ing.item.toLowerCase().replace(/,.*/, '').replace(/\(.*\)/, '').trim();
+      if (core.length > 1) seen.add(core);
+    });
+  });
+  return [...seen].sort();
+})();
+
+let selectedIngredients = [];   // the pills the user has added
+let ingredientResults = null;   // null = not searched yet; array = results
+
+// Score a single recipe: count how many selectedIngredients appear in it.
+// We check if the selected term is contained anywhere in the ingredient item string,
+// so "garlic" matches "garlic, minced" and "garlic powder".
+function scoreRecipe(recipe, selected) {
+  let count = 0;
+  selected.forEach(sel => {
+    const hit = recipe.ingredients.some(ing =>
+      ing.item.toLowerCase().includes(sel.toLowerCase())
+    );
+    if (hit) count++;
+  });
+  return count;
+}
+
+// Highlight the matching part of a suggestion string in bold.
+function highlight(text, query) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0, idx) + '<em>' + text.slice(idx, idx + query.length) + '</em>' + text.slice(idx + query.length);
+}
+
+// ── DOM refs for ingredient search ──
+const ingInput    = document.getElementById("ingInput");
+const ingDropdown = document.getElementById("ingDropdown");
+const ingPills    = document.getElementById("ingPills");
+const ingFindBtn  = document.getElementById("ingFindBtn");
+const ingPanel    = document.getElementById("ingSearchPanel");
+const ingClearBtn = document.getElementById("ingClearBtn");
+
+// Rebuild the pills row from selectedIngredients.
+function renderPills() {
+  ingPills.innerHTML = "";
+  selectedIngredients.forEach((name, idx) => {
+    const pill = document.createElement("span");
+    pill.className = "ing-pill";
+    pill.innerHTML = `${name} <button class="ing-pill-remove" data-idx="${idx}" title="Remove">&#10005;</button>`;
+    ingPills.appendChild(pill);
+  });
+  ingFindBtn.disabled = selectedIngredients.length === 0;
+}
+
+// Show autocomplete suggestions for whatever is in the input.
+function showSuggestions(query) {
+  if (!query) { ingDropdown.classList.remove("open"); return; }
+  const matches = ALL_INGREDIENTS.filter(name =>
+    name.includes(query.toLowerCase()) && !selectedIngredients.includes(name)
+  ).slice(0, 12);
+
+  if (matches.length === 0) { ingDropdown.classList.remove("open"); return; }
+  ingDropdown.innerHTML = matches
+    .map(name => `<div class="ing-suggestion" data-name="${name}">${highlight(name, query)}</div>`)
+    .join("");
+  ingDropdown.classList.add("open");
+}
+
+// Add an ingredient pill (called when user clicks a suggestion).
+function addIngredient(name) {
+  if (!selectedIngredients.includes(name)) {
+    selectedIngredients.push(name);
+    renderPills();
+    // Reset any previous results so "Find Recipes" is needed again.
+    ingredientResults = null;
+  }
+  ingInput.value = "";
+  ingDropdown.classList.remove("open");
+  ingInput.focus();
+}
+
+// Remove a pill by its index in selectedIngredients.
+function removeIngredient(idx) {
+  selectedIngredients.splice(idx, 1);
+  ingredientResults = null;
+  renderPills();
+  if (activeFilter === "ingredient-search") renderGrid();
+}
+
+// Run the search: score every recipe and sort highest-match-count first.
+function runIngredientSearch() {
+  if (selectedIngredients.length === 0) return;
+  const total = selectedIngredients.length;
+  ingredientResults = RECIPES
+    .map((r, i) => ({ r, i, matchCount: scoreRecipe(r, selectedIngredients), total }))
+    .filter(({ matchCount }) => matchCount > 0)
+    .sort((a, b) => b.matchCount - a.matchCount);
+  renderGrid();
+}
+
+// Reset everything and go back to normal browsing.
+function clearIngredientSearch() {
+  selectedIngredients = [];
+  ingredientResults = null;
+  ingInput.value = "";
+  ingDropdown.classList.remove("open");
+  renderPills();
+  ingPanel.classList.remove("visible");
+  // Switch back to "All Recipes" tab
+  activeFilter = "all";
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector('[data-filter="all"]').classList.add("active");
+  renderGrid();
+}
+
+// ── Ingredient search event wiring ──
+
+// Typing in the input → show suggestions
+ingInput.addEventListener("input", () => showSuggestions(ingInput.value.trim()));
+
+// Click a suggestion → add pill
+ingDropdown.addEventListener("click", (e) => {
+  const s = e.target.closest(".ing-suggestion");
+  if (s) addIngredient(s.dataset.name);
+});
+
+// Pressing Enter in the input → add top suggestion or exact match
+ingInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const first = ingDropdown.querySelector(".ing-suggestion");
+    if (first) addIngredient(first.dataset.name);
+  }
+  if (e.key === "Escape") ingDropdown.classList.remove("open");
+});
+
+// Click a pill's ✕ button → remove that ingredient
+ingPills.addEventListener("click", (e) => {
+  const btn = e.target.closest(".ing-pill-remove");
+  if (btn) removeIngredient(Number(btn.dataset.idx));
+});
+
+// "Find Recipes" button
+ingFindBtn.addEventListener("click", runIngredientSearch);
+
+// "Clear search" link
+ingClearBtn.addEventListener("click", clearIngredientSearch);
+
+// Close dropdown when clicking outside
+document.addEventListener("click", (e) => {
+  if (!ingInput.contains(e.target) && !ingDropdown.contains(e.target)) {
+    ingDropdown.classList.remove("open");
+  }
+});
+
+// ── Filter button events ───────────────────────────────────────────────────
+document.getElementById("filterBar").addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  activeFilter = btn.dataset.filter;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  // Show or hide the ingredient search panel depending on which tab is active.
+  ingPanel.classList.toggle("visible", activeFilter === "ingredient-search");
+  renderGrid();
+});
+
+// ── Init ───────────────────────────────────────────────────────────────────
+buildCategoryFilters();
+renderGrid();
+</script>
+</body>
+</html>
