@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Search from './pages/Search'
 import Saved from './pages/Saved'
 import Profile from './pages/Profile'
+import Auth from './pages/Auth'
 import RECIPES from './data/recipes.json'
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/search"  element={<Search  onOpen={openModal} />} />
         <Route path="/saved"   element={<Saved   onOpen={openModal} />} />
         <Route path="/profile" element={<Profile onOpen={openModal} />} />
+        <Route path="/login"   element={<Auth />} />
       </Routes>
       <BottomNav />
       {modalIdx !== null && (

@@ -1,20 +1,48 @@
+import { useNavigate } from 'react-router-dom'
 import RECIPES from '../data/recipes.json'
 import { useApp } from '../context/AppContext'
+import { useAuth } from '../context/AuthContext'
 import { ingredientLabel } from '../utils/recipe'
 
 export default function Profile({ onOpen }) {
   const { shoppingList, shopChecked, toggleShopItem, toggleShopping, clearShopping } = useApp()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const listArr = [...shoppingList]
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Home cook'
+  const avatarUrl   = user?.user_metadata?.avatar_url
+
+  async function handleSignOut() {
+    await signOut()
+  }
 
   return (
     <>
       {/* Profile section */}
       <div className="flex flex-col items-center px-5 pt-7 pb-5 gap-2.5 border-b border-warm-tan">
-        <div className="w-20 h-20 rounded-full bg-warm-tan border-2 border-rim flex items-center justify-center text-[2.5rem]">
-          👤
-        </div>
-        <div className="font-display text-[1.3rem] font-semibold text-ink">Your Name</div>
-        <div className="text-[0.82rem] text-muted">Home cook 🍽</div>
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="avatar" className="w-20 h-20 rounded-full border-2 border-rim object-cover" />
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-warm-tan border-2 border-rim flex items-center justify-center text-[2.5rem]">
+            👤
+          </div>
+        )}
+        <div className="font-display text-[1.3rem] font-semibold text-ink">{displayName}</div>
+        {user ? (
+          <div className="flex flex-col items-center gap-2 mt-0.5">
+            <div className="text-[0.78rem] text-muted">{user.email}</div>
+            <button
+              onClick={handleSignOut}
+              className="text-[0.78rem] font-bold text-muted border-[1.5px] border-rim rounded-[14px] px-4 py-[5px] hover:text-heart hover:border-heart transition-all"
+            >Sign out</button>
+          </div>
+        ) : (
+          <button
+            onClick={() => navigate('/login')}
+            className="mt-0.5 text-[0.85rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-5 py-[6px] hover:bg-accent hover:text-white transition-all"
+          >Log in / Sign up</button>
+        )}
       </div>
 
       {/* Shopping list header */}

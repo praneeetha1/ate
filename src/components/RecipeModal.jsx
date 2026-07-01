@@ -101,18 +101,22 @@ export default function RecipeModal({ recipe, idx, onClose }) {
             <span className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
               Ingredients
             </span>
-            <div className="flex gap-1">
-              {[1, 2, 3].map(s => (
-                <button
-                  key={s}
-                  onClick={() => setScale(s)}
-                  className={`rounded-[14px] px-2.5 py-[3px] text-[0.72rem] font-bold transition-all border-[1.5px] ${
-                    scale === s
-                      ? 'bg-accent border-accent text-white'
-                      : 'bg-card border-rim text-muted hover:border-accent hover:text-accent-dk'
-                  }`}
-                >{s}×</button>
-              ))}
+            <div className="flex gap-1 items-center">
+              {[1, 2, 3].map(s => {
+                const base = recipe.servings || 1
+                const label = base * s === 1 ? '1 serving' : `${base * s} servings`
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setScale(s)}
+                    className={`rounded-[14px] px-2.5 py-[3px] text-[0.72rem] font-bold transition-all border-[1.5px] ${
+                      scale === s
+                        ? 'bg-accent border-accent text-white'
+                        : 'bg-card border-rim text-muted hover:border-accent hover:text-accent-dk'
+                    }`}
+                  >{label}</button>
+                )
+              })}
             </div>
           </div>
 

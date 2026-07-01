@@ -81,7 +81,8 @@
       "In a small bowl, mash the softened butter with the rest of the ingredients and some salt and pepper.",
       "Spread the butter mixture evenly over the shrimp. Bake for 10 to 12 minutes until hot and bubbly. If you like the top browned, place under a broiler for 1-3 minutes (keep an eye on it). Serve with lemon wedges and French bread.",
       "Note: if using fresh shrimp, arrange for presentation. Starting from the outer edge of a 14-inch oval gratin dish, arrange the shrimp in a single layer cut side down with the tails curling up and towards the center of the dish. Pour the remaining marinade over the shrimp."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Pot Roast Carbonnade",
@@ -154,7 +155,8 @@
       "Add the remaining ingredients and bring the mixture to a simmer.",
       "Cover the pot and put it in the oven to braise until the beef is tender, about 2 hours.",
       "Remove the pot from the oven and transfer the pot roast to a serving dish."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Berry Sauce",
@@ -177,7 +179,8 @@
     "steps": [
       "Lightly warm berries and maple syrup in a saucepan\n2. Pour over pancakes/dessert as desired"
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 1
   },
   {
     "name": "Schnitzel",
@@ -243,7 +246,8 @@
       "Put a schnitzel on to each of your serving plates.",
       "Put a little pile of cornichon matchsticks and some watercress leaves on top and serve with a big lob of apple sauce, a squeeze of lemon juice and a drizzle of extra virgin olive oil."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 2
   },
   {
     "name": "Oregano Marinated Chicken",
@@ -285,7 +289,8 @@
       "To marinate the chicken: In a non-reactive dish, combine the lemon juice, olive oil, oregano, salt, and pepper and mix together. Add the chicken breasts to the dish and rub both sides in the mixture. Cover the dish with plastic wrap and let marinate in the refrigerator for at least 30 minutes and up to 4 hours.",
       "To cook the chicken: Heat a nonstick skillet or grill pan over high heat. Add the chicken breasts and cook, turning once, until well browned, about 4 to 5 minutes on each side or until cooked through. Let the chicken rest on a cutting board for a few minutes before slicing it into thin strips."
     ],
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "servings": 6
   },
   {
     "name": "Marinara Sauce",
@@ -324,7 +329,8 @@
       "In a large frying pan over medium heat, saute the garlic in the olive oil until fragrant, about 1 minute. Stir in the red pepper flakes, basil, oregano, and tomatoes and bring to a simmer. Reduce the heat to low and simmer until thickened, about 20 minutes. Season to taste.",
       "Makes about 2 1/2 cups (20 fl oz/625mL)"
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Roasted Salmon with Walnut-Pepper Relish",
@@ -429,7 +435,8 @@
       "Lay skin-side down in a baking dish and roast until just cooking through, 12 to 14 minutes (for 3 lbs).",
       "Let rest 5 minutes, then transfer to a platter and top with the relish."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Shrimp and edamame with lime",
@@ -485,7 +492,8 @@
       "Add scallion greens ad lime juice and cook 1 minute.",
       "Season to taste with salt and pepper; serve with rice and lime wedges, if desired."
     ],
-    "timeMinutes": 38
+    "timeMinutes": 38,
+    "servings": 4
   },
   {
     "name": "Pate brisee",
@@ -528,7 +536,8 @@
       "Shape dough into 1 large disk or 2 small disks, and wrap in plastic wrap. Refrigerate until firm, at least 1 hour. Dough can be refrigerated overnight or frozen for up to 3 months.",
       "To make pastry leaves for garnishing: roll out dough to a 1/4-inch thickness on a lightly floured surface and cut out leaves using floured leaf-shaped cookie cutters. Bake on a parchment-lined baking sheet at 350F, rotating sheet halfway throuh, until pale gold, about 12 minutes."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 1
   },
   {
     "name": "Homemade beef stock",
@@ -619,7 +628,8 @@
       "Stock may be refrigerated for 3 days or frozen for 4 months.",
       "If storing, leave fat layer intact to seal the stock.",
       "Before using, remove the fat that has collected on the surface."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Chervil cream",
@@ -647,7 +657,8 @@
     "steps": [
       "Prepare an ice-water bath; set aside. Bring a medium pot of water to a boil; stir in 1 tablespoon salt. Add chervil. Return to a boil; cook until bright green, about 30 seconds. Using a slotted spoon, immediately transfer to ice-water bath. Drain, and chop coarsely.",
       "Process chervil with 1/4 cup cold water in a food processor until very finely chopped. Pour through a fine-mesh sieve; discard liquid. Whip cream in a medium bowl until thick and fluffy but still pourable; stir in chervil, and season with salt."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Japanese style grilled salmon",
@@ -709,7 +720,8 @@
       "Season salmon with salt and set aside.",
       "Combine marinade ingredients, except lemon slices, in a small saucepan and bring to a boil. Remove from heat and allow to cool to room temperature. Add lemon and pour cooled marinade over fish and marinate refrigerated for 2 to 4 hours. Turn fish occasionally.",
       "To serve: Grill or broil on both sides until just done, approximately 4 to 5 minutes per side. Be careful not to overcook. Salmon should still be translucent in the center. Serve with Soba Noodle Salad on the side."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Grilled salmon gyros",
@@ -865,7 +877,8 @@
       "Remove salmon from the marinade and grill until cooked through, about 3 to 4 minutes per side. Remove from the grill to a plate and keep warm.",
       "Put the pita bread on grill to heat through.",
       "Serve by cutting pitas in half, filling them with salmon, and topping them with the tomato mixture and the cucumber dill sauce. Add iceberg lettuce, if desired, and serve."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Homemade ponzu sauce",
@@ -908,7 +921,8 @@
     "steps": [
       "In a bowl, combine all the ingredients and stir until the sugar dissolves. Store in a covered container in the refrigerator; it will keep for up to 1 month."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 4
   },
   {
     "name": "Shrimp and cabbage stir fry",
@@ -996,7 +1010,8 @@
       "Drain the shrimp. Heat the vegetable oil in a wok or large skillet over medium-high heat, then stir-fry the scallion whites, ginger and garlic, about 30 seconds. Add the shrimp and stir-fry until almost cooked through,a bout 3 minutes. Add the cabbage and stir-fry until wilted and the shrimp are just cooked through, about 2 more minutes.",
       "Stir the hoisin sauce mixture, then add to the wok and simmer, stirring occasionally, 2 minutes. Stir in the scallion greens. Serve with rice, if desired."
     ],
-    "timeMinutes": 17
+    "timeMinutes": 17,
+    "servings": 4
   },
   {
     "name": "Salmon and potatoes in tomato sauce",
@@ -1056,7 +1071,8 @@
       "Stir in parsley. Season salmon with salt and pepper; nestly among potatoes and sauce. Cover and cook until fish is opaque throughout and potatoes are tender when pierced with a knife, 10 minutes. Serve salmon with potatoes and sauce.",
       "If cooking for 2 servings, reduce the cook times of all phases by 2 minutes."
     ],
-    "timeMinutes": 51
+    "timeMinutes": 51,
+    "servings": 4
   },
   {
     "name": "Hawaiian style short ribs (slow cooker)",
@@ -1124,7 +1140,8 @@
       "With a slotted spoon, transfer ribs, pineapple, onions, and ginger to a platter and tent with foil. With a ladle, skim fat from cooking liquid. Serve ribs and pineapple mixture with rice; drizzle with some cooking liquid and sprinkle with scallions.",
       "Cook's Note:\nTo store, refrigerate short ribs and cooking liquid in an airtight container for up to 3 days."
     ],
-    "timeMinutes": 320
+    "timeMinutes": 320,
+    "servings": 6
   },
   {
     "name": "Salmon Tuscano with Herbed Orzo",
@@ -1213,7 +1230,8 @@
       "Add garlic and remaining onion to the pan. Cook until soft, about 2 minutes. Add grape tomatoes and Calamata olives. Cook together for about 3 minutes. Remove the skillet from heat, then stir in parsley, and remaining basil. Season with salt and pepper. Set aside.",
       "Rub salmon with salt, pepper and half of the chopped basil. Using the same saucepan from the onions, saut\u00e9 salmon in the remaining olive oil, until golden on each side. Cook flesh side first, then approximately 5 minutes per side.",
       "Serve salmon atop a small bed of orzo, dazzled with the warm tomato and olive salsa."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Smoked salmon baked potatoes",
@@ -1249,7 +1267,8 @@
     "steps": [
       "Preheat oven to 400F. Poke potatoes all over with a fork. Place on oven rack and bake for 1 hour. Meanwhile mix remaining ingredients together. Split potatoes open and fluff with fork. Spoon salmon mixture onto potatoes and serve."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 4
   },
   {
     "name": "Apple-cheddar baked sweet potatoes",
@@ -1285,7 +1304,8 @@
     "steps": [
       "Preheat oven to 400F. Pierce potatoes all over with fork and place directly on oven rack. Bake for 50 minutes. Meanwhile, cook apples in butter until tender. Spoon onto the baked sweet potatoes, top with cheddar and broil to melt. Top with crumbled bacon."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 4
   },
   {
     "name": "Ina Garten's Pesto",
@@ -1343,7 +1363,8 @@
       "Add the Parmesan and puree for a minute.",
       "Serve, or store the pesto in the refrigerator or freezer with a thin film of olive oil on top."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 4
   },
   {
     "name": "Broiled halibut with ricotta-pea puree",
@@ -1415,7 +1436,8 @@
       "Meanwhile, microwave the peas in a bowl with water until just tender, about 4 minutes. Transfer the peas and liquid to a food processor and pulse with the ricotta, butter and a pinch of salt to make a slightly chunky puree. Divide the puree among plates and top with the fish, carrots, onion and pan juices.",
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/broiled-halibut-with-ricotta-pea-puree-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Mayonnaise",
@@ -1469,7 +1491,8 @@
       "Continue whisking until all of the oil is incorporated. Leave at room temperature for 1 to 2 hours then refrigerate for up to 1 week.",
       "1 serving makes ~1 cup of mayo."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Homemade pecan and maple nut butter",
@@ -1502,7 +1525,8 @@
     "steps": [
       "Combine all ingredients in food processor and blend until smooth, scraping down sides occasionally. Store in an airtight container."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 2
   },
   {
     "name": "Wasabi Salmon with Miso-Sesame Sauce",
@@ -1561,7 +1585,8 @@
       "Preheat oven to 400 degrees. Place salmon on a greased baking sheet, discarding marinade. Bake until fish flakes easily with a fork, about 13 minutes.",
       "Remove salmon. Transfer to a warm serving plate. Drizzle miso sauce over fillets. Serve warm."
     ],
-    "timeMinutes": 28
+    "timeMinutes": 28,
+    "servings": 4
   },
   {
     "name": "Strawberries Romanov (La Madeleine copycat)",
@@ -1593,7 +1618,8 @@
     ],
     "steps": [
       "Wash strawberries and cut the tops off. Let strawberries drain.  Mix together heavy whipping cream, powdered sugar, and the brandy. Beat with a mixer till this becomes thick.  Place strawberries into glasses and spoon over the sauce."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "John Thorne's Pecan Pie",
@@ -1650,7 +1676,8 @@
       "* A little cream (about 1/4 to 1/2 cup) mixed into a pecan pie filling before baking gives it a richer, lighter texture.",
       "* For a sweeter, lighter pie: add more sugar and use fewer pecans; for a denser, less sweet pie: add more pecans and use less sugar.",
       "* The buttery flavour and the lard-induced flakiness of a butter and lard crust make it the perfect one for a perfect pecan pie. And a Southern pecan pie authority I know suggests that you roll out the dough a little thicker than usual; a thick, richly shortened crust provides an appetizing balance to the sweetness of the filling."
-    ]
+    ],
+    "servings": 12
   },
   {
     "name": "Godiva Angel Pie",
@@ -1725,7 +1752,8 @@
       "Be sure to cool the chocolate mixture before adding to the whipped cream.",
       "If it is too warm, the mixture will thin out.",
       "If this happens, chill until it is thick enough to put in shell."
-    ]
+    ],
+    "servings": 12
   },
   {
     "name": "Onion Pie",
@@ -1777,7 +1805,8 @@
       "Lightly beat the eggs and milk together in a small bowl.",
       "Spoon the onions into the crust, then pour the egg mixture over them.  Sprinkle with Parmesan.",
       "Bake for 30-40 minutes until set and golden."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Godiva Dark Chocolate Cheesecake",
@@ -1839,7 +1868,8 @@
       "Once the cake can be unmolded, remove from the pan and cut into 1\u00bd\" sections.",
       "Brush some tempered Godiva Dark Chocolate onto a strip of acetate and, while it is still fluid, smooth over the top of the molded cheesecake.",
       "Once the chocolate has cooled and completely crystallized, remove the acetate, revealing a shiny and textured chocolate finish."
-    ]
+    ],
+    "servings": 10
   },
   {
     "name": "Hot Cocoa",
@@ -1883,7 +1913,8 @@
       "Prepare mix ahead of time. One serving is 1/4 cup mix per cup of milk.",
       "Bring milk to a simmer in a saucepan over medium heat. Whisk cocoa/sugar mix into the milk. Add the chopped chocolate and reduce heat to low and simmer, stirring, until the chocolate melts and the cocoa is thick, about 2 minutes. Divide among mugs and garnish each with homemade marshmallows or whipped cream."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 4
   },
   {
     "name": "Greek yogurt with homemade honeycomb",
@@ -1958,7 +1989,8 @@
       "Leave to cool, then place in the fridge to set. This takes approx 6-10 mins. Break up with the end of a rolling pin and store in an airtight jar if not using immediately.",
       "Using a blender, blitz the raspberries and blueberries together with little caster sugar until smooth. Add a drop of lavender essence. Strain the mixture through a sieve to create a fresh coulis. Taste to check consistency and flavour, add a spoonful of water or sugar as necessary.",
       "Lightly mix almost all of the honeycomb through the yoghurt. Spoon into individual serving glasses and pour the coulis on top. Garnish with lavender flowers and a sprinkling of the remaining honeycomb. Serve immediately."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Cherry-lime cups",
@@ -2037,7 +2069,8 @@
       "Carefully remove liners and weights; bake until crusts are dry and barely golden, 5 to 7 minutes.",
       "Meanwhile, make filling: in a medium bowl, whisk together eggs, flour, sugar, lime juice, and salt. Place 3 cherry halves into each crust and divide filling among each. Bake until filling is set, about 25 minutes. With the tip of a knife or small offset spatula, remove cups from pan. Let cool completely on a wire rack.",
       "To store, refrigerate in an airtight container, up to 1 day."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Strawberries and cream bars",
@@ -2087,7 +2120,8 @@
       "Pour over strawberry mixture and smooth top with rubber spatula.",
       "Freeze until firm, about 4 hours (or, covered, up to 3 days), before cutting into 12 squares."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 12
   },
   {
     "name": "Frozen chocolate mousse trifles",
@@ -2137,7 +2171,8 @@
       "In another medium bowl, beat cream on high until stiff peaks form, 3 minutes. Gently fold whipped cream into egg white mixture.",
       "Fill each of four small glasses with 1/4 cup cake and top with heaping 1/4 cup mousse. Repeat to make a second layer with remaining cake and mousse. Freeze until firm, 3 hours (or up to overnight). Let sit 10 minutes at room temperature, then finely grate chocolate over tops to serve."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Frozen lemon souffle",
@@ -2201,7 +2236,8 @@
       "Pour into mold and freeze until firm, 6 hours (or up to overnight).",
       "To serve, remove parchment, top with raspberries and dust with confectioners' sugar."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Coconut lime semifreddo",
@@ -2261,7 +2297,8 @@
       "Invert onto a serving platter; peel away parchment.",
       "Layer mango on top and serve."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 12
   },
   {
     "name": "Sweet cherry granita",
@@ -2300,7 +2337,8 @@
       "In a blender, puree cherries, sugar, and lemon juice until sugar is dissolved and mixture is smooth. Pour into an 8-inch square baking dish. Freeze 6 hours, scraping with fork every hour (mixture should be icy and fluffy).",
       "To serve, pour 1 tablespoon liqueur into each of 12 small bowls or glasses. Top with 1/2 cup granita and a small dollop of whipped cream, if desired. Serve immediately."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 12
   },
   {
     "name": "Raspberry-lemon thumbprint cookies",
@@ -2371,7 +2409,8 @@
       "Pinch off the dough to form 1-inch balls. Place on the prepared baking sheets, spacing 1-inch apart. Use your floured index finger or 1/2 teaspoon measuring spoon to create depressions in the center of each ball. Fill each indentation with nearly 1/2 teaspoon of the jam mixture. Bake until golden brown, about 20 minutes.",
       "Transfer the cookies to wire racks to cool completely.",
       "Yield: 2 dozen"
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Pumpkin mousse",
@@ -2462,7 +2501,8 @@
       "With an electric mixer on medium speed, whisk egg whites and the sugar to soft peaks. Gently fold egg-white mixture into pumpkin mixture to combine. Whip heavy cream on medium high to stiff peaks, then gently but thoroughly fold into pumpkin mixture.",
       "Divide mousse among 8 to 10 glasses; refrigerate until set, at least 2 hours, or up to 1 day, covered with plastic wrap. If desired, top each with a dollop of sweetened whipped cream and a pastry leaf before serving.",
       "Food safety note: the eggs in this recipe are not cooked"
-    ]
+    ],
+    "servings": 10
   },
   {
     "name": "Salted caramel six layer chocolate cake",
@@ -2616,7 +2656,8 @@
       "Make ahead: Caramel can be refrigerated for up to 3 days. Bring to room temperature before using. Cake layers can be refrigerated for up to 3 days (they actually taste better when refrigerated and have a better texture for stacking).",
       "Storage: Frosted cake can be refrigerated for up to 3 days."
     ],
-    "timeMinutes": 80
+    "timeMinutes": 80,
+    "servings": 12
   },
   {
     "name": "Hazelnut pastry dough",
@@ -2659,7 +2700,8 @@
       "Divide dough in half, and shape each half into a rectangle. Wrap in plastic wrap. Refrigerate until firm, about 1 hour. Let stand for 10 minutes before rolling.",
       "Make ahead: Dough can be refrigerated overnight or frozen for up to 3 months. Let chilled dough stand at room temperature for 10 minutes and fozen dough thaw before using."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 2
   },
   {
     "name": "Cherry couscous pudding",
@@ -2722,7 +2764,8 @@
     "steps": [
       "Bring milks, sugar, almond extract, and a pinch of salt to a boil in a saucepan over medium heat. Add couscous, dried cherries and cinnamon stick; cover and cook 2 minutes. Remove from the heat and let sit, covered, 8 minutes. Fluff with a fork, remove the cinnamon stick and divide among bowls. Top with toasted almond slices and honey, if desired."
     ],
-    "timeMinutes": 7
+    "timeMinutes": 7,
+    "servings": 4
   },
   {
     "name": "Chocolate chestnut mousse",
@@ -2767,7 +2810,8 @@
       "Beat the cream and the remaining 2 tablespoons confectioners' sugar with a mixer until soft peaks form. Reserve 1/2 cup for topping. Fold one-quarter of the remaining whipped cream into the chestnut mixture, then fold in the rest. Chill up to 8 hours.",
       "Divide the mousse among dessert glasses. Top with the reserved whipped cream. Remelt the remaining chocolate in the microwave, if necessary, then drizzle on top."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 8
   },
   {
     "name": "Melomakarona - Honey Cookies with Walnuts",
@@ -2885,7 +2929,8 @@
       "Place the ground walnuts in a shallow plate or bowl next to the stove top. When the cookies come out of the oven and while they are still very warm, carefully float the cookies in the syrup and allow the cookies to absorb syrup on both sides.",
       "Using a fork or small spatula, remove the cookie from the syrup and place on a platter or plate. Press ground walnuts lightly into the tops of the cookies (syrup will help it adhere) and sprinkle lightly with ground cinnamon.",
       "Do not refrigerate Melomakarona as they will harden. Store in an airtight container at room temperature."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Gluten-free chocolate chips cookies",
@@ -2966,7 +3011,8 @@
       "Bake the cookies for 9 to 11 minutes, until golden brown. Remove from the oven and let rest on the baking sheets for 5 minutes, to set, before transferring to racks to cool completely. Or allow them to cool right on the baking sheets.",
       "Yield: 3 dozen cookies"
     ],
-    "timeMinutes": 28
+    "timeMinutes": 28,
+    "servings": 3
   },
   {
     "name": "Homemade candy canes",
@@ -3056,7 +3102,8 @@
       "Admire the individual quality of your handiwork.",
       "Repeat this process with the remaining 3/4 of the candy, one piece of each color at a time.",
       "Allow candy to cool until completely hard; about 15 minutes. Wrap each cane in plastic wrap to keep it from sticking. Store in an airtight jar for several months."
-    ]
+    ],
+    "servings": 16
   },
   {
     "name": "Pecan Pie",
@@ -3127,7 +3174,8 @@
       "Comine all ingredients and blend well.  This may require a mixer since the sugar mixture will be thick.  Fold in pecans and pour into medium unbaked pastry shell.",
       "Bake on cookie sheet at 350 degrees for 50 minutes."
     ],
-    "timeMinutes": 70
+    "timeMinutes": 70,
+    "servings": 1
   },
   {
     "name": "Pretzel shortbread bar",
@@ -3189,7 +3237,8 @@
       "Transfer pan to a wire rack, and let shortbread cool for 1 hour.",
       "Remove shortbread from pan, and cut into 1/2-inch wide rectangles using a serrated knife."
     ],
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "servings": 24
   },
   {
     "name": "Broken glass cupcakes",
@@ -3314,7 +3363,8 @@
       "Make ahead: unfrosted cupcakes can be stored at room temperature for up to 2 days. Frosting can be refrigerated for up to 4 days. Caramel can be stored at room temperature for up to 1 day, break just before using.",
       "Storage: frosted cupcakes can be refrigerated for up to 1 day. Top with caramel shards and cherry preserves just before serving."
     ],
-    "timeMinutes": 90
+    "timeMinutes": 90,
+    "servings": 42
   },
   {
     "name": "Smoked Salmon Ebelskivers",
@@ -3399,7 +3449,8 @@
       "Cook until the bottoms of the pancakes are lightly browned and crisp, 3-5 minutes. Use 2 short wooden skewers to turn all the  pancakes and cook until lightly browned on the second side, about 3 minutes longer.",
       "Transfer the finished pancakes to a platter and keep warm  in the oven while you repeat to make 2 more batches. Serve right away."
     ],
-    "timeMinutes": 33
+    "timeMinutes": 33,
+    "servings": 3
   },
   {
     "name": "The Shake",
@@ -3451,7 +3502,8 @@
     ],
     "steps": [
       "Combine all ingredients in blender. Blend until smooth."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Breakfast Mediterranean Scramble",
@@ -3488,7 +3540,8 @@
     ],
     "steps": [
       "Heat oil in a small non-stick skillet. Once hot, add veggies and saute until soft. Meanwhile, beat greek seasoning and feta into eggs. Once veggies are at desired doneness, add egg mixture to skillet and gently stir until cooked. Serve immediately."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Best Oatmeal Ever",
@@ -3530,7 +3583,8 @@
     ],
     "steps": [
       "To prepare, once oatmeal has been sufficiently cooked, add diced apples and nut butter. Stir for 2-3 minutes.\n2. Serve into a bowl and mix in cinnamon, flax seeds, maple syrup/agave. Stir and enjoy!"
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Spinach souffle",
@@ -3581,7 +3635,8 @@
       "Spray the hot pan with oil, then spoon the mixture in and sprinkle with the pine nuts.",
       "Bake in the oven for 10 minutes, or until well risen, golden, and firm. Serve.",
       "Rather than fresh spinach, one can use 3.5oz per serving cooked spinach, chopped or pureed."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Pecan molasses granola",
@@ -3636,7 +3691,8 @@
       "Store in airtight container at room temperature up to 3 weeks.",
       "Each serving is 1/2 cup."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 10
   },
   {
     "name": "Potato hash with spinach and eggs",
@@ -3708,7 +3764,8 @@
       "Cover and cook until whites are set but yolks are still runny, about 6 minutes.",
       "Sprinkle with Parmesan and parsley and serve immediately."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Chocolate babka",
@@ -3859,7 +3916,8 @@
       "***If desired, make up to this point 1 day in advance. Cover with buttered parchment, then wrap in plastic and refrigerate. Remove 1 hour before baking.",
       "Preheat the oven to 350 degrees F. Brush the loaf with the beaten egg, then sprinkle with the streusel. Bake until the bread is golden and springs back when pressed, 1 hour to 1 hour, 10 minutes. Loosen with a knife, then let cool in the pan, 1 hour. Unmold onto a rack to finish cooling."
     ],
-    "timeMinutes": 120
+    "timeMinutes": 120,
+    "servings": 8
   },
   {
     "name": "Bavarian kartofflepuffer (potato pancakes)",
@@ -3916,7 +3974,8 @@
       "Fry until golden on the bottom then flip and finish the other side until golden as well.",
       "Let pancakes drain on a plate with paper towels.",
       "Serve with a garden salad or alone with some apple sauce or berry jam on the side."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Baked eggs and grits",
@@ -3965,7 +4024,8 @@
       "Preheat oven to 400 degrees. Brush four 8-ounce ramekins or other small ovenproof dishes with oil. Prepare grits according to package instructions. Stir in arugula and 2 tablespoons cheddar, and cook until cheddar melts, about 30 seconds. Season with salt and pepper.",
       "Divide grits among dishes. Make a well in each, then crack an egg into each well; season. Bake on a rimmed baking sheet, until whites are set but yolks are still runny, about 20 minutes, rotating sheet halfway through. To serve, top grits with remaining 2 tablespoons cheddar and a sprinkle of pepper."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Open face egg and tomato sandwich",
@@ -4010,7 +4070,8 @@
       "In a small nonstick skillet, heat oil over medium-low. Gently crack eggs into skillet, and add salt, pepper, and cheese. Cover, and cook until whites are set, about 2 minutes.",
       "Slide one egg onto each muffin."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 2
   },
   {
     "name": "English muffin with apple and cheddar",
@@ -4044,7 +4105,8 @@
       "Place English muffin cut side up in a toaster oven or on a baking sheet under the broiler, and toast until lightly browned.",
       "Spread the mustard on each muffin half, then half the cheese, the apple, and finally the other half of the cheese. Broil until cheese is melted."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Peanut butter-oatmeal sandwich cookies",
@@ -4139,7 +4201,8 @@
       "Spread the filling on half the cookies. Top with the remaining cookies.",
       "Yield: about 22 filled cookies."
     ],
-    "timeMinutes": 42
+    "timeMinutes": 42,
+    "servings": 22
   },
   {
     "name": "Egg sauce",
@@ -4188,7 +4251,8 @@
       "Melt the butter in a small saucepan. Mix in the flour, salt and pepper. Cook over low heat. Stir until mixture is smooth. Remove from heat and stir in milk.",
       "Heat to boiling. Then, stir the mixture constantly for one minute. Add the diced egg to the mixture. Serve with toast, english muffin, or boiled potatoes."
     ],
-    "timeMinutes": 7
+    "timeMinutes": 7,
+    "servings": 2
   },
   {
     "name": "Korean scallion pancakes with vegetable salad",
@@ -4293,7 +4357,8 @@
       "Cook an additional 45-60 seconds or until bottom of pancake is golden brown; remove from heat.",
       "Repeat with remaining batter, adding an additional 1/2 tsp of the canola oil after each pancake. Top pancakes with salad and drizzle with remaining sauce from mixing bowl. Sprinkle with peanuts."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Perfect soft cooked egg",
@@ -4317,7 +4382,8 @@
       "This is good for any number of eggs.",
       "Add 1/2 inch water to a pot. Bring to a boil. Add egg(s) to pot, lower the heat to medium and cover. Cook for 6 1/2 minutes. Immediately place egg(s) in a cold water bath until cool enough to handle. Peel carefully and enjoy."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Hot cereal with apple butter and walnuts",
@@ -4356,7 +4422,8 @@
       "Cook hot cereal according to package directions.",
       "Top cereal with apple butter, sugar, and walnuts."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Mexican potato omelet",
@@ -4422,7 +4489,8 @@
       "Preheat broiler with rack 4 inches from the heat. Meanwhile, cook eggs on the stovetop, lifting the edges to allow uncooked egg to flow underneath, until the center is almost set, 8 to 10 minutes. Sprinkle remaining 1/4 cup cheese over the top, then broil in the oven until set, about 2 minutes.",
       "In a small bowl, make a salsa by combining the remaining tomatoes, scallions, cilantro, and lime juice. Run a metal spatula around the edges of the pan and slide the omelette onto a platter. Serve cut into wedges with salsa."
     ],
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "servings": 4
   },
   {
     "name": "Eggs with mushrooms and tomatoes",
@@ -4489,7 +4557,8 @@
       "* Heat the oil in a large nonstick skillet over medium-high heat. Add the tomatoes, mushroom, and thyme, season with salt and pepper, and cook until tender, 5-7 minutes. Distribute this on top of the eggs (and around the plate, as there will be too much to stack).",
       "Finally, sprinkle with parmesan and chives."
     ],
-    "timeMinutes": 27
+    "timeMinutes": 27,
+    "servings": 4
   },
   {
     "name": "Morning pizza",
@@ -4543,7 +4612,8 @@
       "Toast bread to desired doneness.",
       "Spread ricotta on bread, top with herbs and tomato, and drizzle with oil. Season with salt and pepper to taste. Broil for 3 minutes, then top with parmesan and serve."
     ],
-    "timeMinutes": 17
+    "timeMinutes": 17,
+    "servings": 1
   },
   {
     "name": "Mustard, Avocado, and Dill on a Whole-Wheat Muffin With Boiled Egg",
@@ -4582,7 +4652,8 @@
       "Fill a sauce pan with 1/2 inch of water. Bring to a boil. Add eggs, reduce heat to medium, cover, and cook for 6 1/2 minutes (for any number of eggs). Immediately place in cold water bath. Peel carefully when cooled.",
       "Top the English muffin with the mustard, avocado, and dill, dividing evenly. Serve with the eggs."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 2
   },
   {
     "name": "Baked English Muffins",
@@ -4676,7 +4747,8 @@
       "When completely cool, store muffins in a plastic bag.",
       "Yield: 12 muffins."
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 12
   },
   {
     "name": "Savory Oatmeal and Soft-Cooked Egg",
@@ -4725,7 +4797,8 @@
       "Season egg to taste with salt and pepper.",
       "Serve oatmeal in a bowl topped with cheese, egg, and scallion greens."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Oatmeal-crusted trout",
@@ -4795,7 +4868,8 @@
       "Serve the trout with the leeks and drizzle with the vinegar dressing",
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/oatmeal-crusted-trout-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 4
   },
   {
     "name": "Salt-baked walnut brioche scones",
@@ -4854,7 +4928,8 @@
       "Turn the dough out onto a clean work surface and pat into a 9-inch circle about 3/4-inch thick. Cut into 8 wedges. Arrange the cut scones on the hot salt block and bake until puffed and browned, about 18 minutes.",
       "Remove from the salt block with a spatula and let cool on a rack for 5 minutes before serving."
     ],
-    "timeMinutes": 33
+    "timeMinutes": 33,
+    "servings": 8
   },
   {
     "name": "Spaetzle",
@@ -4926,7 +5001,8 @@
       "When the spatzle starts to float to the surface, cover the pan and keep covered until the spatzle appears to swell and is fluffy.",
       "Remove the dumplings and repeat the procedure with the remaining batter.",
       "In a medium saute pan, add butter, and melt over medium heat until butter turns a light brown. Add garlic and cook until it becomes lightly colored. Add spaetzle to the pan to heat through. Add parsley, cheese, salt and pepper, to taste."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Stove top mac and cheese",
@@ -4985,7 +5061,8 @@
       "In a large pot of boiling, salted water cook the pasta to al dente and drain. Return to the pot and melt in the butter. Toss to coat.",
       "Whisk together the eggs, milk, hot sauce, salt, pepper, and mustard. Stir into the pasta and add the cheese. Over low heat continue to stir for 3 minutes or until creamy.",
       "(This recipe originally called for 6oz milk.  It is reduced as an experiment.)"
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Handmade Pasta",
@@ -5036,7 +5113,8 @@
       "Dust dough with semolina and unwrap noodles.",
       "Cover with a tea towel until ready to cook.  (The past may be made an hour ahead of time or frozen for up to 1 month.",
       "Defrost in refrigerator.)  Fresh pasta will cook, in boiling salted water, in about 2-3 minutes."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Straw and Hay Fettuccine Tangle",
@@ -5072,7 +5150,8 @@
       "Meanwhile, make asparagus pesto.",
       "Salt the pasta water well and cook the pasta until just tender. Drain and toss immediately with the asparagus pesto (1/4 cup per serving), stirring in more afterward depending on how heavily coated you like your pasta. Serve sprinkled with the remaining toasted pine nuts, a dusting of Parmesan, and a quick drizzle of extra-virgin olive oil."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Pesto Orzo with Peas",
@@ -5117,7 +5196,8 @@
       "Meanwhile, bring 1 quart of water to a boil. Add 1 tbsp salt and orzo. Cook about 5 minutes or until al dente.",
       "Add frozen peas and water to the skillet; simmer until tender (about 5 minutes). Drain and return to skillet.",
       "Stir in pesto, orzo, pancetta, and parmesan, and heat through."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Spinach lasagna with mushroom ragu",
@@ -5251,7 +5331,8 @@
       "Uncover and bake until golden, about 25 more minutes.",
       "Let rest before serving."
     ],
-    "timeMinutes": 212
+    "timeMinutes": 212,
+    "servings": 8
   },
   {
     "name": "Three cheese macaroni",
@@ -5342,7 +5423,8 @@
       "Bake until cheese is melted and pasta is warmed through, about 15 minutes.",
       "Transfer to a wire rack and let cool for 5 minutes before serving."
     ],
-    "timeMinutes": 70
+    "timeMinutes": 70,
+    "servings": 10
   },
   {
     "name": "Orecchiette with roasted cauliflower",
@@ -5451,7 +5533,8 @@
       "Remove skillet from heat, add spinach and tomatoes, stir until spinach wilts.",
       "Cover and let stand 10 minutes or until spinach is wilted and sauce is thickened, stirring once halfway through.",
       "Top each serving with bread crumb mixture and additional parmesan cheese."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Pasta with asparagus and egg",
@@ -5491,7 +5574,8 @@
       "When pasta is done, drain it, reserving some pasta water. Return it to the pot, and add butter, parmesan, and enough pasta water to make a thin sauce. Also add asparagus.",
       "Fry eggs over easy. Dish the pasta, and top with egg and a little more parmesan."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Squash lasagna with fresh basil",
@@ -5588,7 +5672,8 @@
       "Let stand, uncovered, 20 minutes.",
       "Top with additional basil and diced tomato, if desired."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 8
   },
   {
     "name": "Creamy Broccoli & Sun-Dried Tomato Orzotto",
@@ -5657,7 +5742,8 @@
       "Heat oil in 12\" skillet over medium-high heat.",
       "Add onion and garlic; cook 30-45 seconds or until fragrant. Stir in orzo, vegetable broth and wine; cook, uncovered, 14-16 minutes or until almost all liquid is absorbed and orzo is tender.",
       "Remove skillet from heat. Add tomatoes and broccoli. Cover; let stand 5 minutes. Add cheeses; mix well. Add parsley for garnish, if desired."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Gnocchi",
@@ -5709,7 +5795,8 @@
       "P.S. These are Chef Anne \"Secrets\" to great gnocchi, use them and you will be successful every time.",
       "Read more at: http://www.foodnetwork.com/recipes/anne-burrell/gnocchi-with-prosciutto-spring-peas-and-chanterelles-recipe/index.html?oc=linkback"
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 8
   },
   {
     "name": "Grilled Cheese & Tomato Skillet",
@@ -5789,7 +5876,8 @@
       "Meanwhile, cut 1/16th (1/4 cup from 4 cups) of the tomatoes into quarters; set aside for garnish. Finely dice remaining tomatoes.",
       "Add oil, onion, and garlic to skillet; cook over medium-high heat 2\u20133 minutes or until onion is translucent, stirring frequently. Carefully add diced tomatoes, broth, pasta, cream, salt and black pepper. Bring to a boil. Cover and cook 6\u20138 minutes or until pasta is still slightly firm, stirring occasionally.",
       "Remove skillet from heat; add half of the cheese and stir until cheese is completely melted. Top with remaining cheese. Cover and let stand 3\u20134 minutes or until cheese is melted. Arrange bread in an overlapping circular pattern around edge of skillet. Garnish with reserved tomatoes and parsley, if desired."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Baked Penne with Roasted Vegetables",
@@ -5901,7 +5989,8 @@
       "In a large bowl, toss the drained pasta with the roasted vegetables, marinara sauce, cheeses, peas, salt, and pepper. Using a wooden spoon, gently mix, until all the pasta is coated with the sauce and the ingredients are combined.",
       "Pour the pasta into a greased 9 by 13-inch pan. Top with the remaining 1/3 cup Parmesan and butter pieces. Bake until top is golden and cheese melts, about 25 minutes."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 6
   },
   {
     "name": "Pasta with escarole",
@@ -5973,7 +6062,8 @@
       "Divide the pasta among bowls, top with the breadcrumb mixture, remaining pancetta and the parmesan. Drizzle with olive oil.",
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/pasta-with-escarole-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Buttery shrimp and radish pasta",
@@ -6023,7 +6113,8 @@
       "Add shrimp, season with salt and pepper, and cook, stirring occasionally, until opaque throughout, 4 minutes.",
       "Add shrimp to pasta and toss, adding enough pasta water to create a light sauce that coats pasta."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Skillet shrimp and orzo",
@@ -6095,7 +6186,8 @@
       "Meanwhile, preheat broiler with oven rack in top position.",
       "Toss shrimp with 1 teaspoon oil and 1/4 teaspoon each salt and pepper. Remove skillet from heat and place shrimp on top of orzo. Heat broiler. Broil until shrimp are opaque throughout, 4 minutes. Sprinkle with basil and serve."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Penne with Butternut Squash and Goat Cheese",
@@ -6171,7 +6263,8 @@
       "Recipe courtesy Giada De Laurentiis",
       "Read more at: http://www.foodnetwork.com/recipes/giada-de-laurentiis/penne-with-butternut-squash-and-goat-cheese-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 68
+    "timeMinutes": 68,
+    "servings": 4
   },
   {
     "name": "Wild mushroom and cauliflower lasagna",
@@ -6373,7 +6466,8 @@
       "Recipe courtesy of Bobby Flay",
       "Read more at: http://www.foodnetwork.com/recipes/bobby-flay/wild-mushroom-and-cauliflower-lasagna-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 185
+    "timeMinutes": 185,
+    "servings": 8
   },
   {
     "name": "Shrimp Scampi with Pasta",
@@ -6449,7 +6543,8 @@
       "Return pan to high heat and cook for a minute or two until butter sauce is slightly thickened.",
       "Serve the shrimp scampi over your choice of pasta or zucchini noodles."
     ],
-    "timeMinutes": 19
+    "timeMinutes": 19,
+    "servings": 4
   },
   {
     "name": "Pesto Cavatelli w/ Mushrooms and Spicy Breadcrumbs",
@@ -6522,7 +6617,8 @@
       "Season with salt and pepper to taste.",
       "Serve the finished pasta garnished with the spicy breadcrumbs."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 2
   },
   {
     "name": "Baked macaroni and cheese",
@@ -6615,7 +6711,8 @@
       "Skip this and you\u2019ll be making scrambled eggs.) Stir in the cheese, 1 teaspoon salt and the pepper.",
       "Fold in the macaroni then move to a 4-quart casserole or souffl\u00e9 dish.",
       "Sprinkle with the remaining cheese, then toss the breadcrumbs with the melted butter and distribute evenly over the top. Bake for 30 minutes, cool for 5 minutes, then serve to a grateful world."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Cavatelli and kale with fried rosemary and walnuts",
@@ -6713,7 +6810,8 @@
       "Garnish with the cheese.",
       "Enjoy!"
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 2
   },
   {
     "name": "Soba Noodle Bento",
@@ -6797,7 +6895,8 @@
       "For dipping sauce: combine dashi and kaeshi. Pack in a leak-proof container.",
       "For crab salad: Massage the cabbage with the salt until the cabbage has wilted. Squeeze well to expel excess moisture. Put in a bowl, add the vinegar and sugar, and mix. Add the crab and taste; add a little more salt if needed. Sprinkle with sansho or black pepper.",
       "To pack: Put the noodles in one compartment, sprinkle with green onion, keep nori and sesame seeds separate. Pack crab and cabbage salad in a divider cup. Halve egg and pack near noodles. Fill in any gaps with cherry tomatoes."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Roasted broccoli and fregola sarda pasta",
@@ -6879,7 +6978,8 @@
       "As they're cooked, add the pasta, broccoli/onion, chopped almonds, and parmesan to the bowl of dressing.  Stir to combine. Taste and adjust seasonings if needed.",
       "Serve **finished pasta** topped with **eggs**. Garnish with the **mint leaves**. Enjoy!"
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 2
   },
   {
     "name": "Old Fashioned Vegetable Soup",
@@ -6974,7 +7074,8 @@
     ],
     "steps": [
       "In a large soup pot, brown ground beef and onion, drain off fat.  Add remaining ingredients EXCEPT for last 3 items (canned vegetables).  Simmer on low heat until vegetables are tender, about an hour.  Add canned vegetables and simmer 5 minutes.  Remove bay leaf and serve."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Vegetarian Chili",
@@ -7103,7 +7204,8 @@
       "Ladle the chili into the bowls over the rice.",
       "Top each serving with a dollop of sour cream and spoonful of avocado or [guacamole](http://www.xanthir.com/recipes/showrecipe.php?id=28).",
       "Sprinkle with [Essence](http://www.xanthir.com/recipes/showrecipe.php?id=id4) and green onions and serve."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Lentil Soup",
@@ -7176,7 +7278,8 @@
       "Reduce the heat to low, cover and cook at a low simmer until the lentils are tender, approximately 35 to 40 minutes.",
       "Using a stick blender, puree to your preferred consistency (optional).",
       "Serve immediately."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Vegetable Stock",
@@ -7234,7 +7337,8 @@
     "steps": [
       "Cook leeks, carrots, onion, and garlic, covered stirring occasionally in a medium saucepan over medium heat for 10 minutes.\n2. Add water, parsley, thyme, bay leaf, and peppercorns. Raise heat to high. Bring to a boil, reduce heat. Simmer, uncovered, for 30 minutes. Pour through a cheesecloth-lined strainer; discard solids.",
       "Storage: stock can be refrigerated for up to 2 days or frozen for up to 3 months."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Creamy tomato soup",
@@ -7301,7 +7405,8 @@
       "Pour back into saucepan and add milk and basil.",
       "Add salt and pepper to taste.",
       "For vegans or non-creamy soup, thin with water if needed."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Parker's split pea soup",
@@ -7369,7 +7474,8 @@
       "Taste for salt and pepper.",
       "Serve hot."
     ],
-    "timeMinutes": 100
+    "timeMinutes": 100,
+    "servings": 6
   },
   {
     "name": "Heinz Chili Sauce",
@@ -7422,7 +7528,8 @@
     "steps": [
       "Whisk all the ingredients together in a small saucepan, place over medium heat.",
       "When mixture begins to bubble reduce heat to low and simmer for 30 minutes. Cover and cool. Refrigerate when cold"
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Smoky Sweet-Potato Soup",
@@ -7488,7 +7595,8 @@
     "steps": [
       "Heat oil in a large pot over medium heat.  Cook garlic and leek until soft and translucent, about 4 minutes.  Add apple, celery, and ginger, and cook for 3 minutes.  Add sweet potatoes and stock, and simmer until sweet potatoes are tender, about 15 minutes.",
       "Add chipotle chiles.  Puree until smooth.  Season with salt and pepper.  Sprinkle with pepitas before serving."
-    ]
+    ],
+    "servings": 10
   },
   {
     "name": "French onion soup",
@@ -7561,7 +7669,8 @@
       "(If you don't have broiler-proof bowls, instead lightly toast the bread, then top with the cheese and broil until bubbly and browned, 4-5 minutes. Serve the soup in an ordinary bowl, topped with the bread slices.)",
       "Serve immediately."
     ],
-    "timeMinutes": 105
+    "timeMinutes": 105,
+    "servings": 4
   },
   {
     "name": "Red lentil soup with sage and bacon",
@@ -7614,7 +7723,8 @@
       "Add the garlic, onion, and carrots to saucepan. Cook vegetable mixture over medium heat until tender, about 5 minutes. Add the minced sage, and cook 1 minute more.",
       "Add the lentils, cumin, and chicken stock; stir to combine. Simmer until lentils are cooked and falling apart, 20 to 25 minutes.",
       "To serve, divide the hot soup among four soup plates, and garnish with the reserved bacon and additional sage."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Green pea soup with cheddar scallion panini",
@@ -7673,7 +7783,8 @@
       "In a large skillet, heat 1 tablespoon butter over medium-low. Place sandwiches in skillet, and cook until golden, 3 to 4 minutes per side, adding remaining tablespoon butter to skillet to cook second side.",
       "Working in batches, puree soup in a blender until smooth (filling blender only halfway to prevent spattering). If necessary, adjust consistency with a little bit of water. Season with salt, pepper, and lemon juice. Slice each panini into four \"fingers, and serve with soup."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 4
   },
   {
     "name": "Broccoli soup with cheddar toasts",
@@ -7738,7 +7849,8 @@
       "Add broccoli florets; reduce heat, and simmer, uncovered, until florets are just tender, about 10 minutes.",
       "Remove soup from heat, and let cool, about 10 minutes. Fill a blender no more than halfway to puree soup in batches until smooth. Return soup to pot; stir in milk and cayenne. Cook over medium heat until heated through (do not boil).",
       "Heat broiler. Divide cheese among bread slices; toast under broiler until melted and golden brown, 45 to 60 seconds. Divide soup among bowls. Top each bowl with a cheese toast, and serve."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Coconut shrimp soup",
@@ -7816,7 +7928,8 @@
       "Break pasta in half; add to pot. Return to a boil, reduce heat to medium, and simmer until pasta is al dente and carrots are just tender, 3 to 4 minutes.",
       "Add shrimp; stir until opaque, about 1 minute. Remove pot from heat, and stir in lime juice; season with salt. Ladle into serving bowls, and garnish with scallions."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Hearty spinach and chickpea soup",
@@ -7885,7 +7998,8 @@
       "Stir cooked rice and chickpeas into the broth; return to a boil. Reduce to a simmer, cover, and continue cooking for 5 more minutes to allow flavors to blend.",
       "Stir in spinach and cook, uncovered, until just wilted, about 1 minute. Season with salt and pepper. Garnish with cheese; serve immediately."
     ],
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "servings": 4
   },
   {
     "name": "Mushroom soup",
@@ -7970,7 +8084,8 @@
       "Remove from heat.",
       "Pour into a large bowl. Working in 3 batches, puree soup in a food processor, making sure there are no remaining mushroom pieces; return to pan. Bring to a simmer; cook, stirring occasionally, 15 minutes. Season with salt and pepper.",
       "Stir in cream; bring just to a simmer. Season with salt. Stir in milk; cook until just heated through. Serve immediately, or refrigerate, covered, up to 3 days; reheat before serving. To serve, divide among bowls; spoon about 2 teaspoons chervil cream into each center, and sprinkle with croutons."
-    ]
+    ],
+    "servings": 12
   },
   {
     "name": "Harvest pumpkin soup",
@@ -8060,7 +8175,8 @@
       "Meanwhile, melt remaining 5 tablespoons butter in a large saucepan over medium-high heat. Add pumpkin puree, parsnip, potato, and turnip, and cook for 5 minutes. Add shallots, and cook until soft, about 4 minutes. Add wine, and cook until liquid has reduced by half.",
       "Strain pumpkin-seed mixture, reserving broth and discarding solids. Add broth to pumpkin-wine mixture. Bring to a simmer; cook 20 minutes. Let cool.",
       "Pass soup through a food mill into a clean saucepan, or puree in a food processor in small batches until smooth. (If soup does not reach desired consistency using a food processor, press it through a fine sieve to remove any remaining lumps.) Heat soup in a saucepan over medium-high heat. Stir in cream, sugar, salt, and pepper, and serve"
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Smoky Yukon Gold Potato Chowder",
@@ -8149,7 +8265,8 @@
       "Remove pot from heat; cool 5 minutes.",
       "Blend soup until smooth.",
       "Stir in milk. Cook, uncovered, over medium heat 2-3 minutes or until simmering. Stir in cheese, salt and black pepper. Cook 2-3 minutes or until cheese is melted. Garnish each serving with sour cream, chives and additional paprika, if desired."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Chili Lemon Cauliflower",
@@ -8187,7 +8304,8 @@
     "steps": [
       "Place a steamer basket in a saucepan with 2 inches simmering water. Add cauliflower, cover, and steam until tender when pierced with a knife, about 8 minutes. Transfer to a bowl and toss with zest, juice, and red pepper. Season with salt and pepper. Serve warm or at room temperature."
     ],
-    "timeMinutes": 18
+    "timeMinutes": 18,
+    "servings": 4
   },
   {
     "name": "Mushroom and lentil soup",
@@ -8261,7 +8379,8 @@
       "In a large Dutch oven or other heavy pot, heat oil over medium. Add carrots, onion, and garlic and cook, stirring occasionally, until beginning to soften, about 6 minutes. Add mushrooms and season with salt and pepper. Cook until mushrooms are softened and golden brown at edges, about 8 minutes.",
       "Add thyme, lentils, soy sauce, lemon, and water; bring to a boil. Reduce heat, partially cover, and simmer until lentils are tender, about 25 minutes. Season to taste with salt and pepper. Serve soup topped with yogurt.",
       "Alternate recipe: use half rice and half lentils.  Add the rice with the water; cook for 15 minutes on medium, before boiling.  Then add lentils, bring to a boil, and simmer for 25 minutes."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Cheddar beer soup",
@@ -8360,7 +8479,8 @@
       "Add handful of cheese and stir until it melts. Continue adding cheese and stirring, until all cheese is incorporated. Make sure soup doesn\u2019t come to a boil by turning down heat if necessary.",
       "Discard the bay leaf. Serve soup in bowls with bread and crumbled bacon."
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 6
   },
   {
     "name": "Tomato-Basil Soup with Ricotta Dumplings",
@@ -8439,7 +8559,8 @@
       "Remove from heat.",
       "Ladle soup into bowls; sprinkle with thinly sliced fresh basil."
     ],
-    "timeMinutes": 24
+    "timeMinutes": 24,
+    "servings": 2
   },
   {
     "name": "Almost famous broccoli cheddar soup",
@@ -8518,7 +8639,8 @@
       "Add the cheese to the soup and whisk over medium heat until melted. Add up to 3/4 cup water if the soup is too thick. Ladle into the bread bowls and garnish with cheese.",
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/almost-famous-broccoli-cheddar-soup-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 70
+    "timeMinutes": 70,
+    "servings": 4
   },
   {
     "name": "Butternut squash chili",
@@ -8615,7 +8737,8 @@
       "Bring the chili to a simmer, then reduce the heat to medium low and cook, stirring occasionally, until the squash is tender and the chili begins to thicken, about 1 hour. (If the soup looks too thick while cooking, add up to 1 cup more water.) Serve topped with a dollop of Greek yogurt and some avocado cubes.",
       "If you\u2019re using dried beans, soak in water overnight, then simmer until just tender, 1 to 1 1/2 hours (or cook 4 to 5 hours in a slow cooker on high)."
     ],
-    "timeMinutes": 85
+    "timeMinutes": 85,
+    "servings": 4
   },
   {
     "name": "Red Lentil Soup with North African Spices",
@@ -8719,7 +8842,8 @@
       "Melt remaining 2 tablespoons butter in small skillet. Remove from heat and stir in mint and paprika. Ladle soup into individual bowls, drizzle each portion with 1 teaspoon spiced butter, sprinkle with cilantro, and serve.",
       "Pair this soup with a salad and bread for lunch or a light supper."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Texas chili potato skins",
@@ -8762,7 +8886,8 @@
     "steps": [
       "Pierce potatoes with a fork. Bake directly on the oven rack at 350F until tender, about 1 hour/ Let cool, then quarter lengthwise and scoop out the flesh, leaving a 1/4-inch shell. Brush both sides with melted butter and season with salt and pepper. Bake, skin-side up, at 450F until crisp, about 15 minutes. Add your toppings."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 16
   },
   {
     "name": "Greek Salad",
@@ -8834,7 +8959,8 @@
     ],
     "steps": [
       "In a small bowl, whisk together the lemon juice, garlic, salt, and oil. Set aside.   In a large bowl lightly toss the lettuce with the olives, cheese, cucumber, tomatoes, onion, oregano, and black pepper. Let sit up to 2 hours.  To serve, toss salad with dressing and place sliced chicken on top."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Sherry Vinaigrette",
@@ -8876,7 +9002,8 @@
     ],
     "steps": [
       "Whisk together the shallot, vinegar, mustard, salt, and pepper in a small bowl. Slowly whisk in the oil until emulsified."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Margherita Salad",
@@ -8970,7 +9097,8 @@
       "Puree the plum tomato, sun-dried tomatoes, vinegar, garlic, oregano, a basil leaves and parmesan in a blender, drizzling in the sun-dried tomato oil until smooth. Add 2 to 3 tablespoons water, if needed to make a pour-able dressing; season with salt and pepper.",
       "Heat the olive oil in a large skillet over medium-high heat. Add the breadcrumbs, season with salt and pepper and cook, stirring occasionally, until golden, about 2 minutes. Add the remaining parmesan and the parsley and cook until toasted, about 1 more minute.",
       "Toss the salad greens, mozzarella, and remaining basil in a large bowl. Toss with the dressing, then sprinkle with the breadcrumb mixture."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Mexican Ensalada",
@@ -9046,7 +9174,8 @@
       "Combine dressing and all ingredients in a large bowl, toss, and serve.",
       "Includes recipe for [basil-lime vinaigrette](http://www.xanthir.com/recipes/showrecipe.php?id=id6).",
       "Alternate dressing (for 2 servings):\n1/2 lemon, juiced; 1 tbsp apple cider vinegar; 2 tbsp olive oil; 2 tablespoons cilantro, chopped"
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Super Protein Salad",
@@ -9113,7 +9242,8 @@
     ],
     "steps": [
       "Combine olive oil, vinegar, mustard, salt and pepper to taste. Toss with other ingredients in a bowl and serve."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Extreme Green Salad",
@@ -9177,7 +9307,8 @@
       "Place all the salad ingredients, except the sesame seeds, into a large bowl or platter.",
       "Whisk together all the dressing ingredients in a small bowl. Drizzle over the salad and toss lightly to coat.",
       "Sprinkle with sesame seeds and serve."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Popeye's Muscle Salad",
@@ -9245,7 +9376,8 @@
     "steps": [
       "Combine all ingredients in a bowl, toss, and serve.",
       "Use whatever vinaigrette you want."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Basil-Lime Vinaigrette",
@@ -9287,7 +9419,8 @@
     ],
     "steps": [
       "In a small bowl, combine the lime zest, lime juice, balsamic vinegar, basil, and cumin. Slowly add the oil, whisking constantly until the mixture thickens. Season with salt and pepper, to taste."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Citrus Rice Salad",
@@ -9345,7 +9478,8 @@
     "steps": [
       "To make the dressing, combine the orange zest and juice, lemon juice, and shallot. Whisk in the olive oil and season with a few pinches of salt and a few grinds of pepper.",
       "Toss the hot rice with the spinach, pine nuts, citrus dressing, then top with the feta. Taste for seasoning and sprinkle with a bit more salt if needed."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Almond Caesar salad with croutons",
@@ -9414,7 +9548,8 @@
       "For croutons: Toss bread with olive oil, season with salt and pepper. Spread on a baking sheet and bake at 425, about 8 minutes. Allow to cool.",
       "For dressing: Meanwhile, process almonds, parmesan, anchovies, and garlic in a food processor until finely chopped. Transfer to a large mixing bowl. Add dijon and lemon juice, whisk until just combined. Drizzle in olive oil and whisk constantly until thoroughly combined. Season with salt and pepper if needed.",
       "Toss dressing with lettuce and croutons."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Soba salad with asparagus and shrimp",
@@ -9486,7 +9621,8 @@
       "Return water to a boil; add noodles and cook according to package instructions.",
       "Drain noodles and rinse under cool water.",
       "Meanwhile, in a small bowl, whisk together soy sauce oil, vinegar, and sugar. Divide noodles among bowls and drizzle with dressing. Top with asparagus and shrimp and sprinkle with scallions and herbs."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Brown rice, chickpea, feta, and mint salad",
@@ -9551,7 +9687,8 @@
       "Combine rice and chickpeas in a bowl. Stir in lemon zest, remaining juice, and oil. Let cool.",
       "Stir in cheese, tomatoes, mint, and onion. Season with salt. Refrigerate until ready to serve.",
       "Can be refrigerated for up to 2 days."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Roasted Shallot Vinaigrette",
@@ -9598,7 +9735,8 @@
     ],
     "steps": [
       "Preheat oven to 400\u00b0.\nWrap shallot in foil. Bake at 400\u00b0 for 35 minutes; cool for 10 minutes. Peel and mince. Combine shallot, vinegar, oil, sugar, mustard, salt, and pepper in a large bowl; stir well with a whisk."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Peanut Noodle Salad",
@@ -9679,7 +9817,8 @@
       "Whisk the lime juice soy sauce, peanut butter, brown sugar, and vegetable oil in a medium bowl until smooth.  Pour the dressing over the noodles.  (If possible, do this when the noodles are hot - it helps melt the peanut butter, which will still be chunky in the dressing.)",
       "Add the bell pepper , scallions, basil, cilantro, and mint and toss to combine.  Season with salt and sprinkle with the peanuts."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Creamy roasted garlic dressing",
@@ -9717,7 +9856,8 @@
     "steps": [
       "In a medium bowl, whisk together buttermilk, sour cream, and mayonnaise. Whisk in remaining ingredients. Season to taste with salt and pepper."
     ],
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "servings": 16
   },
   {
     "name": "Creamy ranch dressing",
@@ -9765,7 +9905,8 @@
     "steps": [
       "Whisk together all ingredients in bowl. Season to taste with salt and pepper."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 16
   },
   {
     "name": "Warm shrimp and potato salad",
@@ -9853,7 +9994,8 @@
       "Add the shrimp to the baking dish. Roast, stirring once, until the shrimp are just cooked through and the potatoes are golden brown, 12 to 15 more minutes.",
       "Toss the romaine in a serving bowl with the lemon juice, olive oil, and salt and pepper to taste. Add the warm shrimp and vegetables and toss to combine. Top with the feta."
     ],
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "servings": 4
   },
   {
     "name": "Caesar Salad Dressing",
@@ -9914,7 +10056,8 @@
     "steps": [
       "In a medium bowl, whisk together the egg yolk, lemon juice, garlic, Worcestershire, pepper flakes, mustard, and anchovies. Slowly whisk in the oils to emulsify. Season, to taste, with salt and pepper."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 8
   },
   {
     "name": "Asian Salad",
@@ -9968,7 +10111,8 @@
       "In a small bowl, whisk together sugar, vinegar, salt and black pepper; set aside.",
       "Peel and julienne carrot and cucumber. Chop bell pepper and green onion.",
       "Add carrot, cucumber, bell pepper and green onion to dressing mixture. Toss vegetables to coat. Serve immediately."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Dang cold Asian noodle salad",
@@ -10058,7 +10202,8 @@
       "In a medium bowl combine, sesame oil, vinegar, soy sauce, hot chili oil, hoisin and extra-virgin olive oil. Mix thoroughly and then combine prepared vegetables and noodles.",
       "Garnish with sesame seeds and peanuts."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Herb crusted salmon with spinach salad",
@@ -10120,7 +10265,8 @@
       "Preheat oven to 450 degrees. Line a baking sheet with aluminum foil; set aside. In a food processor, combine bread, parsley, and oil; season with salt and pepper. Pulse until coarse crumbs form.",
       "Place salmon on prepared sheet; season with salt and pepper. Spread top of fillets with Dijon; top with crumb mixture, pressing gently to adhere. Roast until salmon is opaque throughout, 11 to 13 minutes.",
       "Meanwhile, in a large bowl, combine lemon juice and remaining oil; season with salt and pepper. Add spinach and onion; toss to combine. Serve salmon with spinach salad."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Black bean salad with chipotle honey dressing",
@@ -10168,7 +10314,8 @@
     "steps": [
       "Mix all ingredients, toss with dressing."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Marinated feta, spinach & poached egg salad",
@@ -10264,7 +10411,8 @@
       "Top with feta and poached eggs; sprinkle with salt and black pepper.",
       "Serve with toasted breads slices."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 4
   },
   {
     "name": "Light ranch dressing",
@@ -10332,7 +10480,8 @@
     "steps": [
       "Whisk together all ingredients in a bowl."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 8
   },
   {
     "name": "Light Italian dressing",
@@ -10401,7 +10550,8 @@
       "Rub the cut sides of the tomato along the coarse holes of a grater into a bowl, discard the skins.",
       "Whisk in 1/4 cup water, the vinegar, lemon juice, dijon mustard, sugar, olive oil, garlic, oregano, basil, salt, and pepper to taste."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 8
   },
   {
     "name": "Flaky Buttermilk Biscuits",
@@ -10471,7 +10621,8 @@
       "Roll dough into 1/2-inch-thick round; cut 3 more 3-inch rounds and transfer to baking sheet.",
       "Discard excess dough.",
       "Brush biscuit tops with melted butter.  Bake, without opening oven door, until tops are golden brown and crisp, 15 to 17 minutes.  Let cool on baking sheet 5 to 10 minutes before serving."
-    ]
+    ],
+    "servings": 12
   },
   {
     "name": "Drop biscuits (Cook's Illustrated)",
@@ -10529,7 +10680,8 @@
       "Bake until tops are golden brown and crisp, 12 to 14 minutes.",
       "Brush biscuit tops with remaining 2 tablespoons melted butter. Transfer to wire rack and let cool 5 minutes before serving."
     ],
-    "timeMinutes": 22
+    "timeMinutes": 22,
+    "servings": 8
   },
   {
     "name": "Tex Mex Scones",
@@ -10629,7 +10781,8 @@
       "Bake for 20 to 25 minutes, or until the top is lightly browned and a cake tester or toothpick inserted to the center of a scone comes out clean.",
       "Remove the baking sheet to a wire rack and cool for 5 minutes. Using a spatula, transfer the scones to the wire rack to cool. Recut into wedges, if necessary. Serve warm, or cool completely and store in an airtight container in the refrigerator."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 8
   },
   {
     "name": "Millet bread (Corn-free cornbread)",
@@ -10705,7 +10858,8 @@
       "Place back in the oven and bake for 18-20 minutes until golden brown and a toothpick inserted in the middle comes out clean.",
       "Let cool for 10 minutes before serving."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 8
   },
   {
     "name": "Sauteed Mushrooms with Toasted Flatbread and Baked Eggs",
@@ -10769,7 +10923,8 @@
       "Stir in flatbread and thyme; remove from heat.",
       "Make 4 shallow wells in mushroom mixture and crack 1 egg into each well. Transfer to oven and cook until egg whites have just set, about 4 minutes. Season eggs with salt and red-pepper flakes."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Irish Buttermilk Brown Bread",
@@ -10822,7 +10977,8 @@
       "Bake the bread for ~40min, or until a paring knife inserted in the center comes out clean.",
       "Remove the bread from the oven, tip it out of the pan, and cool on a rack."
     ],
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "servings": 1
   },
   {
     "name": "Toasted Panko Breadcrumbs",
@@ -10852,7 +11008,8 @@
       "Add breadcrumbs, and salt and pepper to taste. Stir gently until melted butter is absorbed. Let cook for 3-4 minutes, stirring occasionally (make sure to mix the bottom layer of toasted breadcrumbs well).",
       "Remove from heat a little before they reach the desired done-ness, unless using immediately, as they'll continue to brown in the pan even off heat."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 2
   },
   {
     "name": "Grilled Portobello Mushrooms Stacked with Fresh Spinach and Shaved Manchego Cheese",
@@ -10908,7 +11065,8 @@
       "Add another mushroom cap, more vinaigrette, spinach, and another slice of cheese.",
       "Place a third mushroom cap on top and finish by drizzling with additional vinaigrette and garnishing with chopped chives, if desired.",
       "[Sherry Vinaigrette](http://www.xanthir.com/recipes/showrecipe.php?id=18)"
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Green-packed Stir Fry with Fresh Herbs",
@@ -10997,7 +11155,8 @@
       "Remove from heat and stir in the mint and basil. Season with enough soy sauce to make the flavors pop, starting with a splash.",
       "Serve over cooked rice.",
       "Nutrition information does not include stir-fry sauce."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Black bean and cheese tacos",
@@ -11071,7 +11230,8 @@
       "In a small pot, heat oil over medium. Add onion and garlic and cook until onion is soft and garlic is fragrant, 3 minutes. Add seasoning and cook until fragrant, 1 minute. Add beans, water (using bean water if possible), salt, and pepper, and simmer until beans are heated through, 5 minutes. Mash in pan with wooden spoon.",
       "Season to taste with salt and pepper if needed. Serve with tortillas, cheese, avocado, lettuce, and jalapenos."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 2
   },
   {
     "name": "Tofu and Sweet Potato Jambalaya",
@@ -11146,7 +11306,8 @@
       "Cover and cook 8 to 10 minutes, stirring occasionally, until rice is tender and liquid is absorbed.",
       "Stir in tofu and onions.",
       "Cook 1 to 2 minutes or until heated through."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Wild Mushroom Risotto",
@@ -11227,7 +11388,8 @@
       "Stir in 1/4 cup cheese, the thyme, and butter. If the rice appears dry, add up to 1/4 cup water to loosen the risotto slightly. Season with salt and pepper to taste.",
       "Divide the risotto between 2 large bowls and drizzle with truffle oil, if desired. Sprinkle with the remaining cheese and the chives."
     ],
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "servings": 2
   },
   {
     "name": "Pizza bianca",
@@ -11296,7 +11458,8 @@
       "Preheat oven to 500. Lightly dust a work surface, rolling pin, and a baking sheet with flour. Roll dough out to a 13-inch round and transfer to sheet.",
       "In a small bowl, stir together ricotta, oil and garlic; season with salt and pepper. Spread ricotta mixture on dough, leaving a 1/2-inch border. Top with mozzarella, then Parmesan. Brush oil on edge of dough. Bake until crust is golden and cheese is melted and browned in spots, 12 to 14 minutes.",
       "In a small bowl, toss arugula with oil and season to taste with salt and pepper. Top pizza with arugula and serve."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Pesto",
@@ -11340,7 +11503,8 @@
       "Place pine nuts in a skillet over medium-low heat. Stir or toss frequently until toasted. Cool before using.",
       "Place basil, pine nuts, and garlic in food processor or blender. Pulse until finely chopped. With motor running, slowly drizzle in olive oil. Blend a few minutes, stopping occasionally to scrape sides, until smooth.",
       "Stir in grated Parmesan. Taste for seasoning and add salt and pepper to taste, if desired. Yields about 1 1/4 cup pesto."
-    ]
+    ],
+    "servings": 10
   },
   {
     "name": "Baked eggs and beans on toast",
@@ -11430,7 +11594,8 @@
       "Make indentations in the bean mixture and crack an egg into each. Sprinkle with salt and pepper, then cover and cook until the egg whites are set, 3 minutes or so. (Whites should still be slightly \"jiggly\" when you remove from heat, as they'll continue cooking for a bit and you want the yolks runny.)",
       "Meanwhile, make toast. Butter it when it comes out. (Or make skillet toast with butter over high heat, 1 minute per side or until browned.)",
       "Toss the tomatoes, parsley and remaining olive oil, and salt and pepper to taste in a bowl. Serve the beans and eggs topped with tomato salad, and toast on the side."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Roasted cauliflower and white beans",
@@ -11489,7 +11654,8 @@
       "Preheat oven to 450F. On a rimmed baking sheet, toss cauliflower with 1/2 of the oil. Season with salt and pepper. Roast for 15-20 minutes. In a small bowl, combine remaining oil, panko, cheese, and rosemary.",
       "Remove sheet from oven. Add beans, lemon zest, and red-pepper flakes to cauliflower, sprinkle with panko mixture and roast until panko is golden brown, about 5-7 minutes."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 1
   },
   {
     "name": "Smoky white bean and arugula panini",
@@ -11569,7 +11735,8 @@
       "To assemble panini, brush one side of each bread slice with remaining oil; place bread oil side down on cutting board. Spread 2 tbsp of the bean mixture over each bread slice; sprinkle with cheese, pressing down firmly. Arrange tomato slices, onion and arugula over half of the bread slices; top with remaining bread slices, oil side up.",
       "Heat grill pan or griddle over medium heat. Cook panini 2-3 minutes per side or until grill marks appear and bread is golden brown. Cook in batches if needed. Slice panini in half crosswise; serve immediately."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Easy chickpea and vegetable curry",
@@ -11656,7 +11823,8 @@
       "Stir in coconut milk and cauliflower and bring to a simmer. Reduce heat to medium low; cover and cook 8-9 minutes or until potato is tender, stirring frequently.",
       "Add lemon juice, peas, and salt to pan; simmer 4-5 minutes or until cauliflower is tender. Serve curry with rice."
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 6
   },
   {
     "name": "Chiles Rellenos",
@@ -11740,7 +11908,8 @@
       "Arrange the chiles on a serving platter, spoon the sauce on top and serve.",
       "Notes\nTo char the chiles (or any fresh chile): Put the chiles over a gas flame or underneath the broiler and cook until they are blackened on all sides. Enclose them in a plastic bag and let stand for 10 minutes to steam, which will make them easier to peel. Peel, stem, and seed the chiles. Once peeled, the chiles may be chopped, sliced or stuffed."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 6
   },
   {
     "name": "Indian Chickpea Wrap",
@@ -11826,7 +11995,8 @@
       "Stir in the chickpeas, carrots, salt and water and continue to cook, stirring, until the sauce is thick and the chickpea is heated through, about 2 more minutes. While cooking, lightly mash the chickpeas so they won't roll around when served.  Season with additional salt if necessary.",
       "Divide the chickpea filling among the naan bread. Drizzle with some of the yogurt sauce and roll up. Serve with chips."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "French-Onion Stuffed Potatoes",
@@ -11870,7 +12040,8 @@
       "Bake potatoes at 400\u00b0 for 1 hour.  Cook onion with olive oil and salt until caramelized, about 30 minutes.",
       "Scoop flesh out of the potatoes and mash with the onion, beef broth, and 2/3 of the gruyere.  Stuff into the skins, top with more cheese, and broil to melt."
     ],
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "servings": 4
   },
   {
     "name": "Asparagus and lemon risotto",
@@ -11945,7 +12116,8 @@
       "Add stock; cook about 20 minutes, stirring occasionally, until almost absorbed.",
       "Meanwhile, roast the asparagus at 400F for 5 minutes, then let cool and chop to bite-size. Add asparagus and peas to the risotto about 1 minute before risotto is done.",
       "Remove from heat; stir in lemon zest and juice, parsley, cheese, and remaining 2 tablespoons oil. Season with salt and pepper. Serve immediately with additional cheese and lemon zest."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Veggie Pizza",
@@ -12009,7 +12181,8 @@
       "Preheat oven to 450\u00b0.",
       "Mix oil and garlic together in small bowl.  Brush onto pizza crust, then bake for 5 minutes, or until garlic is fragrant.",
       "Mix together cheese and italian seasoning.  Sprinkle on crust.  Top with veggies, then finish with parmesan.  Bake for an additional 7-10 minutes, until cheese is melted."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Slow-Cooker Greek Stuffed Peppers",
@@ -12071,7 +12244,8 @@
       "---",
       "To make in the oven: Preheat oven to 350 degrees. In step 2, use a 5-quart Dutch oven or ovenproof pot with a tight-fitting lid; add 1 cup water. Cover; bake until peppers are tender, about 1 hour. Proceed with step 3."
     ],
-    "timeMinutes": 260
+    "timeMinutes": 260,
+    "servings": 2
   },
   {
     "name": "Mediterranean Patio Pizza",
@@ -12165,7 +12339,8 @@
       "Preheat oven to 375\u00b0F. Roll out dough.  Lightly spray dough with olive oil, then add garlic.  Bake 14-16 minutes or until golden brown; cool completely.",
       "For cheese spread, finely chop enough artichoke hearts to make 1/4 cup. Combine with cream cheese, half of the feta cheese and oregano in bowl; mix well. Spread mixture evenly over crust.",
       "For toppers, quarter remaining artichoke hearts. Arrange them and all other vegetables over cream cheese mixture. Sprinkle with remaining feta cheese and pine nuts.  Drizzle with salad dressing just before serving."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "All-day minestrone (slow cooker)",
@@ -12246,7 +12421,8 @@
       "If using raw ditalini, about an hour before you're ready to serve, add it to the slow cooker and cover.",
       "Just before serving, stir in the pesto and already-cooked pasta, if using."
     ],
-    "timeMinutes": 440
+    "timeMinutes": 440,
+    "servings": 6
   },
   {
     "name": "Guacamole baked potatoes",
@@ -12299,7 +12475,8 @@
     "steps": [
       "Preheat oven to 400F. Pierce potatoes all over with fork. Bake potatoes for 1 hour. Meanwhile, mash the avocados, lime juice, red onion, cilantro, jalapeno, and salt. Spoon onto baked potatoes. Top with tomato."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 4
   },
   {
     "name": "Samosa baked potatoes",
@@ -12368,7 +12545,8 @@
       "Preheat oven to 400F. Pierce potatoes all over with fork. Place directly on oven rack and bake for 1 hour. Meanwhile, cook onion, curry powder, ginger, mustard seeds, salt, and pepper in olive oil until lightly browned; one or two minutes before they're done, add the frozen peas to defrost and warm them.",
       "When potatoes are done, remove and let cool for a few minutes. Scoop out their flesh, mash with onion mixture, and stuff back into the skins. Top with yogurt and cilantro."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 4
   },
   {
     "name": "Pinto bean and poblano tacos",
@@ -12445,7 +12623,8 @@
       "Spoon into the warm tortillas.",
       "Serve with lime, and garnish with cilantro."
     ],
-    "timeMinutes": 33
+    "timeMinutes": 33,
+    "servings": 4
   },
   {
     "name": "Muttar paneer",
@@ -12518,7 +12697,8 @@
       "You can cook muttar paneer up to this stage, if you like, uncovering and then reheating gently with the diced, oil-crisped cheese, or proceed directly now.",
       "In which case, take off the foil and add the paneer cubes to warm them through before serving."
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 4
   },
   {
     "name": "Tofu Parmesan",
@@ -12590,7 +12770,8 @@
       "Meanwhile, pan-toast the bread in butter, then sprinkle with garlic salt. Wilt the spinach in another pan, lightly seasoning it.",
       "When everything's finished, plate the spinach with the tofu on top, and serve with garlic bread."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Squash and bean burritos",
@@ -12666,7 +12847,8 @@
       "Stir the rice mixture and spoon it down the center of each tortilla, then top with half of the bean salsa and sprinkle with the cheese. Fold in the sides and roll up. Slice in half and serve with avocado, the remaining bean salsa and yogurt, if desired.",
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/chicken-and-bean-burritos-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 4
   },
   {
     "name": "Guacamole",
@@ -12718,7 +12900,8 @@
     ],
     "steps": [
       "Place all ingredients in a bowl with a flat bottom and mash it with a potato masher.  Alternatively, you can mix everything briefly in a food processor.\n2. Stir well and keep refrigerated. This dish will brown on the areas exposed to air within a few hours, so serve it shortly after making it or just stir again before serving."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "The Original Chex Party Mix",
@@ -12791,7 +12974,8 @@
       "Add cereal mix and stir well to coat with seasoned butter.",
       "Place in the oven and bake for 1 hour, stirring every 15 minutes.",
       "Spread mix out to cool before storing."
-    ]
+    ],
+    "servings": 24
   },
   {
     "name": "Roasted salsa",
@@ -12844,7 +13028,8 @@
       "Yields 3 cups. Refrigerate up to 3 days or freeze up to 3 months.",
       "For green salsa, use 1 1/2 lbs tomatillos and omit lime juice."
     ],
-    "timeMinutes": 23
+    "timeMinutes": 23,
+    "servings": 3
   },
   {
     "name": "Kalitsounia Kritis: Sweet Cheese Pastries from Crete",
@@ -12953,7 +13138,8 @@
       "To fry",
       "Place a teaspoonful of cheese mix into the center of the circle, fold the circle over into a half-moon shape. With wet fingers, crimp the edges to close securely. Preheat 1 cup of olive oil over medium heat and fry until golden on both sides. Drain on paper towels. Sprinkle with confectioner's sugar or drizzle with honey.",
       "Yield: 30-36 pieces"
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Avocado feta dip",
@@ -13012,7 +13198,8 @@
       "Cook onion and jalapeno in olive oil 6 minutes. Puree with remaining ingredients and season with salt to taste.",
       "Serve with toasted bread and vegetable sticks."
     ],
-    "timeMinutes": 16
+    "timeMinutes": 16,
+    "servings": 12
   },
   {
     "name": "Salsa fresca",
@@ -13065,7 +13252,8 @@
     "steps": [
       "In a mixing bowl, combine all ingredients together. Toss thoroughly. Let stand 15 minutes before serving. Yields 2 cups."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 2
   },
   {
     "name": "Spanakopita",
@@ -13135,7 +13323,8 @@
       "Top with remaining 8 phyllo sheets, brushing each with oil.",
       "Bake until phyllo is golden and crisp on top, about 30 minutes. Let cool 15 minutes before cutting  into squares. Serve warm or at room temperature."
     ],
-    "timeMinutes": 70
+    "timeMinutes": 70,
+    "servings": 8
   },
   {
     "name": "Creamy artichoke dip",
@@ -13193,7 +13382,8 @@
       "To serve, top with chives and a drizzle of oil.",
       "Makes 2 cups."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 2
   },
   {
     "name": "Cheese crackers",
@@ -13244,7 +13434,8 @@
       "Cook's Note\nMix It Up: In place of red-pepper flakes, try stirring in 3 tablespoons tomato paste or 1/3 cup crumbled cooked bacon, finely chopped herbs, or finely diced fresh green chiles.",
       "Store crackers in an airtight container, up to 1 day."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 24
   },
   {
     "name": "Taco Spread",
@@ -13289,7 +13480,8 @@
       "Scrape the spread into a small bowl. Serve immediately at room temperature or cover and refrigerate.",
       "Makes approximately 3/4 cup."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Goat cheese, sun dried tomato, and pesto torta",
@@ -13360,7 +13552,8 @@
       "Pasta  \nUse a heaping tablespoon of torta and thin with some of the water the pasta cooked in for each serving of pasta. For two servings, use 2 heaping tablespoons of torta and about 1/4 cup pasta water.",
       "Baked potato  \nDollop on cooked potatoes",
       "Flatbread pizza  \nSpread leftover torta on focaccia and top with grilled vegetables."
-    ]
+    ],
+    "servings": 12
   },
   {
     "name": "Bruschetta baked potatoes",
@@ -13408,7 +13601,8 @@
     "steps": [
       "Preheat oven to 400F. Pierce potatoes all over with fork. Place directly on oven rack and bake for 1 hour. Meanwhile, toss remaining ingredients in a bowl. Slice open potatoes and fluff with fork. Spoon tomato mixture onto potatoes and serve."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 4
   },
   {
     "name": "Ranch dip with vegetables",
@@ -13483,7 +13677,8 @@
       "Serve dip with vegetables.",
       "Read more at: http://www.foodnetwork.com/recipes/ranch-dip-with-vegetables.html?oc=linkback"
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Classic cheese fondue (for Cuisinart Fondue Pot)",
@@ -13539,7 +13734,8 @@
       "Reduce the temperature setting of the Fondue Pot to Setting 3, the fondue should just simmer, it should never boil.",
       "This fondue is traditionally served with cubes of crusty bread. For a change you may also serve blanched to crisp-tender vegetables or cooked, but firm new potatoes."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 8
   },
   {
     "name": "Bagel and lox deviled eggs",
@@ -13599,7 +13795,8 @@
       "Mash the yolks with cream cheese, mayonnaise, Dijon mustard and scallions. Stir in chopped smoked salmon. Season with salt and pepper. Spoon into the egg whites; top with broken bagel chips and more smoked salmon.",
       "Read more at: http://www.foodnetwork.com/recipes/articles/50-deviled-eggs.page-1.html?oc=linkback"
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 24
   },
   {
     "name": "Greek layered dip with pita chips",
@@ -13682,7 +13879,8 @@
       "Serve the dip at room temperature with pita chips.",
       "Read more at: http://www.foodnetwork.com/recipes/sandra-lee/greek-layered-dip-with-pita-chips-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 10
   },
   {
     "name": "Mini Tostadas",
@@ -13771,7 +13969,8 @@
       "Spoon mixture into each chip, and top with sour cream and cheese if desired. Serve immediately to prevent the chips from getting soggy.",
       "Filling can be prepared up to 4 hours ahead if refrigerated. Let come to room temperature before assembling and serving."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 36
   },
   {
     "name": "Caprese Skewers",
@@ -13827,7 +14026,8 @@
       "Slide one tomato onto each skewer, followed by a basil leaf folded in half, followed by mozzarella.  Brush with the vinaigrette. Transfer to serving plate and serve immediately.",
       "Can be assembled up to 3 hours in advance. Do not refrigerate."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 24
   },
   {
     "name": "Herbed biscuits with smoked salmon",
@@ -13907,7 +14107,8 @@
       "Makes 36 biscuits.",
       "To double, double all the ingredients, making the biscuits in batches.\nBest not to halve but you can cut the biscuits into 16 pieces for larger portions.\nYou can make the biscuits 1 day ahead and store in an airtight container; split and fill not more than 1 hour before serving."
     ],
-    "timeMinutes": 37
+    "timeMinutes": 37,
+    "servings": 6
   },
   {
     "name": "French Onion Dip",
@@ -13961,7 +14162,8 @@
       "In a saute pan over medium heat add oil, heat and add onions and salt. Cook the onions until they are caramelized, about 20 minutes. Remove from heat and set aside to cool.",
       "Mix the rest of the ingredients, and then add the cooled onions. Refrigerate and stir again before serving."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 1
   },
   {
     "name": "Frisco gourmet potato skins",
@@ -14009,7 +14211,8 @@
       "Puree topping ingredients together.",
       "Add topping mixture to skins and bake for 5 more minutes."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 16
   },
   {
     "name": "Toasted ravioli potato skins",
@@ -14058,7 +14261,8 @@
       "Fill potato skins with mixture then top with tomato sauce and mozzarella.",
       "Bake 5 more minutes."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 16
   },
   {
     "name": "Sweet, Spicy & Salty Candied Pecans",
@@ -14105,7 +14309,8 @@
       "Once cool, remove the pecans from the parchment, breaking apart any clusters if necessary, and store in an airtight container.",
       "Note: Make sure you're using parchment paper and not wax paper. Wax paper is not nonstick."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 8
   },
   {
     "name": "Tapenade",
@@ -14152,7 +14357,8 @@
       "Thoroughly rinse the olives in cool water. Place all ingredients in the bowl of a food processor. Process to combine, stopping to scrape down the sides of the bowl, until the mixture becomes a coarse paste, approximately 1 to 2 minutes total. Transfer to a bowl and serve.",
       "Recipe courtesy of Alton Brown, 2005"
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 1
   },
   {
     "name": "Egg, cucumber, and smoked gouda spread sandwiches",
@@ -14252,7 +14458,8 @@
       "Serve the sandwiches with the salad on the side.",
       "Enjoy!"
     ],
-    "timeMinutes": 34
+    "timeMinutes": 34,
+    "servings": 2
   },
   {
     "name": "Lovely Lentils",
@@ -14302,7 +14509,8 @@
       "Add vegetable broth to the saucepan, allowing everything to simmer for about 5 minutes.\n3.",
       "Add 1 cup of water along with lentils and allow to simmer (uncovered) for about 20-30 minutes until they are soft.",
       "Add rosemary and drizzle olive oil near the end."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Sweet Mashed Potatoes",
@@ -14339,7 +14547,8 @@
     ],
     "steps": [
       "In a pot that covers the potatoes with water, bring to a boil. The sweet potatoes are done when they are fork tender.\n2. Mash the potatoes with a hand mixer (or fork or masher) and slowly add in butter and milk until potatoes are creamy and mashed to your preferred consistency. Add a touch of cinnamon for added flavour."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Spicy Rice Casserole",
@@ -14410,7 +14619,8 @@
       "As the rice goes into the oven, make the marinara sauce. Once the marinara is simmering, make the breadcrumbs.",
       "Serve rice, topped with marinara and then panko."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 2
   },
   {
     "name": "Shredded Green Beans",
@@ -14463,7 +14673,8 @@
       "Remove from the heat and stir in the zests and half of the chives.",
       "Season to taste with salt and pepper and serve garnished with the remaining chives."
     ],
-    "timeMinutes": 23
+    "timeMinutes": 23,
+    "servings": 4
   },
   {
     "name": "Roasted potatoes and tomatoes",
@@ -14507,7 +14718,8 @@
       "Put a baking sheet in the oven and preheat to 450.",
       "Cut potatoes lengthwise into eighths. Toss with olive oil, tomatoes, rosemary, garlic cloves, salt and pepper. Put cut-side down on the hot baking sheet and roast 15 minutes. Flip the mixture and roast 10 more minutes."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 6
   },
   {
     "name": "Spiced Apple Sauce",
@@ -14563,7 +14775,8 @@
       "Place a lid on top and cook for 15-20 minutes on a medium to low heat until you have a soft, sludgy sauce.",
       "Taste and add a bit more sugar if you want.",
       "Serve warm or room temperature."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Joan's Broccoli Madness",
@@ -14613,7 +14826,8 @@
     ],
     "steps": [
       "Mix the first five ingredients in a large bowl.\nIn a second bowl, beat dressing ingredients together gently until smooth.\nToss the salad with the dressing approximately 10 minutes before serving to allow flavors to meld. Serve on chilled salad dishes."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Artichoke, Leek, and Potato Casserole",
@@ -14679,7 +14893,8 @@
       "Brush a 1 1/2-quart baking dish with oil.  Arrange half the potato slices in a single layer, overlapping slightly; season with salt and pepper.  Top with artichoke mixture and smooth top . Layer with remaining potatoes, brush with 2 tsp oil, and season with salt and pepper.",
       "Bake until sauce is bubbling and potatoes are golden and tender, 35 to 40 minutes.  Let cool 10 minutes before serving."
     ],
-    "timeMinutes": 70
+    "timeMinutes": 70,
+    "servings": 6
   },
   {
     "name": "Broccoli with Parmesan and Walnuts",
@@ -14738,7 +14953,8 @@
       "In a large skillet, heat olive oil over medium-high.  Add broccoli, trimmed and cut into florets, and cook until broccoli begins to brown, 4 minutes.  Add garlic and cook, stirring occasionally, until broccoli is crisp and tender and garlic begins to brown, 3 minutes.",
       "Add red pepper flakes, season with salt and pepper, and transfer to serving bowl.  Toss with lemon zest, lemon juice, parmesan, and walnuts.  Serve warm or at room temperature."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 4
   },
   {
     "name": "Glazed carrots",
@@ -14776,7 +14992,8 @@
     "steps": [
       "Melt butter in large saute pan over medium heat. Add carrots, orange juice, and thyme; cook, stirring occasionally, until carrots are tender, about 5 minutes. Season with salt and pepper. Serve warm."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 8
   },
   {
     "name": "Tex-mex rice and black eyed peas",
@@ -14843,7 +15060,8 @@
       "Add the black-eyed peas, plus the liquid from one of the cans and 1/4 cup water.",
       "Cook, stirring occasionally, until the beans are creamy and tender, about 12 minutes.",
       "Fluff the rice with a fork and divide among bowls. Add the spinach and cilantro to the black-eyed pea mixture and stir until wilted, about 1 minute; spoon evenly over the rice. Top each serving with a few avocado slices, some cheese and more salsa. Serve with sour cream or Greek yogurt, if desired."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Spicy sauteed kale with lemon",
@@ -14891,7 +15109,8 @@
     "steps": [
       "In a large skillet, heat oil and chile over medium-high. Add lemon and honey and cook, stirring until lemon begins to break down, about 2 minutes. Add kale and cook, stirring, until just wilted, about 3 minutes. Add scallions, season with salt, and cook 1 minutes. Serve warm or at room temperature."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 6
   },
   {
     "name": "Sushi rice",
@@ -14943,7 +15162,8 @@
       "It will hold at room temperature for up to 4 hours.",
       "Yield: about 4 cups"
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Grilled salmon sushi rice bowl",
@@ -15037,7 +15257,8 @@
       "Lift the fish from the marinade and place in the grill pan.",
       "Cook, turning once, until it turns opaque and just begins to flake, 2 to 3 minutes on each side.",
       "To serve, divide the rice among 4 bowls. Top with a piece of fish and some asparagus. Pour 1/4 cup of the sauce over the fish in each bowl. Garnish each serving with the sesame oil, green onions, avocado, cucumber, pickled ginger and sesame seeds."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Brussels sprouts with maple and cayenne",
@@ -15084,7 +15305,8 @@
       "Meanwhile, in a small bowl, combine maple syrup and cayenne pepper.",
       "Drizzle brussels sprouts with maple syrup mixture, stir to coat and roast 1 minute."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Pickled red onions",
@@ -15122,7 +15344,8 @@
     "steps": [
       "Bring all ingredients except red onion to a boil in a small saucepan. Remove from heat and let cool, 5 minutes. Toss with red onion in a bowl; cover and chill at least 4 hours, stirring occasionally."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 8
   },
   {
     "name": "Baked Beans",
@@ -15194,7 +15417,8 @@
       "Crock pot instructions:",
       "Preheat crock pot insert on low while prepping ingredients. Heat a cast-iron Dutch oven over medium heat and cook bacon, onion, and jalapeno as directed above. Pour into crock pot. Add remaining ingredients, stir well, and cook for 7 hours on low or until the beans are tender."
     ],
-    "timeMinutes": 380
+    "timeMinutes": 380,
+    "servings": 10
   },
   {
     "name": "Scalloped Yukon Gold and Sweet Potato Gratin",
@@ -15278,7 +15502,8 @@
       "Remove plastic wrap before baking.)",
       "Preheat oven to 400\u00b0F.  Cover gratin tightly with foil.  Bake 30 minutes.  Uncover, and bake until top of gratin is golden and most of liquid is absorbed, about 25 minutes longer.  Let stand 10 minutes; serve."
     ],
-    "timeMinutes": 80
+    "timeMinutes": 80,
+    "servings": 12
   },
   {
     "name": "Shrimp fried rice",
@@ -15352,7 +15577,8 @@
       "Use the spatula to toss the rice, again spreading the rice out over the surface of wok.",
       "5 Drizzle the soy sauce all around the rice and toss. Add the peas and carrots, the cooked eggs, shrimp and sesame oil, tossing to mix the rice evenly with all of the ingredients. Let everything heat back up again, until the rice grains are so hot they practically dance! Taste and add an additional 1 teaspoon of soy sauce if needed."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 4
   },
   {
     "name": "Couscous stuffed bellpeppers with basil sauce",
@@ -15483,7 +15709,8 @@
       "If using poblanos, instead preheat the oven to 475. Halve and clean the poblanos, cover in oil, salt, and pepper, and roast the halves for 11-13 minutes, until slightly softened. Remove from oven, but leave oven on.",
       "When filling is ready, pack into the poblano halves. Return to the oven for 5 minutes, until the peppers are softened. Remove from oven and let sit for two minutes, then drizzle with sauce and serve."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 4
   },
   {
     "name": "Coconut shrimp with tropical rice",
@@ -15566,7 +15793,8 @@
       "Bake until the shrimp are cooked through, about 10 minutes, then turn on the broiler and broil the shrimp until golden brown, 1 to 2 minutes.",
       "Add the cilantro to the rice mixture and toss, then top with shrimp and remaining lime juice."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 4
   },
   {
     "name": "Southwestern brown rice bowl",
@@ -15681,7 +15909,8 @@
       "Combine all the ingredients for the cilantro vinaigrette in a high powered blender and blend for 60 seconds until very smooth. Taste and adjust salt and pepper as needed. Fold the vinaigrette into the cooked brown rice.",
       "Divide the rice among 4 bowls and top with black beans, guacamole, pico, shredded lettuce, bell peppers and cheese. Add extra cilantro to garnish if desired."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 6
   },
   {
     "name": "Hoisin-Lime Salmon with Asparagus Couscous",
@@ -15768,7 +15997,8 @@
       "Top each with salmon, and garnish with scallions and lime wedges.",
       "Serve immediately."
     ],
-    "timeMinutes": 17
+    "timeMinutes": 17,
+    "servings": 4
   },
   {
     "name": "Carrot kinpira",
@@ -15807,7 +16037,8 @@
       "Heat up a frying pan or wok with the sesame oil. Add the carrots and toss around until crisp-tender, about 4 to 5 minutes depending on how skinny the matchsticks are. Add the red pepper flakes and toss some more. Add soy sauce, toss toss. Add the sesame seeds near the end.",
       "This does keep in the refrigerator for a couple of days."
     ],
-    "timeMinutes": 19
+    "timeMinutes": 19,
+    "servings": 4
   },
   {
     "name": "Sweet pepper and onion confit",
@@ -15856,7 +16087,8 @@
       "Just a few ideas for use:",
       "Mixed with pasta\nHeat up and add some cold rice; stir-fry for a quick vegetable fried rice. (No added oil needed since there\u2019s enough in the confit)\nAs an omelette filling - great for a Spanish omelette or tortilla\nWrap with rice paper\nOn a sandwich (e.g. feta or fresh goats cheese, the confit, and some arugula on a crusty roll)\nJust tucked into a corner of your bento box!"
     ],
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "servings": 6
   },
   {
     "name": "Steakhouse steaks",
@@ -15903,7 +16135,8 @@
       "When the skillet is ready, add the steaks and sear them evenly on all sides for about 2 minutes per side, for a total of 10 minutes.",
       "Top each steak with a tablespoon of butter, if using, and place the skillet in the oven. Cook the steaks until they reach 120 degrees F for rare or 125 degrees F for medium-rare on an instant-read thermometer. (To test the steaks, insert the thermometer sideways to be sure you're actually testing the middle of the steak.)",
       "Remove the steaks to a serving platter, cover tightly with aluminum foil and allow to rest at room temperature for 10 minutes. Serve hot with [Roquefort Cheese Sauce](http://www.xanthir.com/recipes/showrecipe.php?id=62) on the side."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Vegetarian Steamed Dumplings",
@@ -16029,7 +16262,8 @@
       "Remove the dumplings from the steamer to a heatproof platter and place in oven to keep warm.",
       "Repeat until all dumplings are cooked.",
       "To make dipping sauce, whisk together ingredients in a small bowl."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Emeril's strawberry lemonade",
@@ -16079,7 +16313,8 @@
       "In a blender, puree strawberries until smooth. Pour through a fine-mesh sieve into a pitcher with lemon syrup, pressing on solid. Stir well to combine.",
       "To serve, stir in seltzer and divide among ice-filled glasses. Trop with lemon slices and mint."
     ],
-    "timeMinutes": 12
+    "timeMinutes": 12,
+    "servings": 6
   },
   {
     "name": "Simple syrup",
@@ -16103,7 +16338,8 @@
       "Bring sugar and water to a boil in a small saucepan over high heat. Cook, stirring, until sugar dissolves, Let cool. Yields 1 cup.",
       "Storage: Can be refrigerated up to 1 month."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 1
   },
   {
     "name": "Hot and nutty whiskey sours",
@@ -16141,7 +16377,8 @@
     "steps": [
       "Bring Nocello, whiskey, simple syrup, and lemon juice to a simmer in a medium saucepan. Divide among 4 mugs, and garnish each with a cinnamon stick."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 4
   },
   {
     "name": "Blood orange cocktails",
@@ -16165,7 +16402,8 @@
       "Combine blood orange juice and liqueur in a large pitcher. Refrigerate for at least 30 minutes. Pour into test tubes (indigo.com) or small glasses.",
       "Make ahead: Cocktails can be refrigerated in pitcher overnight. Stir before using."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 6
   },
   {
     "name": "Red sangria",
@@ -16213,7 +16451,8 @@
     "steps": [
       "Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 4
   },
   {
     "name": "White sangria",
@@ -16265,7 +16504,8 @@
     ],
     "steps": [
       "Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Rose sangria",
@@ -16318,7 +16558,8 @@
     "steps": [
       "Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 6
   },
   {
     "name": "Lemonade",
@@ -16352,7 +16593,8 @@
       "In a small saucepan bring sugar and water to a boil, add peel and simmer for 5 minutes.  Remove from heat, bring to room temperature and strain out peel.",
       "To a 2 quart pitcher add lemon juice, 1/2 cup of the syrup, and 5 cups water.  Stir, taste, and adjust ratio of water and syrup as desired.",
       "Serve over ice, garnished with a mint sprig."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Hot Nutty Irishman",
@@ -16395,7 +16637,8 @@
     "steps": [
       "Place Irish cream, Frangelico, and Kahlua in a coffee mug; pour over coffee. Top with whipped cream and sanding sugar, if desired."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 1
   },
   {
     "name": "Hot buttered rum",
@@ -16448,7 +16691,8 @@
     "steps": [
       "In a bowl, cream together the butter, sugar, cinnamon, nutmeg, cloves, and salt. Refrigerate until almost firm. Spoon about 2 tablespoons of the butter mixture into 12 small mugs. Pour about 3 ounces of rum into each mug (filling about halfway). Top with boiling water (to fill the remaining half), stir well, and serve immediately."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 12
   },
   {
     "name": "Aged Eggnog",
@@ -16516,7 +16760,8 @@
       "A month would be better, and two better still.",
       "In fact, there's nothing that says you couldn't age it a year, but I've just never been able to wait that long. (And yes, you can also drink it right away.)",
       "Makes ~3L/24cups for the full recipe. 18-20 \"servings\" fit a growler well."
-    ]
+    ],
+    "servings": 24
   },
   {
     "name": "Mulled cranberry apple cider",
@@ -16572,7 +16817,8 @@
       "Whether you sweeten it will depend on personal preference and the juices you use.",
       "If using sweetener, start with a couple tablespoons and increase as desired. \n\u2022 If using pure unsweetened cranberry juice (instead of a juice blend), reduce the amount to 2 cups and increase the apple cider/juice to 6 cups."
     ],
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "servings": 6
   },
   {
     "name": "Malted hot cocoa",
@@ -16615,7 +16861,8 @@
     "steps": [
       "Mix all ingredients by sifting or whisking together in a large bowl until evenly incorporated. Store at room temperature in an airtight container.",
       "Each serving is 1/4 cup mix in 1 cup hot milk."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Apple-Brie Panini",
@@ -16654,7 +16901,8 @@
       "Preheat a skillet with 1 tablespoon butter (or oil) on medium-low.",
       "Spread Dijon mustard on the inside of a split piece of baguette. Fill with the brie and apple slices.",
       "Add sandwich to skillet, the press a heavy pan on top to weigh it down. Cook until golden and crisp, 3 to 4 minutes per side. Add more butter to the skillet, if needed, for second side."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Triple Grilled Cheese",
@@ -16696,7 +16944,8 @@
       "Cook the sandwiches in batches, adding the remaining butter as needed, until the cheese melts and the bread is golden, 3-4 minutes per side.",
       "Serve the sandwiches with the soup."
     ],
-    "timeMinutes": 18
+    "timeMinutes": 18,
+    "servings": 4
   },
   {
     "name": "Baja fish tacos",
@@ -16783,7 +17032,8 @@
       "Halve, pit and slice the avocado. Fill the tortillas with the fish, avocado, slaw and salsa. Serve with lime wedges.",
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/baja-fish-tacos-recipe.html?oc=linkback"
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 4
   },
   {
     "name": "Mini hamburger bento (Select a mini burger recipe too)",
@@ -16869,7 +17119,8 @@
       "Drain and cool rapidly under running water.",
       "Drain well before adding to bento box.\n6.",
       "For rice: Pack rice into the bento box and sprinkle with the sesame salt."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Fresh salmon mini burgers",
@@ -16925,7 +17176,8 @@
     "steps": [
       "Mix all ingredients except butter and oil very well with your hands until everything sticks together. Form into mini burger patties. Fry on both sides in a mixture of butter and vegetable oil over medium heat until just cooked through."
     ],
-    "timeMinutes": 23
+    "timeMinutes": 23,
+    "servings": 6
   },
   {
     "name": "Pizza dough",
@@ -17001,7 +17253,8 @@
       "Immediately transfer pizzas to a cooling rack, so their bottoms don't get soggy. After about 10 minutes (to allow the toppings to set), slice and serve; a pair of scissors is a great cutting tool.",
       "Yield: 4 12\" pizzas, 6 to 8 servings each.\nTo freeze: After dividing dough in step 5, wrap ball of dough in plastic wrap and freeze. Allow to defrost in refrigerator and then set out at room temperature for about 30 minutes before shaping crust."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 4
   },
   {
     "name": "Quick pickled red onion",
@@ -17043,7 +17296,8 @@
       "If using a bowl, carefully toss everything together to coat. If using a jar, seal the jar and give it a few good shakes to distribute the juice and salt evenly.",
       "Place the jar in the fridge to sit for at least 30 minutes before using. You can still taste and adjust the salt to preference once they are ready to eat."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 12
   },
   {
     "name": "Pizza sauce from tomato paste",
@@ -17102,7 +17356,8 @@
       "Makes enough for 1 full size pizza (1 lb. dough)",
       "Combine all ingredients in a small bowl; mix well. Set aside about 15 minutes for flavors to develop."
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 1
   },
   {
     "name": "Asparagus pesto",
@@ -17162,7 +17417,8 @@
       "It should be the loose consistency of a pesto; if too thick, thin it with a bit of the pasta water.",
       "Add the lemon juice and salt, then taste and adjust the seasonings."
     ],
-    "timeMinutes": 12
+    "timeMinutes": 12,
+    "servings": 8
   },
   {
     "name": "Adult Lunchable with Veggies, Egg, and Boursin",
@@ -17205,7 +17461,8 @@
     "steps": [
       "Pack all ingredients in small containers or a segmented lunch box. Enjoy!"
     ],
-    "timeMinutes": 5
+    "timeMinutes": 5,
+    "servings": 1
   },
   {
     "name": "Seitan and three-color pepper stir-fry bento",
@@ -17320,7 +17577,8 @@
       "For Blanched Broccoli:",
       "Put just enough water in a small pan to cover the broccoli. Bring the water to a boil, add a pinch of salt, and put in the broccoli florets. Boil for 2-3 minutes, drain the water, and run cold tap water over the broccoli to cool quickly and fix the bright green color. Drain well. Use broccoli and cherry tomatoes to fill in gaps in the bento box."
     ],
-    "timeMinutes": 27
+    "timeMinutes": 27,
+    "servings": 1
   },
   {
     "name": "Tamagoyaki Bento",
@@ -17431,7 +17689,8 @@
       "To instead prepare as a rice bowl (when you're eating it fresh rather than prepping a bento for later), just put the rice serving in a bowl. Fry the eggs, to a soft/gooey yolk, and put on top of rice. Dice the veggies after boiling, add to the spinach during cooking, and put the whole mixture on top of the eggs.",
       "If you want a little more kick, add togarashi to the eggs, and/or drizzle some sriracha or other chili sauce on top of the bowl when done."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 1
   },
   {
     "name": "Fried Shrimp Bento",
@@ -17525,7 +17784,8 @@
       "For **broccoli**, cook or blanch to desired doneness, then let cool. Combine the rest of the ingredients, then mix with the cooled broccoli.",
       "To pack bento:",
       "Put the **dipping sauce** of your choice in the sauce cup, to tuck into a corner of the bento box. Pack **carrot and celeriac salad** and **dressed broccoli**. Place shrimp on top of rice, if possible."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Restaurant Style Butter Chicken in Slow Cooker",
@@ -17626,7 +17886,8 @@
       "Slow Cooker: Transfer everything in slow cooker with 1/4 cup water (or chicken stock for more flavor). Cook on high for 1.25 hours Or on slow for 3-\u00ad4 hours.",
       "Before serving, after the cooker timer is up, add heavy cream and mix well. Taste and adjust salt. Leave on warm until ready to serve."
     ],
-    "timeMinutes": 195
+    "timeMinutes": 195,
+    "servings": 4
   },
   {
     "name": "Smoky Seared Cod with Roasted Potatoes & Dates",
@@ -17719,7 +17980,8 @@
       "Garnish with the almonds.",
       "Enjoy!"
     ],
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "servings": 2
   },
   {
     "name": "Vadouvan curry spice blend",
@@ -17810,7 +18072,8 @@
       "Heat oil in a deep 12-inch heavy nonstick skillet over high heat until it shimmers, then saut\u00e9 onions, shallots, and garlic (stir often) until golden and browned in spots, 25 to 30 minutes",
       "Grind fenugreek seeds in grinder or with mortar and pestle. Add to onion mixture along with remaining ingredients, and stir until combined.",
       "Transfer to a parchment-paper-lined large 4-sided sheet pan and spread as thinly and evenly as possible. Bake, stirring occasionally with a skewer to separate onions, until well browned and barely moist, 1 to 1 1/4 hours."
-    ]
+    ],
+    "servings": 2
   },
   {
     "name": "Spicy salmon onigirazu",
@@ -17881,7 +18144,8 @@
       "Bring one corner of the nori to the center of the filling, then bring up the opposite corner. Be firm so that the nori closes well around the filling, but don't be so rough that the nori breaks. Repeat with remaining corners until they all meet in the center.",
       "Wrap plastic wrap tightly around onigirazu. Refrigerate for a few minutes to soften the nori. Wet a sharp knife and cut onigirazu in half. Unwrap and enjoy."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 2
   },
   {
     "name": "Carrot soboro",
@@ -17923,7 +18187,8 @@
     ],
     "steps": [
       "Put all the ingredients in a small pan and boil over high heat. Lower the heat and simmer for 4-5 minutes or until the carrot is tender. Drain and cool before packing."
-    ]
+    ],
+    "servings": 4
   },
   {
     "name": "Tonkatsu sauce",
@@ -17970,7 +18235,8 @@
     ],
     "steps": [
       "Mix all ingredients together and allow to sit for at least 30 minutes. Refrigerate leftovers."
-    ]
+    ],
+    "servings": 8
   },
   {
     "name": "Kaeshi",
@@ -18000,7 +18266,8 @@
       "Add the sugar and stir until melted. Add the soy sauce and heat up slowly over medium-low heat, stirring several times, until the surface is barely bubbling. It should not boil vigorously or the flavor of the soy sauce will dissipate. Simmer gently for 5 minutes, skimming off any white scum that forms on the surface.",
       "Let cool and store in a glass jar or other nonreactive, airtight container. The kaeshi can be used immediately but is better if rested for at least a day. Store in the refrigerator or other cool, dark, place. It will keep for several months."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 6
   },
   {
     "name": "Scallops over Truffled Mushroom Risotto",
@@ -18107,7 +18374,8 @@
       "Once risotto is done, stir in Parmesan, 1 tbsp plain butter, a squeeze of lemon juice, and lemon zest and truffle oil to taste.",
       "Season risotto with salt, pepper, and more lemon juice to taste. \u2022 Divide between bowls; top with scallops. Drizzle with as much brown butter as you like and any remaining truffle oil to taste. Garnish with remaining chopped parsley. Serve with any remaining lemon wedges on the side."
     ],
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "servings": 2
   },
   {
     "name": "Ancho chile paste",
@@ -18228,7 +18496,8 @@
       "Pack cooled shrimp fritters, cherry tomatoes, and chopped green onion garnish into separate compartment from the noodles. Place dipping sauce in a leak-proof container.",
       "To eat, you can either dip the noodles in the sauce or dump sauce over noodles. You can dip the fritters in the sauce, too."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 1
   },
   {
     "name": "Seared tilapia and lemon-caper sauce",
@@ -18312,7 +18581,8 @@
       "To the pot of **cooked pasta and vegetables**, add the **fromage blanc** and **the juice of the remaining lemon half**; stir to combine. Taste, then season with salt and pepper if desired.",
       "Serve the finished pasta topped with the cooked fish and pan sauce. Garnish with **parsley**. Enjoy!"
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 2
   },
   {
     "name": "Gyoza bento",
@@ -18397,7 +18667,8 @@
       "Pack soy sauce or other dipping sauce in a sauce container.",
       "Cool down completely before closing the bento box."
     ],
-    "timeMinutes": 35
+    "timeMinutes": 35,
+    "servings": 1
   },
   {
     "name": "Yakiniku sauce",
@@ -18455,7 +18726,8 @@
       "The Yakiniku Sauce is now ready to use.",
       "Full recipe yield about 1/3 cup."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 1
   },
   {
     "name": "Okra with ginger soy sauce",
@@ -18495,7 +18767,8 @@
       "Dress the okra with the sauce. You can serve them chilled or at room temperature. Serve the okra on individual plates.",
       "To Store\nYou can keep the leftovers in an airtight container and store in the refrigerator for up to 2 days."
     ],
-    "timeMinutes": 7
+    "timeMinutes": 7,
+    "servings": 4
   },
   {
     "name": "Weeknight Hero spice blend",
@@ -18527,7 +18800,8 @@
     ],
     "steps": [
       "In a small bowl, mix all ingredients. Use a funnel to transfer to a spice jar for storage."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Aguachile Rojo",
@@ -18605,7 +18879,8 @@
       "Blend peppers, olive oil, salt, and pepper. Remove shrimp from fridge, and pour sauce over them. Layer cucumber, onion, avocado, and cilantro on top. Cover and refrigerate again 15-20 minutes.",
       "Stir in hot sauce until blended. Serve with tostadas."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 8
   },
   {
     "name": "Southern Spice Blend",
@@ -18642,7 +18917,8 @@
     ],
     "steps": [
       "Mix all ingredients. 1 serving should fill a standard spice jar (might need a little compaction due to air introduced when mixing)."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Matt's Fajita Seasoning",
@@ -18700,7 +18976,8 @@
     "steps": [
       "Mix all ingredients.",
       "Use 2-3 tbsp per pound of meat. Less for beef, more for chicken/turkey."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Garlic and soy-glazed shrimp",
@@ -18825,7 +19102,8 @@
       "Turn off the heat.",
       "Serve the cooked shrimp with the rice and broccoli. Garnish the broccoli with the toasted breadcrumbs. Serve the spicy pepper sauce and remaining lime wedges (if desired) on the side. Enjoy!"
     ],
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "servings": 2
   },
   {
     "name": "Chocolate cheesecake squares",
@@ -18886,7 +19164,8 @@
       "Blend cream cheese and sour cream in food processor until smooth, scraping down sides of bowl as needed. Add cocoa, cornstarch, sugar, egg, and egg white; process until smooth. Pour into pan; sprinkle with chocolate chips.",
       "Bake until just set, 35 to 40 minutes; cool completely in pan. Refrigerate at least 1 hour. Invert onto a tray; peel off paper, and reinvert crust side down. Cut into 9 squares."
     ],
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "servings": 9
   },
   {
     "name": "Chocolate cinnamon pudding",
@@ -18949,7 +19228,8 @@
     "steps": [
       "Whisk cornstarch, sugar, cocoa powder, cinnamon, and salt in a medium saucepan. Add milks, whisking. Bring to a boil over medium-high heat, whisking constantly. Cook until thickened, about 1 minute. Whisk in chocolate; cook until chocolate has melted, about 1 minute.",
       "Divide evenly among six 4-ounce cups. To prevent a skin from forming, press plastic wrap onto surface of pudding. Refrigerate until set, at least 1 hour and up to overnight. Serve garnished with chocolate shavings and cinnamon sticks."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Creepy crawly cake",
@@ -19073,7 +19353,8 @@
       "Garnish cake and platter with rubber cockroaches.",
       "Storage: Decorated cake can be refrigerated for up to 3 days, but the ganache with not be as shiny,. Bring to room temperature before serving."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 8
   },
   {
     "name": "Chocolate-Hazelnut Icebox Cake",
@@ -19153,7 +19434,8 @@
       "Fit parchment in \nwells of Muffin Pan.",
       "Pipe chocolate flower on Parchment Paper; refrigerate 15 minutes or until \nset."
     ],
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "servings": 12
   },
   {
     "name": "Simple lemon cake",
@@ -19243,7 +19525,8 @@
       "Let cool in pan on a wire rack, 20 minutes.",
       "Remove cake from pan and let cool completely on rack, 1 hour. (Store cooled cake, tightly wrapped in plastic, at room temperature up to 1 day.) Dust with confectioners' sugar and serve with raspberries and cream, if desired."
     ],
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "servings": 10
   },
   {
     "name": "Gooey layered everything bars",
@@ -19317,7 +19600,8 @@
       "Scatter chocolate chips, walnuts, and raisins on top of crust. Drizzle with condensed milk and top with coconut. Bake until coconut is golden, about 20 minutes. Let cool completely in dish on a wire rack before cutting into 18 squares.",
       "Store in an airtight container, at room temperature up to 3 days."
     ],
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "servings": 18
   },
   {
     "name": "Pear and chocolate brioche bread pudding",
@@ -19392,7 +19676,8 @@
       "In a large bowl, gently whisk together eggs and egg yolks, milk, cream, brown sugar, cinnamon, and salt. Pour mixture evenly over bread and pears and let sit 5 minutes. Sprinkle with sanding sugar.",
       "Bake until brioche is puffed and custard is just set, 50 to 60 minutes. Let cool slightly. Serve warm or at room temperature."
     ],
-    "timeMinutes": 75
+    "timeMinutes": 75,
+    "servings": 8
   },
   {
     "name": "Salted chocolate milk",
@@ -19436,7 +19721,8 @@
       "Make the chocolate syrup: combine the sugar and water in a small saucepan. Bring to a simmer over medium heat, then whisk in the cocoa powder until smooth. Remove from the heat and stir in the vanilla. Let cool completely.",
       "Spoon about 2.5 tbsp of the chocolate syrup into each glass. Add 1 1/2 cups milk and a generous pinch of salt. Stir until the syrup and salt dissolves."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 4
   },
   {
     "name": "Chocolate banana ice cream pie",
@@ -19491,7 +19777,8 @@
       "Spread the vanilla ice cream evenly over the banana layer. Freeze until firm, about 2 hours. Let the chocolate ice cream soften at room temperature, then spread over the vanilla layer. Cover with plastic wrap and freeze until firm, at least 2 hours.",
       "Remove the pie from the freezer 20 minutes before serving. Beat the cream and confectioners' sugar with a mixer until soft peaks form, then spread over the pie. Top with toasted coconut, if desired."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 8
   },
   {
     "name": "Granitaville",
@@ -19547,7 +19834,8 @@
       "For the full effect, dip the rims of the serving bowls in equal parts sugar and kosher salt, and a pinch of lime zest.",
       "Garnish with lime slices."
     ],
-    "timeMinutes": 10
+    "timeMinutes": 10,
+    "servings": 4
   },
   {
     "name": "Maple brown butter semifreddo",
@@ -19595,7 +19883,8 @@
       "Freeze until firm, 5 hours (or up to 1 week).",
       "Serve topped with hazelnuts if desired."
     ],
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "servings": 10
   },
   {
     "name": "Brown sugar buttermilk pie",
@@ -19692,7 +19981,8 @@
       "Refrigerate, wrapped in plastic, up to 3 days.",
       "How to Crimp a Crust: Using a knuckle on one hand and the thumb and forefinger of the other, crimp the rim of the crust."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 8
   },
   {
     "name": "Apple brandy brown betty",
@@ -19756,7 +20046,8 @@
       "Preheat oven to 375 degrees. In a medium bowl, toss bread with butter until coated. In a large bowl, toss together apples, brown sugar, maple syrup, nutmeg, prunes, brandy, juice, and half the bread until combined. Transfer mixture to an 8-inch square baking dish and top with remaining bread.",
       "Cover with foil and bake until mixture is bubbling and apples are tender, about 40 minutes. Uncover and bake until top is browned, 10 to 15 minutes. Let cool 15 minutes. Serve with ice cream or whipped cream."
     ],
-    "timeMinutes": 70
+    "timeMinutes": 70,
+    "servings": 8
   },
   {
     "name": "Pumpkin chocolate whoopie pies",
@@ -19826,7 +20117,8 @@
       "Drop dough in 2-tablespoon mounds, 1 inch apart, onto two parchment-lined baking sheets. Bake until tops of cookies spring back when gently pressed, about 14 minutes, rotating sheets halfway through. Transfer to wire racks and let cool completely.",
       "In a medium bowl, using an electric mixer, beat room temperature butter, 1/2 cup cream, cocoa powder, and confectioners' sugar on medium-high until fluffy, 2 minutes. Spread filling on flat side of half the cookies; sandwich with remaining cookies. To serve, dust with confectioners' sugar."
     ],
-    "timeMinutes": 29
+    "timeMinutes": 29,
+    "servings": 10
   },
   {
     "name": "Towering flourless chocolate cake",
@@ -19929,7 +20221,8 @@
       "Fold in the vanilla, then fold in the melted chocolate until swirled.",
       "Spread the meringue on the cake."
     ],
-    "timeMinutes": 85
+    "timeMinutes": 85,
+    "servings": 10
   },
   {
     "name": "Lemon white chocolate cookies",
@@ -20024,7 +20317,8 @@
       "Let cool 2 minutes on the baking sheets, then transfer to racks to cool completely.",
       "Meanwhile, put the white chocolate in a heatproof bowl and set over a saucepan of barely simmering water (do not let the bowl touch the water); stir until the chocolate melts. Drizzle the cookies with the melted white chocolate and sprinkle with the pistachios. Let set at room temperature, about 15 minutes."
     ],
-    "timeMinutes": 80
+    "timeMinutes": 80,
+    "servings": 48
   },
   {
     "name": "Chocolate ice cubes",
@@ -20062,7 +20356,8 @@
     "steps": [
       "Bring milk, water, cocoa powder, and sugar to a simmer in a saucepan, whisking until the limps dissolve. Remove from heat, add chocolate chips and stir until the chocolate melts. Let cool 5 minutes, then pour into an ice cube tray and freeze."
     ],
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "servings": 1
   },
   {
     "name": "Ghirardelli Ultimate Double Chocolate Cookies",
@@ -20131,7 +20426,8 @@
       "Allow to stand\nfor at least 30 minutes to thicken up.",
       "Preheat oven to 375\u00b0. Dip dough using small or large cookie scoop onto cookie sheets\nlined with either parchment paper, non-stick foil or silicone baking liner. Bake about 9 minutes\nfor small ones, 11 minutes for large ones. Cool several minutes before removing from cookie\nsheets.",
       "Makes about 24 large cookies or 40 small cookies."
-    ]
+    ],
+    "servings": 6
   },
   {
     "name": "Brazilian sweet bread",
@@ -20229,7 +20525,8 @@
       "Remove from the oven, and transfer to a rack to cool.",
       "Yield: 1 large loaf, about 16 servings."
     ],
-    "timeMinutes": 65
+    "timeMinutes": 65,
+    "servings": 1
   },
   {
     "name": "Chocolate dipped coconut macaroons",
@@ -20293,7 +20590,8 @@
       "Dip half of each cooled macaroon into the chocolate. Set the macaroons back on the baking sheet, and allow the chocolate to set completely before serving. To store, place in one layer in a closed container. They'll keep for 2 or 3 days, but will gradually become less moist as they sit.",
       "Yield: 33 macaroons.",
       "tips from our bakers\nCoconut cream, sweetened condensed coconut milk, is the coconut equivalent of sweetened condensed milk. Substitute sweetened condensed milk, if desired.\nCoconut milk powder adds flavor and helps the macaroons hold their nice, smooth shape. Leave it out if you like."
-    ]
+    ],
+    "servings": 1
   },
   {
     "name": "Peppermint crunch bark",
@@ -20334,6 +20632,7 @@
       "Store airtight at room temperature for up to a week; freeze for longer storage.",
       "Yield: about 2 dozen pieces."
     ],
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "servings": 24
   }
 ]
