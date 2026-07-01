@@ -107,7 +107,7 @@ export default function RecipeModal({ recipe, idx, onClose }) {
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               className={`text-[1.5rem] transition-all hover:scale-[1.15] p-1 ${isFav ? 'text-heart' : 'text-warm-tan hover:text-[#e8a0a0]'}`}
-              onClick={() => toggleFav(idx)}
+              onClick={() => toggleFav(idx, recipe.name)}
               title="Save recipe"
             >♥</button>
             <button

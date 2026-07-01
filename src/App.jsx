@@ -7,6 +7,8 @@ import Home from './pages/Home'
 import Search from './pages/Search'
 import Saved from './pages/Saved'
 import Profile from './pages/Profile'
+import Friends from './pages/Friends'
+import UserProfile from './pages/UserProfile'
 import Auth from './pages/Auth'
 import RECIPES from './data/recipes.json'
 import { useApp } from './context/AppContext'
@@ -47,8 +49,10 @@ export default function App() {
         <Route path="/"        element={<Home    onOpen={openModal} />} />
         <Route path="/search"  element={<Search  onOpen={openModal} />} />
         <Route path="/saved"   element={<Saved   onOpen={openModal} />} />
-        <Route path="/profile" element={<Profile onOpen={openModal} />} />
-        <Route path="/login"   element={<Auth />} />
+        <Route path="/profile"      element={<Profile     onOpen={openModal} />} />
+        <Route path="/friends"      element={<Friends     onOpen={openModal} />} />
+        <Route path="/user/:username" element={<UserProfile onOpen={openModal} />} />
+        <Route path="/login"        element={<Auth />} />
       </Routes>
       <BottomNav />
       {needsUsername && <UsernameModal />}

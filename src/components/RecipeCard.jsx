@@ -30,7 +30,7 @@ export default function RecipeCard({ recipe, idx, onOpen, fill }) {
         </div>
         <button
           className={`shrink-0 text-[1.2rem] transition-all hover:scale-[1.2] px-[3px] py-[2px] ${isFav ? 'text-heart' : 'text-warm-tan hover:text-[#e8a0a0]'}`}
-          onClick={e => { e.stopPropagation(); toggleFav(idx) }}
+          onClick={e => { e.stopPropagation(); toggleFav(idx, recipe.name) }}
           title="Save"
         >♥</button>
       </div>

@@ -67,8 +67,14 @@ export function AppProvider({ children }) {
       })))
   }
 
+  // ── activity logging ───────────────────────────────────────
+  function logActivity(type, data) {
+    if (!user) return
+    supabase.from('activity').insert({ user_id: user.id, type, ...data })
+  }
+
   // ── favorites ──────────────────────────────────────────────
-  function toggleFav(idx) {
+  function toggleFav(idx, recipeName) {
     setFavorites(prev => {
       const next = new Set(prev)
       if (next.has(idx)) {
@@ -79,6 +85,7 @@ export function AppProvider({ children }) {
         next.add(idx)
         if (user && typeof idx === 'number')
           supabase.from('favorites').upsert({ user_id: user.id, recipe_key: idx })
+        if (recipeName) logActivity('saved', { recipe_key: String(idx), recipe_name: recipeName })
       }
       return next
     })
@@ -91,6 +98,7 @@ export function AppProvider({ children }) {
       if (value) {
         next[name] = value
         if (user) supabase.from('ratings').upsert({ user_id: user.id, recipe_name: name, rating: value })
+        if (value >= 4) logActivity('rated', { recipe_name: name, rating: value })
       } else {
         delete next[name]
         if (user) supabase.from('ratings').delete().match({ user_id: user.id, recipe_name: name })
@@ -160,6 +168,7 @@ export function AppProvider({ children }) {
         .single()
       if (error) throw error
       setUserRecipes(prev => [created, ...prev])
+      logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
       return created
     } else {
       const recipe = { ...data, id: 'local_' + Date.now(), user_id: null, created_at: new Date().toISOString() }
@@ -203,12 +212,18 @@ export function AppProvider({ children }) {
     if (user) supabase.from('lists').update({ name }).match({ id, user_id: user.id })
   }
 
-  function addToList(listId, recipeKey) {
-    setLists(prev => prev.map(l =>
-      l.id === listId && !l.items.includes(recipeKey)
-        ? { ...l, items: [...l.items, recipeKey] }
-        : l
-    ))
+  function addToList(listId, recipeKey, recipeName) {
+    setLists(prev => {
+      const list = prev.find(l => l.id === listId)
+      if (list && !list.items.includes(recipeKey)) {
+        logActivity('listed', { recipe_key: String(recipeKey), recipe_name: recipeName, list_name: list.name })
+      }
+      return prev.map(l =>
+        l.id === listId && !l.items.includes(recipeKey)
+          ? { ...l, items: [...l.items, recipeKey] }
+          : l
+      )
+    })
     if (user) supabase.from('list_items').upsert({ list_id: listId, recipe_key: String(recipeKey) })
   }
 

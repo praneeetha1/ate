@@ -28,7 +28,7 @@ export default function RecipeListItem({ recipe, idx, onOpen }) {
       </div>
       <button
         className={`shrink-0 text-[1.1rem] transition-all hover:scale-[1.2] p-1 ${isFav ? 'text-heart' : 'text-warm-tan hover:text-[#e8a0a0]'}`}
-        onClick={e => { e.stopPropagation(); toggleFav(idx) }}
+        onClick={e => { e.stopPropagation(); toggleFav(idx, recipe.name) }}
         title="Save"
       >♥</button>
       <span className="text-[1.4rem] text-rim shrink-0 pointer-events-none">›</span>
