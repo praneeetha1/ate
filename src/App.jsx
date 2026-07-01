@@ -10,10 +10,14 @@ import Profile from './pages/Profile'
 import Auth from './pages/Auth'
 import RECIPES from './data/recipes.json'
 import { useApp } from './context/AppContext'
+import { useAuth } from './context/AuthContext'
+import UsernameModal from './components/UsernameModal'
 
 export default function App() {
   const [modalIdx, setModalIdx] = useState(null)
   const { userRecipes } = useApp()
+  const { user, profile } = useAuth()
+  const needsUsername = user && profile && !profile.username_set
 
   function openModal(idx) { setModalIdx(idx) }
   function closeModal()   { setModalIdx(null) }
@@ -47,6 +51,7 @@ export default function App() {
         <Route path="/login"   element={<Auth />} />
       </Routes>
       <BottomNav />
+      {needsUsername && <UsernameModal />}
       {modalIdx !== null && modalRecipe && (
         <RecipeModal
           recipe={modalRecipe}

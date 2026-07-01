@@ -5,17 +5,21 @@
 
 -- ── profiles ────────────────────────────────────────────────
 create table if not exists public.profiles (
-  id         uuid primary key references auth.users(id) on delete cascade,
-  username   text,
-  avatar_url text,
-  created_at timestamptz default now()
+  id           uuid primary key references auth.users(id) on delete cascade,
+  username     text unique,
+  username_set boolean default false,
+  avatar_url   text,
+  bio          text,
+  created_at   timestamptz default now(),
+  constraint username_format check (username ~ '^[a-z0-9_]{3,20}$')
 );
 
 alter table public.profiles enable row level security;
 
-create policy "Users can view own profile"
+-- Anyone can view profiles (needed for social features)
+create policy "Anyone can view profiles"
   on public.profiles for select
-  using (auth.uid() = id);
+  using (true);
 
 create policy "Users can update own profile"
   on public.profiles for update

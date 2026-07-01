@@ -5,20 +5,23 @@ import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { ingredientLabel } from '../utils/recipe'
 import CreateRecipeModal from '../components/CreateRecipeModal'
+import UsernameModal from '../components/UsernameModal'
 
 export default function Profile({ onOpen }) {
   const { shoppingList, shopChecked, toggleShopItem, toggleShopping, clearShopping,
           userRecipes, deleteUserRecipe } = useApp()
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
-  const [showCreate, setShowCreate] = useState(false)
+  const [showCreate,   setShowCreate]   = useState(false)
+  const [editUsername, setEditUsername] = useState(false)
   const listArr = [...shoppingList]
 
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Home cook'
-  const avatarUrl   = user?.user_metadata?.avatar_url
+  const displayName = profile?.username ? `@${profile.username}` : (user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Home cook')
+  const avatarUrl   = profile?.avatar_url || user?.user_metadata?.avatar_url
 
   return (
     <>
+      {editUsername && <UsernameModal onClose={() => setEditUsername(false)} />}
       {showCreate && (
         <CreateRecipeModal
           onClose={() => setShowCreate(false)}
@@ -39,10 +42,16 @@ export default function Profile({ onOpen }) {
         {user ? (
           <div className="flex flex-col items-center gap-2 mt-0.5">
             <div className="text-[0.78rem] text-muted">{user.email}</div>
-            <button
-              onClick={() => signOut()}
-              className="text-[0.78rem] font-bold text-muted border-[1.5px] border-rim rounded-[14px] px-4 py-[5px] hover:text-heart hover:border-heart transition-all"
-            >Sign out</button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditUsername(true)}
+                className="text-[0.78rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-3 py-[5px] hover:bg-accent hover:text-white transition-all"
+              >{profile?.username_set ? 'Edit username' : 'Set username'}</button>
+              <button
+                onClick={() => signOut()}
+                className="text-[0.78rem] font-bold text-muted border-[1.5px] border-rim rounded-[14px] px-3 py-[5px] hover:text-heart hover:border-heart transition-all"
+              >Sign out</button>
+            </div>
           </div>
         ) : (
           <button
