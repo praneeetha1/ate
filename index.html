@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TimeToCook</title>
+  <link rel="manifest" href="/ate/manifest.json">
+  <meta name="theme-color" content="#C2885A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ate.">
+  <link rel="apple-touch-icon" href="/ate/icons/apple-touch-icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -972,6 +979,13 @@ document.getElementById("filterBar").addEventListener("click", (e) => {
 // ── Init ───────────────────────────────────────────────────────────────────
 buildCategoryFilters();
 renderGrid();
+
+// Register service worker (makes the app installable and work offline)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/ate/sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>

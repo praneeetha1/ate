@@ -1,0 +1,25 @@
+{
+  "name": "ate.",
+  "short_name": "ate.",
+  "description": "Your cozy recipe companion",
+  "start_url": "/ate/",
+  "scope": "/ate/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FDF6E3",
+  "theme_color": "#C2885A",
+  "icons": [
+    {
+      "src": "/ate/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ate/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
