@@ -1,21 +1,16 @@
-const CACHE = "ate-v3";
-const ASSETS = [
-  "/ate/",
-  "/ate/index.html",
+const CACHE = "ate-v4";
+const STATIC = [
   "/ate/icons/icon-192.png",
   "/ate/icons/icon-512.png",
   "/ate/icons/apple-touch-icon.png",
-  "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap"
 ];
 
-// Install: cache all core assets so the app works offline
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c => c.addAll(STATIC)).then(() => self.skipWaiting())
   );
 });
 
-// Activate: delete old caches if we ever bump CACHE version
 self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -24,8 +19,16 @@ self.addEventListener("activate", e => {
   );
 });
 
-// Fetch: serve from cache first, fall back to network
 self.addEventListener("fetch", e => {
+  const url = new URL(e.request.url);
+
+  // Never cache index.html — always fetch fresh so asset hashes stay in sync
+  if (url.pathname === "/ate/" || url.pathname === "/ate/index.html") {
+    e.respondWith(fetch(e.request));
+    return;
+  }
+
+  // Cache-first for static assets (icons, fonts)
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
