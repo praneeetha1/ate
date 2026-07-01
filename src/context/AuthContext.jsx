@@ -59,19 +59,13 @@ export function AuthProvider({ children }) {
 
   async function updateUsername(username) {
     const clean = username.toLowerCase().trim()
-    // Check availability
-    const { data: existing } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('username', clean)
-      .neq('id', user.id)
-      .maybeSingle()
-    if (existing) throw new Error('Username already taken')
-
     const { error } = await supabase
       .from('profiles')
       .update({ username: clean, username_set: true })
       .eq('id', user.id)
+    // Catch the DB unique constraint violation (code 23505) with a friendly message.
+    // This is race-safe: no TOCTOU window between a pre-check and the actual update.
+    if (error?.code === '23505') throw new Error('Username already taken')
     if (error) throw error
     setProfile(prev => ({ ...prev, username: clean, username_set: true }))
   }

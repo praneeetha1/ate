@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RECIPES from '../data/recipes.json'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 import { ingredientLabel } from '../utils/recipe'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import UsernameModal from '../components/UsernameModal'
@@ -14,10 +15,21 @@ export default function Profile({ onOpen }) {
   const navigate = useNavigate()
   const [showCreate,   setShowCreate]   = useState(false)
   const [editUsername, setEditUsername] = useState(false)
+  const [counts,       setCounts]       = useState({ followers: 0, following: 0 })
   const listArr = [...shoppingList]
 
   const displayName = profile?.username ? `@${profile.username}` : (user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Home cook')
   const avatarUrl   = profile?.avatar_url || user?.user_metadata?.avatar_url
+
+  useEffect(() => {
+    if (!user) return
+    Promise.all([
+      supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('following_id', user.id),
+      supabase.from('follows').select('following_id', { count: 'exact', head: true }).eq('follower_id', user.id),
+    ]).then(([followerRes, followingRes]) => {
+      setCounts({ followers: followerRes.count || 0, following: followingRes.count || 0 })
+    })
+  }, [user?.id])
 
   return (
     <>
@@ -39,6 +51,12 @@ export default function Profile({ onOpen }) {
           </div>
         )}
         <div className="font-display text-[1.3rem] font-semibold text-ink">{displayName}</div>
+        {user && (
+          <div className="flex gap-5 text-[0.82rem] text-muted">
+            <span><strong className="text-ink font-bold">{counts.followers}</strong> followers</span>
+            <span><strong className="text-ink font-bold">{counts.following}</strong> following</span>
+          </div>
+        )}
         {user ? (
           <div className="flex flex-col items-center gap-2 mt-0.5">
             <div className="text-[0.78rem] text-muted">{user.email}</div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
@@ -110,10 +110,12 @@ function FindPeopleSheet({ onClose }) {
 
   async function toggleFollow(profileId) {
     if (following.has(profileId)) {
-      await supabase.from('follows').delete().match({ follower_id: user.id, following_id: profileId })
+      const { error } = await supabase.from('follows').delete().match({ follower_id: user.id, following_id: profileId })
+      if (error) { console.error('Unfollow failed:', error); return }
       setFollowing(prev => { const n = new Set(prev); n.delete(profileId); return n })
     } else {
-      await supabase.from('follows').insert({ follower_id: user.id, following_id: profileId })
+      const { error } = await supabase.from('follows').insert({ follower_id: user.id, following_id: profileId })
+      if (error) { console.error('Follow failed:', error); return }
       setFollowing(prev => new Set([...prev, profileId]))
     }
   }
@@ -166,19 +168,24 @@ function FindPeopleSheet({ onClose }) {
 
 export default function Friends({ onOpen }) {
   const { user } = useAuth()
-  const [feed,           setFeed]           = useState([])
-  const [loading,        setLoading]        = useState(true)
-  const [showFindPeople, setShowFindPeople] = useState(false)
+  const [feed,             setFeed]             = useState([])
+  const [followedProfiles, setFollowedProfiles] = useState([])
+  const [loading,          setLoading]          = useState(true)
+  const [showFindPeople,   setShowFindPeople]   = useState(false)
   const navigate = useNavigate()
+  // Tracks followed user IDs so the realtime handler only reloads for relevant inserts.
+  const followingIdsRef = useRef(new Set())
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
     loadFeed()
 
-    // Real-time subscription
+    // Only reload when a followed user posts activity, not on every global insert.
     const channel = supabase
       .channel('activity-feed')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity' }, () => loadFeed())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity' }, (payload) => {
+        if (followingIdsRef.current.has(payload.new.user_id)) loadFeed()
+      })
       .subscribe()
 
     return () => supabase.removeChannel(channel)
@@ -192,19 +199,32 @@ export default function Friends({ onOpen }) {
       .select('following_id')
       .eq('follower_id', user.id)
 
-    if (!followData?.length) { setFeed([]); setLoading(false); return }
+    if (!followData?.length) {
+      setFollowedProfiles([])
+      setFeed([])
+      setLoading(false)
+      return
+    }
 
     const followingIds = followData.map(f => f.following_id)
+    followingIdsRef.current = new Set(followingIds)
 
-    // Get their activity + profiles
-    const { data } = await supabase
-      .from('activity')
-      .select('*, profile:profiles(username, avatar_url)')
-      .in('user_id', followingIds)
-      .order('created_at', { ascending: false })
-      .limit(50)
+    // Fetch activity + profiles of followed users in parallel
+    const [activityRes, profilesRes] = await Promise.all([
+      supabase
+        .from('activity')
+        .select('*, profile:profiles(username, avatar_url)')
+        .in('user_id', followingIds)
+        .order('created_at', { ascending: false })
+        .limit(50),
+      supabase
+        .from('profiles')
+        .select('id, username, avatar_url')
+        .in('id', followingIds),
+    ])
 
-    setFeed(data || [])
+    setFollowedProfiles(profilesRes.data || [])
+    setFeed(activityRes.data || [])
     setLoading(false)
   }
 
@@ -233,6 +253,36 @@ export default function Friends({ onOpen }) {
           className="text-[0.78rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-3 py-[5px] hover:bg-accent hover:text-white transition-all"
         >+ Find People</button>
       </div>
+
+      {/* Followed users strip */}
+      {followedProfiles.length > 0 && (
+        <div className="px-5 pb-4 border-b border-warm-tan">
+          <div className="text-[0.7rem] font-bold uppercase tracking-[0.08em] text-muted mb-3">Following</div>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-1">
+            {followedProfiles.map(p => (
+              <button
+                key={p.id}
+                onClick={() => p.username && navigate(`/user/${p.username}`)}
+                className="flex flex-col items-center gap-1.5 shrink-0 group"
+              >
+                {p.avatar_url ? (
+                  <img
+                    src={p.avatar_url}
+                    className="w-12 h-12 rounded-full object-cover border-[2px] border-rim group-hover:border-accent transition-colors"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-warm-tan flex items-center justify-center text-[1.3rem] border-[2px] border-rim group-hover:border-accent transition-colors">
+                    👤
+                  </div>
+                )}
+                <span className="text-[0.68rem] text-muted group-hover:text-accent-dk transition-colors max-w-[52px] truncate text-center">
+                  @{p.username || '?'}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-16 text-muted text-[0.9rem]">Loading…</div>

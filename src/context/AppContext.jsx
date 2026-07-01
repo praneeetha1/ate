@@ -40,31 +40,43 @@ export function AppProvider({ children }) {
   }, [user?.id])
 
   async function syncFromSupabase(uid) {
-    const [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes] = await Promise.all([
-      supabase.from('favorites').select('recipe_key').eq('user_id', uid),
-      supabase.from('ratings').select('recipe_name,rating').eq('user_id', uid),
-      supabase.from('notes').select('recipe_name,body').eq('user_id', uid),
-      supabase.from('shopping_list').select('recipe_key').eq('user_id', uid),
-      supabase.from('user_recipes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
-      supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', uid),
-    ])
+    try {
+      // Upload any recipes created while logged out before the DB fetch overwrites local state.
+      const localRecipes = load('ate_user_recipes', []).filter(r => String(r.id).startsWith('local_'))
+      if (localRecipes.length) {
+        const toUpload = localRecipes.map(({ id, user_id, created_at, ...data }) => ({ ...data, user_id: uid }))
+        const { error: uploadErr } = await supabase.from('user_recipes').insert(toUpload)
+        if (uploadErr) console.error('Local recipe upload failed:', uploadErr)
+      }
 
-    if (favsRes.data?.length)
-      setFavorites(prev => new Set([...prev, ...favsRes.data.map(f => f.recipe_key)]))
-    if (ratingsRes.data?.length)
-      setRatings(prev => ({ ...prev, ...Object.fromEntries(ratingsRes.data.map(r => [r.recipe_name, r.rating])) }))
-    if (notesRes.data?.length)
-      setNotes(prev => ({ ...prev, ...Object.fromEntries(notesRes.data.map(n => [n.recipe_name, n.body])) }))
-    if (shopRes.data?.length)
-      setShoppingList(prev => new Set([...prev, ...shopRes.data.map(s => s.recipe_key)]))
-    if (recipesRes.data)
-      setUserRecipes(recipesRes.data)
-    if (listsRes.data)
-      setLists(listsRes.data.map(l => ({
-        id: l.id,
-        name: l.name,
-        items: l.list_items.map(li => /^\d+$/.test(li.recipe_key) ? parseInt(li.recipe_key) : li.recipe_key),
-      })))
+      const [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes] = await Promise.all([
+        supabase.from('favorites').select('recipe_key').eq('user_id', uid),
+        supabase.from('ratings').select('recipe_name,rating').eq('user_id', uid),
+        supabase.from('notes').select('recipe_name,body').eq('user_id', uid),
+        supabase.from('shopping_list').select('recipe_key').eq('user_id', uid),
+        supabase.from('user_recipes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+        supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', uid),
+      ])
+
+      if (!favsRes.error && favsRes.data?.length)
+        setFavorites(prev => new Set([...prev, ...favsRes.data.map(f => f.recipe_key)]))
+      if (!ratingsRes.error && ratingsRes.data?.length)
+        setRatings(prev => ({ ...prev, ...Object.fromEntries(ratingsRes.data.map(r => [r.recipe_name, r.rating])) }))
+      if (!notesRes.error && notesRes.data?.length)
+        setNotes(prev => ({ ...prev, ...Object.fromEntries(notesRes.data.map(n => [n.recipe_name, n.body])) }))
+      if (!shopRes.error && shopRes.data?.length)
+        setShoppingList(prev => new Set([...prev, ...shopRes.data.map(s => s.recipe_key)]))
+      if (!recipesRes.error && recipesRes.data)
+        setUserRecipes(recipesRes.data)
+      if (!listsRes.error && listsRes.data)
+        setLists(listsRes.data.map(l => ({
+          id: l.id,
+          name: l.name,
+          items: l.list_items.map(li => /^\d+$/.test(li.recipe_key) ? parseInt(li.recipe_key) : li.recipe_key),
+        })))
+    } catch (err) {
+      console.error('Supabase sync failed:', err)
+    }
   }
 
   // ── activity logging ───────────────────────────────────────
@@ -159,6 +171,8 @@ export function AppProvider({ children }) {
   }
 
   // ── user recipes ────────────────────────────────────────────
+  const MY_RECIPES_LIST = 'My Recipes'
+
   async function createUserRecipe(data) {
     if (user) {
       const { data: created, error } = await supabase
@@ -169,6 +183,41 @@ export function AppProvider({ children }) {
       if (error) throw error
       setUserRecipes(prev => [created, ...prev])
       logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
+
+      // Auto-add to the "My Recipes" system list, creating it on first use.
+      try {
+        let { data: myList } = await supabase
+          .from('lists')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('name', MY_RECIPES_LIST)
+          .maybeSingle()
+
+        if (!myList) {
+          const { data: newList, error: listErr } = await supabase
+            .from('lists')
+            .insert({ name: MY_RECIPES_LIST, user_id: user.id })
+            .select('id, name')
+            .single()
+          if (!listErr) {
+            myList = newList
+            setLists(prev => [{ id: newList.id, name: MY_RECIPES_LIST, items: [] }, ...prev])
+          }
+        }
+
+        if (myList) {
+          const recipeKey = 'u_' + created.id
+          await supabase.from('list_items').upsert({ list_id: myList.id, recipe_key: recipeKey })
+          setLists(prev => prev.map(l =>
+            l.id === myList.id && !l.items.includes(recipeKey)
+              ? { ...l, items: [...l.items, recipeKey] }
+              : l
+          ))
+        }
+      } catch (err) {
+        console.error('Failed to add to My Recipes list:', err)
+      }
+
       return created
     } else {
       const recipe = { ...data, id: 'local_' + Date.now(), user_id: null, created_at: new Date().toISOString() }

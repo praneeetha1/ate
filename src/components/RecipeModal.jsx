@@ -26,7 +26,10 @@ export default function RecipeModal({ recipe, idx, onClose }) {
     setShowLists(false)
     setNewListName('')
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      document.body.style.overflow = ''
+      clearTimeout(notesTimer.current)
+    }
   }, [idx])
 
   useEffect(() => {
@@ -60,9 +63,8 @@ export default function RecipeModal({ recipe, idx, onClose }) {
   }
 
   async function handleShare() {
-    const shareUrl = typeof idx === 'number'
-      ? `https://praneeetha1.github.io/ate/?r=${idx}`
-      : `https://praneeetha1.github.io/ate/`
+    const base = window.location.origin + import.meta.env.BASE_URL
+    const shareUrl = typeof idx === 'number' ? `${base}?r=${idx}` : base
     const shareData = {
       title: recipe.name,
       text: `Check out this recipe: ${recipe.name}`,

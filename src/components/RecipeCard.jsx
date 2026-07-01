@@ -3,9 +3,10 @@ import Tag from './Tag'
 
 export default function RecipeCard({ recipe, idx, onOpen, fill }) {
   const { favorites, toggleFav, ratings } = useApp()
-  const isFav  = favorites.has(idx)
-  const rating = ratings[recipe.name] || 0
-  const isVeg  = (recipe.dietary || []).includes('vegetarian')
+  const isFav        = favorites.has(idx)
+  const rating       = ratings[recipe.name] || 0
+  const isVeg        = (recipe.dietary || []).includes('vegetarian')
+  const isUserRecipe = typeof idx === 'string' && idx.startsWith('u_')
 
   return (
     <div
@@ -18,6 +19,11 @@ export default function RecipeCard({ recipe, idx, onOpen, fill }) {
             {recipe.name}
           </div>
           <div className="flex items-center gap-[7px] flex-wrap">
+            {isUserRecipe && (
+              <span className="inline-block text-[0.68rem] font-bold tracking-[0.08em] uppercase px-2.5 py-[3px] rounded-xl bg-accent text-white">
+                My Recipe
+              </span>
+            )}
             <Tag category={recipe.category} />
             {recipe.timeMinutes && (
               <span className="text-[0.7rem] text-muted">⏱ {recipe.timeMinutes} min</span>
