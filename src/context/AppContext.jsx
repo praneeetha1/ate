@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { useAuth } from './AuthContext'
+import { supabase } from '../lib/supabase'
 
 const AppContext = createContext(null)
 
@@ -8,42 +10,111 @@ function load(key, fallback) {
 }
 
 export function AppProvider({ children }) {
+  const { user } = useAuth()
+
   const [favorites,    setFavorites]    = useState(() => new Set(load('ate_favs', [])))
   const [ratings,      setRatings]      = useState(() => load('ate_ratings', {}))
   const [notes,        setNotes]        = useState(() => load('ate_notes', {}))
   const [shoppingList, setShoppingList] = useState(() => new Set(load('ate_shopping', [])))
   const [shopChecked,  setShopChecked]  = useState(() => new Set(load('ate_shop_checked', [])))
+  const [userRecipes,  setUserRecipes]  = useState(() => load('ate_user_recipes', []))
+  const [lists,        setLists]        = useState(() => load('ate_lists', []))
 
+  // Persist to localStorage
   useEffect(() => { localStorage.setItem('ate_favs',         JSON.stringify([...favorites])) },    [favorites])
   useEffect(() => { localStorage.setItem('ate_ratings',      JSON.stringify(ratings)) },           [ratings])
   useEffect(() => { localStorage.setItem('ate_notes',        JSON.stringify(notes)) },             [notes])
   useEffect(() => { localStorage.setItem('ate_shopping',     JSON.stringify([...shoppingList])) }, [shoppingList])
   useEffect(() => { localStorage.setItem('ate_shop_checked', JSON.stringify([...shopChecked])) },  [shopChecked])
+  useEffect(() => { localStorage.setItem('ate_user_recipes', JSON.stringify(userRecipes)) },       [userRecipes])
+  useEffect(() => { localStorage.setItem('ate_lists',        JSON.stringify(lists)) },             [lists])
 
+  // Sync on login / reset on logout
+  useEffect(() => {
+    if (user) {
+      syncFromSupabase(user.id)
+    } else {
+      setUserRecipes(load('ate_user_recipes', []))
+      setLists(load('ate_lists', []))
+    }
+  }, [user?.id])
+
+  async function syncFromSupabase(uid) {
+    const [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes] = await Promise.all([
+      supabase.from('favorites').select('recipe_key').eq('user_id', uid),
+      supabase.from('ratings').select('recipe_name,rating').eq('user_id', uid),
+      supabase.from('notes').select('recipe_name,body').eq('user_id', uid),
+      supabase.from('shopping_list').select('recipe_key').eq('user_id', uid),
+      supabase.from('user_recipes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+      supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', uid),
+    ])
+
+    if (favsRes.data?.length)
+      setFavorites(prev => new Set([...prev, ...favsRes.data.map(f => f.recipe_key)]))
+    if (ratingsRes.data?.length)
+      setRatings(prev => ({ ...prev, ...Object.fromEntries(ratingsRes.data.map(r => [r.recipe_name, r.rating])) }))
+    if (notesRes.data?.length)
+      setNotes(prev => ({ ...prev, ...Object.fromEntries(notesRes.data.map(n => [n.recipe_name, n.body])) }))
+    if (shopRes.data?.length)
+      setShoppingList(prev => new Set([...prev, ...shopRes.data.map(s => s.recipe_key)]))
+    if (recipesRes.data)
+      setUserRecipes(recipesRes.data)
+    if (listsRes.data)
+      setLists(listsRes.data.map(l => ({
+        id: l.id,
+        name: l.name,
+        items: l.list_items.map(li => /^\d+$/.test(li.recipe_key) ? parseInt(li.recipe_key) : li.recipe_key),
+      })))
+  }
+
+  // ── favorites ──────────────────────────────────────────────
   function toggleFav(idx) {
     setFavorites(prev => {
       const next = new Set(prev)
-      if (next.has(idx)) next.delete(idx); else next.add(idx)
+      if (next.has(idx)) {
+        next.delete(idx)
+        if (user && typeof idx === 'number')
+          supabase.from('favorites').delete().match({ user_id: user.id, recipe_key: idx })
+      } else {
+        next.add(idx)
+        if (user && typeof idx === 'number')
+          supabase.from('favorites').upsert({ user_id: user.id, recipe_key: idx })
+      }
       return next
     })
   }
 
+  // ── ratings ────────────────────────────────────────────────
   function setRating(name, value) {
     setRatings(prev => {
       const next = { ...prev }
-      if (value) next[name] = value; else delete next[name]
+      if (value) {
+        next[name] = value
+        if (user) supabase.from('ratings').upsert({ user_id: user.id, recipe_name: name, rating: value })
+      } else {
+        delete next[name]
+        if (user) supabase.from('ratings').delete().match({ user_id: user.id, recipe_name: name })
+      }
       return next
     })
   }
 
+  // ── notes ──────────────────────────────────────────────────
   function setNote(name, value) {
     setNotes(prev => {
       const next = { ...prev }
-      if (value) next[name] = value; else delete next[name]
+      if (value) {
+        next[name] = value
+        if (user) supabase.from('notes').upsert({ user_id: user.id, recipe_name: name, body: value })
+      } else {
+        delete next[name]
+        if (user) supabase.from('notes').delete().match({ user_id: user.id, recipe_name: name })
+      }
       return next
     })
   }
 
+  // ── shopping ───────────────────────────────────────────────
   function toggleShopping(idx) {
     setShoppingList(prev => {
       const next = new Set(prev)
@@ -54,8 +125,12 @@ export function AppProvider({ children }) {
           cn.forEach(k => { if (k.startsWith(`${idx}-`)) cn.delete(k) })
           return cn
         })
+        if (user && typeof idx === 'number')
+          supabase.from('shopping_list').delete().match({ user_id: user.id, recipe_key: idx })
       } else {
         next.add(idx)
+        if (user && typeof idx === 'number')
+          supabase.from('shopping_list').upsert({ user_id: user.id, recipe_key: idx })
       }
       return next
     })
@@ -70,8 +145,78 @@ export function AppProvider({ children }) {
   }
 
   function clearShopping() {
+    if (user) supabase.from('shopping_list').delete().eq('user_id', user.id)
     setShoppingList(new Set())
     setShopChecked(new Set())
+  }
+
+  // ── user recipes ────────────────────────────────────────────
+  async function createUserRecipe(data) {
+    if (user) {
+      const { data: created, error } = await supabase
+        .from('user_recipes')
+        .insert({ ...data, user_id: user.id })
+        .select()
+        .single()
+      if (error) throw error
+      setUserRecipes(prev => [created, ...prev])
+      return created
+    } else {
+      const recipe = { ...data, id: 'local_' + Date.now(), user_id: null, created_at: new Date().toISOString() }
+      setUserRecipes(prev => [recipe, ...prev])
+      return recipe
+    }
+  }
+
+  async function deleteUserRecipe(id) {
+    setUserRecipes(prev => prev.filter(r => r.id !== id))
+    setLists(prev => prev.map(l => ({ ...l, items: l.items.filter(k => k !== 'u_' + id) })))
+    if (user) supabase.from('user_recipes').delete().match({ id, user_id: user.id })
+  }
+
+  // ── lists ──────────────────────────────────────────────────
+  async function createList(name) {
+    if (user) {
+      const { data, error } = await supabase
+        .from('lists')
+        .insert({ name, user_id: user.id })
+        .select()
+        .single()
+      if (error) throw error
+      const list = { id: data.id, name: data.name, items: [] }
+      setLists(prev => [list, ...prev])
+      return list
+    } else {
+      const list = { id: 'local_' + Date.now(), name, items: [] }
+      setLists(prev => [list, ...prev])
+      return list
+    }
+  }
+
+  async function deleteList(id) {
+    setLists(prev => prev.filter(l => l.id !== id))
+    if (user) supabase.from('lists').delete().match({ id, user_id: user.id })
+  }
+
+  async function renameList(id, name) {
+    setLists(prev => prev.map(l => l.id === id ? { ...l, name } : l))
+    if (user) supabase.from('lists').update({ name }).match({ id, user_id: user.id })
+  }
+
+  function addToList(listId, recipeKey) {
+    setLists(prev => prev.map(l =>
+      l.id === listId && !l.items.includes(recipeKey)
+        ? { ...l, items: [...l.items, recipeKey] }
+        : l
+    ))
+    if (user) supabase.from('list_items').upsert({ list_id: listId, recipe_key: String(recipeKey) })
+  }
+
+  function removeFromList(listId, recipeKey) {
+    setLists(prev => prev.map(l =>
+      l.id === listId ? { ...l, items: l.items.filter(k => k !== recipeKey) } : l
+    ))
+    if (user) supabase.from('list_items').delete().match({ list_id: listId, recipe_key: String(recipeKey) })
   }
 
   return (
@@ -80,8 +225,9 @@ export function AppProvider({ children }) {
       ratings,      setRating,
       notes,        setNote,
       shoppingList, toggleShopping,
-      shopChecked,  toggleShopItem,
-      clearShopping,
+      shopChecked,  toggleShopItem, clearShopping,
+      userRecipes,  createUserRecipe, deleteUserRecipe,
+      lists,        createList, deleteList, renameList, addToList, removeFromList,
     }}>
       {children}
     </AppContext.Provider>

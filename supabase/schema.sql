@@ -115,3 +115,65 @@ create policy "Users can manage own shopping list"
   on public.shopping_list for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+
+-- ── user_recipes ─────────────────────────────────────────────
+create table if not exists public.user_recipes (
+  id           uuid default gen_random_uuid() primary key,
+  user_id      uuid not null references auth.users(id) on delete cascade,
+  name         text not null,
+  category     text not null default 'My Recipes',
+  dietary      text[] default '{}',
+  ingredients  jsonb not null default '[]',
+  steps        text[] not null default '{}',
+  time_minutes integer,
+  servings     integer,
+  created_at   timestamptz default now()
+);
+
+alter table public.user_recipes enable row level security;
+
+create policy "Users can manage own user_recipes"
+  on public.user_recipes for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+
+-- ── lists ─────────────────────────────────────────────────────
+create table if not exists public.lists (
+  id         uuid default gen_random_uuid() primary key,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  name       text not null,
+  created_at timestamptz default now()
+);
+
+alter table public.lists enable row level security;
+
+create policy "Users can manage own lists"
+  on public.lists for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+
+-- ── list_items ────────────────────────────────────────────────
+-- recipe_key: catalog index as string ("5") OR "u_<uuid>" for user recipes
+create table if not exists public.list_items (
+  id         bigint generated always as identity primary key,
+  list_id    uuid not null references public.lists(id) on delete cascade,
+  recipe_key text not null,
+  added_at   timestamptz default now(),
+  unique (list_id, recipe_key)
+);
+
+alter table public.list_items enable row level security;
+
+create policy "Users can manage own list items"
+  on public.list_items for all
+  using (exists (
+    select 1 from public.lists l
+    where l.id = list_items.list_id and l.user_id = auth.uid()
+  ))
+  with check (exists (
+    select 1 from public.lists l
+    where l.id = list_items.list_id and l.user_id = auth.uid()
+  ));

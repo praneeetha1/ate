@@ -4,12 +4,15 @@ import { ingredientLabel } from '../utils/recipe'
 import Tag from './Tag'
 
 export default function RecipeModal({ recipe, idx, onClose }) {
-  const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping } = useApp()
+  const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
+          lists, addToList, removeFromList, createList } = useApp()
 
   const [scale,           setScale]           = useState(1)
   const [checkedIngs,     setCheckedIngs]     = useState(new Set())
   const [noteText,        setNoteText]        = useState('')
   const [savedHint,       setSavedHint]       = useState(false)
+  const [showLists,       setShowLists]       = useState(false)
+  const [newListName,     setNewListName]     = useState('')
   const notesTimer = useRef(null)
 
   const isFav   = favorites.has(idx)
@@ -20,6 +23,8 @@ export default function RecipeModal({ recipe, idx, onClose }) {
     setScale(1)
     setCheckedIngs(new Set())
     setNoteText(notes[recipe.name] || '')
+    setShowLists(false)
+    setNewListName('')
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
   }, [idx])
@@ -54,6 +59,14 @@ export default function RecipeModal({ recipe, idx, onClose }) {
     setRating(recipe.name, n === rating ? 0 : n)
   }
 
+  async function handleNewList(e) {
+    e.preventDefault()
+    if (!newListName.trim()) return
+    const list = await createList(newListName.trim())
+    addToList(list.id, idx)
+    setNewListName('')
+  }
+
   return (
     <div
       className="fixed inset-0 bg-[rgba(60,35,15,0.55)] backdrop-blur-[3px] z-[500] flex items-start justify-center p-8 overflow-y-auto"
@@ -85,6 +98,47 @@ export default function RecipeModal({ recipe, idx, onClose }) {
               onClick={() => toggleShopping(idx)}
               title="Add to shopping list"
             >🛒</button>
+            <div className="relative">
+              <button
+                className={`text-[1.2rem] transition-all hover:scale-[1.15] p-1 ${lists.some(l => l.items.includes(idx)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                onClick={() => setShowLists(p => !p)}
+                title="Add to list"
+              >📋</button>
+              {showLists && (
+                <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-[1.5px] border-rim rounded-xl shadow-warm-lg z-50 overflow-hidden">
+                  <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-rim bg-paper">
+                    Add to list
+                  </div>
+                  {lists.length === 0 && (
+                    <div className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</div>
+                  )}
+                  {lists.map(l => {
+                    const inL = l.items.includes(idx)
+                    return (
+                      <button
+                        key={l.id}
+                        onClick={() => inL ? removeFromList(l.id, idx) : addToList(l.id, idx)}
+                        className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
+                      >
+                        <span className="text-[0.9rem]">{inL ? '✓' : '+'}</span>
+                        <span className="truncate">{l.name}</span>
+                      </button>
+                    )
+                  })}
+                  <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-rim bg-paper">
+                    <input
+                      value={newListName}
+                      onChange={e => setNewListName(e.target.value)}
+                      placeholder="New list…"
+                      className="flex-1 text-[0.8rem] border-[1.5px] border-rim rounded-lg px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+                    />
+                    <button type="submit" className="bg-accent text-white text-[0.78rem] font-bold rounded-lg px-2.5 hover:bg-accent-dk transition-colors">
+                      Add
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
             <button
               className="bg-paper border-[1.5px] border-rim rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none"
               onClick={onClose}

@@ -1,24 +1,31 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RECIPES from '../data/recipes.json'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { ingredientLabel } from '../utils/recipe'
+import CreateRecipeModal from '../components/CreateRecipeModal'
 
 export default function Profile({ onOpen }) {
-  const { shoppingList, shopChecked, toggleShopItem, toggleShopping, clearShopping } = useApp()
+  const { shoppingList, shopChecked, toggleShopItem, toggleShopping, clearShopping,
+          userRecipes, deleteUserRecipe } = useApp()
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
+  const [showCreate, setShowCreate] = useState(false)
   const listArr = [...shoppingList]
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Home cook'
   const avatarUrl   = user?.user_metadata?.avatar_url
 
-  async function handleSignOut() {
-    await signOut()
-  }
-
   return (
     <>
+      {showCreate && (
+        <CreateRecipeModal
+          onClose={() => setShowCreate(false)}
+          onCreated={idx => { setShowCreate(false); onOpen(idx) }}
+        />
+      )}
+
       {/* Profile section */}
       <div className="flex flex-col items-center px-5 pt-7 pb-5 gap-2.5 border-b border-warm-tan">
         {avatarUrl ? (
@@ -33,7 +40,7 @@ export default function Profile({ onOpen }) {
           <div className="flex flex-col items-center gap-2 mt-0.5">
             <div className="text-[0.78rem] text-muted">{user.email}</div>
             <button
-              onClick={handleSignOut}
+              onClick={() => signOut()}
               className="text-[0.78rem] font-bold text-muted border-[1.5px] border-rim rounded-[14px] px-4 py-[5px] hover:text-heart hover:border-heart transition-all"
             >Sign out</button>
           </div>
@@ -45,9 +52,49 @@ export default function Profile({ onOpen }) {
         )}
       </div>
 
-      {/* Shopping list header */}
+      {/* My Recipes section */}
+      <div className="border-b border-warm-tan">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3">
+          <span className="font-display text-[1.15rem] font-semibold text-ink">My Recipes</span>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="text-[0.78rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-3 py-[5px] hover:bg-accent hover:text-white transition-all"
+          >+ New Recipe</button>
+        </div>
+
+        {!userRecipes.length ? (
+          <div className="px-5 pb-5 text-[0.85rem] text-muted italic">
+            No recipes yet — create your first one!
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1 pb-3">
+            {userRecipes.map(r => (
+              <div
+                key={r.id}
+                className="flex items-center justify-between px-5 py-2.5 hover:bg-paper transition-colors"
+              >
+                <div
+                  className="flex-1 min-w-0 cursor-pointer"
+                  onClick={() => onOpen('u_' + r.id)}
+                >
+                  <div className="font-display text-[0.95rem] font-semibold text-ink truncate">{r.name}</div>
+                  <div className="text-[0.75rem] text-muted">
+                    {r.category}{r.servings ? ` · ${r.servings} servings` : ''}{r.time_minutes ? ` · ${r.time_minutes} min` : ''}
+                  </div>
+                </div>
+                <button
+                  onClick={() => deleteUserRecipe(r.id)}
+                  className="text-[0.72rem] text-muted hover:text-heart transition-colors ml-3 px-2 py-1 rounded shrink-0"
+                >Delete</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Shopping list */}
       <div className="flex items-center justify-between px-5 py-[18px] pb-3">
-        <span className="font-display text-[1.3rem] font-semibold text-ink">🛒 Shopping List</span>
+        <span className="font-display text-[1.15rem] font-semibold text-ink">🛒 Shopping List</span>
         {listArr.length > 0 && (
           <button
             onClick={clearShopping}
@@ -57,7 +104,7 @@ export default function Profile({ onOpen }) {
       </div>
 
       {!listArr.length ? (
-        <div className="text-center py-[60px] px-5">
+        <div className="text-center py-[40px] px-5">
           <div className="font-display text-[1.05rem] text-muted">Nothing here yet</div>
           <div className="text-[0.8rem] text-muted mt-2 italic">
             Open a recipe and tap 🛒 to add its ingredients
@@ -66,7 +113,8 @@ export default function Profile({ onOpen }) {
       ) : (
         <div className="pb-4">
           {listArr.map(idx => {
-            const recipe = RECIPES[idx]
+            const recipe = typeof idx === 'number' ? RECIPES[idx] : null
+            if (!recipe) return null
             return (
               <div key={idx} className="mx-4 mb-3.5 border-[1.5px] border-warm-tan rounded-[10px] overflow-hidden bg-card">
                 <div className="flex items-center justify-between px-3.5 py-2.5 bg-paper border-b border-warm-tan">

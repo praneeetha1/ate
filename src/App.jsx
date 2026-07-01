@@ -9,12 +9,20 @@ import Saved from './pages/Saved'
 import Profile from './pages/Profile'
 import Auth from './pages/Auth'
 import RECIPES from './data/recipes.json'
+import { useApp } from './context/AppContext'
 
 export default function App() {
   const [modalIdx, setModalIdx] = useState(null)
+  const { userRecipes } = useApp()
 
   function openModal(idx) { setModalIdx(idx) }
   function closeModal()   { setModalIdx(null) }
+
+  const modalRecipe = modalIdx !== null
+    ? (typeof modalIdx === 'number'
+        ? RECIPES[modalIdx]
+        : userRecipes.find(r => 'u_' + r.id === modalIdx))
+    : null
 
   return (
     <>
@@ -27,9 +35,9 @@ export default function App() {
         <Route path="/login"   element={<Auth />} />
       </Routes>
       <BottomNav />
-      {modalIdx !== null && (
+      {modalIdx !== null && modalRecipe && (
         <RecipeModal
-          recipe={RECIPES[modalIdx]}
+          recipe={modalRecipe}
           idx={modalIdx}
           onClose={closeModal}
         />
