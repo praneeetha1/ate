@@ -10,7 +10,7 @@ import UsernameModal from '../components/UsernameModal'
 export default function Profile({ onOpen }) {
   const { shoppingList, shopChecked, toggleShopItem, toggleShopping, clearShopping,
           userRecipes, deleteUserRecipe } = useApp()
-  const { user, signOut } = useAuth()
+  const { user, profile, signOut } = useAuth()
   const navigate = useNavigate()
   const [showCreate,   setShowCreate]   = useState(false)
   const [editUsername, setEditUsername] = useState(false)
