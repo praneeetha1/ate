@@ -59,6 +59,23 @@ export default function RecipeModal({ recipe, idx, onClose }) {
     setRating(recipe.name, n === rating ? 0 : n)
   }
 
+  async function handleShare() {
+    const shareUrl = typeof idx === 'number'
+      ? `https://praneeetha1.github.io/ate/?r=${idx}`
+      : `https://praneeetha1.github.io/ate/`
+    const shareData = {
+      title: recipe.name,
+      text: `Check out this recipe: ${recipe.name}`,
+      url: shareUrl,
+    }
+    if (navigator.share) {
+      await navigator.share(shareData)
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      alert('Link copied!')
+    }
+  }
+
   async function handleNewList(e) {
     e.preventDefault()
     if (!newListName.trim()) return
@@ -139,6 +156,11 @@ export default function RecipeModal({ recipe, idx, onClose }) {
                 </div>
               )}
             </div>
+            <button
+              className="text-[1.2rem] transition-all hover:scale-[1.15] p-1 text-warm-tan hover:text-accent"
+              onClick={handleShare}
+              title="Share recipe"
+            >↗</button>
             <button
               className="bg-paper border-[1.5px] border-rim rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none"
               onClick={onClose}

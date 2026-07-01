@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -17,6 +17,18 @@ export default function App() {
 
   function openModal(idx) { setModalIdx(idx) }
   function closeModal()   { setModalIdx(null) }
+
+  // Open recipe from shared link e.g. ?r=42
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const r = params.get('r')
+    if (r !== null) {
+      const idx = parseInt(r)
+      if (!isNaN(idx) && idx >= 0 && idx < RECIPES.length) setModalIdx(idx)
+      // Clean up the URL without reloading
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash)
+    }
+  }, [])
 
   const modalRecipe = modalIdx !== null
     ? (typeof modalIdx === 'number'
