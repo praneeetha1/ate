@@ -19,7 +19,12 @@ createRoot(document.getElementById('root')).render(
 )
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () =>
-    navigator.serviceWorker.register('/ate/sw.js').catch(() => {})
-  )
+  if (import.meta.env.PROD) {
+    window.addEventListener('load', () =>
+      navigator.serviceWorker.register('/ate/sw.js').catch(() => {})
+    )
+  } else {
+    // In dev, unregister any cached SW so Vite's dev server always serves fresh assets.
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()))
+  }
 }
