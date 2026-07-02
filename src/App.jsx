@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Component } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -14,6 +14,27 @@ import RECIPES from './data/recipes.json'
 import { useApp } from './context/AppContext'
 import { useAuth } from './context/AuthContext'
 import UsernameModal from './components/UsernameModal'
+
+export class ErrorBoundary extends Component {
+  state = { error: null }
+  static getDerivedStateFromError(error) { return { error } }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-8 text-center">
+          <div className="text-[3rem]">🍳</div>
+          <div className="font-display text-[1.3rem] font-semibold text-ink">Something went wrong</div>
+          <div className="text-[0.82rem] text-muted max-w-sm">{this.state.error.message}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 bg-accent text-white font-bold rounded-xl px-6 py-2.5 hover:bg-accent-dk transition-colors"
+          >Reload app</button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 export default function App() {
   const [modalIdx, setModalIdx] = useState(null)
