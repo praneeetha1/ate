@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
-const CATEGORIES = ['Main Dish', 'Side Dish', 'Appetizer', 'Salad', 'Soup', 'Breakfast', 'Dessert', 'Snack', 'Sauce', 'Drink', 'My Recipes']
+const CATEGORIES = ['Main Dish', 'Side Dish', 'Appetizer', 'Salad', 'Soup', 'Breakfast', 'Dessert', 'Snack', 'Sauce', 'Drink']
 const DIETARY    = ['vegetarian', 'vegan', 'gluten-free', 'dairy-free']
 
 const emptyIng  = () => ({ amount: '', unit: '', item: '' })
@@ -11,7 +11,7 @@ export default function CreateRecipeModal({ onClose, onCreated }) {
   const { createUserRecipe } = useApp()
 
   const [name,      setName]      = useState('')
-  const [category,  setCategory]  = useState('My Recipes')
+  const [category,  setCategory]  = useState('Main Dish')
   const [dietary,   setDietary]   = useState([])
   const [time,      setTime]      = useState('')
   const [servings,  setServings]  = useState('')
