@@ -230,7 +230,7 @@ export default function UserProfile({ onOpen }) {
               <div
                 key={r.id}
                 className="flex items-center justify-between px-5 py-3.5 border-b border-[rgba(200,180,130,0.3)] hover:bg-paper transition-colors cursor-pointer"
-                onClick={() => onOpen('u_' + r.id)}
+                onClick={() => onOpen('u_' + r.id, { ...r, timeMinutes: r.time_minutes })}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">

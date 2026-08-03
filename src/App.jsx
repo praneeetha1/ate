@@ -38,12 +38,16 @@ export class ErrorBoundary extends Component {
 
 export default function App() {
   const [modalIdx, setModalIdx] = useState(null)
+  // Holds the full recipe object when opening a user recipe that doesn't belong
+  // to the logged-in user (e.g. from someone else's public profile) — those
+  // aren't in this user's own `userRecipes`, so idx lookup alone can't find them.
+  const [externalRecipe, setExternalRecipe] = useState(null)
   const { userRecipes } = useApp()
   const { user, profile } = useAuth()
   const needsUsername = user && profile && !profile.username_set
 
-  function openModal(idx) { setModalIdx(idx) }
-  function closeModal()   { setModalIdx(null) }
+  function openModal(idx, recipe) { setModalIdx(idx); setExternalRecipe(recipe || null) }
+  function closeModal()   { setModalIdx(null); setExternalRecipe(null) }
 
   // Open recipe from shared link e.g. ?r=42
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function App() {
   const modalRecipe = modalIdx !== null
     ? (typeof modalIdx === 'number'
         ? RECIPES[modalIdx]
-        : userRecipes.find(r => 'u_' + r.id === modalIdx))
+        : (externalRecipe || userRecipes.find(r => 'u_' + r.id === modalIdx)))
     : null
 
   return (

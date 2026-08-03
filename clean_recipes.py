@@ -199,10 +199,12 @@ for cat in cats:
 
 sample = sample[:TARGET]
 
-with open("recipes.json", "w") as f:
+OUTPUT_PATH = "src/data/recipes.json"
+
+with open(OUTPUT_PATH, "w") as f:
     json.dump(sample, f, indent=2)
 
-print(f"\nSaved {len(sample)} recipes to recipes.json")
+print(f"\nSaved {len(sample)} recipes to {OUTPUT_PATH}")
 print("\nCategory breakdown:")
 cat_counts = defaultdict(int)
 for r in sample:

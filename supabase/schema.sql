@@ -52,11 +52,11 @@ create trigger on_auth_user_created
 
 
 -- ── favorites ────────────────────────────────────────────────
--- recipe_key = recipe index (integer) matching the JSON array position
+-- recipe_key = catalog index as string ("5") OR "u_<uuid>" for user recipes
 create table if not exists public.favorites (
   id         bigint generated always as identity primary key,
   user_id    uuid not null references auth.users(id) on delete cascade,
-  recipe_key integer not null,
+  recipe_key text not null,
   created_at timestamptz default now(),
   unique (user_id, recipe_key)
 );
@@ -110,7 +110,7 @@ create policy "Users can manage own notes"
 create table if not exists public.shopping_list (
   id         bigint generated always as identity primary key,
   user_id    uuid not null references auth.users(id) on delete cascade,
-  recipe_key integer not null,
+  recipe_key text not null,
   created_at timestamptz default now(),
   unique (user_id, recipe_key)
 );

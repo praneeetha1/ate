@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import RECIPES from '../data/recipes.json'
 import { useApp } from '../context/AppContext'
+import { useToast } from '../context/ToastContext'
 import RecipeCard from '../components/RecipeCard'
 import RecipeListItem from '../components/RecipeListItem'
 
 export default function Saved({ onOpen }) {
   const { favorites, lists, userRecipes, deleteList, createList } = useApp()
+  const { showError } = useToast()
   const [tab,        setTab]        = useState('favorites') // 'favorites' | 'lists'
   const [layout,     setLayout]     = useState('grid')
   const [expanded,   setExpanded]   = useState(null)
@@ -22,8 +24,12 @@ export default function Saved({ onOpen }) {
   async function handleCreateList(e) {
     e.preventDefault()
     if (!newListName.trim()) return
-    await createList(newListName.trim())
-    setNewListName('')
+    try {
+      await createList(newListName.trim())
+      setNewListName('')
+    } catch (err) {
+      showError('Could not create list.')
+    }
   }
 
   const tabCls = active =>

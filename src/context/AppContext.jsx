@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useAuth } from './AuthContext'
+import { useToast } from './ToastContext'
 import { supabase } from '../lib/supabase'
 
 const AppContext = createContext(null)
@@ -9,8 +10,32 @@ function load(key, fallback) {
   catch { return fallback }
 }
 
+// DB rows use snake_case time_minutes; catalog recipes (src/data/recipes.json)
+// and the rest of the UI use camelCase timeMinutes.
+function normalizeUserRecipe(r) {
+  return { ...r, timeMinutes: r.time_minutes }
+}
+
+// recipe_key is stored as text ("5" for catalog index, or "u_<uuid>" for user
+// recipes) — catalog lookups/comparisons elsewhere in the app expect a number.
+function parseRecipeKey(key) {
+  return /^\d+$/.test(String(key)) ? parseInt(key) : key
+}
+
 export function AppProvider({ children }) {
   const { user } = useAuth()
+  const { showError } = useToast()
+
+  // Fire-and-forget Supabase writes still run in the background, but failures
+  // now surface to the user instead of silently desyncing local vs. DB state.
+  function notifyOnError(promise, message) {
+    promise.then(({ error }) => {
+      if (error) {
+        console.error(message, error)
+        showError(message)
+      }
+    })
+  }
 
   const [favorites,    setFavorites]    = useState(() => new Set(load('ate_favs', [])))
   const [ratings,      setRatings]      = useState(() => load('ate_ratings', {}))
@@ -45,8 +70,18 @@ export function AppProvider({ children }) {
       const localRecipes = load('ate_user_recipes', []).filter(r => String(r.id).startsWith('local_'))
       if (localRecipes.length) {
         const toUpload = localRecipes.map(({ id, user_id, created_at, ...data }) => ({ ...data, user_id: uid }))
-        const { error: uploadErr } = await supabase.from('user_recipes').insert(toUpload)
-        if (uploadErr) console.error('Local recipe upload failed:', uploadErr)
+        const { data: uploaded, error: uploadErr } = await supabase.from('user_recipes').insert(toUpload).select()
+        if (uploadErr) {
+          console.error('Local recipe upload failed:', uploadErr)
+          showError('Some locally-created recipes could not be uploaded.')
+        } else if (uploaded?.length) {
+          // Mirror the same side effects createUserRecipe performs for online creation,
+          // so recipes made while logged out still show up in the activity feed and My Recipes list.
+          for (const created of uploaded) {
+            logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
+          }
+          await addRecipesToMyRecipesList(uid, uploaded)
+        }
       }
 
       const [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes] = await Promise.all([
@@ -59,20 +94,20 @@ export function AppProvider({ children }) {
       ])
 
       if (!favsRes.error && favsRes.data?.length)
-        setFavorites(prev => new Set([...prev, ...favsRes.data.map(f => f.recipe_key)]))
+        setFavorites(prev => new Set([...prev, ...favsRes.data.map(f => parseRecipeKey(f.recipe_key))]))
       if (!ratingsRes.error && ratingsRes.data?.length)
         setRatings(prev => ({ ...prev, ...Object.fromEntries(ratingsRes.data.map(r => [r.recipe_name, r.rating])) }))
       if (!notesRes.error && notesRes.data?.length)
         setNotes(prev => ({ ...prev, ...Object.fromEntries(notesRes.data.map(n => [n.recipe_name, n.body])) }))
       if (!shopRes.error && shopRes.data?.length)
-        setShoppingList(prev => new Set([...prev, ...shopRes.data.map(s => s.recipe_key)]))
+        setShoppingList(prev => new Set([...prev, ...shopRes.data.map(s => parseRecipeKey(s.recipe_key))]))
       if (!recipesRes.error && recipesRes.data)
-        setUserRecipes(recipesRes.data)
+        setUserRecipes(recipesRes.data.map(normalizeUserRecipe))
       if (!listsRes.error && listsRes.data)
         setLists(listsRes.data.map(l => ({
           id: l.id,
           name: l.name,
-          items: l.list_items.map(li => /^\d+$/.test(li.recipe_key) ? parseInt(li.recipe_key) : li.recipe_key),
+          items: l.list_items.map(li => parseRecipeKey(li.recipe_key)),
         })))
     } catch (err) {
       console.error('Supabase sync failed:', err)
@@ -82,7 +117,10 @@ export function AppProvider({ children }) {
   // ── activity logging ───────────────────────────────────────
   function logActivity(type, data) {
     if (!user) return
-    supabase.from('activity').insert({ user_id: user.id, type, ...data })
+    notifyOnError(
+      supabase.from('activity').insert({ user_id: user.id, type, ...data }),
+      'Could not log activity.'
+    )
   }
 
   // ── favorites ──────────────────────────────────────────────
@@ -91,12 +129,18 @@ export function AppProvider({ children }) {
       const next = new Set(prev)
       if (next.has(idx)) {
         next.delete(idx)
-        if (user && typeof idx === 'number')
-          supabase.from('favorites').delete().match({ user_id: user.id, recipe_key: idx })
+        if (user)
+          notifyOnError(
+            supabase.from('favorites').delete().match({ user_id: user.id, recipe_key: String(idx) }),
+            'Could not remove favorite.'
+          )
       } else {
         next.add(idx)
-        if (user && typeof idx === 'number')
-          supabase.from('favorites').upsert({ user_id: user.id, recipe_key: idx })
+        if (user)
+          notifyOnError(
+            supabase.from('favorites').upsert({ user_id: user.id, recipe_key: String(idx) }),
+            'Could not save favorite.'
+          )
         if (recipeName) logActivity('saved', { recipe_key: String(idx), recipe_name: recipeName })
       }
       return next
@@ -109,11 +153,19 @@ export function AppProvider({ children }) {
       const next = { ...prev }
       if (value) {
         next[name] = value
-        if (user) supabase.from('ratings').upsert({ user_id: user.id, recipe_name: name, rating: value })
+        if (user)
+          notifyOnError(
+            supabase.from('ratings').upsert({ user_id: user.id, recipe_name: name, rating: value }),
+            'Could not save rating.'
+          )
         if (value >= 4) logActivity('rated', { recipe_name: name, rating: value })
       } else {
         delete next[name]
-        if (user) supabase.from('ratings').delete().match({ user_id: user.id, recipe_name: name })
+        if (user)
+          notifyOnError(
+            supabase.from('ratings').delete().match({ user_id: user.id, recipe_name: name }),
+            'Could not remove rating.'
+          )
       }
       return next
     })
@@ -125,10 +177,18 @@ export function AppProvider({ children }) {
       const next = { ...prev }
       if (value) {
         next[name] = value
-        if (user) supabase.from('notes').upsert({ user_id: user.id, recipe_name: name, body: value })
+        if (user)
+          notifyOnError(
+            supabase.from('notes').upsert({ user_id: user.id, recipe_name: name, body: value }),
+            'Could not save note.'
+          )
       } else {
         delete next[name]
-        if (user) supabase.from('notes').delete().match({ user_id: user.id, recipe_name: name })
+        if (user)
+          notifyOnError(
+            supabase.from('notes').delete().match({ user_id: user.id, recipe_name: name }),
+            'Could not remove note.'
+          )
       }
       return next
     })
@@ -145,12 +205,18 @@ export function AppProvider({ children }) {
           cn.forEach(k => { if (k.startsWith(`${idx}-`)) cn.delete(k) })
           return cn
         })
-        if (user && typeof idx === 'number')
-          supabase.from('shopping_list').delete().match({ user_id: user.id, recipe_key: idx })
+        if (user)
+          notifyOnError(
+            supabase.from('shopping_list').delete().match({ user_id: user.id, recipe_key: String(idx) }),
+            'Could not remove from shopping list.'
+          )
       } else {
         next.add(idx)
-        if (user && typeof idx === 'number')
-          supabase.from('shopping_list').upsert({ user_id: user.id, recipe_key: idx })
+        if (user)
+          notifyOnError(
+            supabase.from('shopping_list').upsert({ user_id: user.id, recipe_key: String(idx) }),
+            'Could not add to shopping list.'
+          )
       }
       return next
     })
@@ -165,13 +231,57 @@ export function AppProvider({ children }) {
   }
 
   function clearShopping() {
-    if (user) supabase.from('shopping_list').delete().eq('user_id', user.id)
+    if (user)
+      notifyOnError(
+        supabase.from('shopping_list').delete().eq('user_id', user.id),
+        'Could not clear shopping list.'
+      )
     setShoppingList(new Set())
     setShopChecked(new Set())
   }
 
   // ── user recipes ────────────────────────────────────────────
   const MY_RECIPES_LIST = 'My Recipes'
+
+  // Auto-adds one or more recipes to the "My Recipes" system list, creating it on first use.
+  // Shared by createUserRecipe (online creation) and syncFromSupabase (recipes made while
+  // logged out, which previously skipped this side effect entirely).
+  async function addRecipesToMyRecipesList(uid, createdRecipes) {
+    try {
+      let { data: myList } = await supabase
+        .from('lists')
+        .select('id')
+        .eq('user_id', uid)
+        .eq('name', MY_RECIPES_LIST)
+        .maybeSingle()
+
+      if (!myList) {
+        const { data: newList, error: listErr } = await supabase
+          .from('lists')
+          .insert({ name: MY_RECIPES_LIST, user_id: uid })
+          .select('id, name')
+          .single()
+        if (listErr) throw listErr
+        myList = newList
+        setLists(prev => [{ id: newList.id, name: MY_RECIPES_LIST, items: [] }, ...prev])
+      }
+
+      const recipeKeys = createdRecipes.map(r => 'u_' + r.id)
+      const { error: itemsErr } = await supabase
+        .from('list_items')
+        .upsert(recipeKeys.map(recipeKey => ({ list_id: myList.id, recipe_key: recipeKey })))
+      if (itemsErr) throw itemsErr
+
+      setLists(prev => prev.map(l =>
+        l.id === myList.id
+          ? { ...l, items: [...new Set([...l.items, ...recipeKeys])] }
+          : l
+      ))
+    } catch (err) {
+      console.error('Failed to add to My Recipes list:', err)
+      showError('Could not add recipe to My Recipes list.')
+    }
+  }
 
   async function createUserRecipe(data) {
     if (user) {
@@ -181,46 +291,13 @@ export function AppProvider({ children }) {
         .select()
         .single()
       if (error) throw error
-      setUserRecipes(prev => [created, ...prev])
+      const normalized = normalizeUserRecipe(created)
+      setUserRecipes(prev => [normalized, ...prev])
       logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
-
-      // Auto-add to the "My Recipes" system list, creating it on first use.
-      try {
-        let { data: myList } = await supabase
-          .from('lists')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('name', MY_RECIPES_LIST)
-          .maybeSingle()
-
-        if (!myList) {
-          const { data: newList, error: listErr } = await supabase
-            .from('lists')
-            .insert({ name: MY_RECIPES_LIST, user_id: user.id })
-            .select('id, name')
-            .single()
-          if (!listErr) {
-            myList = newList
-            setLists(prev => [{ id: newList.id, name: MY_RECIPES_LIST, items: [] }, ...prev])
-          }
-        }
-
-        if (myList) {
-          const recipeKey = 'u_' + created.id
-          await supabase.from('list_items').upsert({ list_id: myList.id, recipe_key: recipeKey })
-          setLists(prev => prev.map(l =>
-            l.id === myList.id && !l.items.includes(recipeKey)
-              ? { ...l, items: [...l.items, recipeKey] }
-              : l
-          ))
-        }
-      } catch (err) {
-        console.error('Failed to add to My Recipes list:', err)
-      }
-
-      return created
+      await addRecipesToMyRecipesList(user.id, [created])
+      return normalized
     } else {
-      const recipe = { ...data, id: 'local_' + Date.now(), user_id: null, created_at: new Date().toISOString() }
+      const recipe = normalizeUserRecipe({ ...data, id: 'local_' + Date.now(), user_id: null, created_at: new Date().toISOString() })
       setUserRecipes(prev => [recipe, ...prev])
       return recipe
     }
@@ -229,7 +306,11 @@ export function AppProvider({ children }) {
   async function deleteUserRecipe(id) {
     setUserRecipes(prev => prev.filter(r => r.id !== id))
     setLists(prev => prev.map(l => ({ ...l, items: l.items.filter(k => k !== 'u_' + id) })))
-    if (user) supabase.from('user_recipes').delete().match({ id, user_id: user.id })
+    if (user)
+      notifyOnError(
+        supabase.from('user_recipes').delete().match({ id, user_id: user.id }),
+        'Could not delete recipe.'
+      )
   }
 
   // ── lists ──────────────────────────────────────────────────
@@ -253,12 +334,20 @@ export function AppProvider({ children }) {
 
   async function deleteList(id) {
     setLists(prev => prev.filter(l => l.id !== id))
-    if (user) supabase.from('lists').delete().match({ id, user_id: user.id })
+    if (user)
+      notifyOnError(
+        supabase.from('lists').delete().match({ id, user_id: user.id }),
+        'Could not delete list.'
+      )
   }
 
   async function renameList(id, name) {
     setLists(prev => prev.map(l => l.id === id ? { ...l, name } : l))
-    if (user) supabase.from('lists').update({ name }).match({ id, user_id: user.id })
+    if (user)
+      notifyOnError(
+        supabase.from('lists').update({ name }).match({ id, user_id: user.id }),
+        'Could not rename list.'
+      )
   }
 
   function addToList(listId, recipeKey, recipeName) {
@@ -273,14 +362,22 @@ export function AppProvider({ children }) {
           : l
       )
     })
-    if (user) supabase.from('list_items').upsert({ list_id: listId, recipe_key: String(recipeKey) })
+    if (user)
+      notifyOnError(
+        supabase.from('list_items').upsert({ list_id: listId, recipe_key: String(recipeKey) }),
+        'Could not add to list.'
+      )
   }
 
   function removeFromList(listId, recipeKey) {
     setLists(prev => prev.map(l =>
       l.id === listId ? { ...l, items: l.items.filter(k => k !== recipeKey) } : l
     ))
-    if (user) supabase.from('list_items').delete().match({ list_id: listId, recipe_key: String(recipeKey) })
+    if (user)
+      notifyOnError(
+        supabase.from('list_items').delete().match({ list_id: listId, recipe_key: String(recipeKey) }),
+        'Could not remove from list.'
+      )
   }
 
   return (
