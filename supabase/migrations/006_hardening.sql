@@ -184,23 +184,43 @@ create index if not exists lists_user_idx          on public.lists (user_id);
 create index if not exists list_items_list_idx     on public.list_items (list_id);
 create index if not exists ratings_user_idx        on public.ratings (user_id);
 create index if not exists notes_user_idx          on public.notes (user_id);
--- Username search uses ilike '%q%'; trigram keeps it from scanning the table.
-create extension if not exists pg_trgm;
-create index if not exists profiles_username_trgm
-  on public.profiles using gin (username gin_trgm_ops);
+-- Username search uses ilike '%q%'; a trigram index keeps it from scanning the
+-- whole table. Creating an extension needs elevated rights, so this degrades to
+-- a notice rather than aborting the migration for a role that lacks them — the
+-- search still works, just without the index.
+do $$
+begin
+  create extension if not exists pg_trgm;
+exception when insufficient_privilege then
+  raise notice 'skipping pg_trgm: insufficient privilege; username search will not be indexed';
+end $$;
+
+do $$
+begin
+  if exists (select 1 from pg_extension where extname = 'pg_trgm') then
+    create index if not exists profiles_username_trgm
+      on public.profiles using gin (username gin_trgm_ops);
+  end if;
+end $$;
 
 
 -- ── 8. enable realtime on activity ───────────────────────────
 -- The Friends feed subscribes to postgres_changes on this table, but nothing
 -- had ever added it to the realtime publication, so the live feed never fired.
+-- Adding to a publication requires owning it, and on some projects that is a
+-- role you are not. Degrade to a notice rather than aborting the whole
+-- migration: everything else here matters more than the live feed, which can be
+-- enabled from the dashboard (Database -> Replication) instead.
 do $$
 begin
-  if not exists (
+  if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    raise notice 'supabase_realtime publication not found; skipping realtime for activity';
+  elsif not exists (
     select 1 from pg_publication_tables
-    where pubname = 'supabase_realtime'
-      and schemaname = 'public'
-      and tablename = 'activity'
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'activity'
   ) then
     alter publication supabase_realtime add table public.activity;
   end if;
+exception when insufficient_privilege then
+  raise notice 'insufficient privilege to add activity to supabase_realtime; enable it from the dashboard (Database -> Replication)';
 end $$;

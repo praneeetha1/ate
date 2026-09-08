@@ -9,7 +9,13 @@
 -- newer than what you already have.
 -- ============================================================
 
-create extension if not exists pg_trgm;
+-- Needs elevated rights; the trigram index below is skipped without it.
+do $$
+begin
+  create extension if not exists pg_trgm;
+exception when insufficient_privilege then
+  raise notice 'skipping pg_trgm: username search will not be indexed';
+end $$;
 
 -- ── profiles ────────────────────────────────────────────────
 create table if not exists public.profiles (
@@ -43,8 +49,13 @@ create policy "Users can insert own profile"
   on public.profiles for insert
   with check (auth.uid() = id);
 
-create index if not exists profiles_username_trgm
-  on public.profiles using gin (username gin_trgm_ops);
+do $$
+begin
+  if exists (select 1 from pg_extension where extname = 'pg_trgm') then
+    create index if not exists profiles_username_trgm
+      on public.profiles using gin (username gin_trgm_ops);
+  end if;
+end $$;
 
 -- Auto-create a profile row when a new user signs up.
 create or replace function public.handle_new_user()
@@ -362,13 +373,20 @@ create index if not exists activity_user_created
   on public.activity (user_id, created_at desc);
 
 -- The Friends feed subscribes to postgres_changes on this table.
+-- Adding to a publication requires owning it, and on some projects that is a
+-- role you are not. Degrade to a notice rather than aborting the whole
+-- migration: everything else here matters more than the live feed, which can be
+-- enabled from the dashboard (Database -> Replication) instead.
 do $$
 begin
-  if not exists (
+  if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    raise notice 'supabase_realtime publication not found; skipping realtime for activity';
+  elsif not exists (
     select 1 from pg_publication_tables
-    where pubname = 'supabase_realtime'
-      and schemaname = 'public' and tablename = 'activity'
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'activity'
   ) then
     alter publication supabase_realtime add table public.activity;
   end if;
+exception when insufficient_privilege then
+  raise notice 'insufficient privilege to add activity to supabase_realtime; enable it from the dashboard (Database -> Replication)';
 end $$;

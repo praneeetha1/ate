@@ -130,12 +130,12 @@ export function AppProvider({ children }) {
       .then(({ error }) => {
         if (!error) return true
         console.error(message || 'Supabase write failed:', error)
-        if (message) showError(message)
+        if (message) showError(describeError(error, message))
         return false
       })
       .catch(err => {
         console.error(message || 'Supabase write failed:', err)
-        if (message) showError(message)
+        if (message) showError(describeError(err, message))
         return false
       })
   }, [showError])
@@ -739,11 +739,12 @@ export function AppProvider({ children }) {
     const key  = 'u_' + id
     const prop = keyToText(key)
 
-    // Purge every local reference. Server-side, the on_user_recipe_deleted
-    // trigger does the same for favorites / shopping_list / list_items /
-    // activity / ratings / notes, including other users' rows — recipe_key is
-    // plain text with no foreign key, so nothing cascaded before.
-    commit(d => {
+    // Every local reference to the recipe. Server-side the
+    // on_user_recipe_deleted trigger does the same for favorites /
+    // shopping_list / list_items / activity / ratings / notes, including other
+    // users' rows — recipe_key is plain text with no foreign key, so nothing
+    // cascaded before.
+    const purge = d => {
       const favorites = new Set(d.favorites);    favorites.delete(key)
       const shopping  = new Set(d.shoppingList); shopping.delete(key)
       const ratings = { ...d.ratings }; delete ratings[prop]
@@ -759,13 +760,23 @@ export function AppProvider({ children }) {
         userRecipes: d.userRecipes.filter(r => r.id !== id),
         lists: d.lists.map(l => ({ ...l, items: l.items.filter(k => k !== key) })),
       }
-    })
+    }
 
-    if (!uid || String(id).startsWith('local_')) return
-    run(
+    // Nothing to confirm with when the recipe only exists on this device.
+    if (!uid || String(id).startsWith('local_')) {
+      commit(purge)
+      return true
+    }
+
+    // Wait for the server rather than removing optimistically. A failed delete
+    // used to leave the recipe gone from the screen but still in the database,
+    // so it silently reappeared on the next reload.
+    const ok = await run(
       supabase.from('user_recipes').delete().match({ id, user_id: uid }),
       'Could not delete recipe.',
     )
+    if (ok) commit(purge)
+    return ok
   }
 
   // ── lists ──────────────────────────────────────────────────

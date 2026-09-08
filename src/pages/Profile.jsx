@@ -22,6 +22,7 @@ export default function Profile({ onOpen }) {
   const [editingRecipe, setEditingRecipe] = useState(null)
   const [editUsername,  setEditUsername]  = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(null)
+  const [deleting,      setDeleting]      = useState(null)
   const [counts,        setCounts]        = useState({ followers: 0, following: 0 })
 
   const [editingBio, setEditingBio] = useState(false)
@@ -276,9 +277,17 @@ export default function Profile({ onOpen }) {
                     <span className="text-[0.8rem] text-heart">Delete “{r.name}” permanently?</span>
                     <div className="flex gap-2 shrink-0">
                       <button
-                        onClick={() => { deleteUserRecipe(r.id); setConfirmDelete(null) }}
-                        className="text-[0.75rem] font-bold text-white bg-heart rounded-lg px-3 py-1"
-                      >Delete</button>
+                        disabled={deleting === r.id}
+                        onClick={async () => {
+                          setDeleting(r.id)
+                          const ok = await deleteUserRecipe(r.id)
+                          setDeleting(null)
+                          // Keep the confirmation open on failure, so the
+                          // recipe and the reason stay on screen together.
+                          if (ok) setConfirmDelete(null)
+                        }}
+                        className="text-[0.75rem] font-bold text-white bg-heart rounded-lg px-3 py-1 disabled:opacity-50"
+                      >{deleting === r.id ? 'Deleting…' : 'Delete'}</button>
                       <button
                         onClick={() => setConfirmDelete(null)}
                         className="text-[0.75rem] font-bold text-muted px-2"
