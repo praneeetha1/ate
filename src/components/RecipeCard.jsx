@@ -59,7 +59,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
         aria-hidden="true"
         className="font-display text-[0.72rem] font-semibold text-ink bg-sun border-t-2.5 border-ink px-4 py-[7px] text-left opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        Let's cook →
+        {"Let's cook →"}
       </button>
     </div>
   )
