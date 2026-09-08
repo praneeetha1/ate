@@ -25,5 +25,8 @@ alter table public.profiles add constraint username_format
 
 -- Allow anyone to view profiles (for social features)
 drop policy if exists "Users can view own profile" on public.profiles;
+-- drop-if-exists so re-running this migration, or running it after a schema.sql
+-- that already declares the policy, does not fail with 42710.
+drop policy if exists "Anyone can view profiles" on public.profiles;
 create policy "Anyone can view profiles"
   on public.profiles for select using (true);

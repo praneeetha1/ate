@@ -33,21 +33,25 @@ grant execute on function public.is_public_profile(uuid) to anon, authenticated;
 
 -- Rewrite the 004 blanket-read policies to respect is_private.
 drop policy if exists "Anyone can view user_recipes" on public.user_recipes;
+drop policy if exists "Public can view public user_recipes" on public.user_recipes;
 create policy "Public can view public user_recipes"
   on public.user_recipes for select
   using (auth.uid() = user_id or public.is_public_profile(user_id));
 
 drop policy if exists "Anyone can view favorites" on public.favorites;
+drop policy if exists "Public can view public favorites" on public.favorites;
 create policy "Public can view public favorites"
   on public.favorites for select
   using (auth.uid() = user_id or public.is_public_profile(user_id));
 
 drop policy if exists "Anyone can view lists" on public.lists;
+drop policy if exists "Public can view public lists" on public.lists;
 create policy "Public can view public lists"
   on public.lists for select
   using (auth.uid() = user_id or public.is_public_profile(user_id));
 
 drop policy if exists "Anyone can view list items" on public.list_items;
+drop policy if exists "Public can view public list items" on public.list_items;
 create policy "Public can view public list items"
   on public.list_items for select
   using (exists (
@@ -57,6 +61,7 @@ create policy "Public can view public list items"
   ));
 
 drop policy if exists "Anyone can view activity" on public.activity;
+drop policy if exists "Public can view public activity" on public.activity;
 create policy "Public can view public activity"
   on public.activity for select
   using (auth.uid() = user_id or public.is_public_profile(user_id));
