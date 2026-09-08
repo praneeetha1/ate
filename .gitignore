@@ -4,3 +4,4 @@ recipes_raw.json
 .env.local
 node_modules
 dist
+rough.md

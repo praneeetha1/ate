@@ -1,4 +1,5 @@
-import json, re
+import json
+import pathlib, re
 from collections import defaultdict
 
 # ── Unit list ────────────────────────────────────────────────────────────────
@@ -162,7 +163,11 @@ def clean_recipe(raw):
     return result
 
 # ── Main ──────────────────────────────────────────────────────────────────────
-with open("recipes_raw.json") as f:
+# Paths are resolved against the repo root so this runs from anywhere.
+REPO_ROOT  = pathlib.Path(__file__).resolve().parent.parent
+INPUT_PATH = REPO_ROOT / "recipes_raw.json"
+
+with open(INPUT_PATH) as f:
     raw_data = json.load(f)
 
 cleaned, skipped = [], 0
@@ -199,7 +204,7 @@ for cat in cats:
 
 sample = sample[:TARGET]
 
-OUTPUT_PATH = "src/data/recipes.json"
+OUTPUT_PATH = REPO_ROOT / "src" / "data" / "recipes.json"
 
 with open(OUTPUT_PATH, "w") as f:
     json.dump(sample, f, indent=2)

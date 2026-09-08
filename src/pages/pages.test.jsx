@@ -1,0 +1,332 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { render, screen, act, waitFor, fireEvent } from '@testing-library/react'
+import { MemoryRouter, Routes, Route } from 'react-router-dom'
+import { createMockSupabase, fakeSession } from '../test/supabaseMock'
+
+const h = vi.hoisted(() => ({ client: null }))
+vi.mock('../lib/supabase', () => ({
+  get supabase() { return h.client },
+  configError: null,
+  appUrl: 'http://localhost:3000/ate/',
+}))
+
+const { default: Profile }     = await import('./Profile')
+const { default: UserProfile } = await import('./UserProfile')
+const { default: Saved }       = await import('./Saved')
+const { AppProvider, useApp }  = await import('../context/AppContext')
+const { AuthProvider }         = await import('../context/AuthContext')
+const { ToastProvider }        = await import('../context/ToastContext')
+
+let api = null
+function Expose() { api = useApp(); return null }
+
+function renderPage(ui, { route = '/' } = {}) {
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      <ToastProvider>
+        <AuthProvider>
+          <AppProvider>
+            <Expose />
+            {ui}
+          </AppProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </MemoryRouter>
+  )
+}
+
+const USER_RECIPE = {
+  id: 'ur-1',
+  user_id: 'user-1',
+  name: 'Nanna Dal',
+  category: 'Main Dish',
+  dietary: ['vegetarian'],
+  ingredients: [
+    { amount: '1', unit: 'cup', item: 'toor dal' },
+    { amount: '2', unit: 'tsp', item: 'cumin' },
+  ],
+  steps: ['Rinse', 'Boil'],
+  time_minutes: 40,
+  servings: 4,
+}
+
+const seed = extra => ({
+  profiles: [{ id: 'user-1', username: 'cook', username_set: true, is_private: false }],
+  ...extra,
+})
+
+beforeEach(() => {
+  localStorage.clear()
+  api = null
+})
+
+describe('Profile — shopping list', () => {
+  // Regression: only numeric catalog keys were resolved here, so adding a user
+  // recipe to the shopping list persisted but rendered nothing at all.
+  it('renders the ingredients of a user recipe added to the list', async () => {
+    h.client = createMockSupabase(seed({
+      user_recipes:  [USER_RECIPE],
+      shopping_list: [{ id: 1, user_id: 'user-1', recipe_key: 'u_ur-1', checked: [1] }],
+    }))
+
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    expect(await screen.findByText('toor dal')).toBeTruthy()
+    expect(screen.getByText('cumin')).toBeTruthy()
+    expect(screen.getByText('1 cup')).toBeTruthy()
+
+    // The persisted `checked` array drives the checkboxes.
+    const boxes = screen.getAllByRole('checkbox', { checked: true })
+    expect(boxes.length).toBeGreaterThanOrEqual(1)
+    expect(api.isShopItemChecked('u_ur-1', 1)).toBe(true)
+    expect(api.isShopItemChecked('u_ur-1', 0)).toBe(false)
+  })
+
+  it('persists a newly ticked ingredient to the database', async () => {
+    h.client = createMockSupabase(seed({
+      user_recipes:  [USER_RECIPE],
+      shopping_list: [{ id: 1, user_id: 'user-1', recipe_key: 'u_ur-1', checked: [] }],
+    }))
+
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+    await screen.findByText('toor dal')
+
+    await act(async () => { api.toggleShopItem('u_ur-1', 0) })
+
+    await waitFor(() => {
+      expect(h.client.__db.shopping_list[0].checked).toEqual([0])
+    })
+  })
+})
+
+describe('Profile — deleting a recipe', () => {
+  it('asks for confirmation before deleting', async () => {
+    h.client = createMockSupabase(seed({ user_recipes: [USER_RECIPE] }))
+
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    await act(async () => { screen.getByRole('button', { name: 'Delete Nanna Dal' }).click() })
+    expect(screen.getByText(/Delete “Nanna Dal” permanently\?/)).toBeTruthy()
+
+    // Backing out leaves it alone.
+    await act(async () => { screen.getByRole('button', { name: 'Cancel' }).click() })
+    expect(h.client.__db.user_recipes).toHaveLength(1)
+
+    await act(async () => { screen.getByRole('button', { name: 'Delete Nanna Dal' }).click() })
+    await act(async () => {
+      const buttons = screen.getAllByRole('button', { name: 'Delete' })
+      buttons[buttons.length - 1].click()
+    })
+    await waitFor(() => expect(h.client.__db.user_recipes).toHaveLength(0))
+  })
+})
+
+describe('Profile — bio and privacy', () => {
+  it('saves a bio, which previously had no editor at all', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    await act(async () => { screen.getByRole('button', { name: 'Add bio' }).click() })
+    fireEvent.change(screen.getByLabelText('Your bio'), {
+      target: { value: 'I cook with too much garlic' },
+    })
+    await act(async () => { screen.getByRole('button', { name: 'Save bio' }).click() })
+
+    await waitFor(() => {
+      expect(h.client.__db.profiles[0].bio).toBe('I cook with too much garlic')
+    })
+  })
+
+  it('toggles the private-profile flag', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    expect(box.checked).toBe(false)
+    await act(async () => { box.click() })
+
+    await waitFor(() => expect(h.client.__db.profiles[0].is_private).toBe(true))
+  })
+})
+
+describe('UserProfile', () => {
+  const other = {
+    profiles: [
+      { id: 'user-1', username: 'cook',  username_set: true, is_private: false },
+      { id: 'user-2', username: 'chandu', username_set: true, is_private: false, bio: 'Bakes daily' },
+    ],
+    user_recipes: [{ ...USER_RECIPE, id: 'ur-9', user_id: 'user-2', name: 'Chandu Cake' }],
+    favorites: [
+      { id: 1, user_id: 'user-2', recipe_key: '5' },
+      { id: 2, user_id: 'user-2', recipe_key: 'u_ur-9' },
+    ],
+    activity: [
+      { id: 'ac-1', user_id: 'user-2', type: 'created', recipe_key: 'u_ur-9', recipe_name: 'Chandu Cake', created_at: new Date().toISOString() },
+    ],
+  }
+
+  function renderUserProfile(username, onOpen = () => {}) {
+    return render(
+      <MemoryRouter initialEntries={[`/user/${username}`]}>
+        <ToastProvider>
+          <AuthProvider>
+            <AppProvider>
+              <Expose />
+              <Routes>
+                <Route path="/user/:username" element={<UserProfile onOpen={onOpen} />} />
+              </Routes>
+            </AppProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </MemoryRouter>
+    )
+  }
+
+  it('finds a profile regardless of the URL’s casing', async () => {
+    // Regression: usernames are stored lowercase, so /user/Chandu 404'd.
+    h.client = createMockSupabase(other)
+    renderUserProfile('Chandu')
+    expect(await screen.findByRole('heading', { name: '@chandu' })).toBeTruthy()
+    expect(screen.getByText('Bakes daily')).toBeTruthy()
+  })
+
+  it('reports a genuinely missing user as not found', async () => {
+    h.client = createMockSupabase(other)
+    renderUserProfile('nobody')
+    expect(await screen.findByText('User not found')).toBeTruthy()
+  })
+
+  // Regression: the raw DB string "5" was handed to onOpen, fell through the
+  // numeric branch in App, resolved to nothing, and the modal never opened.
+  it('opens a saved catalog recipe with a numeric key', async () => {
+    const onOpen = vi.fn()
+    h.client = createMockSupabase(other)
+    renderUserProfile('chandu', onOpen)
+    await screen.findByRole('heading', { name: '@chandu' })
+
+    await act(async () => { screen.getByRole('tab', { name: /Saved/ }).click() })
+    const rows = screen.getAllByRole('button').filter(b => b.textContent.includes('♥'))
+    await act(async () => { rows[0].click() })
+
+    expect(onOpen).toHaveBeenCalled()
+    expect(typeof onOpen.mock.calls[0][0]).toBe('number')
+    expect(onOpen.mock.calls[0][0]).toBe(5)
+  })
+
+  it('passes the recipe object when opening someone else’s user recipe', async () => {
+    const onOpen = vi.fn()
+    h.client = createMockSupabase(other)
+    renderUserProfile('chandu', onOpen)
+    await screen.findByRole('heading', { name: '@chandu' })
+
+    await act(async () => { screen.getByRole('tab', { name: /Recipes/ }).click() })
+    await act(async () => { screen.getByText('Chandu Cake').closest('button').click() })
+
+    // The viewer doesn't own it, so it can't be resolved from `userRecipes`.
+    expect(onOpen).toHaveBeenCalledWith('u_ur-9', expect.objectContaining({ name: 'Chandu Cake' }))
+  })
+
+  it('shows a preview card for a user recipe in the activity feed', async () => {
+    h.client = createMockSupabase(other)
+    renderUserProfile('chandu')
+    await screen.findByRole('heading', { name: '@chandu' })
+    // Regression: activity rows for user recipes returned null and rendered no card.
+    expect(await screen.findByText(/created/)).toBeTruthy()
+    expect(screen.getAllByText('Chandu Cake').length).toBeGreaterThan(0)
+  })
+
+  it('follows and unfollows, adjusting the count', async () => {
+    h.client = createMockSupabase(other)
+    renderUserProfile('chandu')
+    await screen.findByRole('heading', { name: '@chandu' })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+
+    const follow = await screen.findByRole('button', { name: 'Follow' })
+    await act(async () => { follow.click() })
+
+    await waitFor(() => expect(h.client.__db.follows).toHaveLength(1))
+    expect(h.client.__db.follows[0]).toMatchObject({ follower_id: 'user-1', following_id: 'user-2' })
+
+    await act(async () => { screen.getByRole('button', { name: 'Following' }).click() })
+    await waitFor(() => expect(h.client.__db.follows).toHaveLength(0))
+  })
+})
+
+describe('Saved', () => {
+  it('lists both catalog and user recipes, skipping keys that no longer resolve', async () => {
+    h.client = createMockSupabase(seed({
+      user_recipes: [USER_RECIPE],
+      favorites: [
+        { id: 1, user_id: 'user-1', recipe_key: '5' },
+        { id: 2, user_id: 'user-1', recipe_key: 'u_ur-1' },
+        { id: 3, user_id: 'user-1', recipe_key: 'u_deleted' },
+      ],
+    }))
+
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    expect(await screen.findByText('Nanna Dal')).toBeTruthy()
+    // A dangling key renders nothing rather than crashing.
+    expect(screen.queryByText('u_deleted')).toBeNull()
+  })
+
+  it('confirms before deleting a list', async () => {
+    h.client = createMockSupabase(seed({
+      lists: [{ id: 'ls-1', user_id: 'user-1', name: 'Weeknights' }],
+    }))
+
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    await act(async () => { screen.getByRole('tab', { name: /Lists/ }).click() })
+    await act(async () => { screen.getByRole('button', { name: 'Delete Weeknights' }).click() })
+    expect(screen.getByText(/Delete “Weeknights”\?/)).toBeTruthy()
+
+    await act(async () => {
+      const buttons = screen.getAllByRole('button', { name: 'Delete' })
+      buttons[buttons.length - 1].click()
+    })
+    await waitFor(() => expect(h.client.__db.lists).toHaveLength(0))
+  })
+
+  it('renames a list', async () => {
+    h.client = createMockSupabase(seed({
+      lists: [{ id: 'ls-1', user_id: 'user-1', name: 'Weeknights' }],
+    }))
+
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    await act(async () => { screen.getByRole('tab', { name: /Lists/ }).click() })
+    await act(async () => { screen.getByRole('button', { name: 'Rename Weeknights' }).click() })
+
+    fireEvent.change(screen.getByLabelText('Rename Weeknights'), {
+      target: { value: 'Sunday Cooking' },
+    })
+    await act(async () => { screen.getByRole('button', { name: 'Save' }).click() })
+
+    await waitFor(() => expect(h.client.__db.lists[0].name).toBe('Sunday Cooking'))
+  })
+})

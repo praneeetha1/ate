@@ -1,393 +1,826 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from './AuthContext'
 import { useToast } from './ToastContext'
 import { supabase } from '../lib/supabase'
+import {
+  keyToText, keyFromText, keyForName, isUserRecipeKey, userRecipeId,
+  normalizeUserRecipe, toUserRecipeRow,
+} from '../utils/recipe'
+import {
+  scopeFor, loadSlice, saveSlice, clearScope, migrateLegacyKeys,
+} from '../utils/storage'
 
 const AppContext = createContext(null)
 
-function load(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key)) ?? fallback }
-  catch { return fallback }
+const MY_RECIPES_LIST = 'My Recipes'
+
+// Move pre-scoping localStorage into the guest scope once, at module load,
+// before any component reads from storage.
+migrateLegacyKeys()
+
+/**
+ * Rewrites a locally-stored ratings/notes map that is still keyed by recipe
+ * name into one keyed by recipe key.
+ *
+ * Before keys existed these maps used `recipe.name` as the property. Loading
+ * them as-is would make every rating and note look lost, and would then upload
+ * the recipe's *name* as its recipe_key.
+ */
+function migrateNameKeyedMap(map, ownRecipes) {
+  if (!map || typeof map !== 'object') return {}
+  let changed = false
+  const out = {}
+  for (const [prop, value] of Object.entries(map)) {
+    if (/^\d+$/.test(prop) || prop.startsWith('u_')) { out[prop] = value; continue }
+    changed = true
+    const key = keyForName(prop, ownRecipes)
+    // A name that resolves to nothing (a recipe since deleted) is dropped.
+    if (key !== null) out[keyToText(key)] = value
+  }
+  return changed ? out : map
 }
 
-// DB rows use snake_case time_minutes; catalog recipes (src/data/recipes.json)
-// and the rest of the UI use camelCase timeMinutes.
-function normalizeUserRecipe(r) {
-  return { ...r, timeMinutes: r.time_minutes }
+/**
+ * Normalises checked shopping-list items.
+ *
+ * The old shape was a flat array of "<key>-<ingredientIndex>" strings; the
+ * current one is { "<key>": [ingredientIndex, …] }, matching the DB column.
+ */
+function migrateShopChecked(stored) {
+  if (!stored) return {}
+  if (!Array.isArray(stored)) return typeof stored === 'object' ? stored : {}
+
+  const out = {}
+  for (const entry of stored) {
+    const str = String(entry)
+    const dash = str.lastIndexOf('-')
+    if (dash <= 0) continue
+    const key = str.slice(0, dash)
+    const idx = parseInt(str.slice(dash + 1), 10)
+    if (!Number.isFinite(idx)) continue
+    out[key] = [...(out[key] || []), idx].sort((a, b) => a - b)
+  }
+  return out
 }
 
-// recipe_key is stored as text ("5" for catalog index, or "u_<uuid>" for user
-// recipes) — catalog lookups/comparisons elsewhere in the app expect a number.
-function parseRecipeKey(key) {
-  return /^\d+$/.test(String(key)) ? parseInt(key) : key
+/**
+ * Loads all locally-persisted state for one identity, tagged with its scope.
+ *
+ * Scope travels *with* the data rather than being tracked separately: the
+ * persist effect can then never write one identity's values under another
+ * identity's keys, which is what made signing out leak the previous account's
+ * recipes and notes into the next session.
+ */
+function hydrate(scope) {
+  const userRecipes = loadSlice(scope, 'user_recipes', [])
+  return {
+    scope,
+    favorites:    new Set(loadSlice(scope, 'favs', []).map(keyFromText)),
+    ratings:      migrateNameKeyedMap(loadSlice(scope, 'ratings', {}), userRecipes),
+    notes:        migrateNameKeyedMap(loadSlice(scope, 'notes', {}), userRecipes),
+    shoppingList: new Set(loadSlice(scope, 'shopping', []).map(keyFromText)),
+    shopChecked:  migrateShopChecked(loadSlice(scope, 'shop_checked', {})),
+    userRecipes,
+    lists:        loadSlice(scope, 'lists', []),
+  }
 }
 
 export function AppProvider({ children }) {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const { showError } = useToast()
 
-  // Fire-and-forget Supabase writes still run in the background, but failures
-  // now surface to the user instead of silently desyncing local vs. DB state.
-  function notifyOnError(promise, message) {
-    promise.then(({ error }) => {
-      if (error) {
-        console.error(message, error)
-        showError(message)
-      }
+  const uid   = user?.id ?? null
+  const scope = scopeFor(uid)
+
+  const [data,    setData]    = useState(() => hydrate(scopeFor(null)))
+  const [syncing, setSyncing] = useState(false)
+
+  const { favorites, ratings, notes, shoppingList, shopChecked, userRecipes, lists } = data
+
+  /**
+   * Always holds the most recently committed state.
+   *
+   * The Supabase writes below deliberately run *outside* the state updater (see
+   * the note on the handlers), but several of them need to read current state
+   * first — and a handler's closure can be a render behind. Creating a list and
+   * immediately adding a recipe to it is the clearest case: the new list isn't
+   * in the closed-over `lists` yet, so the add would silently no-op.
+   */
+  const dataRef = useRef(data)
+
+  const commit = useCallback(updater => {
+    setData(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater
+      dataRef.current = next
+      return next
     })
+  }, [])
+
+  /**
+   * Fire-and-forget Supabase write whose failure is surfaced to the user.
+   *
+   * `.catch` matters as much as the `error` branch: supabase-js resolves with
+   * an `error` for API failures but *rejects* when the fetch itself fails, and
+   * an uncaught rejection there produced no toast at all — exactly the case
+   * this helper exists for.
+   */
+  const run = useCallback((query, message) => {
+    return Promise.resolve(query)
+      .then(({ error }) => {
+        if (!error) return true
+        console.error(message || 'Supabase write failed:', error)
+        if (message) showError(message)
+        return false
+      })
+      .catch(err => {
+        console.error(message || 'Supabase write failed:', err)
+        if (message) showError(message)
+        return false
+      })
+  }, [showError])
+
+  // ── persistence ────────────────────────────────────────────
+  const lastPersisted = useRef({})
+
+  useEffect(() => {
+    const slices = {
+      favs:         [...data.favorites].map(keyToText),
+      ratings:      data.ratings,
+      notes:        data.notes,
+      shopping:     [...data.shoppingList].map(keyToText),
+      shop_checked: data.shopChecked,
+      user_recipes: data.userRecipes,
+      lists:        data.lists,
+    }
+    for (const [slice, value] of Object.entries(slices)) {
+      const serialized = JSON.stringify(value)
+      const cacheKey   = `${data.scope}:${slice}`
+      if (lastPersisted.current[cacheKey] === serialized) continue
+      lastPersisted.current[cacheKey] = serialized
+      saveSlice(data.scope, slice, value)
+    }
+  }, [data])
+
+  // ── identity changes ───────────────────────────────────────
+  useEffect(() => {
+    // Wait for auth to resolve, or the first pass would treat a signed-in
+    // reload as a guest session and try to upload nothing.
+    if (authLoading) return
+    if (data.scope === scope) return
+
+    // Paint this identity's last-known local state immediately, then reconcile
+    // with the server below.
+    commit(hydrate(scope))
+
+    if (!uid) { setSyncing(false); return }
+
+    let cancelled = false
+    setSyncing(true)
+    syncWithSupabase(uid)
+      .catch(err => {
+        console.error('Supabase sync failed:', err)
+        showError('Could not sync your data. Showing what’s saved on this device.')
+      })
+      .finally(() => { if (!cancelled) setSyncing(false) })
+
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scope, authLoading])
+
+  /**
+   * Push anything created while logged out, then replace local state with the
+   * server's.
+   *
+   * Replacing rather than unioning is deliberate: the old union-merge could
+   * never represent a deletion, so unfavouriting on one device resurrected the
+   * item on the next login. Uploading first means nothing is lost by the
+   * replace.
+   */
+  async function syncWithSupabase(ownerId) {
+    const guest = hydrate(scopeFor(null))
+    const guestHasData =
+      guest.userRecipes.length || guest.lists.length || guest.favorites.size ||
+      guest.shoppingList.size || Object.keys(guest.ratings).length ||
+      Object.keys(guest.notes).length
+
+    let uploadedCleanly = true
+    if (guestHasData) uploadedCleanly = await uploadGuestData(ownerId, guest)
+
+    const fresh = await fetchAll(ownerId)
+    commit({ scope: scopeFor(ownerId), ...fresh })
+
+    // Only drop the guest copy once it is safely on the server, so a failed
+    // upload can be retried on the next login instead of vanishing.
+    if (guestHasData && uploadedCleanly) clearScope(scopeFor(null))
   }
 
-  const [favorites,    setFavorites]    = useState(() => new Set(load('ate_favs', [])))
-  const [ratings,      setRatings]      = useState(() => load('ate_ratings', {}))
-  const [notes,        setNotes]        = useState(() => load('ate_notes', {}))
-  const [shoppingList, setShoppingList] = useState(() => new Set(load('ate_shopping', [])))
-  const [shopChecked,  setShopChecked]  = useState(() => new Set(load('ate_shop_checked', [])))
-  const [userRecipes,  setUserRecipes]  = useState(() => load('ate_user_recipes', []))
-  const [lists,        setLists]        = useState(() => load('ate_lists', []))
+  /** Returns true only if every guest write succeeded. */
+  async function uploadGuestData(ownerId, guest) {
+    let ok = true
 
-  // Persist to localStorage
-  useEffect(() => { localStorage.setItem('ate_favs',         JSON.stringify([...favorites])) },    [favorites])
-  useEffect(() => { localStorage.setItem('ate_ratings',      JSON.stringify(ratings)) },           [ratings])
-  useEffect(() => { localStorage.setItem('ate_notes',        JSON.stringify(notes)) },             [notes])
-  useEffect(() => { localStorage.setItem('ate_shopping',     JSON.stringify([...shoppingList])) }, [shoppingList])
-  useEffect(() => { localStorage.setItem('ate_shop_checked', JSON.stringify([...shopChecked])) },  [shopChecked])
-  useEffect(() => { localStorage.setItem('ate_user_recipes', JSON.stringify(userRecipes)) },       [userRecipes])
-  useEffect(() => { localStorage.setItem('ate_lists',        JSON.stringify(lists)) },             [lists])
+    // 1. Recipes first: their new UUIDs are needed to rewrite the keys that
+    //    guest favourites, lists and shopping entries point at.
+    const localIdMap = new Map()
+    const localRecipes = guest.userRecipes.filter(r => String(r.id).startsWith('local_'))
 
-  // Sync on login / reset on logout
-  useEffect(() => {
-    if (user) {
-      syncFromSupabase(user.id)
-    } else {
-      setUserRecipes(load('ate_user_recipes', []))
-      setLists(load('ate_lists', []))
-    }
-  }, [user?.id])
+    if (localRecipes.length) {
+      const { data: uploaded, error } = await supabase
+        .from('user_recipes')
+        .insert(localRecipes.map(r => ({ ...toUserRecipeRow(r), user_id: ownerId })))
+        .select()
 
-  async function syncFromSupabase(uid) {
-    try {
-      // Upload any recipes created while logged out before the DB fetch overwrites local state.
-      const localRecipes = load('ate_user_recipes', []).filter(r => String(r.id).startsWith('local_'))
-      if (localRecipes.length) {
-        const toUpload = localRecipes.map(({ id, user_id, created_at, ...data }) => ({ ...data, user_id: uid }))
-        const { data: uploaded, error: uploadErr } = await supabase.from('user_recipes').insert(toUpload).select()
-        if (uploadErr) {
-          console.error('Local recipe upload failed:', uploadErr)
-          showError('Some locally-created recipes could not be uploaded.')
-        } else if (uploaded?.length) {
-          // Mirror the same side effects createUserRecipe performs for online creation,
-          // so recipes made while logged out still show up in the activity feed and My Recipes list.
-          for (const created of uploaded) {
-            logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
-          }
-          await addRecipesToMyRecipesList(uid, uploaded)
+      if (error) {
+        console.error('Local recipe upload failed:', error)
+        showError('Some recipes made while logged out could not be uploaded.')
+        ok = false
+      } else if (uploaded?.length) {
+        // insert().select() returns rows in the order they were supplied.
+        uploaded.forEach((row, i) => {
+          localIdMap.set('u_' + localRecipes[i].id, 'u_' + row.id)
+        })
+        for (const row of uploaded) {
+          await logActivityFor(ownerId, 'created', { recipe_key: 'u_' + row.id, recipe_name: row.name })
         }
+        if (!await addRecipesToMyRecipesList(ownerId, uploaded)) ok = false
+      }
+    }
+
+    // Rewrites a guest key to its uploaded equivalent, dropping keys whose
+    // recipe failed to upload (they'd dangle otherwise).
+    const remap = key => {
+      const text = keyToText(key)
+      if (!isUserRecipeKey(text)) return text
+      if (localIdMap.has(text)) return localIdMap.get(text)
+      return userRecipeId(text).startsWith('local_') ? null : text
+    }
+
+    // 2. Favourites.
+    const favRows = [...guest.favorites]
+      .map(remap).filter(Boolean)
+      .map(recipe_key => ({ user_id: ownerId, recipe_key }))
+    if (favRows.length) {
+      if (!await run(
+        supabase.from('favorites').upsert(favRows, { onConflict: 'user_id,recipe_key' }),
+        'Some saved recipes could not be uploaded.',
+      )) ok = false
+    }
+
+    // 3. Shopping list, including which ingredients were ticked off.
+    const shopRows = [...guest.shoppingList]
+      .map(key => {
+        const recipe_key = remap(key)
+        return recipe_key
+          ? { user_id: ownerId, recipe_key, checked: guest.shopChecked[keyToText(key)] || [] }
+          : null
+      })
+      .filter(Boolean)
+    if (shopRows.length) {
+      if (!await run(
+        supabase.from('shopping_list').upsert(shopRows, { onConflict: 'user_id,recipe_key' }),
+        'Your shopping list could not be uploaded.',
+      )) ok = false
+    }
+
+    // 4. Ratings and notes.
+    const ratingRows = Object.entries(guest.ratings)
+      .map(([key, rating]) => {
+        const recipe_key = remap(key)
+        return recipe_key ? { user_id: ownerId, recipe_key, rating } : null
+      })
+      .filter(Boolean)
+    if (ratingRows.length) {
+      if (!await run(
+        supabase.from('ratings').upsert(ratingRows, { onConflict: 'user_id,recipe_key' }),
+        'Some ratings could not be uploaded.',
+      )) ok = false
+    }
+
+    const noteRows = Object.entries(guest.notes)
+      .map(([key, body]) => {
+        const recipe_key = remap(key)
+        return recipe_key ? { user_id: ownerId, recipe_key, body } : null
+      })
+      .filter(Boolean)
+    if (noteRows.length) {
+      if (!await run(
+        supabase.from('notes').upsert(noteRows, { onConflict: 'user_id,recipe_key' }),
+        'Some notes could not be uploaded.',
+      )) ok = false
+    }
+
+    // 5. Lists. These had no upload path at all before, so a list made while
+    //    logged out was silently destroyed by the first sync.
+    const localLists = guest.lists.filter(l => String(l.id).startsWith('local_'))
+    for (const list of localLists) {
+      const { data: created, error } = await supabase
+        .from('lists')
+        .insert({ name: list.name, user_id: ownerId })
+        .select('id')
+        .maybeSingle()
+
+      if (error || !created) {
+        console.error('Local list upload failed:', error)
+        showError(`List “${list.name}” could not be uploaded.`)
+        ok = false
+        continue
       }
 
-      const [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes] = await Promise.all([
-        supabase.from('favorites').select('recipe_key').eq('user_id', uid),
-        supabase.from('ratings').select('recipe_name,rating').eq('user_id', uid),
-        supabase.from('notes').select('recipe_name,body').eq('user_id', uid),
-        supabase.from('shopping_list').select('recipe_key').eq('user_id', uid),
-        supabase.from('user_recipes').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
-        supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', uid),
-      ])
+      const itemRows = list.items
+        .map(remap).filter(Boolean)
+        .map(recipe_key => ({ list_id: created.id, recipe_key }))
+      if (itemRows.length) {
+        if (!await run(
+          supabase.from('list_items').upsert(itemRows, { onConflict: 'list_id,recipe_key' }),
+          `Items in “${list.name}” could not be uploaded.`,
+        )) ok = false
+      }
+    }
 
-      if (!favsRes.error && favsRes.data?.length)
-        setFavorites(prev => new Set([...prev, ...favsRes.data.map(f => parseRecipeKey(f.recipe_key))]))
-      if (!ratingsRes.error && ratingsRes.data?.length)
-        setRatings(prev => ({ ...prev, ...Object.fromEntries(ratingsRes.data.map(r => [r.recipe_name, r.rating])) }))
-      if (!notesRes.error && notesRes.data?.length)
-        setNotes(prev => ({ ...prev, ...Object.fromEntries(notesRes.data.map(n => [n.recipe_name, n.body])) }))
-      if (!shopRes.error && shopRes.data?.length)
-        setShoppingList(prev => new Set([...prev, ...shopRes.data.map(s => parseRecipeKey(s.recipe_key))]))
-      if (!recipesRes.error && recipesRes.data)
-        setUserRecipes(recipesRes.data.map(normalizeUserRecipe))
-      if (!listsRes.error && listsRes.data)
-        setLists(listsRes.data.map(l => ({
-          id: l.id,
-          name: l.name,
-          items: l.list_items.map(li => parseRecipeKey(li.recipe_key)),
-        })))
-    } catch (err) {
-      console.error('Supabase sync failed:', err)
+    return ok
+  }
+
+  /** Reads every owned slice, and repairs rows left over from older schemas. */
+  async function fetchAll(ownerId) {
+    const [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes] = await Promise.all([
+      supabase.from('favorites').select('recipe_key').eq('user_id', ownerId),
+      supabase.from('ratings').select('recipe_key,recipe_name,rating').eq('user_id', ownerId),
+      supabase.from('notes').select('recipe_key,recipe_name,body').eq('user_id', ownerId),
+      supabase.from('shopping_list').select('recipe_key,checked').eq('user_id', ownerId),
+      supabase.from('user_recipes').select('*').eq('user_id', ownerId).order('created_at', { ascending: false }),
+      supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', ownerId),
+    ])
+
+    for (const res of [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes]) {
+      if (res.error) throw res.error
+    }
+
+    const fetchedRecipes = (recipesRes.data || []).map(normalizeUserRecipe)
+
+    // Migration 006 stamped pre-existing ratings/notes with 'legacy:<name>'
+    // because the catalog needed to map a name to a key and the database has no
+    // access to it. Resolve those here, where the catalog is available.
+    const ratingRows = await backfillLegacyKeys('ratings', ratingsRes.data, ownerId, fetchedRecipes)
+    const noteRows   = await backfillLegacyKeys('notes',   notesRes.data,   ownerId, fetchedRecipes)
+
+    return {
+      favorites:    new Set((favsRes.data || []).map(f => keyFromText(f.recipe_key))),
+      ratings:      Object.fromEntries(ratingRows.map(r => [keyToText(r.recipe_key), r.rating])),
+      notes:        Object.fromEntries(noteRows.map(n => [keyToText(n.recipe_key), n.body])),
+      shoppingList: new Set((shopRes.data || []).map(s => keyFromText(s.recipe_key))),
+      shopChecked:  Object.fromEntries((shopRes.data || []).map(s => [keyToText(s.recipe_key), s.checked || []])),
+      userRecipes:  fetchedRecipes,
+      lists: (listsRes.data || []).map(l => ({
+        id: l.id,
+        name: l.name,
+        items: (l.list_items || []).map(li => keyFromText(li.recipe_key)),
+      })),
     }
   }
 
-  // ── activity logging ───────────────────────────────────────
-  function logActivity(type, data) {
-    if (!user) return
-    notifyOnError(
-      supabase.from('activity').insert({ user_id: user.id, type, ...data }),
-      'Could not log activity.'
+  async function backfillLegacyKeys(table, rows, ownerId, ownRecipes) {
+    const out = []
+    for (const row of rows || []) {
+      if (!String(row.recipe_key).startsWith('legacy:')) { out.push(row); continue }
+
+      const name = row.recipe_name || String(row.recipe_key).slice('legacy:'.length)
+      const key  = keyForName(name, ownRecipes)
+      if (key === null) {
+        // Can't be attributed to any recipe this user can see. Leave the row
+        // untouched rather than deleting data we might be able to resolve later.
+        console.warn(`Could not resolve legacy ${table} key for “${name}”`)
+        continue
+      }
+
+      const { error } = await supabase
+        .from(table)
+        .update({ recipe_key: keyToText(key) })
+        .match({ user_id: ownerId, recipe_key: row.recipe_key })
+      if (error) { console.error(`Backfill of ${table} failed:`, error); continue }
+
+      out.push({ ...row, recipe_key: keyToText(key) })
+    }
+    return out
+  }
+
+  // ── activity ───────────────────────────────────────────────
+  /**
+   * Records a feed event, replacing any previous event of the same kind for the
+   * same recipe.
+   *
+   * Re-saving a recipe used to append another row every time, and un-saving
+   * left the old one behind, so the feed accumulated events for actions that
+   * had since been undone.
+   */
+  async function logActivityFor(ownerId, type, payload) {
+    if (!ownerId) return
+    if (payload.recipe_key) {
+      await Promise.resolve(
+        supabase.from('activity').delete().match({
+          user_id: ownerId, type, recipe_key: keyToText(payload.recipe_key),
+        })
+      ).catch(err => console.error('Could not clear previous activity:', err))
+    }
+    await run(
+      supabase.from('activity').insert({ user_id: ownerId, type, ...payload }),
+      'Could not update your activity feed.',
+    )
+  }
+
+  function logActivity(type, payload) {
+    if (!uid) return
+    logActivityFor(uid, type, payload)
+  }
+
+  function removeActivity(type, key) {
+    if (!uid) return
+    run(
+      supabase.from('activity').delete().match({ user_id: uid, type, recipe_key: keyToText(key) }),
+      null,
     )
   }
 
   // ── favorites ──────────────────────────────────────────────
-  function toggleFav(idx, recipeName) {
-    setFavorites(prev => {
-      const next = new Set(prev)
-      if (next.has(idx)) {
-        next.delete(idx)
-        if (user)
-          notifyOnError(
-            supabase.from('favorites').delete().match({ user_id: user.id, recipe_key: String(idx) }),
-            'Could not remove favorite.'
-          )
-      } else {
-        next.add(idx)
-        if (user)
-          notifyOnError(
-            supabase.from('favorites').upsert({ user_id: user.id, recipe_key: String(idx) }),
-            'Could not save favorite.'
-          )
-        if (recipeName) logActivity('saved', { recipe_key: String(idx), recipe_name: recipeName })
-      }
-      return next
+  // Note on all the handlers below: the Supabase call and any activity logging
+  // happen *outside* the setState updater. Previously they lived inside it, and
+  // React 18's StrictMode double-invokes updaters — so every one of these fired
+  // twice in development, duplicating activity rows.
+  function toggleFav(key, recipeName) {
+    const wasFav = dataRef.current.favorites.has(key)
+
+    commit(d => {
+      const next = new Set(d.favorites)
+      if (wasFav) next.delete(key); else next.add(key)
+      return { ...d, favorites: next }
     })
+
+    if (!uid) return
+    const recipe_key = keyToText(key)
+    if (wasFav) {
+      run(
+        supabase.from('favorites').delete().match({ user_id: uid, recipe_key }),
+        'Could not remove favorite.',
+      )
+      removeActivity('saved', key)
+    } else {
+      run(
+        supabase.from('favorites').upsert({ user_id: uid, recipe_key }, { onConflict: 'user_id,recipe_key' }),
+        'Could not save favorite.',
+      )
+      if (recipeName) logActivity('saved', { recipe_key, recipe_name: recipeName })
+    }
   }
 
   // ── ratings ────────────────────────────────────────────────
-  function setRating(name, value) {
-    setRatings(prev => {
-      const next = { ...prev }
-      if (value) {
-        next[name] = value
-        if (user)
-          notifyOnError(
-            supabase.from('ratings').upsert({ user_id: user.id, recipe_name: name, rating: value }),
-            'Could not save rating.'
-          )
-        if (value >= 4) logActivity('rated', { recipe_name: name, rating: value })
-      } else {
-        delete next[name]
-        if (user)
-          notifyOnError(
-            supabase.from('ratings').delete().match({ user_id: user.id, recipe_name: name }),
-            'Could not remove rating.'
-          )
-      }
-      return next
+  function setRating(key, value, recipeName) {
+    const prop = keyToText(key)
+
+    commit(d => {
+      const next = { ...d.ratings }
+      if (value) next[prop] = value; else delete next[prop]
+      return { ...d, ratings: next }
     })
+
+    if (!uid) return
+    if (value) {
+      run(
+        supabase.from('ratings').upsert(
+          { user_id: uid, recipe_key: prop, recipe_name: recipeName ?? null, rating: value },
+          { onConflict: 'user_id,recipe_key' },
+        ),
+        'Could not save rating.',
+      )
+      if (value >= 4 && recipeName) {
+        logActivity('rated', { recipe_key: prop, recipe_name: recipeName, rating: value })
+      } else {
+        removeActivity('rated', key)
+      }
+    } else {
+      run(
+        supabase.from('ratings').delete().match({ user_id: uid, recipe_key: prop }),
+        'Could not remove rating.',
+      )
+      removeActivity('rated', key)
+    }
   }
 
   // ── notes ──────────────────────────────────────────────────
-  function setNote(name, value) {
-    setNotes(prev => {
-      const next = { ...prev }
-      if (value) {
-        next[name] = value
-        if (user)
-          notifyOnError(
-            supabase.from('notes').upsert({ user_id: user.id, recipe_name: name, body: value }),
-            'Could not save note.'
-          )
-      } else {
-        delete next[name]
-        if (user)
-          notifyOnError(
-            supabase.from('notes').delete().match({ user_id: user.id, recipe_name: name }),
-            'Could not remove note.'
-          )
-      }
-      return next
+  function setNote(key, value, recipeName) {
+    const prop = keyToText(key)
+
+    commit(d => {
+      const next = { ...d.notes }
+      if (value) next[prop] = value; else delete next[prop]
+      return { ...d, notes: next }
     })
+
+    if (!uid) return
+    if (value) {
+      run(
+        supabase.from('notes').upsert(
+          { user_id: uid, recipe_key: prop, recipe_name: recipeName ?? null, body: value },
+          { onConflict: 'user_id,recipe_key' },
+        ),
+        'Could not save note.',
+      )
+    } else {
+      run(
+        supabase.from('notes').delete().match({ user_id: uid, recipe_key: prop }),
+        'Could not remove note.',
+      )
+    }
   }
 
   // ── shopping ───────────────────────────────────────────────
-  function toggleShopping(idx) {
-    setShoppingList(prev => {
-      const next = new Set(prev)
-      if (next.has(idx)) {
-        next.delete(idx)
-        setShopChecked(c => {
-          const cn = new Set(c)
-          cn.forEach(k => { if (k.startsWith(`${idx}-`)) cn.delete(k) })
-          return cn
-        })
-        if (user)
-          notifyOnError(
-            supabase.from('shopping_list').delete().match({ user_id: user.id, recipe_key: String(idx) }),
-            'Could not remove from shopping list.'
-          )
-      } else {
-        next.add(idx)
-        if (user)
-          notifyOnError(
-            supabase.from('shopping_list').upsert({ user_id: user.id, recipe_key: String(idx) }),
-            'Could not add to shopping list.'
-          )
-      }
-      return next
+  function toggleShopping(key) {
+    const wasListed = dataRef.current.shoppingList.has(key)
+    const prop = keyToText(key)
+
+    commit(d => {
+      const next    = new Set(d.shoppingList)
+      const checked = { ...d.shopChecked }
+      if (wasListed) { next.delete(key); delete checked[prop] }
+      else next.add(key)
+      return { ...d, shoppingList: next, shopChecked: checked }
     })
+
+    if (!uid) return
+    if (wasListed) {
+      run(
+        supabase.from('shopping_list').delete().match({ user_id: uid, recipe_key: prop }),
+        'Could not remove from shopping list.',
+      )
+    } else {
+      run(
+        supabase.from('shopping_list').upsert(
+          { user_id: uid, recipe_key: prop, checked: [] },
+          { onConflict: 'user_id,recipe_key' },
+        ),
+        'Could not add to shopping list.',
+      )
+    }
   }
 
-  function toggleShopItem(key) {
-    setShopChecked(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key); else next.add(key)
-      return next
-    })
+  /** Ticks or unticks ingredient `index` of the recipe at `key`. */
+  function toggleShopItem(key, index) {
+    const prop    = keyToText(key)
+    const current = dataRef.current.shopChecked[prop] || []
+    const next    = current.includes(index)
+      ? current.filter(i => i !== index)
+      : [...current, index].sort((a, b) => a - b)
+
+    commit(d => ({ ...d, shopChecked: { ...d.shopChecked, [prop]: next } }))
+
+    if (!uid) return
+    run(
+      supabase.from('shopping_list').update({ checked: next }).match({ user_id: uid, recipe_key: prop }),
+      'Could not save your checked ingredients.',
+    )
+  }
+
+  function isShopItemChecked(key, index) {
+    return (shopChecked[keyToText(key)] || []).includes(index)
   }
 
   function clearShopping() {
-    if (user)
-      notifyOnError(
-        supabase.from('shopping_list').delete().eq('user_id', user.id),
-        'Could not clear shopping list.'
-      )
-    setShoppingList(new Set())
-    setShopChecked(new Set())
+    commit(d => ({ ...d, shoppingList: new Set(), shopChecked: {} }))
+    if (!uid) return
+    run(
+      supabase.from('shopping_list').delete().eq('user_id', uid),
+      'Could not clear shopping list.',
+    )
   }
 
-  // ── user recipes ────────────────────────────────────────────
-  const MY_RECIPES_LIST = 'My Recipes'
-
-  // Auto-adds one or more recipes to the "My Recipes" system list, creating it on first use.
-  // Shared by createUserRecipe (online creation) and syncFromSupabase (recipes made while
-  // logged out, which previously skipped this side effect entirely).
-  async function addRecipesToMyRecipesList(uid, createdRecipes) {
+  // ── user recipes ───────────────────────────────────────────
+  /** Adds recipes to the "My Recipes" system list, creating it on first use. */
+  async function addRecipesToMyRecipesList(ownerId, createdRecipes) {
     try {
-      let { data: myList } = await supabase
+      let { data: myList, error: findErr } = await supabase
         .from('lists')
         .select('id')
-        .eq('user_id', uid)
+        .eq('user_id', ownerId)
         .eq('name', MY_RECIPES_LIST)
         .maybeSingle()
+      if (findErr) throw findErr
 
       if (!myList) {
         const { data: newList, error: listErr } = await supabase
           .from('lists')
-          .insert({ name: MY_RECIPES_LIST, user_id: uid })
+          .insert({ name: MY_RECIPES_LIST, user_id: ownerId })
           .select('id, name')
           .single()
         if (listErr) throw listErr
         myList = newList
-        setLists(prev => [{ id: newList.id, name: MY_RECIPES_LIST, items: [] }, ...prev])
+        commit(d => ({
+          ...d,
+          lists: [{ id: newList.id, name: MY_RECIPES_LIST, items: [] }, ...d.lists],
+        }))
       }
 
       const recipeKeys = createdRecipes.map(r => 'u_' + r.id)
       const { error: itemsErr } = await supabase
         .from('list_items')
-        .upsert(recipeKeys.map(recipeKey => ({ list_id: myList.id, recipe_key: recipeKey })))
+        .upsert(
+          recipeKeys.map(recipe_key => ({ list_id: myList.id, recipe_key })),
+          { onConflict: 'list_id,recipe_key' },
+        )
       if (itemsErr) throw itemsErr
 
-      setLists(prev => prev.map(l =>
-        l.id === myList.id
-          ? { ...l, items: [...new Set([...l.items, ...recipeKeys])] }
-          : l
-      ))
+      commit(d => ({
+        ...d,
+        lists: d.lists.map(l =>
+          l.id === myList.id
+            ? { ...l, items: [...new Set([...l.items, ...recipeKeys])] }
+            : l
+        ),
+      }))
+      return true
     } catch (err) {
       console.error('Failed to add to My Recipes list:', err)
       showError('Could not add recipe to My Recipes list.')
+      return false
     }
   }
 
-  async function createUserRecipe(data) {
-    if (user) {
+  async function createUserRecipe(fields) {
+    if (uid) {
       const { data: created, error } = await supabase
         .from('user_recipes')
-        .insert({ ...data, user_id: user.id })
+        .insert({ ...toUserRecipeRow(fields), user_id: uid })
         .select()
         .single()
       if (error) throw error
+
       const normalized = normalizeUserRecipe(created)
-      setUserRecipes(prev => [normalized, ...prev])
+      commit(d => ({ ...d, userRecipes: [normalized, ...d.userRecipes] }))
       logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
-      await addRecipesToMyRecipesList(user.id, [created])
+      await addRecipesToMyRecipesList(uid, [created])
       return normalized
-    } else {
-      const recipe = normalizeUserRecipe({ ...data, id: 'local_' + Date.now(), user_id: null, created_at: new Date().toISOString() })
-      setUserRecipes(prev => [recipe, ...prev])
-      return recipe
     }
+
+    const recipe = normalizeUserRecipe({
+      ...fields,
+      id: 'local_' + Date.now(),
+      user_id: null,
+      created_at: new Date().toISOString(),
+    })
+    commit(d => ({ ...d, userRecipes: [recipe, ...d.userRecipes] }))
+    return recipe
+  }
+
+  async function updateUserRecipe(id, fields) {
+    const row = toUserRecipeRow(fields)
+
+    if (uid && !String(id).startsWith('local_')) {
+      const { data: updated, error } = await supabase
+        .from('user_recipes')
+        .update(row)
+        .match({ id, user_id: uid })
+        .select()
+        .single()
+      if (error) throw error
+
+      const normalized = normalizeUserRecipe(updated)
+      commit(d => ({
+        ...d,
+        userRecipes: d.userRecipes.map(r => (r.id === id ? normalized : r)),
+      }))
+      return normalized
+    }
+
+    // Computed outside the updater so the updater stays pure — StrictMode
+    // double-invokes it in development.
+    const existing = dataRef.current.userRecipes.find(r => r.id === id)
+    if (!existing) return null
+    const merged = normalizeUserRecipe({ ...existing, ...row })
+
+    commit(d => ({
+      ...d,
+      userRecipes: d.userRecipes.map(r => (r.id === id ? merged : r)),
+    }))
+    return merged
   }
 
   async function deleteUserRecipe(id) {
-    setUserRecipes(prev => prev.filter(r => r.id !== id))
-    setLists(prev => prev.map(l => ({ ...l, items: l.items.filter(k => k !== 'u_' + id) })))
-    if (user)
-      notifyOnError(
-        supabase.from('user_recipes').delete().match({ id, user_id: user.id }),
-        'Could not delete recipe.'
-      )
+    const key  = 'u_' + id
+    const prop = keyToText(key)
+
+    // Purge every local reference. Server-side, the on_user_recipe_deleted
+    // trigger does the same for favorites / shopping_list / list_items /
+    // activity / ratings / notes, including other users' rows — recipe_key is
+    // plain text with no foreign key, so nothing cascaded before.
+    commit(d => {
+      const favorites = new Set(d.favorites);    favorites.delete(key)
+      const shopping  = new Set(d.shoppingList); shopping.delete(key)
+      const ratings = { ...d.ratings }; delete ratings[prop]
+      const notes   = { ...d.notes };   delete notes[prop]
+      const checked = { ...d.shopChecked }; delete checked[prop]
+      return {
+        ...d,
+        favorites,
+        shoppingList: shopping,
+        ratings,
+        notes,
+        shopChecked: checked,
+        userRecipes: d.userRecipes.filter(r => r.id !== id),
+        lists: d.lists.map(l => ({ ...l, items: l.items.filter(k => k !== key) })),
+      }
+    })
+
+    if (!uid || String(id).startsWith('local_')) return
+    run(
+      supabase.from('user_recipes').delete().match({ id, user_id: uid }),
+      'Could not delete recipe.',
+    )
   }
 
   // ── lists ──────────────────────────────────────────────────
   async function createList(name) {
-    if (user) {
-      const { data, error } = await supabase
+    if (uid) {
+      const { data: created, error } = await supabase
         .from('lists')
-        .insert({ name, user_id: user.id })
+        .insert({ name, user_id: uid })
         .select()
         .single()
       if (error) throw error
-      const list = { id: data.id, name: data.name, items: [] }
-      setLists(prev => [list, ...prev])
-      return list
-    } else {
-      const list = { id: 'local_' + Date.now(), name, items: [] }
-      setLists(prev => [list, ...prev])
+      const list = { id: created.id, name: created.name, items: [] }
+      commit(d => ({ ...d, lists: [list, ...d.lists] }))
       return list
     }
+
+    const list = { id: 'local_' + Date.now(), name, items: [] }
+    commit(d => ({ ...d, lists: [list, ...d.lists] }))
+    return list
   }
 
   async function deleteList(id) {
-    setLists(prev => prev.filter(l => l.id !== id))
-    if (user)
-      notifyOnError(
-        supabase.from('lists').delete().match({ id, user_id: user.id }),
-        'Could not delete list.'
-      )
+    commit(d => ({ ...d, lists: d.lists.filter(l => l.id !== id) }))
+    if (!uid || String(id).startsWith('local_')) return
+    run(
+      supabase.from('lists').delete().match({ id, user_id: uid }),
+      'Could not delete list.',
+    )
   }
 
   async function renameList(id, name) {
-    setLists(prev => prev.map(l => l.id === id ? { ...l, name } : l))
-    if (user)
-      notifyOnError(
-        supabase.from('lists').update({ name }).match({ id, user_id: user.id }),
-        'Could not rename list.'
-      )
+    commit(d => ({ ...d, lists: d.lists.map(l => (l.id === id ? { ...l, name } : l)) }))
+    if (!uid || String(id).startsWith('local_')) return
+    run(
+      supabase.from('lists').update({ name }).match({ id, user_id: uid }),
+      'Could not rename list.',
+    )
   }
 
-  function addToList(listId, recipeKey, recipeName) {
-    setLists(prev => {
-      const list = prev.find(l => l.id === listId)
-      if (list && !list.items.includes(recipeKey)) {
-        logActivity('listed', { recipe_key: String(recipeKey), recipe_name: recipeName, list_name: list.name })
-      }
-      return prev.map(l =>
-        l.id === listId && !l.items.includes(recipeKey)
-          ? { ...l, items: [...l.items, recipeKey] }
-          : l
-      )
-    })
-    if (user)
-      notifyOnError(
-        supabase.from('list_items').upsert({ list_id: listId, recipe_key: String(recipeKey) }),
-        'Could not add to list.'
-      )
+  function addToList(listId, key, recipeName) {
+    // Read from the ref: a list created moments ago is not in the closure yet.
+    const list = dataRef.current.lists.find(l => l.id === listId)
+    if (!list || list.items.includes(key)) return
+
+    commit(d => ({
+      ...d,
+      lists: d.lists.map(l =>
+        l.id === listId && !l.items.includes(key) ? { ...l, items: [...l.items, key] } : l
+      ),
+    }))
+
+    if (!uid || String(listId).startsWith('local_')) return
+    run(
+      supabase.from('list_items').upsert(
+        { list_id: listId, recipe_key: keyToText(key) },
+        { onConflict: 'list_id,recipe_key' },
+      ),
+      'Could not add to list.',
+    )
+    if (recipeName) {
+      logActivity('listed', {
+        recipe_key: keyToText(key), recipe_name: recipeName, list_name: list.name,
+      })
+    }
   }
 
-  function removeFromList(listId, recipeKey) {
-    setLists(prev => prev.map(l =>
-      l.id === listId ? { ...l, items: l.items.filter(k => k !== recipeKey) } : l
-    ))
-    if (user)
-      notifyOnError(
-        supabase.from('list_items').delete().match({ list_id: listId, recipe_key: String(recipeKey) }),
-        'Could not remove from list.'
-      )
+  function removeFromList(listId, key) {
+    commit(d => ({
+      ...d,
+      lists: d.lists.map(l =>
+        l.id === listId ? { ...l, items: l.items.filter(k => k !== key) } : l
+      ),
+    }))
+
+    if (!uid || String(listId).startsWith('local_')) return
+    run(
+      supabase.from('list_items').delete().match({ list_id: listId, recipe_key: keyToText(key) }),
+      'Could not remove from list.',
+    )
   }
 
   return (
     <AppContext.Provider value={{
+      syncing,
       favorites,    toggleFav,
       ratings,      setRating,
       notes,        setNote,
       shoppingList, toggleShopping,
-      shopChecked,  toggleShopItem, clearShopping,
-      userRecipes,  createUserRecipe, deleteUserRecipe,
+      toggleShopItem, isShopItemChecked, clearShopping,
+      userRecipes,  createUserRecipe, updateUserRecipe, deleteUserRecipe,
       lists,        createList, deleteList, renameList, addToList, removeFromList,
     }}>
       {children}

@@ -1,42 +1,80 @@
 import { useState, useEffect, useRef } from 'react'
 import { useApp } from '../context/AppContext'
-import { ingredientLabel } from '../utils/recipe'
+import { useToast } from '../context/ToastContext'
+import { useDialog } from '../hooks/useDialog'
+import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId } from '../utils/recipe'
+import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
 
-export default function RecipeModal({ recipe, idx, onClose }) {
+export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
   const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
           lists, addToList, removeFromList, createList } = useApp()
+  const { showToast, showError } = useToast()
+  const [editing,     setEditing]     = useState(false)
 
-  const [scale,           setScale]           = useState(1)
-  const [checkedIngs,     setCheckedIngs]     = useState(new Set())
-  const [noteText,        setNoteText]        = useState('')
-  const [savedHint,       setSavedHint]       = useState(false)
-  const [showLists,       setShowLists]       = useState(false)
-  const [newListName,     setNewListName]     = useState('')
+  // Stand the trap down while the edit dialog is stacked on top of this one.
+  const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing })
+
+  const [scale,       setScale]       = useState(1)
+  const [checkedIngs, setCheckedIngs] = useState(new Set())
+  const [noteText,    setNoteText]    = useState('')
+  const [savedHint,   setSavedHint]   = useState(false)
+  const [showLists,   setShowLists]   = useState(false)
+  const [newListName, setNewListName] = useState('')
+
   const notesTimer = useRef(null)
+  const hintTimer  = useRef(null)
+  const listsRef   = useRef(null)
 
-  const isFav   = favorites.has(idx)
-  const inList  = shoppingList.has(idx)
-  const rating  = ratings[recipe.name] || 0
+  const keyProp = keyToText(recipeKey)
+  const isFav   = favorites.has(recipeKey)
+  const inList  = shoppingList.has(recipeKey)
+  const rating  = ratings[keyProp] || 0
+
+  // Ratings and notes are keyed by recipe key, not recipe name — a user recipe
+  // called "Carbonara" no longer shares its stars and notes with the catalog
+  // recipe of the same name.
+  const savedNote = notes[keyProp] || ''
+
+  // Holds the latest keystroke so it can be flushed if the modal closes inside
+  // the debounce window. Without this, typing a note and closing within 600ms
+  // silently discarded it.
+  const pendingNote = useRef(null)
 
   useEffect(() => {
     setScale(1)
     setCheckedIngs(new Set())
-    setNoteText(notes[recipe.name] || '')
+    setNoteText(savedNote)
     setShowLists(false)
     setNewListName('')
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = ''
-      clearTimeout(notesTimer.current)
-    }
-  }, [idx])
+    pendingNote.current = null
+    // savedNote is intentionally not a dependency: re-running on every note
+    // change would overwrite what the user is currently typing.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyProp])
 
+  // Flush an in-flight note edit when the modal goes away.
   useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+    return () => {
+      clearTimeout(notesTimer.current)
+      clearTimeout(hintTimer.current)
+      if (pendingNote.current !== null) {
+        setNote(recipeKey, pendingNote.current, recipe.name)
+        pendingNote.current = null
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyProp])
+
+  // Dismiss the "add to list" popover on an outside click.
+  useEffect(() => {
+    if (!showLists) return
+    function onDown(e) {
+      if (listsRef.current && !listsRef.current.contains(e.target)) setShowLists(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [showLists])
 
   function toggleIng(i) {
     setCheckedIngs(prev => {
@@ -50,53 +88,92 @@ export default function RecipeModal({ recipe, idx, onClose }) {
     const val = e.target.value
     setNoteText(val)
     setSavedHint(false)
+    pendingNote.current = val.trim()
+
     clearTimeout(notesTimer.current)
     notesTimer.current = setTimeout(() => {
-      setNote(recipe.name, val.trim())
+      setNote(recipeKey, pendingNote.current, recipe.name)
+      pendingNote.current = null
       setSavedHint(true)
-      setTimeout(() => setSavedHint(false), 1500)
+      hintTimer.current = setTimeout(() => setSavedHint(false), 1500)
     }, 600)
   }
 
   function handleStarClick(n) {
-    setRating(recipe.name, n === rating ? 0 : n)
+    setRating(recipeKey, n === rating ? 0 : n, recipe.name)
   }
 
   async function handleShare() {
     const base = window.location.origin + import.meta.env.BASE_URL
-    const shareUrl = typeof idx === 'number' ? `${base}?r=${idx}` : base
-    const shareData = {
-      title: recipe.name,
-      text: `Check out this recipe: ${recipe.name}`,
-      url: shareUrl,
-    }
-    if (navigator.share) {
-      await navigator.share(shareData)
-    } else {
-      await navigator.clipboard.writeText(shareUrl)
-      alert('Link copied!')
+    // User recipes are shareable too, via their uuid — they previously fell
+    // back to the bare app URL, which shared nothing in particular.
+    const shareUrl = isUserRecipeKey(recipeKey)
+      ? `${base}?u=${userRecipeId(recipeKey)}`
+      : `${base}?r=${recipeKey}`
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: recipe.name,
+          text: `Check out this recipe: ${recipe.name}`,
+          url: shareUrl,
+        })
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl)
+        showToast('Link copied', 'info')
+      } else {
+        // Clipboard needs a secure context; nothing to fall back to.
+        showError('Sharing isn’t supported in this browser.')
+      }
+    } catch (err) {
+      // The user dismissing the native share sheet rejects with AbortError —
+      // that isn't a failure worth reporting.
+      if (err?.name === 'AbortError') return
+      console.error('Share failed:', err)
+      showError('Could not share this recipe.')
     }
   }
 
   async function handleNewList(e) {
     e.preventDefault()
-    if (!newListName.trim()) return
-    const list = await createList(newListName.trim())
-    addToList(list.id, idx)
-    setNewListName('')
+    const name = newListName.trim()
+    if (!name) return
+    try {
+      const list = await createList(name)
+      addToList(list.id, recipeKey, recipe.name)
+      setNewListName('')
+    } catch (err) {
+      console.error('Create list failed:', err)
+      showError('Could not create that list.')
+    }
   }
+
+  if (editing) {
+    return (
+      <CreateRecipeModal
+        recipe={recipe}
+        onClose={() => setEditing(false)}
+        onSaved={() => setEditing(false)}
+      />
+    )
+  }
+
+  const iconBtn = 'transition-all hover:scale-[1.15] p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
 
   return (
     <div
-      className="fixed inset-0 bg-[rgba(60,35,15,0.55)] backdrop-blur-[3px] z-[500] flex items-start justify-center p-8 overflow-y-auto"
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      className="fixed inset-0 bg-[rgba(60,35,15,0.55)] backdrop-blur-[3px] z-[500] flex items-start justify-center p-4 sm:p-8 overflow-y-auto"
+      {...backdropProps}
     >
-      <div className="bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate">
+      <div
+        className="bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
+        {...panelProps}
+      >
 
         {/* ── Header ── */}
         <div className="px-5 pt-5 pb-[14px] border-b border-warm-tan flex items-start gap-3.5">
           <div className="flex-1 min-w-0">
-            <h2 className="font-display text-[1.4rem] font-semibold text-ink leading-tight mb-2.5">
+            <h2 id={titleId} className="font-display text-[1.4rem] font-semibold text-ink leading-tight mb-2.5">
               {recipe.name}
             </h2>
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -104,23 +181,40 @@ export default function RecipeModal({ recipe, idx, onClose }) {
               {recipe.timeMinutes && (
                 <span className="text-[0.78rem] text-muted">⏱ {recipe.timeMinutes} min</span>
               )}
+              {recipe.servings && (
+                <span className="text-[0.78rem] text-muted">🍽 {recipe.servings} servings</span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
+            {editable && (
+              <button
+                className={`${iconBtn} text-[1.1rem] text-warm-tan hover:text-accent`}
+                onClick={() => setEditing(true)}
+                aria-label={`Edit ${recipe.name}`}
+                title="Edit recipe"
+              >✎</button>
+            )}
             <button
-              className={`text-[1.5rem] transition-all hover:scale-[1.15] p-1 ${isFav ? 'text-heart' : 'text-warm-tan hover:text-[#e8a0a0]'}`}
-              onClick={() => toggleFav(idx, recipe.name)}
+              className={`${iconBtn} text-[1.5rem] ${isFav ? 'text-heart' : 'text-warm-tan hover:text-[#e8a0a0]'}`}
+              onClick={() => toggleFav(recipeKey, recipe.name)}
+              aria-pressed={isFav}
+              aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
               title="Save recipe"
             >♥</button>
             <button
-              className={`text-[1.3rem] transition-all hover:scale-[1.15] p-1 ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
-              onClick={() => toggleShopping(idx)}
+              className={`${iconBtn} text-[1.3rem] ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+              onClick={() => toggleShopping(recipeKey)}
+              aria-pressed={inList}
+              aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
               title="Add to shopping list"
             >🛒</button>
-            <div className="relative">
+            <div className="relative" ref={listsRef}>
               <button
-                className={`text-[1.2rem] transition-all hover:scale-[1.15] p-1 ${lists.some(l => l.items.includes(idx)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                className={`${iconBtn} text-[1.2rem] ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
                 onClick={() => setShowLists(p => !p)}
+                aria-expanded={showLists}
+                aria-label="Add to a list"
                 title="Add to list"
               >📋</button>
               {showLists && (
@@ -129,17 +223,18 @@ export default function RecipeModal({ recipe, idx, onClose }) {
                     Add to list
                   </div>
                   {lists.length === 0 && (
-                    <div className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</div>
+                    <p className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</p>
                   )}
                   {lists.map(l => {
-                    const inL = l.items.includes(idx)
+                    const inL = l.items.includes(recipeKey)
                     return (
                       <button
                         key={l.id}
-                        onClick={() => inL ? removeFromList(l.id, idx) : addToList(l.id, idx)}
+                        onClick={() => inL ? removeFromList(l.id, recipeKey) : addToList(l.id, recipeKey, recipe.name)}
+                        aria-pressed={inL}
                         className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
                       >
-                        <span className="text-[0.9rem]">{inL ? '✓' : '+'}</span>
+                        <span className="text-[0.9rem]" aria-hidden="true">{inL ? '✓' : '+'}</span>
                         <span className="truncate">{l.name}</span>
                       </button>
                     )
@@ -149,6 +244,8 @@ export default function RecipeModal({ recipe, idx, onClose }) {
                       value={newListName}
                       onChange={e => setNewListName(e.target.value)}
                       placeholder="New list…"
+                      aria-label="New list name"
+                      maxLength={60}
                       className="flex-1 text-[0.8rem] border-[1.5px] border-rim rounded-lg px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
                     />
                     <button type="submit" className="bg-accent text-white text-[0.78rem] font-bold rounded-lg px-2.5 hover:bg-accent-dk transition-colors">
@@ -159,13 +256,15 @@ export default function RecipeModal({ recipe, idx, onClose }) {
               )}
             </div>
             <button
-              className="text-[1.2rem] transition-all hover:scale-[1.15] p-1 text-warm-tan hover:text-accent"
+              className={`${iconBtn} text-[1.2rem] text-warm-tan hover:text-accent`}
               onClick={handleShare}
+              aria-label={`Share ${recipe.name}`}
               title="Share recipe"
             >↗</button>
             <button
-              className="bg-paper border-[1.5px] border-rim rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none"
+              className="bg-paper border-[1.5px] border-rim rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               onClick={onClose}
+              aria-label="Close recipe"
               title="Close"
             >×</button>
           </div>
@@ -175,18 +274,20 @@ export default function RecipeModal({ recipe, idx, onClose }) {
         <div className="p-5 pb-6">
 
           {/* Ingredients header + scale */}
-          <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-dashed border-rim">
-            <span className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
+          <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-dashed border-rim gap-3">
+            <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
               Ingredients
-            </span>
-            <div className="flex gap-1 items-center">
+            </h3>
+            <div className="flex gap-1 items-center" role="group" aria-label="Scale ingredients">
               {[1, 2, 3].map(s => {
-                const base = recipe.servings || 1
-                const label = base * s === 1 ? '1 serving' : `${base * s} servings`
+                const base  = recipe.servings || 1
+                const total = base * s
+                const label = total === 1 ? '1 serving' : `${total} servings`
                 return (
                   <button
                     key={s}
                     onClick={() => setScale(s)}
+                    aria-pressed={scale === s}
                     className={`rounded-[14px] px-2.5 py-[3px] text-[0.72rem] font-bold transition-all border-[1.5px] ${
                       scale === s
                         ? 'bg-accent border-accent text-white'
@@ -204,33 +305,30 @@ export default function RecipeModal({ recipe, idx, onClose }) {
               const { measure, item } = ingredientLabel(ing, scale)
               const checked = checkedIngs.has(i)
               return (
-                <li
-                  key={i}
-                  className={`flex items-start gap-2.5 py-[5px] border-b border-[rgba(200,180,130,0.25)] text-[0.88rem] cursor-pointer transition-opacity last:border-0 ${checked ? 'opacity-40' : ''}`}
-                  onClick={() => toggleIng(i)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => toggleIng(i)}
-                    onClick={e => e.stopPropagation()}
-                    className="accent-accent w-[15px] h-[15px] shrink-0 mt-[1px] cursor-pointer"
-                  />
-                  <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
-                  <span className="text-ink">{item}</span>
+                <li key={i} className={`text-[0.88rem] border-b border-[rgba(200,180,130,0.25)] last:border-0 transition-opacity ${checked ? 'opacity-40' : ''}`}>
+                  <label className="flex items-start gap-2.5 py-[5px] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleIng(i)}
+                      className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px] cursor-pointer"
+                    />
+                    <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
+                    <span className="text-ink">{item}</span>
+                  </label>
                 </li>
               )
             })}
           </ul>
 
           {/* Steps */}
-          <div className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-rim">
+          <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-rim">
             Steps
-          </div>
+          </h3>
           <ol className="list-none mb-1">
             {recipe.steps.map((step, i) => (
               <li key={i} className="flex gap-3 mb-3.5 text-[0.88rem] leading-relaxed">
-                <span className="bg-accent text-white w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]">
+                <span className="bg-accent text-white w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]" aria-hidden="true">
                   {i + 1}
                 </span>
                 <span className="text-ink">{step}</span>
@@ -240,34 +338,35 @@ export default function RecipeModal({ recipe, idx, onClose }) {
 
           {/* Notes & Ratings */}
           <div className="mt-5 pt-4 border-t border-dashed border-rim">
-            <div className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-rim">
+            <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-rim">
               Your Notes
-            </div>
-            {/* Stars */}
-            <div className="flex items-center gap-0.5 mb-3">
+            </h3>
+            <div className="flex items-center gap-0.5 mb-3" role="group" aria-label="Your rating">
               {[1, 2, 3, 4, 5].map(n => (
                 <button
                   key={n}
                   onClick={() => handleStarClick(n)}
-                  className={`text-[1.4rem] leading-none p-[2px] transition-all hover:scale-[1.18] ${n <= rating ? 'text-star' : 'text-warm-tan'}`}
-                  title={`${n} star${n > 1 ? 's' : ''}`}
+                  aria-pressed={n <= rating}
+                  aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
+                  className={`text-[1.4rem] leading-none p-[2px] transition-all hover:scale-[1.18] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded ${n <= rating ? 'text-star' : 'text-warm-tan'}`}
                 >★</button>
               ))}
               {rating > 0 && (
                 <button
-                  onClick={() => setRating(recipe.name, 0)}
+                  onClick={() => setRating(recipeKey, 0, recipe.name)}
                   className="ml-1.5 text-[0.7rem] text-muted underline hover:text-heart transition-colors"
                 >clear</button>
               )}
             </div>
-            {/* Textarea */}
             <textarea
               value={noteText}
               onChange={handleNoteChange}
+              maxLength={2000}
+              aria-label={`Your notes on ${recipe.name}`}
               placeholder="Jot down substitutions, tips, how it turned out…"
               className="w-full min-h-[80px] border-[1.5px] border-rim rounded-lg px-3 py-2.5 text-[0.86rem] text-ink bg-paper resize-y outline-none focus:border-accent transition-colors leading-relaxed placeholder:text-muted font-sans"
             />
-            <div className="text-right text-[0.68rem] text-muted mt-1 h-[14px]">
+            <div className="text-right text-[0.68rem] text-muted mt-1 h-[14px]" aria-live="polite">
               {savedHint ? 'Saved' : ''}
             </div>
           </div>

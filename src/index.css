@@ -6,6 +6,14 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Single source of truth for the two fixed chrome heights. The sticky filter
+   bars in Home/Search and body's bottom padding both derive from these, so
+   changing the header or nav no longer requires hunting magic numbers. */
+:root {
+  --header-h: 72px;
+  --nav-h:    62px;
+}
+
 body {
   background-color: #FDF6E3;
   background-image: repeating-linear-gradient(
@@ -16,7 +24,7 @@ body {
   );
   min-height: 100vh;
   overflow-x: hidden;
-  padding-bottom: 62px;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   font-family: 'Lato', sans-serif;
   color: #3D2B1F;
 }
@@ -38,3 +46,9 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 .snap-start { scroll-snap-align: start; }
+
+/* iOS safe-area padding for bottom sheets and the fixed nav. */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Sticks directly below the sticky app header. */
+.sticky-under-header { position: sticky; top: var(--header-h); }
