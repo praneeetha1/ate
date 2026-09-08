@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { supabase } from '../lib/supabase'
 import { ingredientLabel, resolveRecipe, keyToText } from '../utils/recipe'
+import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import UsernameModal from '../components/UsernameModal'
 
@@ -29,6 +30,11 @@ export default function Profile({ onOpen }) {
   const [savingPriv, setSavingPriv] = useState(false)
 
   const listArr = [...shoppingList]
+
+  // `select('*')` simply omits a column that doesn't exist, so an absent key
+  // here means migration 006 hasn't been applied to this database yet. Better
+  // to say so than to offer a checkbox whose every click fails.
+  const privacySupported = !!profile && 'is_private' in profile
 
   const displayName = profile?.username
     ? `@${profile.username}`
@@ -64,7 +70,7 @@ export default function Profile({ onOpen }) {
       setEditingBio(false)
     } catch (err) {
       console.error('Bio update failed:', err)
-      showError(err.message || 'Could not save your bio.')
+      showError(describeError(err, 'Could not save your bio.'))
     } finally {
       setSavingBio(false)
     }
@@ -83,7 +89,7 @@ export default function Profile({ onOpen }) {
       )
     } catch (err) {
       console.error('Privacy update failed:', err)
-      showError('Could not change your privacy setting.')
+      showError(describeError(err, 'Could not change your privacy setting.'))
     } finally {
       setSavingPriv(false)
     }
@@ -185,12 +191,12 @@ export default function Profile({ onOpen }) {
                 on this flag, so it genuinely hides content rather than only
                 hiding the profile page. */}
             <div className="w-full mt-3 pt-3 border-t border-warm-tan">
-              <label className="flex items-start gap-3 cursor-pointer">
+              <label className={`flex items-start gap-3 ${privacySupported ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
                 <input
                   type="checkbox"
                   checked={!!profile?.is_private}
                   onChange={handleTogglePrivacy}
-                  disabled={savingPriv || !profile}
+                  disabled={savingPriv || !privacySupported}
                   className="accent-accent w-[16px] h-[16px] shrink-0 mt-[2px]"
                 />
                 <span>
@@ -200,6 +206,12 @@ export default function Profile({ onOpen }) {
                   </span>
                 </span>
               </label>
+              {profile && !privacySupported && (
+                <p role="status" className="text-[0.75rem] text-heart mt-2">
+                  Unavailable until the pending database migration
+                  (<code className="font-mono">006_hardening.sql</code>) is applied.
+                </p>
+              )}
             </div>
           </div>
         ) : (

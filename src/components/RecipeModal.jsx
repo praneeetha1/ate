@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 import { useToast } from '../context/ToastContext'
 import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId } from '../utils/recipe'
+import { describeError } from '../utils/errors'
 import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
 
@@ -144,7 +145,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       setNewListName('')
     } catch (err) {
       console.error('Create list failed:', err)
-      showError('Could not create that list.')
+      showError(describeError(err, 'Could not create that list.'))
     }
   }
 
@@ -248,7 +249,11 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                       maxLength={60}
                       className="flex-1 text-[0.8rem] border-[1.5px] border-rim rounded-lg px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
                     />
-                    <button type="submit" className="bg-accent text-white text-[0.78rem] font-bold rounded-lg px-2.5 hover:bg-accent-dk transition-colors">
+                    <button
+                      type="submit"
+                      disabled={!newListName.trim()}
+                      className="bg-accent text-white text-[0.78rem] font-bold rounded-lg px-2.5 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
+                    >
                       Add
                     </button>
                   </form>

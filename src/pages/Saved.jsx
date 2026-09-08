@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { useToast } from '../context/ToastContext'
 import { resolveRecipe, keyToText } from '../utils/recipe'
+import { describeError } from '../utils/errors'
 import RecipeCard from '../components/RecipeCard'
 import RecipeListItem from '../components/RecipeListItem'
 
@@ -13,6 +14,8 @@ export default function Saved({ onOpen }) {
   const [layout,      setLayout]      = useState('grid')
   const [expanded,    setExpanded]    = useState(null)
   const [newListName, setNewListName] = useState('')
+  const [creating,    setCreating]    = useState(false)
+  const [createError, setCreateError] = useState('')
   const [renaming,    setRenaming]    = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const [confirmList, setConfirmList] = useState(null)
@@ -27,21 +30,43 @@ export default function Saved({ onOpen }) {
 
   async function handleCreateList(e) {
     e.preventDefault()
+    if (creating) return
+
     const name = newListName.trim()
-    if (!name) return
+    // Previously this returned silently while the button still looked live, so
+    // pressing "+ Create" with an empty field did visibly nothing at all.
+    if (!name) {
+      setCreateError('Give the list a name first.')
+      return
+    }
+    if (lists.some(l => l.name.toLowerCase() === name.toLowerCase())) {
+      setCreateError(`You already have a list called “${name}”.`)
+      return
+    }
+
+    setCreating(true)
+    setCreateError('')
     try {
       await createList(name)
       setNewListName('')
     } catch (err) {
       console.error('Create list failed:', err)
-      showError('Could not create list.')
+      // Shown inline next to the field only — a toast as well would say the
+      // same thing twice, right beside itself.
+      setCreateError(describeError(err, 'Could not create list.'))
+    } finally {
+      setCreating(false)
     }
   }
 
   async function handleRename(e, id) {
     e.preventDefault()
     const name = renameValue.trim()
-    if (!name) return
+    // An empty rename used to close nothing and change nothing, with no hint why.
+    if (!name) {
+      showError('A list needs a name.')
+      return
+    }
     await renameList(id, name)
     setRenaming(null)
   }
@@ -114,19 +139,31 @@ export default function Saved({ onOpen }) {
       {/* ── Lists tab ── */}
       {tab === 'lists' && (
         <div className="px-5 py-4">
-          <form onSubmit={handleCreateList} className="flex gap-2 mb-5">
-            <input
-              value={newListName}
-              onChange={e => setNewListName(e.target.value)}
-              placeholder="New list name…"
-              aria-label="New list name"
-              maxLength={60}
-              className="flex-1 border-[1.5px] border-rim rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none focus:border-accent placeholder:text-muted"
-            />
-            <button
-              type="submit"
-              className="bg-accent text-white font-bold text-[0.88rem] rounded-xl px-4 hover:bg-accent-dk transition-colors"
-            >+ Create</button>
+          <form onSubmit={handleCreateList} className="mb-5" noValidate>
+            <div className="flex gap-2">
+              <input
+                value={newListName}
+                onChange={e => { setNewListName(e.target.value); setCreateError('') }}
+                placeholder="New list name…"
+                aria-label="New list name"
+                aria-invalid={!!createError}
+                aria-describedby={createError ? 'create-list-error' : undefined}
+                maxLength={60}
+                className="flex-1 border-[1.5px] rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none transition-colors placeholder:text-muted focus:border-accent border-rim aria-[invalid=true]:border-heart"
+              />
+              {/* Disabled while empty, so the button visibly communicates that a
+                  name is needed instead of silently doing nothing. */}
+              <button
+                type="submit"
+                disabled={creating || !newListName.trim()}
+                className="bg-accent text-white font-bold text-[0.88rem] rounded-xl px-4 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
+              >{creating ? 'Creating…' : '+ Create'}</button>
+            </div>
+            {createError && (
+              <p id="create-list-error" role="alert" className="text-[0.78rem] text-heart mt-2">
+                {createError}
+              </p>
+            )}
           </form>
 
           {!lists.length ? (
@@ -151,7 +188,11 @@ export default function Saved({ onOpen }) {
                             autoFocus
                             className="flex-1 border-[1.5px] border-rim rounded-lg px-2.5 py-1.5 text-[0.88rem] bg-paper outline-none focus:border-accent"
                           />
-                          <button type="submit" className="text-[0.75rem] font-bold text-accent px-2">Save</button>
+                          <button
+                            type="submit"
+                            disabled={!renameValue.trim()}
+                            className="text-[0.75rem] font-bold text-accent px-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                          >Save</button>
                           <button type="button" onClick={() => setRenaming(null)} className="text-[0.75rem] text-muted px-2">Cancel</button>
                         </form>
                       ) : (

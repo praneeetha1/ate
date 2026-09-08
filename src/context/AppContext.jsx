@@ -9,6 +9,7 @@ import {
 import {
   scopeFor, loadSlice, saveSlice, clearScope, migrateLegacyKeys,
 } from '../utils/storage'
+import { describeError } from '../utils/errors'
 
 const AppContext = createContext(null)
 
@@ -179,7 +180,7 @@ export function AppProvider({ children }) {
     syncWithSupabase(uid)
       .catch(err => {
         console.error('Supabase sync failed:', err)
-        showError('Could not sync your data. Showing what’s saved on this device.')
+        showError(describeError(err, 'Could not sync your data. Showing what’s saved on this device.'))
       })
       .finally(() => { if (!cancelled) setSyncing(false) })
 
@@ -350,8 +351,26 @@ export function AppProvider({ children }) {
       supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', ownerId),
     ])
 
-    for (const res of [favsRes, ratingsRes, notesRes, shopRes, recipesRes, listsRes]) {
-      if (res.error) throw res.error
+    // Degrade per slice rather than all-or-nothing. One failing query used to
+    // throw and abandon the whole sync, so a single unapplied migration (say,
+    // ratings.recipe_key not existing yet) took favourites, recipes and lists
+    // down with it. Now each slice that succeeded is kept, and the first
+    // failure is reported once.
+    const failures = [
+      ['saved recipes',  favsRes],
+      ['ratings',        ratingsRes],
+      ['notes',          notesRes],
+      ['shopping list',  shopRes],
+      ['your recipes',   recipesRes],
+      ['lists',          listsRes],
+    ].filter(([, res]) => res.error)
+
+    if (failures.length) {
+      for (const [label, res] of failures) {
+        console.error(`Could not load ${label}:`, res.error)
+      }
+      const [label, res] = failures[0]
+      showError(describeError(res.error, `Could not load your ${label}.`))
     }
 
     const fetchedRecipes = (recipesRes.data || []).map(normalizeUserRecipe)
@@ -359,21 +378,37 @@ export function AppProvider({ children }) {
     // Migration 006 stamped pre-existing ratings/notes with 'legacy:<name>'
     // because the catalog needed to map a name to a key and the database has no
     // access to it. Resolve those here, where the catalog is available.
-    const ratingRows = await backfillLegacyKeys('ratings', ratingsRes.data, ownerId, fetchedRecipes)
-    const noteRows   = await backfillLegacyKeys('notes',   notesRes.data,   ownerId, fetchedRecipes)
+    const ratingRows = ratingsRes.error ? [] : await backfillLegacyKeys('ratings', ratingsRes.data, ownerId, fetchedRecipes)
+    const noteRows   = notesRes.error   ? [] : await backfillLegacyKeys('notes',   notesRes.data,   ownerId, fetchedRecipes)
+
+    // For a slice that failed, keep the device's copy: replacing it with an
+    // empty server response would look like the user's data had been deleted.
+    const local = hydrate(scopeFor(ownerId))
 
     return {
-      favorites:    new Set((favsRes.data || []).map(f => keyFromText(f.recipe_key))),
-      ratings:      Object.fromEntries(ratingRows.map(r => [keyToText(r.recipe_key), r.rating])),
-      notes:        Object.fromEntries(noteRows.map(n => [keyToText(n.recipe_key), n.body])),
-      shoppingList: new Set((shopRes.data || []).map(s => keyFromText(s.recipe_key))),
-      shopChecked:  Object.fromEntries((shopRes.data || []).map(s => [keyToText(s.recipe_key), s.checked || []])),
-      userRecipes:  fetchedRecipes,
-      lists: (listsRes.data || []).map(l => ({
-        id: l.id,
-        name: l.name,
-        items: (l.list_items || []).map(li => keyFromText(li.recipe_key)),
-      })),
+      favorites: favsRes.error
+        ? local.favorites
+        : new Set((favsRes.data || []).map(f => keyFromText(f.recipe_key))),
+      ratings: ratingsRes.error
+        ? local.ratings
+        : Object.fromEntries(ratingRows.map(r => [keyToText(r.recipe_key), r.rating])),
+      notes: notesRes.error
+        ? local.notes
+        : Object.fromEntries(noteRows.map(n => [keyToText(n.recipe_key), n.body])),
+      shoppingList: shopRes.error
+        ? local.shoppingList
+        : new Set((shopRes.data || []).map(s => keyFromText(s.recipe_key))),
+      shopChecked: shopRes.error
+        ? local.shopChecked
+        : Object.fromEntries((shopRes.data || []).map(s => [keyToText(s.recipe_key), s.checked || []])),
+      userRecipes: recipesRes.error ? local.userRecipes : fetchedRecipes,
+      lists: listsRes.error
+        ? local.lists
+        : (listsRes.data || []).map(l => ({
+            id: l.id,
+            name: l.name,
+            items: (l.list_items || []).map(li => keyFromText(li.recipe_key)),
+          })),
     }
   }
 

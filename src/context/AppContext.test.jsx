@@ -372,3 +372,64 @@ describe('editing a user recipe', () => {
     expect(row).not.toHaveProperty('timeMinutes')
   })
 })
+
+describe('resilience to an unapplied migration', () => {
+  // This is the shape of the real-world report: migration 006 adds
+  // ratings.recipe_key, and until it runs PostgREST answers 42703. That used to
+  // throw out of fetchAll and abandon the whole sync, so lists / favourites /
+  // recipes all silently failed to load too.
+  const MISSING_COLUMN = { code: '42703', message: 'column ratings.recipe_key does not exist' }
+
+  it('still loads lists and favourites when the ratings query fails', async () => {
+    h.client = createMockSupabase({
+      ...seedProfile('user-1'),
+      favorites: [{ id: 1, user_id: 'user-1', recipe_key: '5' }],
+      lists: [{ id: 'ls-1', user_id: 'user-1', name: 'Weeknights' }],
+      user_recipes: [{ id: 'ur-1', user_id: 'user-1', name: 'Dal', category: 'Main Dish', ingredients: [], steps: [] }],
+    })
+
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+    h.client.__failOn('ratings', 'select', MISSING_COLUMN)
+
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    // The slices that worked are present...
+    expect(screen.getByTestId('favs').textContent).toBe('5')
+    expect(screen.getByTestId('recipes').textContent).toBe('Dal')
+    expect(api.lists.map(l => l.name)).toContain('Weeknights')
+    // ...and the failure is explained rather than swallowed.
+    expect(await screen.findByRole('alert')).toHaveTextContent(/migration may not have been applied/)
+  })
+
+  it('creating a list still works after a partial sync', async () => {
+    h.client = createMockSupabase(seedProfile('user-1'))
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+    h.client.__failOn('notes', 'select', MISSING_COLUMN)
+
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    await act(async () => { await api.createList('Made Anyway') })
+
+    expect(api.lists.map(l => l.name)).toContain('Made Anyway')
+    await waitFor(() => expect(h.client.__db.lists.map(l => l.name)).toContain('Made Anyway'))
+  })
+
+  it('keeps the device copy of a slice whose query failed', async () => {
+    localStorage.setItem('ate:user-1:ratings', JSON.stringify({ 5: 4 }))
+    h.client = createMockSupabase(seedProfile('user-1'))
+
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+    h.client.__failOn('ratings', 'select', MISSING_COLUMN)
+
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    // Not wiped to {} by an empty server answer.
+    expect(JSON.parse(screen.getByTestId('ratings').textContent)).toEqual({ 5: 4 })
+  })
+})

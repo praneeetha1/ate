@@ -330,3 +330,156 @@ describe('Saved', () => {
     await waitFor(() => expect(h.client.__db.lists[0].name).toBe('Sunday Cooking'))
   })
 })
+
+describe('Saved > + Create feedback', () => {
+  async function openLists() {
+    await act(async () => { screen.getByRole('tab', { name: /Lists/ }).click() })
+  }
+
+  // This is the reported symptom: clicking "+ Create" appeared to do nothing.
+  // The handler bailed on an empty name while the button still looked live.
+  it('disables + Create until a name is typed', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await openLists()
+
+    const button = screen.getByRole('button', { name: '+ Create' })
+    expect(button).toBeDisabled()
+
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: 'Weeknights' } })
+    expect(button).toBeEnabled()
+
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: '   ' } })
+    expect(button).toBeDisabled()
+  })
+
+  it('explains itself when submitted empty instead of doing nothing', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await openLists()
+
+    // Enter in the field submits the form even though the button is disabled.
+    await act(async () => {
+      fireEvent.submit(screen.getByLabelText('New list name').closest('form'))
+    })
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Give the list a name first.')
+    expect(api.lists).toHaveLength(0)
+  })
+
+  it('creates the list and clears the field on success', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+    await openLists()
+
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: 'Weeknights' } })
+    await act(async () => { screen.getByRole('button', { name: '+ Create' }).click() })
+
+    await waitFor(() => expect(h.client.__db.lists.map(l => l.name)).toContain('Weeknights'))
+    expect(screen.getByLabelText('New list name').value).toBe('')
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('rejects a duplicate name with a reason', async () => {
+    h.client = createMockSupabase(seed({
+      lists: [{ id: 'ls-1', user_id: 'user-1', name: 'Weeknights' }],
+    }))
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+    await openLists()
+
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: 'weeknights' } })
+    await act(async () => { screen.getByRole('button', { name: '+ Create' }).click() })
+
+    expect(screen.getByRole('alert')).toHaveTextContent('already have a list called')
+    expect(h.client.__db.lists).toHaveLength(1)
+  })
+
+  it('names the real cause when the database rejects the insert', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+    await openLists()
+
+    h.client.__failOn('lists', 'insert', { code: '42501', message: 'violates row-level security policy' })
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: 'Blocked' } })
+    await act(async () => { screen.getByRole('button', { name: '+ Create' }).click() })
+
+    const inline = await screen.findByRole('alert')
+    expect(inline).toHaveTextContent(/row-level security/)
+    expect(inline.id).toBe('create-list-error')
+    // Not duplicated as a toast beside itself.
+    expect(screen.getAllByText(/row-level security/)).toHaveLength(1)
+  })
+})
+
+describe('Profile > privacy toggle without migration 006', () => {
+  // A profiles row that predates 006 simply has no `is_private` key, because
+  // PostgREST omits columns that don't exist. Reported symptom was a bare
+  // "Could not change your privacy setting." toast on every click.
+  const legacyProfile = { profiles: [{ id: 'user-1', username: 'praneeiitk', username_set: true }] }
+
+  it('disables the toggle and names the missing migration', async () => {
+    h.client = createMockSupabase(legacyProfile)
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    expect(box).toBeDisabled()
+    expect(screen.getByText(/006_hardening\.sql/)).toBeTruthy()
+  })
+
+  it('enables the toggle once the column exists', async () => {
+    h.client = createMockSupabase(seed())   // seed() includes is_private: false
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    expect(box).toBeEnabled()
+    expect(screen.queryByText(/006_hardening\.sql/)).toBeNull()
+  })
+
+  it('names the real cause if the update is rejected anyway', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    h.client.__failOn('profiles', 'update', {
+      code: '42703', message: 'column "is_private" of relation "profiles" does not exist',
+    })
+    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    await act(async () => { box.click() })
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/migration may not have been applied/)
+  })
+
+  it('confirms the change when it succeeds', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Profile onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    await act(async () => { box.click() })
+
+    await waitFor(() => expect(h.client.__db.profiles[0].is_private).toBe(true))
+    expect(await screen.findByRole('status', { name: '' })).toBeTruthy()
+    expect(screen.getByText('Your profile is now private.')).toBeTruthy()
+  })
+})
