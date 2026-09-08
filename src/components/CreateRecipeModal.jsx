@@ -114,7 +114,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     }
   }
 
-  const inputCls = 'w-full border-[1.5px] border-rim rounded-lg px-3.5 py-2.5 text-[0.88rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted'
+  const inputCls = 'w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-[0.88rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted'
   const labelCls = 'text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted mb-1 block'
 
   return (
@@ -123,11 +123,11 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
       {...backdropProps}
     >
       <div
-        className="bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-xl w-full max-w-[600px] mx-auto my-4"
+        className="bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-[600px] mx-auto my-4"
         {...panelProps}
       >
 
-        <div className="flex items-center justify-between px-5 py-4 border-b border-warm-tan">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-ink">
           <h2 id={titleId} className="font-display text-[1.3rem] font-semibold text-ink">
             {isEdit ? 'Edit Recipe' : 'New Recipe'}
           </h2>
@@ -135,7 +135,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="bg-paper border-[1.5px] border-rim rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >×</button>
         </div>
 
@@ -206,10 +206,10 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     type="button"
                     onClick={() => toggleDietary(d)}
                     aria-pressed={dietary.includes(d)}
-                    className={`text-[0.72rem] font-bold px-2.5 py-[4px] rounded-full border-[1.5px] transition-all ${
+                    className={`text-[0.72rem] font-bold px-2.5 py-[4px] rounded-full border-2 transition-all ${
                       dietary.includes(d)
-                        ? 'bg-accent border-accent text-white'
-                        : 'bg-card border-rim text-muted hover:border-accent'
+                        ? 'bg-accent border-ink text-ink shadow-pop'
+                        : 'bg-card border-ink text-muted hover:bg-paper'
                     }`}
                   >{d}</button>
                 ))}
@@ -228,7 +228,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     placeholder="Amt"
                     aria-label={`Ingredient ${i + 1} amount`}
                     maxLength={16}
-                    className="w-[64px] border-[1.5px] border-rim rounded-lg px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    className="w-[64px] border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
                   />
                   <input
                     value={ing.unit}
@@ -236,7 +236,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     placeholder="Unit"
                     aria-label={`Ingredient ${i + 1} unit`}
                     maxLength={24}
-                    className="w-[72px] border-[1.5px] border-rim rounded-lg px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    className="w-[72px] border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
                   />
                   <input
                     value={ing.item}
@@ -244,7 +244,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     placeholder="Ingredient"
                     aria-label={`Ingredient ${i + 1} name`}
                     maxLength={MAX_ITEM}
-                    className="flex-1 border-[1.5px] border-rim rounded-lg px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    className="flex-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
                   />
                   {ings.length > 1 && (
                     <button
@@ -259,7 +259,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
               <button
                 type="button"
                 onClick={addIng}
-                className="self-start text-[0.78rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-3 py-[5px] hover:bg-accent hover:text-white transition-all mt-0.5"
+                className="self-start text-[0.78rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[5px] hover:bg-accent hover:text-ink transition-all mt-0.5"
               >+ Add ingredient</button>
             </div>
           </div>
@@ -270,7 +270,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
               {steps.map((step, i) => (
                 <div key={i} className="flex gap-2 items-start">
                   <span
-                    className="bg-accent text-white w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-2.5"
+                    className="bg-accent text-ink border-2 border-ink shadow-pop press w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-2.5"
                     aria-hidden="true"
                   >{i + 1}</span>
                   <textarea
@@ -280,7 +280,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     aria-label={`Step ${i + 1}`}
                     maxLength={MAX_STEP}
                     rows={2}
-                    className="flex-1 border-[1.5px] border-rim rounded-lg px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted leading-relaxed"
+                    className="flex-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted leading-relaxed"
                   />
                   {steps.length > 1 && (
                     <button
@@ -295,25 +295,25 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
               <button
                 type="button"
                 onClick={addStep}
-                className="self-start text-[0.78rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-3 py-[5px] hover:bg-accent hover:text-white transition-all mt-0.5"
+                className="self-start text-[0.78rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[5px] hover:bg-accent hover:text-ink transition-all mt-0.5"
               >+ Add step</button>
             </div>
           </div>
 
           {error && (
-            <p role="alert" className="text-[0.82rem] text-heart bg-[#fde8e8] rounded-lg px-3 py-2">{error}</p>
+            <p role="alert" className="text-[0.82rem] text-heart bg-[#fde8e8] rounded-xl px-3 py-2">{error}</p>
           )}
 
-          <div className="flex gap-3 pt-1 border-t border-rim">
+          <div className="flex gap-3 pt-1 border-t border-ink">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 border-[1.5px] border-rim rounded-xl py-3 text-[0.9rem] font-bold text-muted hover:bg-paper transition-all"
+              className="flex-1 border-2 border-ink rounded-xl py-3 text-[0.9rem] font-bold text-muted hover:bg-paper transition-all"
             >Cancel</button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-accent text-white rounded-xl py-3 text-[0.9rem] font-bold hover:bg-accent-dk disabled:opacity-50 transition-all"
+              className="flex-1 bg-accent text-ink border-2 border-ink shadow-pop press rounded-xl py-3 text-[0.9rem] font-bold hover:bg-accent-dk disabled:opacity-50 transition-all"
             >{saving ? 'Saving…' : isEdit ? 'Save changes' : 'Save Recipe'}</button>
           </div>
 

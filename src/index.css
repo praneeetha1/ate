@@ -15,18 +15,36 @@
 }
 
 body {
-  background-color: #FDF6E3;
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 27px,
-    rgba(180, 150, 90, 0.06) 28px
-  );
+  /* Dotted paper instead of ruled lines — the sticker ground. */
+  background-color: #FFF4E6;
+  background-image: radial-gradient(circle at 1px 1px, rgba(43, 35, 32, 0.10) 1px, transparent 0);
+  background-size: 16px 16px;
   min-height: 100vh;
   overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
-  font-family: 'Lato', sans-serif;
-  color: #3D2B1F;
+  font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+  color: #2B2320;
+}
+
+/* ── Sticker components ─────────────────────────────────────
+   The look is one rule repeated: ink outline + hard offset
+   shadow, and the shadow collapses when you press. Anything
+   tappable gets .press so the whole app feels physical. */
+.sticker {
+  border: 2.5px solid #2B2320;
+  border-radius: 1.125rem;
+  background: #FFFFFF;
+  box-shadow: 3px 3px 0 #2B2320;
+}
+.press {
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+}
+.press:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #2B2320 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .press, .press:active { transition: none; transform: none; }
 }
 
 /* Modal entrance animation */

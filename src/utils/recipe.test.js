@@ -121,8 +121,11 @@ describe('catalog data integrity', () => {
   })
 
   it('has a tag colour for every catalog category', () => {
+    // tagStyles prepends the shared ink outline, so assert on the fill half
+    // only — otherwise a category falling through to the fallback swatch
+    // would still differ from the bare fallback string and pass.
     for (const c of CATALOG_CATEGORIES) {
-      expect(tagStyles(c)).not.toBe('bg-warm-tan text-ink')
+      expect(tagStyles(c)).not.toContain('bg-warm-tan')
     }
   })
 })

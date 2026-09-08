@@ -6,8 +6,8 @@
   "scope": "/ate/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FDF6E3",
-  "theme_color": "#C2885A",
+  "background_color": "#FFF4E6",
+  "theme_color": "#FF8B5E",
   "icons": [
     {
       "src": "/ate/icons/icon-192.png",

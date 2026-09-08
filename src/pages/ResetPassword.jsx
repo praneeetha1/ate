@@ -34,21 +34,21 @@ export default function ResetPassword() {
     }
   }
 
-  const inputCls = 'w-full border-[1.5px] border-rim rounded-lg px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted'
+  const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted'
 
   return (
     <div className="min-h-[calc(100vh-var(--nav-h))] flex items-center justify-center px-5 py-10">
-      <div className="w-full max-w-sm bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-lg p-6">
+      <div className="w-full max-w-sm bg-card border-2 border-ink rounded-2xl shadow-warm-lg p-6">
         <h1 className="font-display text-[1.3rem] font-semibold text-ink mb-1">Choose a new password</h1>
 
         {done ? (
           <>
-            <p role="status" className="text-[0.85rem] text-[#2A6035] bg-[#D5EBD8] rounded-lg px-3 py-2 mt-3">
+            <p role="status" className="text-[0.85rem] text-[#2A6035] bg-[#D5EBD8] rounded-xl px-3 py-2 mt-3">
               Password updated.
             </p>
             <button
               onClick={() => navigate('/')}
-              className="w-full bg-accent text-white font-bold text-[0.9rem] rounded-lg py-3 mt-4 hover:bg-accent-dk transition-colors"
+              className="w-full bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.9rem] rounded-xl py-3 mt-4 hover:bg-accent-dk transition-colors"
             >Start cooking</button>
           </>
         ) : !user ? (
@@ -59,7 +59,7 @@ export default function ResetPassword() {
             </p>
             <button
               onClick={() => navigate('/login')}
-              className="w-full border-[1.5px] border-accent text-accent font-bold text-[0.9rem] rounded-lg py-3 mt-4 hover:bg-accent hover:text-white transition-colors"
+              className="w-full border-2 border-ink text-ink bg-card shadow-pop press font-bold text-[0.9rem] rounded-xl py-3 mt-4 hover:bg-accent hover:text-ink transition-colors"
             >Back to log in</button>
           </>
         ) : (
@@ -88,12 +88,12 @@ export default function ResetPassword() {
               className={inputCls}
             />
 
-            {error && <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-lg px-3 py-2">{error}</p>}
+            {error && <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-xl px-3 py-2">{error}</p>}
 
             <button
               type="submit"
               disabled={saving}
-              className="bg-accent text-white font-bold text-[0.9rem] rounded-lg py-3 mt-1 hover:bg-accent-dk transition-colors disabled:opacity-50"
+              className="bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.9rem] rounded-xl py-3 mt-1 hover:bg-accent-dk transition-colors disabled:opacity-50"
             >{saving ? 'Saving…' : 'Update password'}</button>
           </form>
         )}

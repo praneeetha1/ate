@@ -4,26 +4,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        cream:       '#FDF6E3',
-        paper:       '#FAF0D7',
-        card:        '#FFFDF7',
-        'warm-tan':  '#E8D5B0',
-        rim:         '#D9C99A',
-        accent:      '#C2885A',
-        'accent-dk': '#A0673B',
-        ink:         '#3D2B1F',
-        muted:       '#7A6047',
-        heart:       '#C0392B',
-        star:        '#E8A020',
+        // ── Sticker-book palette ─────────────────────────────
+        // Warm paper grounds, one hard ink for every outline, and
+        // three candy accents. Everything cute comes from the
+        // ink outline + hard offset shadow, not from the fills.
+        cream:       '#FFF4E6',   // app background
+        paper:       '#FFEBD3',   // secondary surface (header, nav, sunk rows)
+        card:        '#FFFFFF',   // card faces
+        'warm-tan':  '#E4D6C8',   // inactive / disabled marks — never a border
+        rim:         '#2B2320',   // every outline: same ink as text
+        ink:         '#2B2320',
+        muted:       '#6B5C55',
+        accent:      '#FF8B5E',   // coral — primary action
+        'accent-dk': '#E8663A',
+        mint:        '#4EC6B0',   // secondary accent
+        sun:         '#FFD166',   // tertiary accent
+        heart:       '#FF5D73',
+        star:        '#FFB627',
       },
       fontFamily: {
-        display: ['"Playfair Display"', 'serif'],
-        sans:    ['Lato', 'ui-sans-serif', 'system-ui'],
+        display: ['Fredoka', 'ui-rounded', 'system-ui', 'sans-serif'],
+        sans:    ['Nunito', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+      borderWidth: {
+        DEFAULT: '1px',
+        '2.5':   '2.5px',
+        '3':     '3px',
+      },
+      borderRadius: {
+        // Nudged up across the board — 'xl' is the card radius, and
+        // bumping it here rounds every existing rounded-xl at once.
+        lg:  '0.75rem',   // 12px
+        xl:  '1.125rem',  // 18px
+        '2xl': '1.375rem',// 22px
       },
       boxShadow: {
-        warm:    '0 2px 8px rgba(100,70,30,0.12)',
-        'warm-lg': '0 8px 24px rgba(100,70,30,0.18)',
-        'warm-xl': '0 20px 60px rgba(60,35,15,0.35)',
+        // Hard offset, no blur. This is the whole look — if you change
+        // one thing back, don't change this.
+        pop:       '2px 2px 0 #2B2320',
+        warm:      '3px 3px 0 #2B2320',
+        'warm-lg': '5px 5px 0 #2B2320',
+        'warm-xl': '7px 7px 0 #2B2320',
+        'pop-mint':'3px 3px 0 #4EC6B0, 3px 3px 0 1.5px #2B2320',
       },
     },
   },

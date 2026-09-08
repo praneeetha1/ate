@@ -16,7 +16,7 @@ export default function ConfigError({ message }) {
         (or to the repository’s Actions secrets for a deployed build) and restart
         the dev server:
       </p>
-      <pre className="text-left text-[0.72rem] bg-paper border-[1.5px] border-rim rounded-lg px-4 py-3 overflow-x-auto max-w-full">
+      <pre className="text-left text-[0.72rem] bg-paper border-2 border-ink rounded-xl px-4 py-3 overflow-x-auto max-w-full">
 {`VITE_SUPABASE_URL=https://<project>.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon key>`}
       </pre>

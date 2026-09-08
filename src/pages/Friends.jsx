@@ -25,7 +25,7 @@ function activityLabel(item) {
 }
 
 function Avatar({ url, username, size = 'w-9 h-9', text = 'text-[1.1rem]', onClick }) {
-  const shared = `${size} rounded-full shrink-0 border border-rim`
+  const shared = `${size} rounded-full shrink-0 border border-ink`
   const label  = username ? `@${username}` : 'this cook'
 
   if (url) {
@@ -83,7 +83,7 @@ function ActivityItem({ item, userRecipeMap, onOpenRecipe }) {
           {recipe && (
             <button
               type="button"
-              className="mt-2.5 w-full text-left bg-paper border-[1.5px] border-warm-tan rounded-xl px-3.5 py-2.5 hover:border-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="mt-2.5 w-full text-left bg-paper border-2 border-ink rounded-xl px-3.5 py-2.5 hover:bg-paper transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               onClick={() => onOpenRecipe(key, isCatalogKey(key) ? undefined : recipe)}
             >
               <div className="font-display text-[0.9rem] font-semibold text-ink">{recipe.name}</div>
@@ -189,8 +189,8 @@ function FindPeopleSheet({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-[rgba(60,35,15,0.55)] backdrop-blur-[3px] z-[500] flex items-end justify-center">
-      <div className="bg-card w-full max-w-lg rounded-t-2xl border-t-[1.5px] border-rim shadow-warm-xl pb-safe">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-rim">
+      <div className="bg-card w-full max-w-lg rounded-t-2xl border-t-[1.5px] border-ink shadow-warm-xl pb-safe">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-ink">
           <h2 className="font-display text-[1.1rem] font-semibold text-ink">Find People</h2>
           <button onClick={onClose} aria-label="Close" className="text-muted text-[1.4rem] hover:text-ink">×</button>
         </div>
@@ -206,7 +206,7 @@ function FindPeopleSheet({ onClose }) {
             autoCorrect="off"
             spellCheck={false}
             autoFocus
-            className="w-full border-[1.5px] border-rim rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+            className="w-full border-2 border-ink rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
           />
         </div>
 
@@ -224,10 +224,10 @@ function FindPeopleSheet({ onClose }) {
                   onClick={() => toggleFollow(p.id)}
                   disabled={pending.has(p.id)}
                   aria-pressed={following.has(p.id)}
-                  className={`text-[0.8rem] font-bold rounded-[14px] px-4 py-[6px] border-[1.5px] transition-all disabled:opacity-50 ${
+                  className={`text-[0.8rem] font-bold rounded-full px-4 py-[6px] border-2 transition-all disabled:opacity-50 ${
                     following.has(p.id)
-                      ? 'border-rim text-muted hover:text-heart hover:border-heart'
-                      : 'bg-accent border-accent text-white hover:bg-accent-dk'
+                      ? 'border-ink text-muted hover:text-heart hover:border-heart'
+                      : 'bg-accent border-ink text-ink shadow-pop hover:bg-accent-dk'
                   }`}
                 >{following.has(p.id) ? 'Following' : 'Follow'}</button>
               </li>
@@ -389,7 +389,7 @@ export default function Friends({ onOpen }) {
         <p className="text-[0.85rem] text-muted">Log in to follow friends and see their activity</p>
         <button
           onClick={() => navigate('/login')}
-          className="mt-2 bg-accent text-white font-bold rounded-xl px-6 py-2.5 hover:bg-accent-dk transition-colors"
+          className="mt-2 bg-accent text-ink border-2 border-ink shadow-pop press font-bold rounded-xl px-6 py-2.5 hover:bg-accent-dk transition-colors"
         >Log in</button>
       </div>
     )
@@ -403,12 +403,12 @@ export default function Friends({ onOpen }) {
         <h1 className="font-display text-[1.3rem] font-semibold text-ink">Friends</h1>
         <button
           onClick={() => setShowFindPeople(true)}
-          className="text-[0.78rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-3 py-[5px] hover:bg-accent hover:text-white transition-all"
+          className="text-[0.78rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[5px] hover:bg-accent hover:text-ink transition-all"
         >+ Find People</button>
       </div>
 
       {followedProfiles.length > 0 && (
-        <nav className="px-5 pb-4 border-b border-warm-tan" aria-label="People you follow">
+        <nav className="px-5 pb-4 border-b border-ink" aria-label="People you follow">
           <h2 className="text-[0.7rem] font-bold uppercase tracking-[0.08em] text-muted mb-3">Following</h2>
           <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-1">
             {followedProfiles.map(p => (
@@ -421,10 +421,10 @@ export default function Friends({ onOpen }) {
                   <img
                     src={p.avatar_url}
                     alt=""
-                    className="w-12 h-12 rounded-full object-cover border-[2px] border-rim group-hover:border-accent transition-colors"
+                    className="w-12 h-12 rounded-full object-cover border-[2px] border-ink group-hover:bg-paper transition-colors"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-warm-tan flex items-center justify-center text-[1.3rem] border-[2px] border-rim group-hover:border-accent transition-colors" aria-hidden="true">
+                  <div className="w-12 h-12 rounded-full bg-warm-tan flex items-center justify-center text-[1.3rem] border-[2px] border-ink group-hover:bg-paper transition-colors" aria-hidden="true">
                     👤
                   </div>
                 )}
@@ -446,7 +446,7 @@ export default function Friends({ onOpen }) {
           <p className="text-[0.82rem] text-muted">Follow some friends to see their activity</p>
           <button
             onClick={() => setShowFindPeople(true)}
-            className="mt-3 text-[0.82rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-4 py-[6px] hover:bg-accent hover:text-white transition-all"
+            className="mt-3 text-[0.82rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-4 py-[6px] hover:bg-accent hover:text-ink transition-all"
           >Find People</button>
         </div>
       ) : (
@@ -466,7 +466,7 @@ export default function Friends({ onOpen }) {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="text-[0.82rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-4 py-[6px] hover:bg-accent hover:text-white transition-all disabled:opacity-50"
+                className="text-[0.82rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-4 py-[6px] hover:bg-accent hover:text-ink transition-all disabled:opacity-50"
               >{loadingMore ? 'Loading…' : 'Load more'}</button>
             </div>
           )}

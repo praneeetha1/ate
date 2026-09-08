@@ -54,10 +54,10 @@ export default function Auth() {
     }
   }
 
-  const inputCls = 'w-full border-[1.5px] border-rim rounded-lg px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted font-sans'
+  const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted font-sans'
   const tabCls   = active =>
     `flex-1 py-2.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
-      active ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-ink'
+      active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
     }`
 
   const submitLabel = tab === 'login' ? 'Log in' : tab === 'signup' ? 'Create account' : 'Send reset link'
@@ -75,9 +75,9 @@ export default function Auth() {
           </p>
         </div>
 
-        <div className="bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-lg overflow-hidden">
+        <div className="bg-card border-2 border-ink rounded-2xl shadow-warm-lg overflow-hidden">
 
-          <div className="flex border-b border-rim bg-paper" role="tablist">
+          <div className="flex border-b border-ink bg-paper" role="tablist">
             <button role="tab" aria-selected={tab === 'login'}  className={tabCls(tab === 'login')}  onClick={() => switchTab('login')}>Log in</button>
             <button role="tab" aria-selected={tab === 'signup'} className={tabCls(tab === 'signup')} onClick={() => switchTab('signup')}>Sign up</button>
           </div>
@@ -87,7 +87,7 @@ export default function Auth() {
               <>
                 <button
                   onClick={handleGoogle}
-                  className="w-full flex items-center justify-center gap-3 bg-white border-[1.5px] border-rim rounded-lg py-2.5 text-[0.88rem] font-bold text-ink hover:border-accent hover:bg-paper transition-all mb-5 shadow-warm"
+                  className="w-full flex items-center justify-center gap-3 bg-white border-2 border-ink rounded-xl py-2.5 text-[0.88rem] font-bold text-ink hover:bg-paper hover:bg-paper transition-all mb-5 shadow-warm"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -137,13 +137,13 @@ export default function Auth() {
                 />
               )}
 
-              {error   && <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-lg px-3 py-2">{error}</p>}
-              {success && <p role="status" className="text-[0.8rem] text-[#2A6035] bg-[#D5EBD8] rounded-lg px-3 py-2">{success}</p>}
+              {error   && <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-xl px-3 py-2">{error}</p>}
+              {success && <p role="status" className="text-[0.8rem] text-[#2A6035] bg-[#D5EBD8] rounded-xl px-3 py-2">{success}</p>}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-accent text-white font-bold text-[0.9rem] rounded-lg py-3 mt-1 hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.9rem] rounded-xl py-3 mt-1 hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? '…' : submitLabel}
               </button>

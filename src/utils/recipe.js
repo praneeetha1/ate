@@ -5,18 +5,18 @@ import { parseFrac, fmtFrac } from './fractions'
 // by hand ("Soup--Stew"), but tagKey turned "Soup & Stew" into "Soup---Stew" —
 // so every category containing "&" silently fell through to the fallback swatch.
 export const TAG_COLORS = {
-  'main-dish':         'bg-[#D5EBD8] text-[#2A6035]',
-  'breakfast':         'bg-[#FDE9C5] text-[#8B5C00]',
-  'dessert':           'bg-[#F9D8E0] text-[#8B2040]',
-  'side-dish':         'bg-[#D8EDF5] text-[#1A5470]',
-  'soup-stew':         'bg-[#F5E2CB] text-[#7A3D10]',
-  'salad':             'bg-[#DFF2DA] text-[#2A5E30]',
-  'quick-meal':        'bg-[#EDE2F5] text-[#5A2A80]',
-  'vegetarian':        'bg-[#D8F0E5] text-[#1A6040]',
-  'snack-appetizer':   'bg-[#FFF0C5] text-[#7A5A00]',
-  'drink':             'bg-[#D8E8FF] text-[#1A3A80]',
-  'bread-baking':      'bg-[#F0E0C8] text-[#6B4415]',
-  'pasta-noodles':     'bg-[#FFE5D0] text-[#8A4520]',
+  'main-dish':         'bg-[#4EC6B0] text-[#0F332C]',
+  'breakfast':         'bg-[#FFD166] text-[#5A3D00]',
+  'dessert':           'bg-[#FFA6C1] text-[#6E1636]',
+  'side-dish':         'bg-[#8ED2F0] text-[#0E3D57]',
+  'soup-stew':         'bg-[#FFB27A] text-[#6B2E05]',
+  'salad':             'bg-[#A8E06A] text-[#2C4A0C]',
+  'quick-meal':        'bg-[#C9A7F5] text-[#3F1470]',
+  'vegetarian':        'bg-[#7FE0B0] text-[#0D4A2E]',
+  'snack-appetizer':   'bg-[#FFE066] text-[#5E4600]',
+  'drink':             'bg-[#8FB8FF] text-[#12295E]',
+  'bread-baking':      'bg-[#E8C48F] text-[#5A3A10]',
+  'pasta-noodles':     'bg-[#FF9E7A] text-[#6E2A0C]',
 }
 
 /** Slugifies a category name: "Soup & Stew" -> "soup-stew". */
@@ -28,7 +28,9 @@ export function tagKey(cat) {
 }
 
 export function tagStyles(cat) {
-  return TAG_COLORS[tagKey(cat)] || 'bg-warm-tan text-ink'
+  // Every tag carries the ink outline; only the fill varies by category.
+  const fill = TAG_COLORS[tagKey(cat)] || 'bg-warm-tan text-ink'
+  return `border-2 border-ink ${fill}`
 }
 
 /**

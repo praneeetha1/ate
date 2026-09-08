@@ -96,7 +96,7 @@ export default function Profile({ onOpen }) {
     }
   }
 
-  const smallBtn = 'text-[0.78rem] font-bold border-[1.5px] rounded-[14px] px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const smallBtn = 'text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
 
   return (
     <>
@@ -116,11 +116,11 @@ export default function Profile({ onOpen }) {
       )}
 
       {/* Profile section */}
-      <div className="flex flex-col items-center px-5 pt-7 pb-5 gap-2.5 border-b border-warm-tan">
+      <div className="flex flex-col items-center px-5 pt-7 pb-5 gap-2.5 border-b border-ink">
         {avatarUrl ? (
-          <img src={avatarUrl} alt="" className="w-20 h-20 rounded-full border-2 border-rim object-cover" />
+          <img src={avatarUrl} alt="" className="w-20 h-20 rounded-full border-2 border-ink object-cover" />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-warm-tan border-2 border-rim flex items-center justify-center text-[2.5rem]" aria-hidden="true">
+          <div className="w-20 h-20 rounded-full bg-warm-tan border-2 border-ink flex items-center justify-center text-[2.5rem]" aria-hidden="true">
             👤
           </div>
         )}
@@ -148,13 +148,13 @@ export default function Profile({ onOpen }) {
                   rows={3}
                   aria-label="Your bio"
                   placeholder="A line about you and how you cook…"
-                  className="w-full border-[1.5px] border-rim rounded-lg px-3 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted"
+                  className="w-full border-2 border-ink rounded-xl px-3 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted"
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-[0.7rem] text-muted">{bioDraft.length}/{MAX_BIO}</span>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setEditingBio(false)} className={`${smallBtn} border-rim text-muted`}>Cancel</button>
-                    <button type="submit" disabled={savingBio} className={`${smallBtn} border-accent bg-accent text-white disabled:opacity-50`}>
+                    <button type="button" onClick={() => setEditingBio(false)} className={`${smallBtn} border-ink text-muted`}>Cancel</button>
+                    <button type="submit" disabled={savingBio} className={`${smallBtn} border-ink bg-accent text-ink disabled:opacity-50`}>
                       {savingBio ? 'Saving…' : 'Save bio'}
                     </button>
                   </div>
@@ -168,21 +168,21 @@ export default function Profile({ onOpen }) {
                 <div className="flex gap-2 flex-wrap justify-center">
                   <button
                     onClick={() => { setBioDraft(profile?.bio || ''); setEditingBio(true) }}
-                    className={`${smallBtn} border-accent text-accent hover:bg-accent hover:text-white`}
+                    className={`${smallBtn} border-ink text-ink hover:bg-accent hover:text-ink`}
                   >{profile?.bio ? 'Edit bio' : 'Add bio'}</button>
                   <button
                     onClick={() => setEditUsername(true)}
-                    className={`${smallBtn} border-accent text-accent hover:bg-accent hover:text-white`}
+                    className={`${smallBtn} border-ink text-ink hover:bg-accent hover:text-ink`}
                   >{profile?.username_set ? 'Edit username' : 'Set username'}</button>
                   {profile?.username && (
                     <Link
                       to={`/user/${profile.username}`}
-                      className={`${smallBtn} border-rim text-muted hover:border-accent hover:text-accent`}
+                      className={`${smallBtn} border-ink text-muted hover:bg-paper hover:text-accent`}
                     >View public profile</Link>
                   )}
                   <button
                     onClick={() => signOut().catch(err => { console.error(err); showError('Could not sign out.') })}
-                    className={`${smallBtn} border-rim text-muted hover:text-heart hover:border-heart`}
+                    className={`${smallBtn} border-ink text-muted hover:text-heart hover:border-heart`}
                   >Sign out</button>
                 </div>
               </>
@@ -191,7 +191,7 @@ export default function Profile({ onOpen }) {
             {/* Privacy. Public reads of recipes/saves/lists/activity are gated
                 on this flag, so it genuinely hides content rather than only
                 hiding the profile page. */}
-            <div className="w-full mt-3 pt-3 border-t border-warm-tan">
+            <div className="w-full mt-3 pt-3 border-t border-ink">
               <label className={`flex items-start gap-3 ${privacySupported ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
                 <input
                   type="checkbox"
@@ -218,7 +218,7 @@ export default function Profile({ onOpen }) {
         ) : (
           <button
             onClick={() => navigate('/login')}
-            className="mt-0.5 text-[0.85rem] font-bold text-accent border-[1.5px] border-accent rounded-[14px] px-5 py-[6px] hover:bg-accent hover:text-white transition-all"
+            className="mt-0.5 text-[0.85rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-5 py-[6px] hover:bg-accent hover:text-ink transition-all"
           >Log in / Sign up</button>
         )}
       </div>
@@ -226,12 +226,12 @@ export default function Profile({ onOpen }) {
       {syncing && <p className="text-center py-2 text-[0.75rem] text-muted" role="status">Syncing…</p>}
 
       {/* My Recipes section */}
-      <section className="border-b border-warm-tan" aria-labelledby="profile-recipes-heading">
+      <section className="border-b border-ink" aria-labelledby="profile-recipes-heading">
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <h2 id="profile-recipes-heading" className="font-display text-[1.15rem] font-semibold text-ink">My Recipes</h2>
           <button
             onClick={() => setShowCreate(true)}
-            className={`${smallBtn} border-accent text-accent hover:bg-accent hover:text-white`}
+            className={`${smallBtn} border-ink text-ink hover:bg-accent hover:text-ink`}
           >+ New Recipe</button>
         </div>
 
@@ -273,7 +273,7 @@ export default function Profile({ onOpen }) {
                 {/* Deletion is permanent and also strips the recipe from every
                     list, save and shopping entry — so ask first. */}
                 {confirmDelete === r.id && (
-                  <div className="flex items-center justify-between gap-3 mx-5 mb-2 px-3.5 py-2.5 bg-[#fde8e8] border border-warm-tan rounded-lg">
+                  <div className="flex items-center justify-between gap-3 mx-5 mb-2 px-3.5 py-2.5 bg-[#fde8e8] border border-ink rounded-xl">
                     <span className="text-[0.8rem] text-heart">Delete “{r.name}” permanently?</span>
                     <div className="flex gap-2 shrink-0">
                       <button
@@ -286,7 +286,7 @@ export default function Profile({ onOpen }) {
                           // recipe and the reason stay on screen together.
                           if (ok) setConfirmDelete(null)
                         }}
-                        className="text-[0.75rem] font-bold text-white bg-heart rounded-lg px-3 py-1 disabled:opacity-50"
+                        className="text-[0.75rem] font-bold text-ink bg-heart border-2 border-ink shadow-pop press rounded-xl px-3 py-1 disabled:opacity-50"
                       >{deleting === r.id ? 'Deleting…' : 'Delete'}</button>
                       <button
                         onClick={() => setConfirmDelete(null)}
@@ -308,7 +308,7 @@ export default function Profile({ onOpen }) {
           {listArr.length > 0 && (
             <button
               onClick={clearShopping}
-              className={`${smallBtn} border-rim text-muted hover:text-heart hover:border-heart`}
+              className={`${smallBtn} border-ink text-muted hover:text-heart hover:border-heart`}
             >Clear all</button>
           )}
         </div>
@@ -329,8 +329,8 @@ export default function Profile({ onOpen }) {
               const recipe = resolveRecipe(key, userRecipes)
               if (!recipe) return null
               return (
-                <div key={keyToText(key)} className="mx-4 mb-3.5 border-[1.5px] border-warm-tan rounded-[10px] overflow-hidden bg-card">
-                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-paper border-b border-warm-tan gap-2">
+                <div key={keyToText(key)} className="mx-4 mb-3.5 border-2 border-ink rounded-xl overflow-hidden bg-card">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-paper border-b border-ink gap-2">
                     <button
                       type="button"
                       className="font-display text-[0.92rem] font-semibold text-ink flex-1 truncate text-left hover:text-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
@@ -339,7 +339,7 @@ export default function Profile({ onOpen }) {
                     <button
                       onClick={() => toggleShopping(key)}
                       aria-label={`Remove ${recipe.name} from shopping list`}
-                      className="text-[0.72rem] font-bold text-muted px-1.5 py-0.5 rounded-lg hover:text-heart hover:bg-[#fde8e8] transition-all shrink-0"
+                      className="text-[0.72rem] font-bold text-muted px-1.5 py-0.5 rounded-xl hover:text-heart hover:bg-[#fde8e8] transition-all shrink-0"
                     >Remove</button>
                   </div>
                   <ul className="list-none">

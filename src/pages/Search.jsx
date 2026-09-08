@@ -101,14 +101,14 @@ export default function Search({ onOpen }) {
 
   const results = mode === 'name' ? nameResults : ingResults
   const pillCls = active =>
-    `text-[0.78rem] font-bold tracking-[0.06em] px-4 py-1.5 rounded-full border-[1.5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-      active ? 'bg-accent border-accent text-white' : 'bg-card border-rim text-muted hover:border-accent'
+    `text-[0.78rem] font-bold tracking-[0.06em] px-4 py-1.5 rounded-full border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+      active ? 'bg-accent border-ink text-ink shadow-pop' : 'bg-card border-ink text-muted hover:bg-paper'
     }`
 
   return (
     <>
       {/* Search header */}
-      <div className="px-5 py-4 pb-3 bg-cream sticky-under-header z-[90] border-b border-warm-tan">
+      <div className="px-5 py-4 pb-3 bg-cream sticky-under-header z-[90] border-b border-ink">
         <div className="relative mb-3">
           <input
             type="search"
@@ -117,7 +117,7 @@ export default function Search({ onOpen }) {
             onChange={e => setNameQuery(e.target.value)}
             disabled={mode === 'ingredient'}
             aria-label="Search recipes by name"
-            className="w-full border-[1.5px] border-rim rounded-[10px] px-4 py-[11px] pr-10 text-[0.95rem] bg-card text-ink outline-none focus:border-accent transition-colors placeholder:text-muted disabled:opacity-60"
+            className="w-full border-2 border-ink rounded-xl px-4 py-[11px] pr-10 text-[0.95rem] bg-card text-ink outline-none focus:border-accent transition-colors placeholder:text-muted disabled:opacity-60"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" aria-hidden="true">🔍</span>
         </div>
@@ -129,7 +129,7 @@ export default function Search({ onOpen }) {
 
       {/* Ingredient picker */}
       {mode === 'ingredient' && (
-        <div className="px-5 py-3.5 pb-3 bg-paper border-b border-warm-tan">
+        <div className="px-5 py-3.5 pb-3 bg-paper border-b border-ink">
           <div className="flex gap-2 relative">
             <div className="flex-1 relative">
               <input
@@ -144,10 +144,10 @@ export default function Search({ onOpen }) {
                 onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                 aria-label="Add an ingredient you have"
                 aria-expanded={showDropdown && suggestions.length > 0}
-                className="w-full border-[1.5px] border-rim rounded-lg px-3.5 py-2.5 text-[0.9rem] bg-card text-ink outline-none focus:border-accent transition-colors placeholder:text-muted"
+                className="w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-[0.9rem] bg-card text-ink outline-none focus:border-accent transition-colors placeholder:text-muted"
               />
               {showDropdown && suggestions.length > 0 && (
-                <ul className="absolute top-[calc(100%+4px)] left-0 right-0 bg-card border-[1.5px] border-rim rounded-lg shadow-warm-lg max-h-[180px] overflow-y-auto z-50 list-none">
+                <ul className="absolute top-[calc(100%+4px)] left-0 right-0 bg-card border-2 border-ink rounded-xl shadow-warm-lg max-h-[180px] overflow-y-auto z-50 list-none">
                   {suggestions.map(n => (
                     <li key={n}>
                       <button
@@ -165,7 +165,7 @@ export default function Search({ onOpen }) {
             <button
               onClick={findRecipes}
               disabled={!selectedIngs.length}
-              className="bg-accent text-white rounded-lg px-4 text-[0.8rem] font-bold whitespace-nowrap hover:bg-accent-dk disabled:opacity-40 disabled:cursor-default transition-colors"
+              className="bg-accent text-ink border-2 border-ink shadow-pop press rounded-xl px-4 text-[0.8rem] font-bold whitespace-nowrap hover:bg-accent-dk disabled:opacity-40 disabled:cursor-default transition-colors"
             >Find Recipes</button>
           </div>
           {selectedIngs.length > 0 && (
@@ -200,7 +200,7 @@ export default function Search({ onOpen }) {
             <div key={key}>
               <RecipeCard recipe={r} recipeKey={key} onOpen={onOpen} fill />
               {mode === 'ingredient' && matchCount > 0 && (
-                <p className="text-[0.72rem] text-accent-dk bg-paper border border-t-0 border-warm-tan rounded-b-xl px-4 py-1.5 font-bold -mt-1">
+                <p className="text-[0.72rem] text-accent-dk bg-paper border border-t-0 border-ink rounded-b-xl px-4 py-1.5 font-bold -mt-1">
                   ✓ matches {matchCount} of {total} ingredient{total !== 1 ? 's' : ''} you have
                 </p>
               )}

@@ -4,6 +4,32 @@
 -- Idempotent — safe to re-run.
 -- ============================================================
 
+-- ── 0. prerequisites from earlier migrations ─────────────────
+-- Do not assume 005 was applied. If favorites/shopping_list.recipe_key is still
+-- the original integer, every later statement here that compares it to a text
+-- key fails — including the cleanup trigger below, which made deleting a recipe
+-- error with `42883 operator does not exist: integer = text`.
+-- Guarded so an already-migrated database isn't rewritten needlessly.
+do $$
+declare
+  t text;
+begin
+  foreach t in array array['favorites', 'shopping_list'] loop
+    if (select data_type from information_schema.columns
+        where table_schema = 'public' and table_name = t and column_name = 'recipe_key') <> 'text'
+    then
+      execute format('alter table public.%I alter column recipe_key type text using recipe_key::text', t);
+      raise notice 'widened %.recipe_key to text (migration 005 had not been applied)', t;
+    end if;
+  end loop;
+end $$;
+
+-- Also from 005: follower-count queries filter on following_id, which isn't the
+-- leading column of the composite primary key.
+create index if not exists follows_following_id_idx
+  on public.follows (following_id);
+
+
 -- ── 1. profile privacy switch ────────────────────────────────
 -- 004 made user_recipes / favorites / lists / list_items world-readable
 -- unconditionally, with no way to opt out. Gate every public read on the

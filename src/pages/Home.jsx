@@ -43,9 +43,9 @@ export default function Home({ onOpen }) {
     onOpen(i)
   }
 
-  const pillBase     = 'shrink-0 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 py-[5px] rounded-full border-[1.5px] transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
-  const pillActive   = 'bg-accent border-accent text-white'
-  const pillInactive = 'bg-card border-rim text-muted hover:border-accent hover:text-accent-dk'
+  const pillBase     = 'shrink-0 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 py-[5px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
+  const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
 
   return (
     <>
@@ -57,7 +57,7 @@ export default function Home({ onOpen }) {
       )}
 
       {/* Filter bar */}
-      <div className="flex items-center gap-2 px-5 py-3 overflow-x-auto scrollbar-hide border-b border-warm-tan bg-cream sticky-under-header z-[80]">
+      <div className="flex items-center gap-2 px-5 py-3 overflow-x-auto scrollbar-hide border-b border-ink bg-cream sticky-under-header z-[80]">
         <div className="flex items-center gap-2 shrink-0" role="group" aria-label="Filter by diet">
           {DIET_PILLS.map(p => (
             <button
@@ -81,11 +81,11 @@ export default function Home({ onOpen }) {
         </div>
         <button
           onClick={surprise}
-          className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-[1.5px] border-rim rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent hover:text-white hover:border-accent transition-all"
+          className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
         >🎲 Surprise me</button>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="shrink-0 text-[0.75rem] font-bold text-white bg-accent border-[1.5px] border-accent rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent-dk transition-all"
+          className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent-dk transition-all"
         >+ My Recipe</button>
       </div>
 
@@ -96,7 +96,7 @@ export default function Home({ onOpen }) {
             <h2 id="my-recipes-heading" className="font-display text-[1.1rem] font-semibold text-ink">My Recipes</h2>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="text-[0.72rem] font-bold text-accent border-[1.5px] border-accent rounded-full px-3 py-[3px] hover:bg-accent hover:text-white transition-all"
+              className="text-[0.72rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[3px] hover:bg-accent hover:text-ink transition-all"
             >+ New</button>
           </div>
           <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">

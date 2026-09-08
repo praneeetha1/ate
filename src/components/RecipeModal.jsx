@@ -167,12 +167,12 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       {...backdropProps}
     >
       <div
-        className="bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
+        className="bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
         {...panelProps}
       >
 
         {/* ── Header ── */}
-        <div className="px-5 pt-5 pb-[14px] border-b border-warm-tan flex items-start gap-3.5">
+        <div className="px-5 pt-5 pb-[14px] border-b border-ink flex items-start gap-3.5">
           <div className="flex-1 min-w-0">
             <h2 id={titleId} className="font-display text-[1.4rem] font-semibold text-ink leading-tight mb-2.5">
               {recipe.name}
@@ -219,8 +219,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                 title="Add to list"
               >📋</button>
               {showLists && (
-                <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-[1.5px] border-rim rounded-xl shadow-warm-lg z-50 overflow-hidden">
-                  <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-rim bg-paper">
+                <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
+                  <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
                     Add to list
                   </div>
                   {lists.length === 0 && (
@@ -240,19 +240,19 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                       </button>
                     )
                   })}
-                  <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-rim bg-paper">
+                  <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-ink bg-paper">
                     <input
                       value={newListName}
                       onChange={e => setNewListName(e.target.value)}
                       placeholder="New list…"
                       aria-label="New list name"
                       maxLength={60}
-                      className="flex-1 text-[0.8rem] border-[1.5px] border-rim rounded-lg px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+                      className="flex-1 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
                     />
                     <button
                       type="submit"
                       disabled={!newListName.trim()}
-                      className="bg-accent text-white text-[0.78rem] font-bold rounded-lg px-2.5 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
+                      className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
                     >
                       Add
                     </button>
@@ -267,7 +267,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               title="Share recipe"
             >↗</button>
             <button
-              className="bg-paper border-[1.5px] border-rim rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               onClick={onClose}
               aria-label="Close recipe"
               title="Close"
@@ -279,7 +279,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
         <div className="p-5 pb-6">
 
           {/* Ingredients header + scale */}
-          <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-dashed border-rim gap-3">
+          <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-dashed border-ink gap-3">
             <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
               Ingredients
             </h3>
@@ -293,10 +293,10 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                     key={s}
                     onClick={() => setScale(s)}
                     aria-pressed={scale === s}
-                    className={`rounded-[14px] px-2.5 py-[3px] text-[0.72rem] font-bold transition-all border-[1.5px] ${
+                    className={`rounded-full px-2.5 py-[3px] text-[0.72rem] font-bold transition-all border-2 ${
                       scale === s
-                        ? 'bg-accent border-accent text-white'
-                        : 'bg-card border-rim text-muted hover:border-accent hover:text-accent-dk'
+                        ? 'bg-accent border-ink text-ink shadow-pop'
+                        : 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
                     }`}
                   >{label}</button>
                 )
@@ -327,13 +327,13 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           </ul>
 
           {/* Steps */}
-          <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-rim">
+          <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-ink">
             Steps
           </h3>
           <ol className="list-none mb-1">
             {recipe.steps.map((step, i) => (
               <li key={i} className="flex gap-3 mb-3.5 text-[0.88rem] leading-relaxed">
-                <span className="bg-accent text-white w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]" aria-hidden="true">
+                <span className="bg-accent text-ink border-2 border-ink shadow-pop press w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]" aria-hidden="true">
                   {i + 1}
                 </span>
                 <span className="text-ink">{step}</span>
@@ -342,8 +342,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           </ol>
 
           {/* Notes & Ratings */}
-          <div className="mt-5 pt-4 border-t border-dashed border-rim">
-            <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-rim">
+          <div className="mt-5 pt-4 border-t border-dashed border-ink">
+            <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-ink">
               Your Notes
             </h3>
             <div className="flex items-center gap-0.5 mb-3" role="group" aria-label="Your rating">
@@ -369,7 +369,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               maxLength={2000}
               aria-label={`Your notes on ${recipe.name}`}
               placeholder="Jot down substitutions, tips, how it turned out…"
-              className="w-full min-h-[80px] border-[1.5px] border-rim rounded-lg px-3 py-2.5 text-[0.86rem] text-ink bg-paper resize-y outline-none focus:border-accent transition-colors leading-relaxed placeholder:text-muted font-sans"
+              className="w-full min-h-[80px] border-2 border-ink rounded-xl px-3 py-2.5 text-[0.86rem] text-ink bg-paper resize-y outline-none focus:border-accent transition-colors leading-relaxed placeholder:text-muted font-sans"
             />
             <div className="text-right text-[0.68rem] text-muted mt-1 h-[14px]" aria-live="polite">
               {savedHint ? 'Saved' : ''}

@@ -147,7 +147,7 @@ export default function UserProfile({ onOpen }) {
   }
 
   const backBar = label => (
-    <div className="flex items-center gap-3 px-5 py-4 border-b border-rim bg-paper">
+    <div className="flex items-center gap-3 px-5 py-4 border-b border-ink bg-paper">
       <button onClick={() => navigate(-1)} aria-label="Go back" className="text-accent text-[1.3rem] leading-none hover:text-accent-dk">‹</button>
       <span className="font-display text-[1rem] font-semibold text-ink">{label}</span>
     </div>
@@ -173,7 +173,7 @@ export default function UserProfile({ onOpen }) {
 
   const tabCls = active =>
     `flex-1 py-2.5 text-[0.78rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
-      active ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-ink'
+      active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
     }`
 
   return (
@@ -181,11 +181,11 @@ export default function UserProfile({ onOpen }) {
       {backBar(`@${profile.username}`)}
 
       {/* Profile header */}
-      <div className="px-5 py-5 border-b border-rim">
+      <div className="px-5 py-5 border-b border-ink">
         <div className="flex items-center gap-4">
           {profile.avatar_url
-            ? <img src={profile.avatar_url} alt="" className="w-16 h-16 rounded-full object-cover border-[2px] border-rim" />
-            : <div className="w-16 h-16 rounded-full bg-warm-tan flex items-center justify-center text-[2rem] border-[2px] border-rim" aria-hidden="true">👤</div>
+            ? <img src={profile.avatar_url} alt="" className="w-16 h-16 rounded-full object-cover border-[2px] border-ink" />
+            : <div className="w-16 h-16 rounded-full bg-warm-tan flex items-center justify-center text-[2rem] border-[2px] border-ink" aria-hidden="true">👤</div>
           }
           <div className="flex-1 min-w-0">
             <h1 className="font-display text-[1.2rem] font-bold text-ink truncate">@{profile.username}</h1>
@@ -200,24 +200,24 @@ export default function UserProfile({ onOpen }) {
               onClick={toggleFollow}
               disabled={pending}
               aria-pressed={following}
-              className={`text-[0.82rem] font-bold rounded-[14px] px-4 py-[6px] border-[1.5px] transition-all shrink-0 disabled:opacity-50 ${
+              className={`text-[0.82rem] font-bold rounded-full px-4 py-[6px] border-2 transition-all shrink-0 disabled:opacity-50 ${
                 following
-                  ? 'border-rim text-muted hover:text-heart hover:border-heart'
-                  : 'bg-accent border-accent text-white hover:bg-accent-dk'
+                  ? 'border-ink text-muted hover:text-heart hover:border-heart'
+                  : 'bg-accent border-ink text-ink shadow-pop hover:bg-accent-dk'
               }`}
             >{following ? 'Following' : 'Follow'}</button>
           )}
           {isOwnProfile && (
             <button
               onClick={() => navigate('/profile')}
-              className="text-[0.82rem] font-bold rounded-[14px] px-4 py-[6px] border-[1.5px] border-rim text-muted hover:border-accent hover:text-accent transition-all shrink-0"
+              className="text-[0.82rem] font-bold rounded-full px-4 py-[6px] border-2 border-ink text-muted hover:bg-paper hover:text-accent transition-all shrink-0"
             >Edit Profile</button>
           )}
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-rim bg-paper" role="tablist">
+      <div className="flex border-b border-ink bg-paper" role="tablist">
         <button role="tab" aria-selected={tab === 'activity'} className={tabCls(tab === 'activity')} onClick={() => setTab('activity')}>Activity</button>
         <button role="tab" aria-selected={tab === 'recipes'} className={tabCls(tab === 'recipes')} onClick={() => setTab('recipes')}>
           Recipes {recipes.length > 0 && <span className="ml-1 text-[0.68rem] text-muted">({recipes.length})</span>}
@@ -244,7 +244,7 @@ export default function UserProfile({ onOpen }) {
                   {hit?.recipe && (
                     <button
                       type="button"
-                      className="w-full text-left bg-paper border-[1.5px] border-warm-tan rounded-xl px-3.5 py-2.5 hover:border-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      className="w-full text-left bg-paper border-2 border-ink rounded-xl px-3.5 py-2.5 hover:bg-paper transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       onClick={() => onOpen(hit.key, isCatalogKey(hit.key) ? undefined : hit.recipe)}
                     >
                       <div className="font-display text-[0.9rem] font-semibold text-ink">{hit.recipe.name}</div>
@@ -275,7 +275,7 @@ export default function UserProfile({ onOpen }) {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <span className="inline-block text-[0.65rem] font-bold tracking-[0.08em] uppercase px-2 py-[2px] rounded-lg bg-accent text-white shrink-0">
+                    <span className="inline-block text-[0.65rem] font-bold tracking-[0.08em] uppercase px-2 py-[2px] rounded-xl bg-accent text-ink border-2 border-ink shadow-pop press shrink-0">
                       My Recipe
                     </span>
                     <span className="font-display text-[0.95rem] font-semibold text-ink truncate">{r.name}</span>

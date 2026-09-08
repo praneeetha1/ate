@@ -73,13 +73,13 @@ export default function Saved({ onOpen }) {
 
   const tabCls = active =>
     `flex-1 py-2.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
-      active ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-ink'
+      active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
     }`
 
   return (
     <>
       {/* Tab bar */}
-      <div className="flex border-b border-rim bg-paper" role="tablist">
+      <div className="flex border-b border-ink bg-paper" role="tablist">
         <button role="tab" aria-selected={tab === 'favorites'} className={tabCls(tab === 'favorites')} onClick={() => setTab('favorites')}>
           ♥ Saved
         </button>
@@ -104,8 +104,8 @@ export default function Saved({ onOpen }) {
                   onClick={() => setLayout(key)}
                   aria-pressed={layout === key}
                   aria-label={`${label} layout`}
-                  className={`w-8 h-8 rounded-md text-[1.1rem] flex items-center justify-center border-[1.5px] transition-all ${
-                    layout === key ? 'bg-accent border-accent text-white' : 'bg-card border-rim text-muted'
+                  className={`w-8 h-8 rounded-md text-[1.1rem] flex items-center justify-center border-2 transition-all ${
+                    layout === key ? 'bg-accent border-ink text-ink shadow-pop' : 'bg-card border-ink text-muted'
                   }`}
                 >{icon}</button>
               ))}
@@ -149,14 +149,14 @@ export default function Saved({ onOpen }) {
                 aria-invalid={!!createError}
                 aria-describedby={createError ? 'create-list-error' : undefined}
                 maxLength={60}
-                className="flex-1 border-[1.5px] rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none transition-colors placeholder:text-muted focus:border-accent border-rim aria-[invalid=true]:border-heart"
+                className="flex-1 border-2 rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none transition-colors placeholder:text-muted focus:border-accent border-ink aria-[invalid=true]:border-heart"
               />
               {/* Disabled while empty, so the button visibly communicates that a
                   name is needed instead of silently doing nothing. */}
               <button
                 type="submit"
                 disabled={creating || !newListName.trim()}
-                className="bg-accent text-white font-bold text-[0.88rem] rounded-xl px-4 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
+                className="bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.88rem] rounded-xl px-4 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
               >{creating ? 'Creating…' : '+ Create'}</button>
             </div>
             {createError && (
@@ -176,7 +176,7 @@ export default function Saved({ onOpen }) {
                 const isOpen   = expanded === list.id
                 const resolved = list.items.map(resolve).filter(Boolean)
                 return (
-                  <div key={list.id} className="border-[1.5px] border-warm-tan rounded-xl overflow-hidden bg-card">
+                  <div key={list.id} className="border-2 border-ink rounded-xl overflow-hidden bg-card">
                     <div className="flex items-center justify-between px-4 py-3 hover:bg-paper transition-colors gap-2">
                       {renaming === list.id ? (
                         <form onSubmit={e => handleRename(e, list.id)} className="flex gap-2 flex-1">
@@ -186,7 +186,7 @@ export default function Saved({ onOpen }) {
                             aria-label={`Rename ${list.name}`}
                             maxLength={60}
                             autoFocus
-                            className="flex-1 border-[1.5px] border-rim rounded-lg px-2.5 py-1.5 text-[0.88rem] bg-paper outline-none focus:border-accent"
+                            className="flex-1 border-2 border-ink rounded-xl px-2.5 py-1.5 text-[0.88rem] bg-paper outline-none focus:border-accent"
                           />
                           <button
                             type="submit"
@@ -227,12 +227,12 @@ export default function Saved({ onOpen }) {
 
                     {/* Deleting a list throws away its contents, so confirm first. */}
                     {confirmList === list.id && (
-                      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#fde8e8] border-t border-warm-tan">
+                      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#fde8e8] border-t border-ink">
                         <span className="text-[0.8rem] text-heart">Delete “{list.name}”?</span>
                         <div className="flex gap-2 shrink-0">
                           <button
                             onClick={() => { deleteList(list.id); setConfirmList(null) }}
-                            className="text-[0.75rem] font-bold text-white bg-heart rounded-lg px-3 py-1"
+                            className="text-[0.75rem] font-bold text-ink bg-heart border-2 border-ink shadow-pop press rounded-xl px-3 py-1"
                           >Delete</button>
                           <button
                             onClick={() => setConfirmList(null)}
@@ -243,7 +243,7 @@ export default function Saved({ onOpen }) {
                     )}
 
                     {isOpen && (
-                      <div className="border-t border-warm-tan">
+                      <div className="border-t border-ink">
                         {!resolved.length ? (
                           <p className="px-4 py-4 text-[0.85rem] text-muted italic">No recipes in this list yet.</p>
                         ) : (

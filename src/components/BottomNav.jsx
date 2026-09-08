@@ -12,7 +12,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Main"
-      className="fixed bottom-0 left-0 right-0 bg-paper border-t-[1.5px] border-rim flex z-[300] shadow-[0_-2px_12px_rgba(100,70,30,0.12)] pb-safe"
+      className="fixed bottom-0 left-0 right-0 bg-card border-t-[2.5px] border-ink flex z-[300] pb-safe"
       style={{ height: 'calc(var(--nav-h) + env(safe-area-inset-bottom, 0px))' }}
     >
       {TABS.map(({ to, icon, label }) => (
@@ -21,13 +21,24 @@ export default function BottomNav() {
           to={to}
           end={to === '/'}
           className={({ isActive }) =>
-            `flex-1 flex flex-col items-center justify-center gap-[3px] text-[0.6rem] font-bold uppercase tracking-[0.08em] transition-colors pb-2 pt-1.5 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
-              isActive ? 'text-accent' : 'text-muted'
+            `flex-1 flex flex-col items-center justify-center gap-[3px] font-display text-[0.6rem] font-semibold uppercase tracking-[0.07em] transition-colors pb-2 pt-1.5 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
+              isActive ? 'text-accent-dk' : 'text-muted'
             }`
           }
         >
-          <span className="text-[1.35rem] leading-none" aria-hidden="true">{icon}</span>
-          <span>{label}</span>
+          {({ isActive }) => (
+            <>
+              {/* The active tab's icon sits in an outlined coral badge — the
+                  same ink-outline rule as every other tappable thing. */}
+              <span
+                aria-hidden="true"
+                className={`text-[1.1rem] leading-none w-7 h-7 grid place-items-center rounded-full transition-all ${
+                  isActive ? 'border-2 border-ink bg-accent shadow-pop -translate-y-[1px]' : ''
+                }`}
+              >{icon}</span>
+              <span>{label}</span>
+            </>
+          )}
         </NavLink>
       ))}
     </nav>

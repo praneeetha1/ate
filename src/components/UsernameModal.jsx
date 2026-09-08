@@ -42,7 +42,7 @@ export default function UsernameModal({ onClose }) {
       {...backdropProps}
     >
       <div
-        className="bg-card border-[1.5px] border-rim rounded-2xl shadow-warm-xl w-full max-w-sm p-7"
+        className="bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-sm p-7"
         {...panelProps}
       >
 
@@ -73,7 +73,7 @@ export default function UsernameModal({ onClose }) {
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}
-              className="w-full border-[1.5px] border-rim rounded-xl pl-8 pr-4 py-3 text-[0.95rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted"
+              className="w-full border-2 border-ink rounded-xl pl-8 pr-4 py-3 text-[0.95rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted"
               autoFocus
             />
           </div>
@@ -82,13 +82,13 @@ export default function UsernameModal({ onClose }) {
           </p>
 
           {error && (
-            <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-lg px-3 py-2">{error}</p>
+            <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-xl px-3 py-2">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={saving || username.trim().length < 3}
-            className="bg-accent text-white font-bold text-[0.95rem] rounded-xl py-3 mt-1 hover:bg-accent-dk disabled:opacity-50 transition-all"
+            className="bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.95rem] rounded-xl py-3 mt-1 hover:bg-accent-dk disabled:opacity-50 transition-all"
           >
             {saving ? 'Saving…' : profile?.username_set ? 'Save username' : 'Set username'}
           </button>
