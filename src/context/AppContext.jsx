@@ -204,20 +204,46 @@ export function AppProvider({ children }) {
       guest.shoppingList.size || Object.keys(guest.ratings).length ||
       Object.keys(guest.notes).length
 
-    let uploadedCleanly = true
-    if (guestHasData) uploadedCleanly = await uploadGuestData(ownerId, guest)
+    let result = { ok: true, remaining: null }
+    if (guestHasData) result = await uploadGuestData(ownerId, guest)
 
     const fresh = await fetchAll(ownerId)
     commit({ scope: scopeFor(ownerId), ...fresh })
 
-    // Only drop the guest copy once it is safely on the server, so a failed
-    // upload can be retried on the next login instead of vanishing.
-    if (guestHasData && uploadedCleanly) clearScope(scopeFor(null))
+    if (guestHasData) {
+      if (result.ok) {
+        clearScope(scopeFor(null))
+      } else {
+        // Keep only what genuinely still needs uploading, so a retry on the
+        // next login cannot duplicate anything that already landed.
+        const guestScope = scopeFor(null)
+        for (const [slice, value] of Object.entries(result.remaining)) {
+          saveSlice(guestScope, slice, value)
+        }
+      }
+    }
   }
 
-  /** Returns true only if every guest write succeeded. */
+  /**
+   * Pushes guest data to the server.
+   *
+   * Returns the slices still awaiting upload. Each one is pruned the moment it
+   * lands, rather than the whole scope being cleared only if *everything*
+   * succeeded — under the old all-or-nothing rule, one failing slice (ratings,
+   * before migration 006 added recipe_key) meant the guest copy was kept and
+   * re-uploaded on every subsequent login, duplicating recipes and lists.
+   */
   async function uploadGuestData(ownerId, guest) {
     let ok = true
+    const remaining = {
+      favs:         [...guest.favorites].map(keyToText),
+      ratings:      { ...guest.ratings },
+      notes:        { ...guest.notes },
+      shopping:     [...guest.shoppingList].map(keyToText),
+      shop_checked: { ...guest.shopChecked },
+      user_recipes: [...guest.userRecipes],
+      lists:        [...guest.lists],
+    }
 
     // 1. Recipes first: their new UUIDs are needed to rewrite the keys that
     //    guest favourites, lists and shopping entries point at.
@@ -225,25 +251,44 @@ export function AppProvider({ children }) {
     const localRecipes = guest.userRecipes.filter(r => String(r.id).startsWith('local_'))
 
     if (localRecipes.length) {
-      const { data: uploaded, error } = await supabase
-        .from('user_recipes')
-        .insert(localRecipes.map(r => ({ ...toUserRecipeRow(r), user_id: ownerId })))
-        .select()
+      // Skip anything a previous attempt already landed. created_at is carried
+      // over from the device so it forms a stable natural key with the name.
+      const { data: existing } = await supabase
+        .from('user_recipes').select('id, name, created_at').eq('user_id', ownerId)
+      const stamp = r => `${r.name}|${r.created_at ? new Date(r.created_at).toISOString() : ''}`
+      const already = new Map((existing || []).map(r => [stamp(r), r.id]))
 
-      if (error) {
-        console.error('Local recipe upload failed:', error)
-        showError('Some recipes made while logged out could not be uploaded.')
-        ok = false
-      } else if (uploaded?.length) {
-        // insert().select() returns rows in the order they were supplied.
-        uploaded.forEach((row, i) => {
-          localIdMap.set('u_' + localRecipes[i].id, 'u_' + row.id)
-        })
-        for (const row of uploaded) {
-          await logActivityFor(ownerId, 'created', { recipe_key: 'u_' + row.id, recipe_name: row.name })
-        }
-        if (!await addRecipesToMyRecipesList(ownerId, uploaded)) ok = false
+      const fresh = []
+      for (const r of localRecipes) {
+        const seen = already.get(stamp(r))
+        if (seen) localIdMap.set('u_' + r.id, 'u_' + seen)
+        else fresh.push(r)
       }
+
+      if (fresh.length) {
+        const { data: uploaded, error } = await supabase
+          .from('user_recipes')
+          .insert(fresh.map(r => ({
+            ...toUserRecipeRow(r), user_id: ownerId, created_at: r.created_at,
+          })))
+          .select()
+
+        if (error) {
+          console.error('Local recipe upload failed:', error)
+          showError(describeError(error, 'Some recipes made while logged out could not be uploaded.'))
+          ok = false
+        } else if (uploaded?.length) {
+          // insert().select() returns rows in the order they were supplied.
+          uploaded.forEach((row, i) => localIdMap.set('u_' + fresh[i].id, 'u_' + row.id))
+          for (const row of uploaded) {
+            await logActivityFor(ownerId, 'created', { recipe_key: 'u_' + row.id, recipe_name: row.name })
+          }
+          if (!await addRecipesToMyRecipesList(ownerId, uploaded)) ok = false
+        }
+      }
+
+      // Drop every recipe now known to be on the server.
+      remaining.user_recipes = remaining.user_recipes.filter(r => !localIdMap.has('u_' + r.id))
     }
 
     // Rewrites a guest key to its uploaded equivalent, dropping keys whose
@@ -260,11 +305,12 @@ export function AppProvider({ children }) {
       .map(remap).filter(Boolean)
       .map(recipe_key => ({ user_id: ownerId, recipe_key }))
     if (favRows.length) {
-      if (!await run(
+      if (await run(
         supabase.from('favorites').upsert(favRows, { onConflict: 'user_id,recipe_key' }),
         'Some saved recipes could not be uploaded.',
-      )) ok = false
-    }
+      )) remaining.favs = []
+      else ok = false
+    } else remaining.favs = []
 
     // 3. Shopping list, including which ingredients were ticked off.
     const shopRows = [...guest.shoppingList]
@@ -276,11 +322,12 @@ export function AppProvider({ children }) {
       })
       .filter(Boolean)
     if (shopRows.length) {
-      if (!await run(
+      if (await run(
         supabase.from('shopping_list').upsert(shopRows, { onConflict: 'user_id,recipe_key' }),
         'Your shopping list could not be uploaded.',
-      )) ok = false
-    }
+      )) { remaining.shopping = []; remaining.shop_checked = {} }
+      else ok = false
+    } else { remaining.shopping = []; remaining.shop_checked = {} }
 
     // 4. Ratings and notes.
     const ratingRows = Object.entries(guest.ratings)
@@ -290,11 +337,12 @@ export function AppProvider({ children }) {
       })
       .filter(Boolean)
     if (ratingRows.length) {
-      if (!await run(
+      if (await run(
         supabase.from('ratings').upsert(ratingRows, { onConflict: 'user_id,recipe_key' }),
         'Some ratings could not be uploaded.',
-      )) ok = false
-    }
+      )) remaining.ratings = {}
+      else ok = false
+    } else remaining.ratings = {}
 
     const noteRows = Object.entries(guest.notes)
       .map(([key, body]) => {
@@ -303,41 +351,53 @@ export function AppProvider({ children }) {
       })
       .filter(Boolean)
     if (noteRows.length) {
-      if (!await run(
+      if (await run(
         supabase.from('notes').upsert(noteRows, { onConflict: 'user_id,recipe_key' }),
         'Some notes could not be uploaded.',
-      )) ok = false
-    }
+      )) remaining.notes = {}
+      else ok = false
+    } else remaining.notes = {}
 
     // 5. Lists. These had no upload path at all before, so a list made while
     //    logged out was silently destroyed by the first sync.
     const localLists = guest.lists.filter(l => String(l.id).startsWith('local_'))
-    for (const list of localLists) {
-      const { data: created, error } = await supabase
-        .from('lists')
-        .insert({ name: list.name, user_id: ownerId })
-        .select('id')
-        .maybeSingle()
+    if (localLists.length) {
+      const { data: existingLists } = await supabase
+        .from('lists').select('id, name').eq('user_id', ownerId)
+      const byName = new Map((existingLists || []).map(l => [l.name, l.id]))
+      const landed = new Set()
 
-      if (error || !created) {
-        console.error('Local list upload failed:', error)
-        showError(`List “${list.name}” could not be uploaded.`)
-        ok = false
-        continue
-      }
+      for (const list of localLists) {
+        // A list of the same name already on the server is that same list — a
+        // previous attempt created it before something else in this batch failed.
+        let listId = byName.get(list.name)
 
-      const itemRows = list.items
-        .map(remap).filter(Boolean)
-        .map(recipe_key => ({ list_id: created.id, recipe_key }))
-      if (itemRows.length) {
-        if (!await run(
+        if (!listId) {
+          const { data: created, error } = await supabase
+            .from('lists').insert({ name: list.name, user_id: ownerId }).select('id').maybeSingle()
+          if (error || !created) {
+            console.error('Local list upload failed:', error)
+            showError(describeError(error, `List “${list.name}” could not be uploaded.`))
+            ok = false
+            continue
+          }
+          listId = created.id
+        }
+
+        const itemRows = list.items
+          .map(remap).filter(Boolean)
+          .map(recipe_key => ({ list_id: listId, recipe_key }))
+        if (itemRows.length && !await run(
           supabase.from('list_items').upsert(itemRows, { onConflict: 'list_id,recipe_key' }),
           `Items in “${list.name}” could not be uploaded.`,
-        )) ok = false
-      }
-    }
+        )) { ok = false; continue }
 
-    return ok
+        landed.add(list.id)
+      }
+      remaining.lists = remaining.lists.filter(l => !landed.has(l.id))
+    } else remaining.lists = []
+
+    return { ok, remaining }
   }
 
   /** Reads every owned slice, and repairs rows left over from older schemas. */

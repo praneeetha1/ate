@@ -433,3 +433,86 @@ describe('resilience to an unapplied migration', () => {
     expect(JSON.parse(screen.getByTestId('ratings').textContent)).toEqual({ 5: 4 })
   })
 })
+
+describe('duplicate uploads', () => {
+  it('does not re-upload a recipe when an unrelated slice failed', async () => {
+    h.client = createMockSupabase(seedProfile('user-1'))
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+
+    // Guest creates a recipe AND rates something.
+    await act(async () => {
+      await api.createUserRecipe({ name: 'testing', category: 'Quick Meal', ingredients: [], steps: [], time_minutes: 20, servings: 2 })
+    })
+    act(() => api.setRating(3, 5, 'Catalog'))
+
+    // First login: ratings upload fails (as it did before migration 006).
+    h.client.__failOn('ratings', 'upsert', { code: '42703', message: 'column ratings.recipe_key does not exist' })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+    expect(h.client.__db.user_recipes).toHaveLength(1)
+
+    // Log out, then back in. The recipe is already on the server.
+    await act(async () => { h.client.__setSession(null) })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    expect(h.client.__db.user_recipes.map(r => r.name)).toEqual(['testing'])
+  })
+
+  it('does not duplicate lists either', async () => {
+    h.client = createMockSupabase(seedProfile('user-1'))
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { await api.createList('Weeknights') })
+    act(() => api.setNote(3, 'x', 'Catalog'))
+
+    h.client.__failOn('notes', 'upsert', { code: '42703', message: 'no recipe_key' })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+    await act(async () => { h.client.__setSession(null) })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    expect(h.client.__db.lists.filter(l => l.name === 'Weeknights')).toHaveLength(1)
+  })
+
+  it('clears the guest scope completely when everything uploads', async () => {
+    h.client = createMockSupabase(seedProfile('user-1'))
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { await api.createUserRecipe({ name: 'solo', category: 'Dessert', ingredients: [], steps: [] }) })
+
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    expect(localStorage.getItem('ate:guest:user_recipes')).toBeNull()
+    expect(h.client.__db.user_recipes).toHaveLength(1)
+  })
+
+  it('retries only the slice that failed, not the ones that landed', async () => {
+    h.client = createMockSupabase(seedProfile('user-1'))
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+    await act(async () => { await api.createUserRecipe({ name: 'kept', category: 'Dessert', ingredients: [], steps: [] }) })
+    act(() => api.setRating(3, 5, 'Catalog'))
+
+    h.client.__failOn('ratings', 'upsert', { code: '42703', message: 'no recipe_key' })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    // The recipe landed and is gone from the guest scope; the rating is retained.
+    expect(JSON.parse(localStorage.getItem('ate:guest:user_recipes'))).toEqual([])
+    expect(JSON.parse(localStorage.getItem('ate:guest:ratings'))).toEqual({ 3: 5 })
+
+    // Second login: the rating now succeeds and nothing is duplicated.
+    await act(async () => { h.client.__setSession(null) })
+    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
+    await waitFor(() => expect(api.syncing).toBe(false))
+
+    expect(h.client.__db.user_recipes).toHaveLength(1)
+    expect(h.client.__db.ratings).toHaveLength(1)
+    expect(localStorage.getItem('ate:guest:ratings')).toBeNull()
+  })
+})
+
