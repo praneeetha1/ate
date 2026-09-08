@@ -147,6 +147,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       const list = await createList(name)
       addToList(list.id, recipeKey, recipe.name)
       setNewListName('')
+      showToast(`Added to ${list.name}`, 'info')
     } catch (err) {
       console.error('Create list failed:', err)
       showError(describeError(err, 'Could not create that list.'))
@@ -209,7 +210,10 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
             ><Icon name="heart" size={22} filled={isFav} /></button>
             <button
               className={`${iconBtn} ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
-              onClick={() => toggleShopping(recipeKey)}
+              onClick={() => {
+                toggleShopping(recipeKey)
+                showToast(inList ? 'Removed from shopping list' : 'Added to shopping list', 'info')
+              }}
               aria-pressed={inList}
               aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
               title="Add to shopping list"
@@ -235,7 +239,11 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                     return (
                       <button
                         key={l.id}
-                        onClick={() => inL ? removeFromList(l.id, recipeKey) : addToList(l.id, recipeKey, recipe.name)}
+                        onClick={() => {
+                          if (inL) removeFromList(l.id, recipeKey)
+                          else addToList(l.id, recipeKey, recipe.name)
+                          showToast(`${inL ? 'Removed from' : 'Added to'} ${l.name}`, 'info')
+                        }}
                         aria-pressed={inL}
                         className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
                       >
