@@ -336,37 +336,57 @@ describe('Saved > + Create feedback', () => {
     await act(async () => { screen.getByRole('tab', { name: /Lists/ }).click() })
   }
 
-  // This is the reported symptom: clicking "+ Create" appeared to do nothing.
-  // The handler bailed on an empty name while the button still looked live.
-  it('disables + Create until a name is typed', async () => {
+  // The reported symptom, twice over: first the handler bailed silently on an
+  // empty name; then I disabled the button, and a disabled button never fires a
+  // click at all — so it still read as completely dead.
+  it('keeps + Create clickable even with an empty field', async () => {
     h.client = createMockSupabase(seed())
     renderPage(<Saved onOpen={() => {}} />)
     await waitFor(() => expect(api).not.toBeNull())
     await openLists()
 
-    const button = screen.getByRole('button', { name: '+ Create' })
-    expect(button).toBeDisabled()
-
-    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: 'Weeknights' } })
-    expect(button).toBeEnabled()
-
+    expect(screen.getByRole('button', { name: '+ Create' })).toBeEnabled()
     fireEvent.change(screen.getByLabelText('New list name'), { target: { value: '   ' } })
-    expect(button).toBeDisabled()
+    expect(screen.getByRole('button', { name: '+ Create' })).toBeEnabled()
   })
 
-  it('explains itself when submitted empty instead of doing nothing', async () => {
+  it('explains what is missing and focuses the field when clicked empty', async () => {
     h.client = createMockSupabase(seed())
     renderPage(<Saved onOpen={() => {}} />)
     await waitFor(() => expect(api).not.toBeNull())
     await openLists()
 
-    // Enter in the field submits the form even though the button is disabled.
-    await act(async () => {
-      fireEvent.submit(screen.getByLabelText('New list name').closest('form'))
-    })
+    await act(async () => { screen.getByRole('button', { name: '+ Create' }).click() })
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Give the list a name first.')
+    expect(screen.getByLabelText('New list name')).toHaveFocus()
+    expect(api.lists).toHaveLength(0)
+  })
+
+  it('does the same for whitespace only', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await openLists()
+
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: '   ' } })
+    await act(async () => { screen.getByRole('button', { name: '+ Create' }).click() })
 
     expect(screen.getByRole('alert')).toHaveTextContent('Give the list a name first.')
     expect(api.lists).toHaveLength(0)
+  })
+
+  it('clears the message as soon as the user types', async () => {
+    h.client = createMockSupabase(seed())
+    renderPage(<Saved onOpen={() => {}} />)
+    await waitFor(() => expect(api).not.toBeNull())
+    await openLists()
+
+    await act(async () => { screen.getByRole('button', { name: '+ Create' }).click() })
+    expect(screen.getByRole('alert')).toBeTruthy()
+
+    fireEvent.change(screen.getByLabelText('New list name'), { target: { value: 'W' } })
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 
   it('creates the list and clears the field on success', async () => {

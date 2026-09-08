@@ -26,6 +26,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   const notesTimer = useRef(null)
   const hintTimer  = useRef(null)
   const listsRef   = useRef(null)
+  const newListRef = useRef(null)
 
   const keyProp = keyToText(recipeKey)
   const isFav   = favorites.has(recipeKey)
@@ -138,7 +139,9 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   async function handleNewList(e) {
     e.preventDefault()
     const name = newListName.trim()
-    if (!name) return
+    // No room for an inline message here, but the click must still do
+    // something rather than silently no-op.
+    if (!name) { newListRef.current?.focus(); return }
     try {
       const list = await createList(name)
       addToList(list.id, recipeKey, recipe.name)
@@ -242,6 +245,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   })}
                   <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-ink bg-paper">
                     <input
+                      ref={newListRef}
                       value={newListName}
                       onChange={e => setNewListName(e.target.value)}
                       placeholder="New list…"
@@ -251,8 +255,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                     />
                     <button
                       type="submit"
-                      disabled={!newListName.trim()}
-                      className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
+                      className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors"
                     >
                       Add
                     </button>

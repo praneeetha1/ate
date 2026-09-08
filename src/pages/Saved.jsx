@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useApp } from '../context/AppContext'
 import { useToast } from '../context/ToastContext'
 import { resolveRecipe, keyToText } from '../utils/recipe'
@@ -19,6 +19,7 @@ export default function Saved({ onOpen }) {
   const [renaming,    setRenaming]    = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const [confirmList, setConfirmList] = useState(null)
+  const newListRef = useRef(null)
 
   const favList = [...favorites]
 
@@ -37,10 +38,12 @@ export default function Saved({ onOpen }) {
     // pressing "+ Create" with an empty field did visibly nothing at all.
     if (!name) {
       setCreateError('Give the list a name first.')
+      newListRef.current?.focus()
       return
     }
     if (lists.some(l => l.name.toLowerCase() === name.toLowerCase())) {
       setCreateError(`You already have a list called “${name}”.`)
+      newListRef.current?.focus()
       return
     }
 
@@ -142,6 +145,7 @@ export default function Saved({ onOpen }) {
           <form onSubmit={handleCreateList} className="mb-5" noValidate>
             <div className="flex gap-2">
               <input
+                ref={newListRef}
                 value={newListName}
                 onChange={e => { setNewListName(e.target.value); setCreateError('') }}
                 placeholder="New list name…"
@@ -151,12 +155,14 @@ export default function Saved({ onOpen }) {
                 maxLength={60}
                 className="flex-1 border-2 rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none transition-colors placeholder:text-muted focus:border-accent border-ink aria-[invalid=true]:border-heart"
               />
-              {/* Disabled while empty, so the button visibly communicates that a
-                  name is needed instead of silently doing nothing. */}
+              {/* Deliberately NOT disabled when the field is empty: a disabled
+                  button never fires a click, so it reads as broken. Clicking it
+                  always does something — it explains what's missing and puts the
+                  cursor in the field. */}
               <button
                 type="submit"
-                disabled={creating || !newListName.trim()}
-                className="bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.88rem] rounded-xl px-4 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent"
+                disabled={creating}
+                className="bg-accent text-ink border-2 border-ink shadow-pop press font-bold text-[0.88rem] rounded-xl px-4 hover:bg-accent-dk transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >{creating ? 'Creating…' : '+ Create'}</button>
             </div>
             {createError && (
@@ -190,8 +196,7 @@ export default function Saved({ onOpen }) {
                           />
                           <button
                             type="submit"
-                            disabled={!renameValue.trim()}
-                            className="text-[0.75rem] font-bold text-accent px-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="text-[0.75rem] font-bold text-accent px-2"
                           >Save</button>
                           <button type="button" onClick={() => setRenaming(null)} className="text-[0.75rem] text-muted px-2">Cancel</button>
                         </form>
