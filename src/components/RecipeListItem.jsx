@@ -1,6 +1,7 @@
 import { useApp } from '../context/AppContext'
 import { keyToText, isUserRecipeKey } from '../utils/recipe'
 import Tag from './Tag'
+import Icon from './Icon'
 
 export default function RecipeListItem({ recipe, recipeKey, onOpen }) {
   const { favorites, toggleFav, ratings } = useApp()
@@ -17,7 +18,7 @@ export default function RecipeListItem({ recipe, recipeKey, onOpen }) {
         className="flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
       >
         <div className="font-display text-[0.98rem] font-semibold text-ink truncate mb-[5px]">
-          {recipe.name}{isVeg ? ' 🌿' : ''}
+          {recipe.name}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {isUserRecipeKey(recipeKey) && (
@@ -26,12 +27,15 @@ export default function RecipeListItem({ recipe, recipeKey, onOpen }) {
             </span>
           )}
           <Tag category={recipe.category} />
+          {isVeg && <Icon name="leaf" size={13} label="Vegetarian" className="text-[#2E8B57]" />}
           {recipe.timeMinutes && (
-            <span className="text-[0.72rem] font-bold text-muted">⏱ {recipe.timeMinutes} min</span>
+            <span className="flex items-center gap-1 text-[0.72rem] font-bold text-muted">
+              <Icon name="clock" size={13} />{recipe.timeMinutes} min
+            </span>
           )}
           {rating > 0 && (
-            <span className="text-[0.75rem] text-star tracking-[-1px]" aria-label={`Rated ${rating} out of 5`}>
-              {'★'.repeat(rating)}
+            <span className="flex items-center gap-[1px] text-star" aria-label={`Rated ${rating} out of 5`}>
+              {Array.from({ length: rating }, (_, i) => <Icon key={i} name="star" size={12} filled />)}
             </span>
           )}
         </div>
@@ -43,11 +47,15 @@ export default function RecipeListItem({ recipe, recipeKey, onOpen }) {
         aria-pressed={isFav}
         aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
         title="Save"
-      >♥</button>
+      >
+        <Icon name="heart" size={18} filled={isFav} />
+      </button>
       <span
         className="shrink-0 w-6 h-6 grid place-items-center rounded-full border-2 border-ink bg-sun text-ink text-[0.8rem] font-extrabold leading-none pointer-events-none"
         aria-hidden="true"
-      >›</span>
+      >
+        <Icon name="arrowRight" size={13} strokeWidth={2.8} />
+      </span>
     </div>
   )
 }

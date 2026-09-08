@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import RECIPES from '../data/recipes.json'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
+import Icon from '../components/Icon'
 
 /** Reduces "flour, sifted (optional)" to "flour" for the suggestion list. */
 function coreIngredient(item) {
@@ -112,14 +113,14 @@ export default function Search({ onOpen }) {
         <div className="relative mb-3">
           <input
             type="search"
-            placeholder={mode === 'ingredient' ? 'Ingredient search active below ↓' : 'Search recipes by name…'}
+            placeholder={mode === 'ingredient' ? 'Ingredient search active below' : 'Search recipes by name…'}
             value={nameQuery}
             onChange={e => setNameQuery(e.target.value)}
             disabled={mode === 'ingredient'}
             aria-label="Search recipes by name"
             className="w-full border-2 border-ink rounded-xl px-4 py-[11px] pr-10 text-[0.95rem] bg-card text-ink outline-none focus:border-accent transition-colors placeholder:text-muted disabled:opacity-60"
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" aria-hidden="true">🔍</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" ><Icon name="search" size={17} /></span>
         </div>
         <div className="flex gap-2" role="group" aria-label="Search mode">
           <button onClick={() => setMode('name')}       aria-pressed={mode === 'name'}       className={pillCls(mode === 'name')}>By Recipe Name</button>
@@ -177,7 +178,7 @@ export default function Search({ onOpen }) {
                     onClick={() => removeIngredient(name)}
                     aria-label={`Remove ${name}`}
                     className="text-[0.85rem] text-muted hover:text-heart transition-colors"
-                  >✕</button>
+                  ><Icon name="close" size={12} strokeWidth={3} /></button>
                 </li>
               ))}
             </ul>
@@ -189,7 +190,7 @@ export default function Search({ onOpen }) {
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 p-5 pb-6">
         {results === null ? (
           <p className="col-span-full text-center py-[60px] text-muted text-[1rem]">
-            {mode === 'name' ? 'Type a recipe name above 🍳' : 'Pick ingredients above, then tap Find Recipes 🍳'}
+            {mode === 'name' ? 'Type a recipe name above' : 'Pick ingredients above, then tap Find Recipes'}
           </p>
         ) : results.length === 0 ? (
           <p className="col-span-full text-center py-[60px] font-display text-[1.1rem] text-muted">
@@ -201,7 +202,7 @@ export default function Search({ onOpen }) {
               <RecipeCard recipe={r} recipeKey={key} onOpen={onOpen} fill />
               {mode === 'ingredient' && matchCount > 0 && (
                 <p className="text-[0.72rem] text-accent-dk bg-paper border border-t-0 border-ink rounded-b-xl px-4 py-1.5 font-bold -mt-1">
-                  ✓ matches {matchCount} of {total} ingredient{total !== 1 ? 's' : ''} you have
+                  <Icon name="check" size={13} className="inline align-[-2px] mr-1" /> matches {matchCount} of {total} ingredient{total !== 1 ? 's' : ''} you have
                 </p>
               )}
             </div>

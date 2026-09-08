@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
+import Icon from './Icon'
 
 const TABS = [
-  { to: '/',        icon: '🏠', label: 'Home'    },
-  { to: '/search',  icon: '🔍', label: 'Search'  },
-  { to: '/saved',   icon: '♥',  label: 'Saved'   },
-  { to: '/friends', icon: '👥', label: 'Friends' },
-  { to: '/profile', icon: '👤', label: 'Profile' },
+  { to: '/',        icon: 'home',   label: 'Home'    },
+  { to: '/search',  icon: 'search', label: 'Search'  },
+  { to: '/saved',   icon: 'heart',  label: 'Saved'   },
+  { to: '/friends', icon: 'users',  label: 'Friends' },
+  { to: '/profile', icon: 'user',   label: 'Profile' },
 ]
 
 export default function BottomNav() {
@@ -22,7 +23,7 @@ export default function BottomNav() {
           end={to === '/'}
           className={({ isActive }) =>
             `flex-1 flex flex-col items-center justify-center gap-[3px] font-display text-[0.6rem] font-semibold uppercase tracking-[0.07em] transition-colors pb-2 pt-1.5 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
-              isActive ? 'text-accent-dk' : 'text-muted'
+              isActive ? 'text-ink' : 'text-muted'
             }`
           }
         >
@@ -31,11 +32,12 @@ export default function BottomNav() {
               {/* The active tab's icon sits in an outlined coral badge — the
                   same ink-outline rule as every other tappable thing. */}
               <span
-                aria-hidden="true"
-                className={`text-[1.1rem] leading-none w-7 h-7 grid place-items-center rounded-full transition-all ${
+                className={`w-7 h-7 grid place-items-center rounded-full transition-all ${
                   isActive ? 'border-2 border-ink bg-accent shadow-pop -translate-y-[1px]' : ''
                 }`}
-              >{icon}</span>
+              >
+                <Icon name={icon} size={17} filled={isActive && icon === 'heart'} />
+              </span>
               <span>{label}</span>
             </>
           )}

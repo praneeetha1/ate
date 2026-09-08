@@ -1,6 +1,7 @@
 import { useApp } from '../context/AppContext'
 import { keyToText, isUserRecipeKey } from '../utils/recipe'
 import Tag from './Tag'
+import Icon from './Icon'
 
 export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
   const { favorites, toggleFav, ratings } = useApp()
@@ -33,12 +34,14 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
             )}
             <Tag category={recipe.category} />
             {recipe.timeMinutes && (
-              <span className="text-[0.7rem] font-bold text-muted">⏱ {recipe.timeMinutes} min</span>
+              <span className="flex items-center gap-1 text-[0.7rem] font-bold text-muted">
+                <Icon name="clock" size={13} />{recipe.timeMinutes} min
+              </span>
             )}
-            {isVeg && <span className="text-[0.72rem]" title="Vegetarian" role="img" aria-label="Vegetarian">🌿</span>}
+            {isVeg && <Icon name="leaf" size={13} label="Vegetarian" className="text-[#2E8B57]" />}
             {rating > 0 && (
-              <span className="text-[0.68rem] text-star tracking-[-1px]" aria-label={`Rated ${rating} out of 5`}>
-                {'★'.repeat(rating)}
+              <span className="flex items-center gap-[1px] text-star" aria-label={`Rated ${rating} out of 5`}>
+                {Array.from({ length: rating }, (_, i) => <Icon key={i} name="star" size={11} filled />)}
               </span>
             )}
           </div>
@@ -50,7 +53,9 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
           aria-pressed={isFav}
           aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
           title="Save"
-        >♥</button>
+        >
+          <Icon name="heart" size={19} filled={isFav} />
+        </button>
       </div>
       <button
         type="button"
@@ -59,7 +64,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
         aria-hidden="true"
         className="font-display text-[0.72rem] font-semibold text-ink bg-sun border-t-2.5 border-ink px-4 py-[7px] text-left opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        {"Let's cook →"}
+        <span className="inline-flex items-center gap-1.5">{"Let's cook"}<Icon name="arrowRight" size={13} /></span>
       </button>
     </div>
   )

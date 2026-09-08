@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { supabase } from '../lib/supabase'
 import { keyFromText, isCatalogKey, resolveRecipe, normalizeUserRecipe } from '../utils/recipe'
+import Icon from '../components/Icon'
 
 function timeAgo(ts) {
   const diff = (Date.now() - new Date(ts)) / 1000
@@ -132,10 +133,12 @@ export default function UserProfile({ onOpen }) {
   }
 
   function activityLabel(item) {
-    if (item.type === 'saved')   return <><span className="text-heart" aria-hidden="true">♥</span> saved <strong>{item.recipe_name}</strong></>
-    if (item.type === 'created') return <>📖 created <strong>{item.recipe_name}</strong></>
-    if (item.type === 'rated')   return <>⭐ rated <strong>{item.recipe_name}</strong> {'★'.repeat(item.rating || 0)}</>
-    if (item.type === 'listed')  return <>📋 added <strong>{item.recipe_name}</strong> to <em>{item.list_name}</em></>
+    if (item.type === 'saved')   return <><Icon name="heart" size={14} filled className="inline align-[-2px] text-heart" /> saved <strong>{item.recipe_name}</strong></>
+    if (item.type === 'created') return <><Icon name="book" size={14} className="inline align-[-2px] text-muted" /> created <strong>{item.recipe_name}</strong></>
+    if (item.type === 'rated')   return <><Icon name="star" size={14} filled className="inline align-[-2px] text-star" /> rated <strong>{item.recipe_name}</strong> {Array.from({ length: item.rating || 0 }, (_, i) => (
+      <Icon key={i} name="star" size={12} filled className="inline align-[-1px] text-star" />
+    ))}</>
+    if (item.type === 'listed')  return <><Icon name="list" size={14} className="inline align-[-2px] text-muted" /> added <strong>{item.recipe_name}</strong> to <em>{item.list_name}</em></>
     return item.type
   }
 
@@ -163,7 +166,7 @@ export default function UserProfile({ onOpen }) {
     <div className="flex flex-col min-h-screen">
       {backBar(`@${handle}`)}
       <div className="flex flex-col items-center py-20 text-center gap-2">
-        <div className="text-[2rem]" aria-hidden="true">👤</div>
+        <Icon name="user" size={32} className="mx-auto text-warm-tan" />
         <p className="font-display text-[1.1rem] text-muted">User not found</p>
       </div>
     </div>
@@ -185,7 +188,7 @@ export default function UserProfile({ onOpen }) {
         <div className="flex items-center gap-4">
           {profile.avatar_url
             ? <img src={profile.avatar_url} alt="" className="w-16 h-16 rounded-full object-cover border-[2px] border-ink" />
-            : <div className="w-16 h-16 rounded-full bg-warm-tan flex items-center justify-center text-[2rem] border-[2px] border-ink" aria-hidden="true">👤</div>
+            : <div className="w-16 h-16 rounded-full bg-warm-tan flex items-center justify-center border-[2px] border-ink" aria-hidden="true"><Icon name="user" size={32} /></div>
           }
           <div className="flex-1 min-w-0">
             <h1 className="font-display text-[1.2rem] font-bold text-ink truncate">@{profile.username}</h1>
@@ -315,7 +318,7 @@ export default function UserProfile({ onOpen }) {
                     {recipe.category}{recipe.timeMinutes ? ` · ${recipe.timeMinutes} min` : ''}
                   </div>
                 </div>
-                <span className="text-heart text-[1.1rem] ml-3 shrink-0" aria-hidden="true">♥</span>
+                <span className="text-heart ml-3 shrink-0" aria-hidden="true"><Icon name="heart" size={17} filled /></span>
               </button>
             ))
           )}

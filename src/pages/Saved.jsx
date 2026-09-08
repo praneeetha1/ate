@@ -5,6 +5,7 @@ import { resolveRecipe, keyToText } from '../utils/recipe'
 import { describeError } from '../utils/errors'
 import RecipeCard from '../components/RecipeCard'
 import RecipeListItem from '../components/RecipeListItem'
+import Icon from '../components/Icon'
 
 export default function Saved({ onOpen }) {
   const { favorites, lists, userRecipes, deleteList, renameList, createList, syncing } = useApp()
@@ -75,7 +76,7 @@ export default function Saved({ onOpen }) {
   }
 
   const tabCls = active =>
-    `flex-1 py-2.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
+    `flex-1 py-2.5 inline-flex items-center justify-center gap-1.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
       active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
     }`
 
@@ -84,10 +85,10 @@ export default function Saved({ onOpen }) {
       {/* Tab bar */}
       <div className="flex border-b border-ink bg-paper" role="tablist">
         <button role="tab" aria-selected={tab === 'favorites'} className={tabCls(tab === 'favorites')} onClick={() => setTab('favorites')}>
-          ♥ Saved
+          <Icon name="heart" size={15} /> Saved
         </button>
         <button role="tab" aria-selected={tab === 'lists'} className={tabCls(tab === 'lists')} onClick={() => setTab('lists')}>
-          📋 Lists
+          <Icon name="list" size={15} /> Lists
         </button>
       </div>
 
@@ -101,7 +102,7 @@ export default function Saved({ onOpen }) {
           <div className="flex items-center justify-between px-5 py-[18px] pb-3">
             <h1 className="font-display text-[1.3rem] font-semibold text-ink">Saved Recipes</h1>
             <div className="flex gap-1" role="group" aria-label="Layout">
-              {[{ key: 'grid', icon: '⊞', label: 'Grid' }, { key: 'list', icon: '☰', label: 'List' }].map(({ key, icon, label }) => (
+              {[{ key: 'grid', icon: 'grid', label: 'Grid' }, { key: 'list', icon: 'menu', label: 'List' }].map(({ key, icon, label }) => (
                 <button
                   key={key}
                   onClick={() => setLayout(key)}
@@ -110,14 +111,14 @@ export default function Saved({ onOpen }) {
                   className={`w-8 h-8 rounded-md text-[1.1rem] flex items-center justify-center border-2 transition-all ${
                     layout === key ? 'bg-accent border-ink text-ink shadow-pop' : 'bg-card border-ink text-muted'
                   }`}
-                >{icon}</button>
+                ><Icon name={icon} size={16} /></button>
               ))}
             </div>
           </div>
 
           {!favList.length ? (
             <p className="text-center py-[60px] font-display text-[1.1rem] text-muted px-5">
-              No saved recipes yet — tap ♥ on any recipe to save it here.
+              No saved recipes yet — tap the heart on any recipe to save it here.
             </p>
           ) : layout === 'grid' ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 px-5 pb-5">
@@ -174,7 +175,7 @@ export default function Saved({ onOpen }) {
 
           {!lists.length ? (
             <p className="text-center py-[40px] font-display text-[1.05rem] text-muted">
-              No lists yet — create one above or use 📋 in any recipe.
+              No lists yet — create one above or use the list button in any recipe.
             </p>
           ) : (
             <div className="flex flex-col gap-3">

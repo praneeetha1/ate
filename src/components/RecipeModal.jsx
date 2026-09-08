@@ -6,6 +6,7 @@ import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId } from '../ut
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
+import Icon from './Icon'
 
 export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
   const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
@@ -183,44 +184,44 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
             <div className="flex items-center gap-2.5 flex-wrap">
               <Tag category={recipe.category} />
               {recipe.timeMinutes && (
-                <span className="text-[0.78rem] text-muted">⏱ {recipe.timeMinutes} min</span>
+                <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="clock" size={14} />{recipe.timeMinutes} min</span>
               )}
               {recipe.servings && (
-                <span className="text-[0.78rem] text-muted">🍽 {recipe.servings} servings</span>
+                <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="plate" size={14} />{recipe.servings} servings</span>
               )}
             </div>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             {editable && (
               <button
-                className={`${iconBtn} text-[1.1rem] text-warm-tan hover:text-accent`}
+                className={`${iconBtn} text-warm-tan hover:text-accent`}
                 onClick={() => setEditing(true)}
                 aria-label={`Edit ${recipe.name}`}
                 title="Edit recipe"
-              >✎</button>
+              ><Icon name="pencil" size={20} /></button>
             )}
             <button
-              className={`${iconBtn} text-[1.5rem] ${isFav ? 'text-heart' : 'text-warm-tan hover:text-[#e8a0a0]'}`}
+              className={`${iconBtn} ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
               onClick={() => toggleFav(recipeKey, recipe.name)}
               aria-pressed={isFav}
               aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
               title="Save recipe"
-            >♥</button>
+            ><Icon name="heart" size={22} filled={isFav} /></button>
             <button
-              className={`${iconBtn} text-[1.3rem] ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+              className={`${iconBtn} ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
               onClick={() => toggleShopping(recipeKey)}
               aria-pressed={inList}
               aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
               title="Add to shopping list"
-            >🛒</button>
+            ><Icon name="cart" size={21} /></button>
             <div className="relative" ref={listsRef}>
               <button
-                className={`${iconBtn} text-[1.2rem] ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                className={`${iconBtn} ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
                 onClick={() => setShowLists(p => !p)}
                 aria-expanded={showLists}
                 aria-label="Add to a list"
                 title="Add to list"
-              >📋</button>
+              ><Icon name="list" size={20} /></button>
               {showLists && (
                 <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
                   <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
@@ -238,7 +239,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                         aria-pressed={inL}
                         className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
                       >
-                        <span className="text-[0.9rem]" aria-hidden="true">{inL ? '✓' : '+'}</span>
+                        <Icon name={inL ? 'check' : 'plus'} size={15} />
                         <span className="truncate">{l.name}</span>
                       </button>
                     )
@@ -264,17 +265,17 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               )}
             </div>
             <button
-              className={`${iconBtn} text-[1.2rem] text-warm-tan hover:text-accent`}
+              className={`${iconBtn} text-warm-tan hover:text-accent`}
               onClick={handleShare}
               aria-label={`Share ${recipe.name}`}
               title="Share recipe"
-            >↗</button>
+            ><Icon name="share" size={19} /></button>
             <button
-              className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               onClick={onClose}
               aria-label="Close recipe"
               title="Close"
-            >×</button>
+            ><Icon name="close" size={17} strokeWidth={2.6} /></button>
           </div>
         </div>
 
@@ -356,8 +357,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   onClick={() => handleStarClick(n)}
                   aria-pressed={n <= rating}
                   aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
-                  className={`text-[1.4rem] leading-none p-[2px] transition-all hover:scale-[1.18] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded ${n <= rating ? 'text-star' : 'text-warm-tan'}`}
-                >★</button>
+                  className={`leading-none p-[2px] transition-transform hover:scale-[1.18] active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded ${n <= rating ? 'text-star' : 'text-warm-tan'}`}
+                ><Icon name="star" size={24} filled={n <= rating} /></button>
               ))}
               {rating > 0 && (
                 <button

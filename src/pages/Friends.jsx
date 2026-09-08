@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext'
 import { supabase } from '../lib/supabase'
 import { keyFromText, isCatalogKey, resolveRecipe, normalizeUserRecipe, userRecipeId } from '../utils/recipe'
 import { escapeLike } from '../utils/postgrest'
+import Icon from '../components/Icon'
 
 const PAGE_SIZE = 30
 
@@ -17,10 +18,12 @@ function timeAgo(ts) {
 }
 
 function activityLabel(item) {
-  if (item.type === 'saved')   return <><span className="text-heart" aria-hidden="true">♥</span> saved <strong>{item.recipe_name}</strong></>
-  if (item.type === 'created') return <>📖 created <strong>{item.recipe_name}</strong></>
-  if (item.type === 'rated')   return <>⭐ rated <strong>{item.recipe_name}</strong> {'★'.repeat(item.rating || 0)}</>
-  if (item.type === 'listed')  return <>📋 added <strong>{item.recipe_name}</strong> to <em>{item.list_name}</em></>
+  if (item.type === 'saved')   return <><Icon name="heart" size={14} filled className="inline align-[-2px] text-heart" /> saved <strong>{item.recipe_name}</strong></>
+  if (item.type === 'created') return <><Icon name="book" size={14} className="inline align-[-2px] text-muted" /> created <strong>{item.recipe_name}</strong></>
+  if (item.type === 'rated')   return <><Icon name="star" size={14} filled className="inline align-[-2px] text-star" /> rated <strong>{item.recipe_name}</strong> {Array.from({ length: item.rating || 0 }, (_, i) => (
+      <Icon key={i} name="star" size={12} filled className="inline align-[-1px] text-star" />
+    ))}</>
+  if (item.type === 'listed')  return <><Icon name="list" size={14} className="inline align-[-2px] text-muted" /> added <strong>{item.recipe_name}</strong> to <em>{item.list_name}</em></>
   return item.type
 }
 
@@ -43,7 +46,7 @@ function Avatar({ url, username, size = 'w-9 h-9', text = 'text-[1.1rem]', onCli
       onClick={onClick}
       aria-label={onClick ? `View ${label}` : undefined}
       className={`${shared} bg-warm-tan flex items-center justify-center ${text} ${onClick ? 'cursor-pointer' : ''}`}
-    >👤</div>
+    ><Icon name="user" size={18} /></div>
   )
 }
 
@@ -384,7 +387,7 @@ export default function Friends({ onOpen }) {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-6 text-center gap-3">
-        <div className="text-[2.5rem]" aria-hidden="true">👥</div>
+        <Icon name="users" size={40} className="mx-auto text-warm-tan" />
         <h1 className="font-display text-[1.2rem] font-semibold text-ink">See what friends are cooking</h1>
         <p className="text-[0.85rem] text-muted">Log in to follow friends and see their activity</p>
         <button
@@ -425,7 +428,7 @@ export default function Friends({ onOpen }) {
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-warm-tan flex items-center justify-center text-[1.3rem] border-[2px] border-ink group-hover:bg-paper transition-colors" aria-hidden="true">
-                    👤
+                    <Icon name="user" size={22} />
                   </div>
                 )}
                 <span className="text-[0.68rem] text-muted group-hover:text-accent-dk transition-colors max-w-[52px] truncate text-center">
@@ -441,7 +444,7 @@ export default function Friends({ onOpen }) {
         <p className="text-center py-16 text-muted text-[0.9rem]" role="status">Loading…</p>
       ) : feed.length === 0 ? (
         <div className="flex flex-col items-center py-16 px-6 text-center gap-2">
-          <div className="text-[2rem]" aria-hidden="true">👥</div>
+          <Icon name="users" size={32} className="mx-auto text-warm-tan" />
           <p className="font-display text-[1.05rem] text-muted">Nothing here yet</p>
           <p className="text-[0.82rem] text-muted">Follow some friends to see their activity</p>
           <button

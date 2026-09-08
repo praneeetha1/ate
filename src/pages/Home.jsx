@@ -4,17 +4,18 @@ import RecipeCard from '../components/RecipeCard'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import { applyFilters } from '../utils/recipe'
 import { useApp } from '../context/AppContext'
+import Icon from '../components/Icon'
 
 const CATEGORIES = [...new Set(RECIPES.map(r => r.category))]
 
 const DIET_PILLS = [
   { label: 'All',           value: '' },
-  { label: '🌿 Vegetarian', value: 'vegetarian' },
+  { label: 'Vegetarian', value: 'vegetarian', icon: 'leaf' },
 ]
 const TIME_PILLS = [
   { label: 'Any time',       value: '' },
-  { label: '⏱ Under 30 min', value: '30' },
-  { label: '⏱ Under 1 hr',   value: '60' },
+  { label: 'Under 30 min', value: '30', icon: 'clock' },
+  { label: 'Under 1 hr',   value: '60', icon: 'clock' },
 ]
 
 export default function Home({ onOpen }) {
@@ -43,7 +44,7 @@ export default function Home({ onOpen }) {
     onOpen(i)
   }
 
-  const pillBase     = 'shrink-0 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 py-[5px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 py-[5px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
   const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
   const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
 
@@ -65,7 +66,9 @@ export default function Home({ onOpen }) {
               onClick={() => setDietFilter(p.value)}
               aria-pressed={dietFilter === p.value}
               className={`${pillBase} ${dietFilter === p.value ? pillActive : pillInactive}`}
-            >{p.label}</button>
+            >
+              {p.icon && <Icon name={p.icon} size={13} />}{p.label}
+            </button>
           ))}
         </div>
         <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
@@ -76,13 +79,15 @@ export default function Home({ onOpen }) {
               onClick={() => setTimeFilter(p.value)}
               aria-pressed={timeFilter === p.value}
               className={`${pillBase} ${timeFilter === p.value ? pillActive : pillInactive}`}
-            >{p.label}</button>
+            >
+              {p.icon && <Icon name={p.icon} size={13} />}{p.label}
+            </button>
           ))}
         </div>
         <button
           onClick={surprise}
           className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
-        >🎲 Surprise me</button>
+        ><Icon name="dice" size={14} />Surprise me</button>
         <button
           onClick={() => setShowCreateModal(true)}
           className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent-dk transition-all"

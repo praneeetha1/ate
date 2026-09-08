@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, Component } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
+import Icon from './components/Icon'
 import RecipeModal from './components/RecipeModal'
 import Home from './pages/Home'
 import Search from './pages/Search'
@@ -30,7 +31,7 @@ export class ErrorBoundary extends Component {
     if (this.state.error) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-8 text-center">
-          <div className="text-[3rem]" aria-hidden="true">🍳</div>
+          <Icon name="pan" size={48} className="mx-auto text-accent-dk" />
           <h1 className="font-display text-[1.3rem] font-semibold text-ink">Something went wrong</h1>
           <p className="text-[0.82rem] text-muted max-w-sm">{this.state.error.message}</p>
           <button

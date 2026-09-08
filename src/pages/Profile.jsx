@@ -8,6 +8,7 @@ import { ingredientLabel, resolveRecipe, keyToText } from '../utils/recipe'
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import UsernameModal from '../components/UsernameModal'
+import Icon from '../components/Icon'
 
 const MAX_BIO = 300
 
@@ -121,7 +122,7 @@ export default function Profile({ onOpen }) {
           <img src={avatarUrl} alt="" className="w-20 h-20 rounded-full border-2 border-ink object-cover" />
         ) : (
           <div className="w-20 h-20 rounded-full bg-warm-tan border-2 border-ink flex items-center justify-center text-[2.5rem]" aria-hidden="true">
-            👤
+            <Icon name="user" size={34} />
           </div>
         )}
         <h1 className="font-display text-[1.3rem] font-semibold text-ink">{displayName}</h1>
@@ -304,7 +305,7 @@ export default function Profile({ onOpen }) {
       {/* Shopping list */}
       <section aria-labelledby="shopping-heading">
         <div className="flex items-center justify-between px-5 py-[18px] pb-3">
-          <h2 id="shopping-heading" className="font-display text-[1.15rem] font-semibold text-ink">🛒 Shopping List</h2>
+          <h2 id="shopping-heading" className="font-display text-[1.15rem] font-semibold text-ink flex items-center gap-2"><Icon name="cart" size={19} />Shopping List</h2>
           {listArr.length > 0 && (
             <button
               onClick={clearShopping}
@@ -317,7 +318,7 @@ export default function Profile({ onOpen }) {
           <div className="text-center py-[40px] px-5">
             <p className="font-display text-[1.05rem] text-muted">Nothing here yet</p>
             <p className="text-[0.8rem] text-muted mt-2 italic">
-              Open a recipe and tap 🛒 to add its ingredients
+              Open a recipe and tap the cart to add its ingredients
             </p>
           </div>
         ) : (
