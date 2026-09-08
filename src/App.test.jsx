@@ -117,7 +117,7 @@ describe('routing', () => {
     renderApp({ route: '/this-does-not-exist' })
     await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
     // Home's filter bar is the tell.
-    expect(screen.getByRole('button', { name: '🎲 Surprise me' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /Surprise me/ })).toBeTruthy()
   })
 
   it('renders the login page', async () => {

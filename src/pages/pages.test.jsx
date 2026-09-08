@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
+import RECIPES from '../data/recipes.json'
 
 const h = vi.hoisted(() => ({ client: null }))
 vi.mock('../lib/supabase', () => ({
@@ -220,8 +221,7 @@ describe('UserProfile', () => {
     await screen.findByRole('heading', { name: '@chandu' })
 
     await act(async () => { screen.getByRole('tab', { name: /Saved/ }).click() })
-    const rows = screen.getAllByRole('button').filter(b => b.textContent.includes('♥'))
-    await act(async () => { rows[0].click() })
+    await act(async () => { screen.getByText(RECIPES[5].name).closest('button').click() })
 
     expect(onOpen).toHaveBeenCalled()
     expect(typeof onOpen.mock.calls[0][0]).toBe('number')

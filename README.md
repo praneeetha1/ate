@@ -1,7 +1,7 @@
 # ate. 🍳
 
-A cozy, vintage-style recipe app — browse a 300-recipe catalog, cook from your
-own recipes, and follow what your friends are making.
+A cozy recipe app in a hand-drawn sticker style — browse a 300-recipe catalog,
+cook from your own recipes, and follow what your friends are making.
 
 **Built with:** Vite + React 18 + React Router (hash routing) + Tailwind CSS,
 with Supabase for auth, Postgres storage and realtime. Installable as a PWA.
@@ -53,3 +53,9 @@ idempotent and safe to re-run.
 
 `scripts/clean_recipes.py` normalises a scraped `recipes_raw.json` (not
 committed) into `src/data/recipes.json`. It is not part of the app build.
+
+`scripts/make_icons.py` redraws `public/icons/*.png` — the PWA and home-screen
+icons — as the "ate." wordmark, using the palette from `tailwind.config.js`.
+The letters are drawn as geometry rather than set as type, so the script needs
+no font and no image library. Re-run it with `python3 scripts/make_icons.py`
+if the brand colours change.
