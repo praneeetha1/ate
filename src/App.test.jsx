@@ -113,24 +113,29 @@ describe('shared recipe links', () => {
 })
 
 describe('routing', () => {
+  /**
+   * Waits for the destination, not for the splash to leave.
+   *
+   * <Navigate> redirects in an effect, so there is one render pass where auth
+   * has resolved (no "Loading…") but <main> is still empty. Asserting the
+   * moment the splash disappears caught that gap on a slow CI runner while
+   * passing locally — findBy* waits for the thing the test is actually about.
+   */
   it('redirects an unknown route home rather than rendering nothing', async () => {
     renderApp({ route: '/this-does-not-exist' })
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
     // Home's filter bar is the tell.
-    expect(screen.getByRole('button', { name: /Surprise me/ })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: /Surprise me/ })).toBeTruthy()
   })
 
   it('renders the login page', async () => {
     renderApp({ route: '/login' })
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
-    expect(screen.getByRole('tab', { name: 'Sign up' })).toBeTruthy()
+    expect(await screen.findByRole('tab', { name: 'Sign up' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Forgot your password?' })).toBeTruthy()
   })
 
   it('exposes the reset-password route', async () => {
     renderApp({ route: '/reset-password' })
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
-    expect(screen.getByRole('heading', { name: 'Choose a new password' })).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Choose a new password' })).toBeTruthy()
   })
 })
 

@@ -7,19 +7,28 @@ import Icon from './Icon'
 
 /**
  * Every ingredient the catalogue knows about, canonically, for the add box's
- * suggestions. Built once: 300 recipes reduce to ~800 distinct kitchen items.
+ * suggestions — 300 recipes reduce to 790 distinct kitchen items.
+ *
+ * Built on first use, not at module load. App.jsx imports the /pantry route
+ * eagerly, so doing this at import cost every cold start ~7ms locally (more on
+ * a slow phone) to populate a datalist most sessions never open. Cached after
+ * the first call, since the catalogue can't change at runtime.
  */
-const KNOWN_ITEMS = (() => {
-  const seen = new Set()
-  for (const r of RECIPES) {
-    for (const ing of r.ingredients) {
-      if (!ing.item || isNeverShopped(ing.item)) continue
-      const c = canonicalItem(ing.item)
-      if (c.length > 1) seen.add(c)
+let cachedItems = null
+function knownItems() {
+  if (!cachedItems) {
+    const seen = new Set()
+    for (const r of RECIPES) {
+      for (const ing of r.ingredients) {
+        if (!ing.item || isNeverShopped(ing.item)) continue
+        const c = canonicalItem(ing.item)
+        if (c.length > 1) seen.add(c)
+      }
     }
+    cachedItems = [...seen].sort()
   }
-  return [...seen].sort()
-})()
+  return cachedItems
+}
 
 /**
  * The user's kitchen: the one place it is both read and edited.
@@ -134,7 +143,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
               className="flex-1 min-w-0 text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
             />
             <datalist id="pantry-items">
-              {KNOWN_ITEMS.map(i => <option key={i} value={i} />)}
+              {knownItems().map(i => <option key={i} value={i} />)}
             </datalist>
             <button
               type="submit"
