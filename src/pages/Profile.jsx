@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase'
 import { ingredientLabel, resolveRecipe, keyToText } from '../utils/recipe'
 import { shoppingName, isNeverShopped } from '../utils/ingredients'
 import { usePantry } from '../context/PantryContext'
+import PantrySection from '../components/PantrySection'
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import UsernameModal from '../components/UsernameModal'
@@ -304,6 +305,11 @@ export default function Profile({ onOpen }) {
           </div>
         )}
       </section>
+
+      {/* Fridge / pantry — what you have, directly above what you still need. */}
+      <div className="border-b border-ink">
+        <PantrySection headingId="profile-pantry-heading" />
+      </div>
 
       {/* Shopping list */}
       <section aria-labelledby="shopping-heading">

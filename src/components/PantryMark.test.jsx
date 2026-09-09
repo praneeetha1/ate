@@ -29,7 +29,7 @@ const RECIPE = {
   steps: ['Boil the pasta'],
 }
 
-function renderModal({ signedIn = true, seed = {} } = {}) {
+function renderModal({ signedIn = true, seed = {}, recipe = RECIPE } = {}) {
   h.client = createMockSupabase({
     profiles: [{ id: 'user-1', username: 'cook', username_set: true }],
     ...(signedIn ? { __session: fakeSession('user-1') } : {}),
@@ -40,7 +40,7 @@ function renderModal({ signedIn = true, seed = {} } = {}) {
       <AuthProvider>
         <AppProvider>
           <PantryProvider>
-            <RecipeModal recipe={RECIPE} recipeKey={3} onClose={() => {}} />
+            <RecipeModal recipe={recipe} recipeKey={3} onClose={() => {}} />
           </PantryProvider>
         </AppProvider>
       </AuthProvider>
@@ -49,12 +49,12 @@ function renderModal({ signedIn = true, seed = {} } = {}) {
 }
 
 /** The marker for one ingredient, found by the state spelled out in its label. */
-const mark = name => screen.getByRole('button', { name: new RegExp(`^${name}:`, 'i') })
+const mark = name => screen.getByRole('img', { name: new RegExp(`^${name}:`, 'i') })
 
 beforeEach(() => { localStorage.clear() })
 
 describe('PantryMark in a recipe', () => {
-  it('offers a marker per ingredient once signed in', async () => {
+  it('shows a marker per ingredient once signed in', async () => {
     renderModal()
     // Labelled by the shopping name, so the prep text doesn't get announced.
     await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
@@ -64,39 +64,13 @@ describe('PantryMark in a recipe', () => {
   it('shows nothing at all for a guest', async () => {
     renderModal({ signedIn: false })
     await screen.findByText('Test Carbonara')
-    expect(screen.queryByRole('button', { name: /in your kitchen|not tracked/i })).toBeNull()
+    expect(screen.queryByRole('img', { name: /in your kitchen|not tracked/i })).toBeNull()
   })
 
-  it('starts a staple as assumed-present and an unknown item as untracked', async () => {
+  it('shows a staple as assumed-present and an unknown item as untracked', async () => {
     renderModal()
     await waitFor(() => expect(mark('Kosher salt')).toHaveAccessibleName(/in your kitchen/i))
     expect(mark('pecorino')).toHaveAccessibleName(/not tracked/i)
-  })
-
-  it('records a tap against the canonical item', async () => {
-    const user = userEvent.setup()
-    renderModal()
-    await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
-
-    await user.click(mark('pecorino'))
-
-    await waitFor(() => expect(mark('pecorino')).toHaveAccessibleName(/in your kitchen/i))
-    // 'pecorino, grated' is stored as 'pecorino' — prep text never reaches the DB.
-    expect(h.client.__db.pantry).toEqual([
-      expect.objectContaining({ user_id: 'user-1', item: 'pecorino', state: 'have' }),
-    ])
-  })
-
-  it('walks a non-staple have -> low -> out -> untracked', async () => {
-    const user = userEvent.setup()
-    renderModal()
-    await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
-
-    for (const label of [/in your kitchen/i, /running low/i, /out/i, /not tracked/i]) {
-      await user.click(mark('pecorino'))
-      await waitFor(() => expect(mark('pecorino')).toHaveAccessibleName(label))
-    }
-    expect(h.client.__db.pantry).toEqual([])
   })
 
   it('reflects a stored row on open', async () => {
@@ -104,16 +78,70 @@ describe('PantryMark in a recipe', () => {
     await waitFor(() => expect(mark('pecorino')).toHaveAccessibleName(/running low/i))
   })
 
-  // Regression: the marker began life inside the row's <label>, so tapping it
-  // also toggled the cooking checkbox next to it.
-  it('does not tick the ingredient checkbox', async () => {
+  it('reflects out as well', async () => {
+    renderModal({ seed: { pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'out' }] } })
+    await waitFor(() => expect(mark('pecorino')).toHaveAccessibleName(/^pecorino: out/i))
+  })
+
+  /**
+   * The recipe reports, it doesn't edit. Managing the pantry from here made it
+   * unclear whether the marker was showing state or setting it, so there is
+   * deliberately nothing to press.
+   */
+  it('is not a control', async () => {
     const user = userEvent.setup()
     renderModal()
     await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
 
-    const boxes = screen.getAllByRole('checkbox')
+    // No button, and clicking it changes nothing.
+    expect(screen.queryByRole('button', { name: /^pecorino:/i })).toBeNull()
     await user.click(mark('pecorino'))
 
-    for (const box of boxes) expect(box).not.toBeChecked()
+    expect(h.client.__db.pantry).toEqual([])
+    expect(mark('pecorino')).toHaveAccessibleName(/not tracked/i)
+  })
+
+  it('never marks water', async () => {
+    renderModal({ recipe: {
+      name: 'Test Carbonara', category: 'Pasta & Noodles', servings: 2, dietary: [],
+      ingredients: [{ amount: '1', unit: 'cup', item: 'water' }, { amount: '', unit: '', item: 'pecorino' }],
+      steps: ['Boil'],
+    } })
+    await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
+    expect(screen.queryByRole('img', { name: /^water:/i })).toBeNull()
+  })
+
+  it('does not disturb the cooking checkboxes', async () => {
+    renderModal()
+    await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
+    for (const box of screen.getAllByRole('checkbox')) expect(box).not.toBeChecked()
+  })
+})
+
+describe('the summary above the ingredient list', () => {
+  it('says what is missing', async () => {
+    renderModal()
+
+    // Salt is an assumed staple, pecorino is unknown -> 1 of 2 to hand.
+    expect(await screen.findByText(/you have/i)).toHaveTextContent('1 of 2')
+    expect(screen.getByText(/missing/i)).toHaveTextContent('pecorino')
+  })
+
+  it('says so when the kitchen covers the whole recipe', async () => {
+    renderModal({ seed: { pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'have' }] } })
+    expect(await screen.findByText(/you have everything/i)).toBeInTheDocument()
+  })
+
+  it('flags a low item without calling it missing', async () => {
+    renderModal({ seed: { pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'low' }] } })
+
+    expect(await screen.findByText(/you have everything/i)).toBeInTheDocument()
+    expect(screen.getByText(/low on pecorino/i)).toBeInTheDocument()
+  })
+
+  it('is absent for a guest', async () => {
+    renderModal({ signedIn: false })
+    await screen.findByText('Test Carbonara')
+    expect(screen.queryByText(/you have/i)).toBeNull()
   })
 })

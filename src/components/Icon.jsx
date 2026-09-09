@@ -86,6 +86,14 @@ const PATHS = {
       <circle cx="12" cy="12" r="4.6" />
     </>
   ),
+  // A fridge: the body, the freezer divider, and a handle on each door.
+  fridge: (
+    <>
+      <path d="M5.4 4.6a1.6 1.6 0 0 1 1.6-1.6h10a1.6 1.6 0 0 1 1.6 1.6v14.8a1.6 1.6 0 0 1-1.6 1.6H7a1.6 1.6 0 0 1-1.6-1.6Z" />
+      <path d="M5.4 9.4h13.2" />
+      <path d="M8.2 6.1v1.4M8.2 12v2.6" />
+    </>
+  ),
   pan: (
     <>
       <circle cx="10.2" cy="13.4" r="6.6" />

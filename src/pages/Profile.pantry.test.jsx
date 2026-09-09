@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
 
@@ -47,13 +47,24 @@ function renderProfile({ pantry = [] } = {}) {
 beforeEach(() => { localStorage.clear() })
 
 describe('ticking a shopping item', () => {
+  /**
+   * Scoped to the shopping list: the Fridge / Pantry section sits on the same
+   * page now, so an item can legitimately appear twice — once as something you
+   * have, once as something you're buying.
+   */
+  const shoppingRow = async name => {
+    const section = await screen.findByRole('region', { name: /shopping list/i })
+    // The rows arrive once AppContext has loaded the list, so this has to wait.
+    const label = (await within(section).findByText(name)).closest('label')
+    return label.querySelector('input[type="checkbox"]')
+  }
+
   it('records it as in the kitchen', async () => {
     const user = userEvent.setup()
     renderProfile()
 
     // The row renders the shopping name, not the recipe's "garlic, minced".
-    const row = await screen.findByText('garlic')
-    const box = row.closest('label').querySelector('input[type="checkbox"]')
+    const box = await shoppingRow('garlic')
 
     await user.click(box)
 
@@ -69,8 +80,7 @@ describe('ticking a shopping item', () => {
     const user = userEvent.setup()
     renderProfile({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
 
-    const row = await screen.findByText('garlic')
-    const box = row.closest('label').querySelector('input[type="checkbox"]')
+    const box = await shoppingRow('garlic')
 
     await user.click(box)          // tick
     await waitFor(() => expect(box).toBeChecked())
@@ -89,8 +99,7 @@ describe('ticking a shopping item', () => {
     const user = userEvent.setup()
     renderProfile()
 
-    const row = await screen.findByText('garlic')
-    const box = row.closest('label').querySelector('input[type="checkbox"]')
+    const box = await shoppingRow('garlic')
     await user.click(box)
 
     await waitFor(() => {

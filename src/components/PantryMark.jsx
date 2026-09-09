@@ -4,22 +4,19 @@ import { PANTRY_LABELS } from '../utils/pantry'
 import Icon from './Icon'
 
 /**
- * The have / low / out marker on one ingredient row.
+ * Whether you have one ingredient — read only.
  *
- * Sits at the end of the row it describes — the cheapest place to record
- * pantry state is the ingredient list the user is already reading to decide
- * whether to cook something, so the control lives there rather than on a
- * separate screen you'd have to remember to visit.
+ * Deliberately not a control. Managing the kitchen belongs on the Fridge /
+ * Pantry page, where the whole thing is visible at once; a recipe is for
+ * deciding what to cook, and a marker that both reported and edited left it
+ * unclear which it was doing. So this reports, and nothing else.
  *
- * Renders nothing at all when nobody is signed in: the pantry is server-backed
- * (see PantryContext), so for a guest this would be a button that silently
- * does nothing.
+ * Renders nothing when nobody is signed in (the pantry is server-backed), and
+ * nothing for water or ice, which aren't things anyone tracks.
  */
 export default function PantryMark({ item, className = '' }) {
-  const { pantry, pantryState, cyclePantry, pantryEnabled } = usePantry()
+  const { pantry, pantryState, pantryEnabled } = usePantry()
 
-  // No dot on water or ice: offering to track something nobody buys is the
-  // same clutter the shopping list already drops.
   if (!pantryEnabled || isNeverShopped(item)) return null
 
   const state = pantryState(item)
@@ -33,28 +30,28 @@ export default function PantryMark({ item, className = '' }) {
   const assumed = state !== 'unknown' && !pantry.has(canonicalItem(item))
 
   const fill =
-    state === 'have' ? 'bg-accent text-ink' :
-    state === 'out'  ? 'bg-card text-heart' :
-    state === 'low'  ? 'bg-card text-ink'   :
-                       'bg-card text-warm-tan'
+    state === 'have' ? 'bg-accent text-ink border-ink' :
+    state === 'out'  ? 'bg-card text-heart border-heart' :
+    state === 'low'  ? 'bg-card text-ink border-ink' :
+                       'bg-card border-rim'
 
   return (
-    <button
-      type="button"
-      onClick={() => cyclePantry(item)}
-      // Not aria-pressed: that's a two-state idiom and this has four, so the
-      // current one is spelled out instead.
-      aria-label={`${name}: ${PANTRY_LABELS[state]}. Change what you have.`}
-      title={`In your kitchen: ${PANTRY_LABELS[state]}`}
-      className={`relative shrink-0 w-[19px] h-[19px] rounded-full border-2 border-ink
-        flex items-center justify-center overflow-hidden transition-all
-        hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent
+    <span
+      // role="img" with a label: a screen reader should read the state once,
+      // not announce a button that can't usefully be pressed.
+      role="img"
+      aria-label={`${name}: ${PANTRY_LABELS[state]}`}
+      title={PANTRY_LABELS[state]}
+      className={`relative shrink-0 w-[19px] h-[19px] rounded-full border-2
+        grid place-items-center overflow-hidden
         ${fill} ${assumed ? 'opacity-45' : ''} ${className}`}
     >
       {state === 'have' && <Icon name="check" size={11} strokeWidth={3} />}
       {state === 'out'  && <Icon name="close" size={10} strokeWidth={3} />}
       {state === 'low'  && <span className="absolute inset-x-0 bottom-0 h-1/2 bg-accent" />}
-      {state === 'unknown' && <Icon name="plus" size={10} strokeWidth={3} />}
-    </button>
+      {/* `unknown` stays an empty outline. It holds the row's alignment and
+          reads as "not tracked", which is a different claim from "you don't
+          have this". */}
+    </span>
   )
 }

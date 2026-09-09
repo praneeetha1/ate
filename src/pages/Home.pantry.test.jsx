@@ -80,7 +80,7 @@ describe('what can I make', () => {
     await user.click(toggle())
 
     // Without this the ranking looks broken rather than uninformed.
-    expect(await screen.findByText(/nothing marked yet/i)).toBeInTheDocument()
+    expect(await screen.findByText(/nothing in your pantry yet/i)).toBeInTheDocument()
   })
 
   it('drops the hint once the pantry has anything in it', async () => {
@@ -91,7 +91,7 @@ describe('what can I make', () => {
     await user.click(toggle())
 
     await screen.findByRole('heading', { name: /closest to ready/i })
-    expect(screen.queryByText(/nothing marked yet/i)).toBeNull()
+    expect(screen.queryByText(/nothing in your pantry yet/i)).toBeNull()
   })
 
   it('ranks closest-first and says what is missing', async () => {
@@ -140,5 +140,37 @@ describe('what can I make', () => {
       const fewer = Number((await screen.findByText(/\d+ recipes/)).textContent.match(/\d+/)[0])
       expect(fewer).toBeLessThan(all)
     })
+  })
+})
+
+describe('the Closest to ready strip', () => {
+  it('appears once the pantry knows something, without hiding the categories', async () => {
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+
+    expect(await screen.findByRole('heading', { name: /closest to ready/i })).toBeInTheDocument()
+    // A strip alongside the catalogue, not a replacement for it.
+    expect(screen.getByRole('heading', { name: 'Main Dish' })).toBeInTheDocument()
+  })
+
+  it('stays away until something is marked', async () => {
+    renderHome()
+    await waitFor(() => expect(toggle()).toBeInTheDocument())
+    expect(screen.queryByRole('heading', { name: /closest to ready/i })).toBeNull()
+  })
+
+  it('is hidden from guests', async () => {
+    renderHome({ signedIn: false, pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Main Dish' })).toBeInTheDocument())
+    expect(screen.queryByRole('heading', { name: /closest to ready/i })).toBeNull()
+  })
+
+  it('opens the full ranking from See all', async () => {
+    const user = userEvent.setup()
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+
+    await user.click(await screen.findByRole('button', { name: /see all/i }))
+
+    await waitFor(() => expect(screen.queryByRole('heading', { name: 'Main Dish' })).toBeNull())
+    expect(toggle()).toHaveAttribute('aria-pressed', 'true')
   })
 })

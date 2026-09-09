@@ -7,6 +7,7 @@ import RecipeModal from './components/RecipeModal'
 import Home from './pages/Home'
 import Search from './pages/Search'
 import Saved from './pages/Saved'
+import Pantry from './pages/Pantry'
 import Profile from './pages/Profile'
 import Friends from './pages/Friends'
 import UserProfile from './pages/UserProfile'
@@ -153,6 +154,7 @@ export default function App() {
           <Route path="/"               element={<Home        onOpen={openModal} />} />
           <Route path="/search"         element={<Search      onOpen={openModal} />} />
           <Route path="/saved"          element={<Saved       onOpen={openModal} />} />
+          <Route path="/pantry"         element={<Pantry />} />
           <Route path="/profile"        element={<Profile     onOpen={openModal} />} />
           <Route path="/friends"        element={<Friends     onOpen={openModal} />} />
           <Route path="/user/:username" element={<UserProfile onOpen={openModal} />} />

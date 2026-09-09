@@ -51,14 +51,16 @@ export default function Home({ onOpen }) {
    * category would bury the best answer under whichever heading it fell into.
    */
   const ranked = useMemo(() => {
-    if (!pantryMode) return []
+    // Also feeds the "Closest to ready" strip, so it can't be gated on the
+    // toggle — but it stays idle until the pantry actually knows something.
+    if (!pantryEnabled || (!pantryMode && pantry.size === 0)) return []
     return [
       ...filtered,
       ...filteredMine.map(r => ({ r, i: 'u_' + r.id })),
     ]
       .map(p => ({ ...p, fit: pantryFit(p.r, pantryState) }))
       .sort((a, b) => compareFit(a.fit, b.fit))
-  }, [pantryMode, filtered, filteredMine, pantryState])
+  }, [pantryEnabled, pantryMode, pantry, filtered, filteredMine, pantryState])
 
   function surprise() {
     if (!filtered.length) return
@@ -128,6 +130,32 @@ export default function Home({ onOpen }) {
         >+ My Recipe</button>
       </div>
 
+      {/* Once the pantry knows anything, the payoff comes to the user rather
+          than waiting behind the toggle. Capped at eight: a strip, not a
+          replacement for the catalogue. */}
+      {!pantryMode && pantry.size > 0 && ranked.length > 0 && (
+        <section className="mb-2" aria-labelledby="closest-strip-heading">
+          <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
+            <h2 id="closest-strip-heading" className="font-display text-[1.1rem] font-semibold text-ink flex items-center gap-2">
+              <Icon name="fridge" size={17} />Closest to ready
+            </h2>
+            <button
+              onClick={() => setPantryMode(true)}
+              className="text-[0.72rem] font-bold text-accent-dk border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[3px] hover:bg-accent hover:text-ink transition-all"
+            >See all</button>
+          </div>
+          <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
+            {ranked.slice(0, 8).map(({ r, i, fit }) => (
+              <div key={i} className="snap-start shrink-0 w-[240px]">
+                <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill />
+                <PantryFit fit={fit} />
+              </div>
+            ))}
+          </div>
+          <div className="h-px bg-warm-tan opacity-60 mx-5" />
+        </section>
+      )}
+
       {pantryMode ? (
         <section aria-labelledby="closest-heading" className="pb-2">
           <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
@@ -141,8 +169,9 @@ export default function Home({ onOpen }) {
               broken feature unless we say why. */}
           {pantryReady && pantry.size === 0 && (
             <p className="mx-5 mb-3 text-[0.78rem] text-muted italic border-2 border-dashed border-rim rounded-xl px-4 py-3">
-              Nothing marked yet — staples like salt and oil are assumed. Open a
-              recipe and tap the dot beside an ingredient to say what you have.
+              Nothing in your pantry yet — staples like salt and oil are assumed.
+              Add what you have from the fridge icon at the top, and this list
+              will reorder around it.
             </p>
           )}
 

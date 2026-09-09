@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useApp } from '../context/AppContext'
 import { useToast } from '../context/ToastContext'
 import { useDialog } from '../hooks/useDialog'
@@ -8,11 +8,14 @@ import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
 import Icon from './Icon'
 import PantryMark from './PantryMark'
+import { usePantry } from '../context/PantryContext'
+import { pantryFit } from '../utils/pantry'
 
 export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
   const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
           lists, addToList, removeFromList, createList } = useApp()
   const { showToast, showError } = useToast()
+  const { pantryState, pantryEnabled } = usePantry()
   const [editing,     setEditing]     = useState(false)
 
   // Stand the trap down while the edit dialog is stacked on top of this one.
@@ -29,6 +32,12 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   const hintTimer  = useRef(null)
   const listsRef   = useRef(null)
   const newListRef = useRef(null)
+
+  // Recomputed as marks change, so the summary above the list stays live.
+  const fit = useMemo(
+    () => pantryFit(recipe, pantryState),
+    [recipe, pantryState],
+  )
 
   const keyProp = keyToText(recipeKey)
   const isFav   = favorites.has(recipeKey)
@@ -316,6 +325,29 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               })}
             </div>
           </div>
+
+          {/* What the dots below add up to.
+              The marks are set here, so their consequence has to be visible
+              here too — otherwise a tap changes nothing the user can see and
+              the whole feature reads as decorative. */}
+          {pantryEnabled && fit.total > 0 && (
+            <p className="text-[0.78rem] mb-2 -mt-0.5">
+              {fit.missing.length === 0 ? (
+                <span className="text-accent-dk font-bold">
+                  <Icon name="check" size={13} className="inline align-[-2px] mr-1" />
+                  You have everything
+                </span>
+              ) : (
+                <span className="text-muted">
+                  You have <span className="font-bold text-ink">{fit.have.length + fit.low.length} of {fit.total}</span>
+                  {' '}— missing <span className="font-bold text-ink">{fit.missing.join(', ')}</span>
+                </span>
+              )}
+              {fit.low.length > 0 && (
+                <span className="text-muted"> · low on {fit.low.join(', ')}</span>
+              )}
+            </p>
+          )}
 
           {/* Ingredients list */}
           <ul className="list-none mb-5">
