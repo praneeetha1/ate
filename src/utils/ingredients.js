@@ -409,3 +409,60 @@ export const PANTRY_STAPLES = new Set([
 export function isStaple(raw) {
   return PANTRY_STAPLES.has(canonicalItem(raw))
 }
+
+/** The distinct canonical items a recipe calls for. */
+export function canonicalItems(recipe) {
+  const out = new Set()
+  for (const ing of recipe?.ingredients || []) {
+    const c = canonicalItem(ing.item)
+    if (c) out.add(c)
+  }
+  return [...out]
+}
+
+/**
+ * Whether a recipe's canonical ingredients include the one picked.
+ *
+ * Matched at word boundaries, which is the whole point: a plain `includes()`
+ * let "egg" match a recipe whose only qualifying ingredient was "chopped
+ * veggies", and "pepper" match "peppermint oil" — both real catalog rows. The
+ * boundaries cost nothing in recall, because "chicken" still reaches "chicken
+ * breast" and "chicken thigh": those are separate words.
+ *
+ * This is why picking a main ingredient can't just compare canonical names.
+ * Only 8 recipes list plain "chicken"; the rest say "chicken breast" or
+ * "chicken thigh", and an equality test would miss every one of them.
+ */
+export function matchesIngredient(canonicalIngredients, selected) {
+  if (!selected) return true
+  // The optional plural is for phrases canonicalItem() can't fully singularise:
+  // it only singularises the head noun, which it assumes is last, so "diced
+  // tomatoes in juice" keeps its plural and a bare \btomato\b would miss it.
+  const escaped = selected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const word = new RegExp(`\\b${escaped}(?:e?s)?\\b`)
+  return canonicalIngredients.some(c => word.test(c))
+}
+
+/**
+ * Ingredients a meal gets built around, for the "must-have" filter.
+ *
+ * Proteins, pulses, the substantial vegetables and the starchy bases — the
+ * answer to "I've got chicken, what can I do with it". Deliberately excludes
+ * the aromatics that turn up everywhere: onion is in 84 of the catalog's
+ * recipes and garlic in 105, so a chip for either would filter almost nothing
+ * out and just take up room in the row.
+ *
+ * Ordered by kind rather than alphabetically, since the row reads as groups —
+ * proteins, then pulses, then vegetables, then bases. Only ever shown for
+ * items the cook actually has, so the list being broad costs nothing.
+ */
+export const MAIN_INGREDIENTS = [
+  'chicken', 'shrimp', 'prawn', 'fish', 'salmon', 'cod', 'tuna', 'crab',
+  'lamb', 'mutton', 'goat', 'beef', 'ground beef', 'pork', 'bacon',
+  'sausage', 'turkey', 'egg', 'paneer', 'tofu',
+  'chickpea', 'kidney bean', 'black bean', 'lentil', 'red lentil',
+  'toor dal', 'moong dal', 'chana dal', 'urad dal',
+  'potato', 'cauliflower', 'eggplant', 'okra', 'mushroom', 'spinach',
+  'cabbage', 'pumpkin',
+  'rice', 'basmati rice', 'pasta', 'bread',
+]

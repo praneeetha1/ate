@@ -37,7 +37,113 @@ const toggle = () => screen.getByRole('button', { name: /what can i make/i })
 
 beforeEach(() => { localStorage.clear() })
 
+describe('the must-use filter', () => {
+  const OWNED = [
+    { user_id: 'user-1', item: 'chicken', state: 'have' },
+    { user_id: 'user-1', item: 'shrimp',  state: 'low'  },
+  ]
+  const row = () => screen.getByRole('group', { name: /must-have ingredient/i })
+  const chip = name => screen.getByRole('button', { name })
+  const shownCount = () => {
+    const m = screen.getByText(/^\d+ recipes?$/).textContent.match(/\d+/)
+    return Number(m[0])
+  }
+
+  async function openRanking(pantry) {
+    const user = userEvent.setup()
+    renderHome({ pantry })
+    await waitFor(() => expect(toggle()).toBeInTheDocument())
+    await user.click(toggle())
+    await screen.findByRole('heading', { name: /closest to ready/i })
+    return user
+  }
+
+  it('offers a chip per main ingredient the cook has', async () => {
+    await openRanking(OWNED)
+
+    await waitFor(() => expect(row()).toBeInTheDocument())
+    expect(chip('chicken')).toBeInTheDocument()
+    expect(chip('shrimp')).toBeInTheDocument()
+    // Not a main the cook has: no chip, even though recipes use it.
+    expect(screen.queryByRole('button', { name: 'potato' })).toBeNull()
+  })
+
+  /**
+   * The aromatics are excluded on purpose: onion is in 84 of the catalog's
+   * recipes, so a chip for it would filter almost nothing out.
+   */
+  it('does not offer an aromatic as a main', async () => {
+    await openRanking([...OWNED, { user_id: 'user-1', item: 'onion', state: 'have' }])
+
+    await waitFor(() => expect(row()).toBeInTheDocument())
+    expect(screen.queryByRole('button', { name: 'onion' })).toBeNull()
+  })
+
+  it('narrows the ranking to recipes that use it', async () => {
+    const user = await openRanking(OWNED)
+    await waitFor(() => expect(row()).toBeInTheDocument())
+    const all = shownCount()
+
+    await user.click(chip('shrimp'))
+
+    await waitFor(() => expect(shownCount()).toBeLessThan(all))
+    expect(shownCount()).toBeGreaterThan(0)
+    expect(chip('shrimp')).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('goes back to everything on Anything', async () => {
+    const user = await openRanking(OWNED)
+    await waitFor(() => expect(row()).toBeInTheDocument())
+    const all = shownCount()
+
+    await user.click(chip('shrimp'))
+    await waitFor(() => expect(shownCount()).toBeLessThan(all))
+    await user.click(chip('Anything'))
+
+    await waitFor(() => expect(shownCount()).toBe(all))
+  })
+
+  /**
+   * Word boundaries, not name equality. Only 8 recipes list plain "chicken";
+   * the rest say "chicken breast" or "chicken thigh", and an equality test
+   * would miss every one of them.
+   */
+  it('counts a recipe whose chicken is a cut, not the bare word', async () => {
+    const user = await openRanking([OWNED[0]])
+    await waitFor(() => expect(row()).toBeInTheDocument())
+
+    await user.click(chip('chicken'))
+
+    // More than the handful that say exactly "chicken".
+    await waitFor(() => expect(shownCount()).toBeGreaterThan(8))
+  })
+
+  // A staple is present without ever being tracked, so it qualifies too.
+  it('offers a staple main the cook was never asked about', async () => {
+    await openRanking([])
+    await waitFor(() => expect(row()).toBeInTheDocument())
+    expect(chip('egg')).toBeInTheDocument()
+  })
+
+  it('says nothing when the cook has no mains at all', async () => {
+    await openRanking([{ user_id: 'user-1', item: 'egg', state: 'out' }])
+    await screen.findByRole('heading', { name: /closest to ready/i })
+    expect(screen.queryByRole('group', { name: /must-have ingredient/i })).toBeNull()
+  })
+})
+
 describe('what can I make', () => {
+  // It changes what the page shows rather than narrowing the catalogue, so it
+  // leads the row instead of sitting behind diet and time.
+  it('puts the toggle before the diet and time filters', async () => {
+    renderHome()
+    await waitFor(() => expect(toggle()).toBeInTheDocument())
+
+    const diet = screen.getByRole('button', { name: 'All' })
+    const after = toggle().compareDocumentPosition(diet) & Node.DOCUMENT_POSITION_FOLLOWING
+    expect(after).toBeTruthy()
+  })
+
   it('is offered only to signed-in users', async () => {
     renderHome({ signedIn: false })
     await waitFor(() => expect(screen.getByRole('heading', { name: 'Main Dish' })).toBeInTheDocument())

@@ -5,6 +5,7 @@ import { applyFilters, VISIBLE_CATALOG } from '../utils/recipe'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
 import { pantryFit, compareFit } from '../utils/pantry'
+import { MAIN_INGREDIENTS, canonicalItems, matchesIngredient } from '../utils/ingredients'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 
@@ -26,6 +27,7 @@ export default function Home({ onOpen }) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [pantryMode,     setPantryMode]      = useState(false)
   const [catFilter,      setCatFilter]       = useState('')
+  const [mustHave,       setMustHave]        = useState('')
   const { userRecipes } = useApp()
   const { pantryEnabled, pantryReady, pantryState, pantry } = usePantry()
 
@@ -58,7 +60,9 @@ export default function Home({ onOpen }) {
       ...filtered,
       ...filteredMine.map(r => ({ r, i: 'u_' + r.id })),
     ]
-      .map(p => ({ ...p, fit: pantryFit(p.r, pantryState) }))
+      // `items` is carried alongside the fit so the must-have row can be
+      // derived and applied without canonicalising every ingredient again.
+      .map(p => ({ ...p, fit: pantryFit(p.r, pantryState), items: canonicalItems(p.r) }))
       .sort((a, b) => compareFit(a.fit, b.fit))
   }, [pantryEnabled, pantryMode, pantry, filtered, filteredMine, pantryState])
 
@@ -77,13 +81,38 @@ export default function Home({ onOpen }) {
     ]
   }, [ranked])
 
-  // Category narrowing applies to the full ranked list only. The "Closest to
-  // ready" strip stays unfiltered: it's a preview of your best options
-  // overall, and its pills aren't on screen to explain a narrowed one.
-  const rankedVisible = useMemo(
-    () => (catFilter ? ranked.filter(({ r }) => r.category === catFilter) : ranked),
-    [ranked, catFilter],
-  )
+  /**
+   * The main ingredients worth offering as a must-have, for this cook.
+   *
+   * Two conditions, both necessary: the cook has it (a staple counts, which is
+   * how eggs qualify without ever being tracked), and something in the current
+   * ranking actually uses it. The second is what keeps a chip from leading to
+   * an empty screen, the same reason the course pills are derived from the
+   * results rather than from the full category list.
+   */
+  const mustHaves = useMemo(() => {
+    if (!pantryEnabled) return []
+    return MAIN_INGREDIENTS.filter(m => {
+      const state = pantryState(m)
+      if (state !== 'have' && state !== 'low') return false
+      return ranked.some(({ items }) => matchesIngredient(items, m))
+    })
+  }, [pantryEnabled, pantryState, ranked])
+
+  // A chip can stop being offered while it's still selected — the last of the
+  // chicken gets marked out, and the pill vanishes from under the selection.
+  // Reading the filter as unset in that case beats stranding the user on an
+  // empty list with nothing on screen explaining why.
+  const activeMustHave = mustHaves.includes(mustHave) ? mustHave : ''
+
+  // Category and must-have narrowing apply to the full ranked list only. The
+  // "Closest to ready" strip stays unfiltered: it's a preview of your best
+  // options overall, and its pills aren't on screen to explain a narrowed one.
+  const rankedVisible = useMemo(() => {
+    let out = catFilter ? ranked.filter(({ r }) => r.category === catFilter) : ranked
+    if (activeMustHave) out = out.filter(({ items }) => matchesIngredient(items, activeMustHave))
+    return out
+  }, [ranked, catFilter, activeMustHave])
 
   function surprise() {
     if (!filtered.length) return
@@ -106,6 +135,21 @@ export default function Home({ onOpen }) {
 
       {/* Filter bar */}
       <div className="flex items-center gap-2 px-5 py-3 overflow-x-auto scrollbar-hide border-b border-ink bg-cream sticky-under-header z-[80]">
+        {/* First in the row, ahead of diet and time: it doesn't narrow the
+            catalogue the way those do, it changes what the page is showing —
+            so it reads as the mode switch it is rather than a third filter. */}
+        {pantryEnabled && (
+          <>
+            <button
+              onClick={() => setPantryMode(p => !p)}
+              aria-pressed={pantryMode}
+              className={`${pillBase} ${pantryMode ? pillActive : pillInactive}`}
+            >
+              <Icon name="plate" size={13} />What can I make
+            </button>
+            <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
+          </>
+        )}
         <div className="flex items-center gap-2 shrink-0" role="group" aria-label="Filter by diet">
           {DIET_PILLS.map(p => (
             <button
@@ -131,18 +175,6 @@ export default function Home({ onOpen }) {
             </button>
           ))}
         </div>
-        {pantryEnabled && (
-          <>
-            <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
-            <button
-              onClick={() => setPantryMode(p => !p)}
-              aria-pressed={pantryMode}
-              className={`${pillBase} ${pantryMode ? pillActive : pillInactive}`}
-            >
-              <Icon name="plate" size={13} />What can I make
-            </button>
-          </>
-        )}
         <button
           onClick={surprise}
           className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
@@ -212,6 +244,35 @@ export default function Home({ onOpen }) {
                   aria-pressed={catFilter === cat}
                   className={`${pillBase} ${catFilter === cat ? pillActive : pillInactive}`}
                 >{cat}</button>
+              ))}
+            </div>
+          )}
+
+          {/* Must-haves: the other question a full fridge asks. The ranking
+              answers "what am I closest to cooking"; this answers "I need to
+              use up the chicken". Only the mains the cook actually has, so the
+              row is short and every chip leads somewhere. */}
+          {mustHaves.length > 0 && (
+            <div
+              className="flex items-center gap-2 px-5 pb-3 overflow-x-auto scrollbar-hide"
+              role="group"
+              aria-label="Filter by a must-have ingredient"
+            >
+              <span className="shrink-0 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-muted">
+                Must use
+              </span>
+              <button
+                onClick={() => setMustHave('')}
+                aria-pressed={activeMustHave === ''}
+                className={`${pillBase} ${activeMustHave === '' ? pillActive : pillInactive}`}
+              >Anything</button>
+              {mustHaves.map(m => (
+                <button
+                  key={m}
+                  onClick={() => setMustHave(m)}
+                  aria-pressed={activeMustHave === m}
+                  className={`${pillBase} ${activeMustHave === m ? pillActive : pillInactive}`}
+                >{m}</button>
               ))}
             </div>
           )}

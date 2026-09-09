@@ -3,7 +3,7 @@ import { VISIBLE_CATALOG } from '../utils/recipe'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
-import { canonicalItem } from '../utils/ingredients'
+import { canonicalItem, matchesIngredient } from '../utils/ingredients'
 import { pantryFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
@@ -27,27 +27,8 @@ const CATALOG_INGREDIENTS = (() => {
   return seen
 })()
 
-/**
- * Matches a selected ingredient against a recipe's, at word boundaries.
- *
- * The boundaries are the point. This was a plain `.includes()`, so picking
- * "egg" matched a recipe whose only qualifying ingredient was "chopped
- * veggies", and "pepper" matched "peppermint oil" — both live in the current
- * catalogue. Anchoring to whole words costs nothing in recall: "chicken" still
- * reaches all nine chicken ingredients, "lemon" all eight, because those are
- * genuinely separate words in "chicken breast" and "lemon juice".
- */
-function matchesSelection(canonicalIngredients, selected) {
-  // The optional plural is for phrases canonicalItem() can't fully singularise:
-  // it only singularises the head noun, which it assumes is last, so "diced
-  // tomatoes in juice" keeps its plural and a bare \btomato\b would miss it.
-  const escaped = selected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const word = new RegExp(`\\b${escaped}(?:e?s)?\\b`)
-  return canonicalIngredients.some(c => word.test(c))
-}
-
 function scoreRecipe(canonicalIngredients, selected) {
-  return selected.filter(sel => matchesSelection(canonicalIngredients, sel)).length
+  return selected.filter(sel => matchesIngredient(canonicalIngredients, sel)).length
 }
 
 function Highlight({ text, query }) {
