@@ -92,7 +92,13 @@ const MATCH_ONLY_PREP = [
 // in `ing.amount`, but nothing stops someone writing "3 cloves garlic".
 const CONTAINERS = /^(?:[\d\s/¼½¾⅓⅔⅛-]*\s*)?(?:cans?|jars?|packages?|pkgs?|bunch(?:es)?|heads?|sticks?|sprigs?|stalks?|slices?|cloves?|pieces?)\s+/i
 
-const MATCH_PREP_RE = new RegExp(`\\b(?:${TRAILING_PREP}|${MATCH_ONLY_PREP})\\b`, 'gi')
+// The leading `(^|[^-\\w])` is a hand-rolled lookbehind: a prep word is only
+// stripped when it isn't hyphen-joined to the word before it, so "sun-dried
+// tomato" keeps its "dried" (it's a distinct product, and dropping it produced
+// the nonsense name "sun tomato") while "dried oregano" still reduces to
+// oregano. Written this way rather than with (?<!-) because lookbehind is
+// still missing from older Safari.
+const MATCH_PREP_RE = new RegExp(`(^|[^-\\w])(?:${TRAILING_PREP}|${MATCH_ONLY_PREP})\\b`, 'gi')
 
 /**
  * Synonyms the rules above can't reach, because the difference is vocabulary
@@ -165,7 +171,7 @@ function singularize(s) {
 export function canonicalItem(raw) {
   if (!raw) return ''
   let s = shoppingName(raw).toLowerCase()
-    .replace(MATCH_PREP_RE, '')
+    .replace(MATCH_PREP_RE, '$1')
     .replace(/\s+/g, ' ')
     .trim()
     .replace(CONTAINERS, '')
@@ -174,8 +180,19 @@ export function canonicalItem(raw) {
   // "Kosher salt and freshly ground black pepper" and nine other phrasings all
   // mean the same two staples. Folding them here rather than adding ten alias
   // entries also stops the pantry offering to track each variant separately.
+  // Peppercorns are pepper. Done as a substitution rather than alias entries
+  // because the catalogue writes it several ways ("whole black peppercorns",
+  // "cracked black peppercorn") and each would otherwise need its own row.
+  s = s.replace(/\bpeppercorns?\b/g, 'pepper')
+
   // Anchored at the end so "salt and pepper shrimp" stays its own item.
   if (/\bsalt\b[^,]*\band\b[^,]*\bpepper$/.test(s)) return 'salt and pepper'
+
+  // Removing a prep word from the middle of a compound leaves the hyphen
+  // stranded — "sun-dried tomato" became "sun- tomato". Only hyphens that now
+  // sit against a space are cleaned, so "all-purpose" and "extra-virgin"
+  // survive intact.
+  s = s.replace(/-\s+|\s+-/g, ' ').replace(/\s+/g, ' ').trim()
 
   const direct = lookup(INGREDIENT_ALIASES, s)
   if (direct) return direct

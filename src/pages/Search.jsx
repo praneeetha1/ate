@@ -3,29 +3,51 @@ import RECIPES from '../data/recipes.json'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
+import { canonicalItem } from '../utils/ingredients'
 import { pantryFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 
-/** Reduces "flour, sifted (optional)" to "flour" for the suggestion list. */
-function coreIngredient(item) {
-  return String(item).toLowerCase().replace(/,.*/, '').replace(/\(.*\)/, '').trim()
-}
-
+/**
+ * The ingredient names this page offers, in the same canonical vocabulary the
+ * pantry uses — so "egg" means one thing across the whole app instead of each
+ * feature guessing at ingredient identity separately.
+ *
+ * This replaced a local `coreIngredient()` that only stripped commas and
+ * parentheses, which left "eggs", "large egg", "egg white" and "egg yolk" as
+ * four unrelated suggestions.
+ */
 const CATALOG_INGREDIENTS = (() => {
   const seen = new Set()
   RECIPES.forEach(r => r.ingredients.forEach(ing => {
     if (!ing.item) return
-    const core = coreIngredient(ing.item)
+    const core = canonicalItem(ing.item)
     if (core.length > 1) seen.add(core)
   }))
   return seen
 })()
 
-function scoreRecipe(recipe, selected) {
-  return selected.filter(sel =>
-    recipe.ingredients.some(ing => String(ing.item).toLowerCase().includes(sel.toLowerCase()))
-  ).length
+/**
+ * Matches a selected ingredient against a recipe's, at word boundaries.
+ *
+ * The boundaries are the point. This was a plain `.includes()`, so picking
+ * "egg" matched a recipe whose only qualifying ingredient was "chopped
+ * veggies", and "pepper" matched "peppermint oil" — both live in the current
+ * catalogue. Anchoring to whole words costs nothing in recall: "chicken" still
+ * reaches all nine chicken ingredients, "lemon" all eight, because those are
+ * genuinely separate words in "chicken breast" and "lemon juice".
+ */
+function matchesSelection(canonicalIngredients, selected) {
+  // The optional plural is for phrases canonicalItem() can't fully singularise:
+  // it only singularises the head noun, which it assumes is last, so "diced
+  // tomatoes in juice" keeps its plural and a bare \btomato\b would miss it.
+  const escaped = selected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const word = new RegExp(`\\b${escaped}(?:e?s)?\\b`)
+  return canonicalIngredients.some(c => word.test(c))
+}
+
+function scoreRecipe(canonicalIngredients, selected) {
+  return selected.filter(sel => matchesSelection(canonicalIngredients, sel)).length
 }
 
 function Highlight({ text, query }) {
@@ -63,11 +85,26 @@ export default function Search({ onOpen }) {
     const seen = new Set(CATALOG_INGREDIENTS)
     userRecipes.forEach(r => (r.ingredients || []).forEach(ing => {
       if (!ing.item) return
-      const core = coreIngredient(ing.item)
+      const core = canonicalItem(ing.item)
       if (core.length > 1) seen.add(core)
     }))
     return [...seen].sort()
   }, [userRecipes])
+
+  /**
+   * Each recipe's ingredients reduced to canonical names, once.
+   *
+   * canonicalItem() is regex-heavy and there are ~3,000 ingredient lines, so
+   * doing this per keystroke would be wasteful — and skipped entirely until
+   * the ingredient tab is actually opened, since name search never needs it.
+   */
+  const canonicalIngredients = useMemo(() => {
+    if (mode !== 'ingredient') return null
+    return new Map(searchable.map(({ r, key }) => [
+      key,
+      (r.ingredients || []).map(ing => canonicalItem(ing.item)).filter(Boolean),
+    ]))
+  }, [mode, searchable])
 
   const nameResults = useMemo(() => {
     const q = nameQuery.trim().toLowerCase()
@@ -75,10 +112,22 @@ export default function Search({ onOpen }) {
     return searchable.filter(({ r }) => r.name.toLowerCase().includes(q))
   }, [nameQuery, searchable])
 
+  /**
+   * Closest match first, then prefix, then anything containing the query.
+   *
+   * Plain alphabetical order with a 12-item cap made the most obvious answer
+   * unreachable: typing "tomato" filled every slot with "cherry tomato",
+   * "grape tomato", "plum tomato"… and never offered "tomato" itself.
+   */
   const suggestions = useMemo(() => {
     if (!ingQuery) return []
-    const q = ingQuery.toLowerCase()
-    return allIngredients.filter(n => n.includes(q) && !selectedIngs.includes(n)).slice(0, 12)
+    const q = ingQuery.trim().toLowerCase()
+    if (!q) return []
+    const rank = n => (n === q ? 0 : n.startsWith(q) ? 1 : 2)
+    return allIngredients
+      .filter(n => n.includes(q) && !selectedIngs.includes(n))
+      .sort((a, b) => rank(a) - rank(b) || a.length - b.length || a.localeCompare(b))
+      .slice(0, 12)
   }, [ingQuery, selectedIngs, allIngredients])
 
   function addIngredient(name) {
@@ -98,7 +147,10 @@ export default function Search({ onOpen }) {
     const total = selectedIngs.length
     setIngResults(
       searchable
-        .map(({ r, key }) => ({ r, key, matchCount: scoreRecipe(r, selectedIngs), total }))
+        .map(({ r, key }) => ({
+          r, key, total,
+          matchCount: scoreRecipe(canonicalIngredients?.get(key) || [], selectedIngs),
+        }))
         .filter(x => x.matchCount > 0)
         .sort((a, b) => b.matchCount - a.matchCount)
     )

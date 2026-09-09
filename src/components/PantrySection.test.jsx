@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
+import { canonicalItem, isStaple } from '../utils/ingredients'
 
 const h = vi.hoisted(() => ({ client: null }))
 vi.mock('../lib/supabase', () => ({
@@ -174,6 +175,93 @@ describe('Fridge / Pantry section', () => {
       await screen.findByLabelText(/add an item to your pantry/i)
       const options = document.querySelectorAll('#pantry-items option')
       expect(options.length).toBeGreaterThan(500)
+    })
+  })
+
+  describe('the quick-add grid', () => {
+    const chip = name => screen.getByRole('button', { name: `Add ${name}` })
+
+    it('offers a grouped set of common household items', async () => {
+      renderSection()
+      expect(await screen.findByRole('heading', { name: /quick add/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Produce' })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Dairy & Eggs' })).toBeInTheDocument()
+      expect(chip('garlic')).toBeInTheDocument()
+    })
+
+    // The whole point: staples are already assumed, so tapping one here would
+    // only ever undo that assumption for free.
+    it('never offers an assumed staple', async () => {
+      renderSection()
+      await screen.findByRole('heading', { name: /quick add/i })
+      for (const staple of ['salt', 'water', 'sugar', 'egg', 'milk', 'butter']) {
+        expect(screen.queryByRole('button', { name: `Add ${staple}` })).toBeNull()
+      }
+    })
+
+    it('adds an item in one tap', async () => {
+      const user = userEvent.setup()
+      renderSection()
+      await user.click(await screen.findByRole('button', { name: 'Add garlic' }))
+
+      await waitFor(() => expect(h.client.__db.pantry).toEqual([
+        expect.objectContaining({ item: 'garlic', state: 'have' }),
+      ]))
+    })
+
+    /**
+     * The grid is a source to draw from, not a second display of state. Once
+     * an item is answered for it belongs to the lists above — leaving it here
+     * too put the same chip on screen twice saying the same thing.
+     */
+    it('drops an item from the grid once it is added', async () => {
+      const user = userEvent.setup()
+      renderSection()
+      await user.click(await screen.findByRole('button', { name: 'Add garlic' }))
+
+      await waitFor(() => expect(screen.queryByRole('button', { name: 'Add garlic' })).toBeNull())
+      // ...and it turns up in the kitchen list instead.
+      expect(screen.getByRole('button', { name: /^garlic: in your kitchen/i })).toBeInTheDocument()
+    })
+
+    it('does not offer anything already tracked, in any state', async () => {
+      renderSection({ pantry: [
+        { user_id: 'user-1', item: 'garlic', state: 'have' },
+        { user_id: 'user-1', item: 'tomato', state: 'out' },
+        { user_id: 'user-1', item: 'basil',  state: 'low' },
+      ] })
+      await screen.findByRole('heading', { name: /quick add/i })
+
+      for (const item of ['garlic', 'tomato', 'basil']) {
+        expect(screen.queryByRole('button', { name: `Add ${item}` })).toBeNull()
+      }
+      // Untouched ones are still on offer.
+      expect(chip('onion')).toBeInTheDocument()
+    })
+
+    it('hides a category once everything in it is tracked', async () => {
+      renderSection({ pantry: ['rice', 'pasta', 'bread', 'tortilla'].map(item => (
+        { user_id: 'user-1', item, state: 'have' }
+      )) })
+      await screen.findByRole('heading', { name: /quick add/i })
+
+      expect(screen.queryByRole('heading', { name: 'Grains & Bread' })).toBeNull()
+      expect(screen.getByRole('heading', { name: 'Produce' })).toBeInTheDocument()
+    })
+
+    // Guards the promise in the module's doc comment: the label you tap is
+    // exactly what gets stored, with no canonicalisation surprise in between.
+    it('labels every chip with its own canonical name', async () => {
+      renderSection()
+      await screen.findByRole('heading', { name: /quick add/i })
+
+      const labels = screen.getAllByRole('button', { name: /^Add / })
+        .map(b => b.getAttribute('aria-label').replace(/^Add /, ''))
+      expect(labels.length).toBeGreaterThan(25)
+      for (const label of labels) {
+        expect(canonicalItem(label)).toBe(label)
+        expect(isStaple(label)).toBe(false)
+      }
     })
   })
 

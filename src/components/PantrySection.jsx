@@ -6,6 +6,34 @@ import { PANTRY_LABELS } from '../utils/pantry'
 import Icon from './Icon'
 
 /**
+ * A quick-tap grid for the household items people almost always have on hand,
+ * as an alternative to typing every one into the add box.
+ *
+ * Deliberately not "the most common catalogue ingredients" — that list is
+ * garlic, onion, lemon juice, parmesan… which is really "what recipes call
+ * for", not "what's usually in a kitchen". Bread, chicken, and rice barely
+ * appear in the catalogue's own ingredient lines (they're often the recipe
+ * itself, not an ingredient of it) but are exactly the kind of thing this grid
+ * exists for. So this list is hand-picked for real-world commonness, not
+ * derived from ingredient frequency.
+ *
+ * Excludes anything in PANTRY_STAPLES — those are already assumed present,
+ * so a tap here would only ever be undoing that assumption for free, which
+ * isn't the job of a fast-add grid.
+ *
+ * Every label is verified (in PantrySection.test.jsx) to be its own
+ * canonicalItem() output, so what the user taps is exactly what gets stored —
+ * no surprise relabelling between the button and the chip it produces.
+ */
+const QUICK_ADD_GROUPS = [
+  { title: 'Produce',            items: ['garlic', 'onion', 'tomato', 'potato', 'carrot', 'bell pepper', 'spinach', 'cucumber', 'lemon', 'avocado'] },
+  { title: 'Dairy & Eggs',       items: ['cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese'] },
+  { title: 'Meat & Seafood',     items: ['chicken', 'ground beef', 'bacon', 'shrimp'] },
+  { title: 'Grains & Bread',     items: ['rice', 'pasta', 'bread', 'tortilla'] },
+  { title: 'Herbs & Condiments', items: ['basil', 'cilantro', 'parsley', 'ginger', 'ketchup', 'mustard', 'mayonnaise'] },
+]
+
+/**
  * Every ingredient the catalogue knows about, canonically, for the add box's
  * suggestions — 300 recipes reduce to 790 distinct kitchen items.
  *
@@ -93,6 +121,31 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
     setNote('')
     inputRef.current?.focus()
   }
+
+  /**
+   * One tap from the quick-add grid. Purely additive: the tapped item moves up
+   * into your kitchen and leaves the grid.
+   *
+   * Not a toggle, so the grid never doubles as a second display of state. It
+   * offers only what you haven't answered for, and the list above is the one
+   * place that shows and edits what you have — otherwise the same item sat on
+   * screen twice, saying the same thing in two different controls.
+   */
+  function quickAdd(item) {
+    setPantryState(item, 'have')
+    setNote('')
+  }
+
+  /**
+   * The grid minus anything already answered for, so it shrinks as the kitchen
+   * fills up and never repeats a chip shown in the lists below.
+   */
+  const quickAddGroups = useMemo(
+    () => QUICK_ADD_GROUPS
+      .map(g => ({ ...g, items: g.items.filter(i => !pantry.has(i)) }))
+      .filter(g => g.items.length > 0),
+    [pantry],
+  )
 
   const grouped = useMemo(() => {
     const out = { have: [], low: [], out: [] }
@@ -205,6 +258,38 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
               </div>
             )
           })}
+
+          {/* Quick add sits at the bottom, below what you already have: it's a
+              shortcut for filling the lists above, so it reads as a source to
+              draw from rather than part of the kitchen itself. */}
+          {quickAddGroups.length > 0 && (
+            <div className="mt-4 pt-3.5 border-t border-dashed border-rim">
+              <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted mb-2.5 flex items-center gap-1.5">
+                <Icon name="plus" size={13} strokeWidth={3} />Quick add
+              </h3>
+              {quickAddGroups.map(({ title, items }) => (
+                <div key={title} className="mb-2.5 last:mb-0">
+                  <h4 className="text-[0.68rem] font-bold uppercase tracking-[0.07em] text-warm-tan mb-1.5">
+                    {title}
+                  </h4>
+                  <ul className="flex flex-wrap gap-1.5 list-none">
+                    {items.map(item => (
+                      <li key={item}>
+                        <button
+                          type="button"
+                          onClick={() => quickAdd(item)}
+                          aria-label={`Add ${item}`}
+                          className="inline-flex items-center gap-1 border-2 border-ink rounded-full px-3 py-[3px] text-[0.8rem] font-bold bg-card text-ink hover:bg-accent transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        >
+                          <Icon name="plus" size={10} strokeWidth={3} />{item}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
 
           {assumedStaples.length > 4 && (
             <p className="text-[0.76rem] text-muted mt-3.5 pt-3 border-t border-dashed border-rim">
