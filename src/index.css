@@ -68,5 +68,16 @@ body {
 /* iOS safe-area padding for bottom sheets and the fixed nav. */
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-/* Sticks directly below the sticky app header. */
-.sticky-under-header { position: sticky; top: var(--header-h); }
+/* Sticks directly below the sticky app header. When the header has scrolled
+   away (quick-return, see useHideOnScroll) these bars take its place at the
+   top instead of leaving a --header-h band of content sliding underneath. */
+.sticky-under-header {
+  position: sticky;
+  top: var(--header-h);
+  transition: top 200ms;
+}
+html[data-header-hidden='true'] .sticky-under-header { top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-under-header { transition: none; }
+}
