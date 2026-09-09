@@ -152,6 +152,123 @@ describe('isNeverShopped', () => {
   })
 })
 
+/**
+ * Indian recipe writing names the same jar three ways — the Hindi word, the
+ * British spelling, and "X powder" where this catalog says "ground X" — so
+ * these all have to land on one pantry slot or the pantry is useless for half
+ * the catalog.
+ */
+describe('the Indian vocabulary', () => {
+  it('folds the Hindi name onto the English one', () => {
+    expect(canonicalItem('haldi')).toBe('turmeric')
+    expect(canonicalItem('jeera')).toBe('cumin')
+    expect(canonicalItem('hing')).toBe('asafoetida')
+    expect(canonicalItem('besan')).toBe('gram flour')
+    expect(canonicalItem('rajma')).toBe('kidney bean')
+    expect(canonicalItem('imli')).toBe('tamarind')
+  })
+
+  // Word-wise rather than whole-string, so a modifier survives the swap.
+  it('keeps the modifier when substituting a word', () => {
+    expect(canonicalItem('red capsicum')).toBe('red bell pepper')
+    expect(canonicalItem('green chillies, slit')).toBe('green chili')
+  })
+
+  it('treats the British spelling as the same word', () => {
+    for (const s of ['green chillies', 'green chilies', 'green chiles']) {
+      expect(canonicalItem(s)).toBe('green chili')
+    }
+    expect(canonicalItem('yoghurt')).toBe('yogurt')
+    expect(canonicalItem('brinjal')).toBe('eggplant')
+  })
+
+  it('matches "X powder" to the ground spice the catalog already lists', () => {
+    expect(canonicalItem('cumin powder')).toBe(canonicalItem('ground cumin'))
+    expect(canonicalItem('Turmeric Powder')).toBe('turmeric')
+    expect(canonicalItem('dhania powder')).toBe('coriander')
+    expect(canonicalItem('asafoetida powder')).toBe('asafoetida')
+  })
+
+  /**
+   * The reason the powder rule is an allowlist and not a suffix rule: for most
+   * of the catalog "X powder" is emphatically not X.
+   */
+  it('never strips powder from something that is not a spice', () => {
+    for (const s of ['baking powder', 'garlic powder', 'onion powder',
+                     'cocoa powder', 'milk powder', 'coconut milk powder',
+                     'curry powder', 'protein powder']) {
+      expect(canonicalItem(s)).toBe(s)
+    }
+  })
+
+  // Amchur is dried mango powder; a jar of it and a bowl of fruit are not one
+  // pantry slot, so this one is aliased rather than left to the powder rule.
+  it('keeps mango powder apart from mango', () => {
+    expect(canonicalItem('dry mango powder')).toBe('amchur')
+    expect(canonicalItem('mango powder')).toBe('amchur')
+    expect(canonicalItem('mango')).toBe('mango')
+  })
+
+  // Whole spices and ground spices are two things to own: a kitchen can be out
+  // of cumin powder while holding a jar of seeds for tempering.
+  it('keeps a whole spice apart from its ground form', () => {
+    expect(canonicalItem('cumin seeds')).toBe('cumin seed')
+    expect(canonicalItem('cumin seeds')).not.toBe(canonicalItem('cumin powder'))
+  })
+
+  it('folds the dals, and towards English where the catalog has the word', () => {
+    expect(canonicalItem('arhar dal')).toBe('toor dal')
+    expect(canonicalItem('masoor dal')).toBe(canonicalItem('red lentils'))
+    expect(canonicalItem('chole')).toBe(canonicalItem('chickpeas'))
+  })
+
+  // "curd" means yogurt in an Indian recipe but bean curd is tofu, which is
+  // why these are whole-string aliases and not word substitutions.
+  it('reads curd as yogurt without touching bean curd', () => {
+    expect(canonicalItem('curd')).toBe('yogurt')
+    expect(canonicalItem('hung curd')).toBe('yogurt')
+    expect(canonicalItem('bean curd')).toBe('bean curd')
+  })
+
+  it('assumes the spices a kitchen buys once a year', () => {
+    for (const s of ['turmeric powder', 'jeera', 'garam masala', 'haldi',
+                     'red chilli powder', 'ghee', 'bay leaves', 'elaichi']) {
+      expect(isStaple(s)).toBe(true)
+    }
+  })
+
+  // The optional half. Assuming these would claim a kitchen has things most
+  // kitchens genuinely don't.
+  it('does not assume the specialist ones', () => {
+    for (const s of ['asafoetida', 'curry leaves', 'kasuri methi', 'saffron',
+                     'chaat masala', 'paneer', 'toor dal', 'jaggery']) {
+      expect(isStaple(s)).toBe(false)
+    }
+  })
+})
+
+/**
+ * The imported recipes are CC-BY-SA, which is only satisfied while the
+ * attribution travels with them. Losing these fields in a refactor would make
+ * the catalog a licence violation rather than a bug, so it's guarded here.
+ * See LICENSE-DATA.md.
+ */
+describe('licensed recipes keep their attribution', () => {
+  const licensed = RECIPES.filter(r => r.license)
+
+  it('has the imported recipes, still marked', () => {
+    expect(licensed.length).toBeGreaterThan(150)
+  })
+
+  it('names a source, a URL and a licence on every one', () => {
+    for (const r of licensed) {
+      expect(r.source).toBeTruthy()
+      expect(r.license).toBe('CC-BY-SA-4.0')
+      expect(r.sourceUrl).toMatch(/^https:\/\/en\.wikibooks\.org\/wiki\/Cookbook:/)
+    }
+  })
+})
+
 // These guard the properties the shopping list and the future pantry rely on,
 // across every ingredient line in the catalog rather than hand-picked cases.
 describe('the whole catalog', () => {
@@ -165,9 +282,10 @@ describe('the whole catalog', () => {
   it('shortens rows enough to read in a shop', () => {
     const items = [...new Set(lines.map(i => i.item))]
     const long  = items.filter(i => shoppingName(i).length > 40)
-    // 298 of the raw strings exceed 40 chars; what's left is genuinely long
-    // product names ("King Arthur Gluten-Free Multi-Purpose Flour").
-    expect(long.length).toBeLessThan(25)
+    // 419 of the raw strings exceed 40 chars; what's left is genuinely long
+    // product names ("King Arthur Gluten-Free Multi-Purpose Flour") and a
+    // handful of imported lines that were written as prose.
+    expect(long.length).toBeLessThan(30)
   })
 
   it('suppresses only water rows from the shopping list', () => {
@@ -190,10 +308,18 @@ describe('the whole catalog', () => {
     expect(stapleLines / lines.length).toBeGreaterThan(0.25)
   })
 
+  // Asserted as a ratio, not a count: the catalog grows, and an absolute cap
+  // just has to be raised each time, which tests nothing about the collapsing.
   it('collapses the vocabulary enough for pantry matching to be possible', () => {
     const raw   = new Set(lines.map(i => i.item.trim().toLowerCase()))
     const canon = new Set(lines.map(i => canonicalItem(i.item)))
     expect(raw.size).toBeGreaterThan(1500)
-    expect(canon.size).toBeLessThan(900)
+    expect(canon.size / raw.size).toBeLessThan(0.55)
+  })
+
+  // An item that canonicalises to nothing matches no pantry row and no other
+  // recipe, so it silently drops out of every count the pantry reports.
+  it('never canonicalises an ingredient down to nothing', () => {
+    expect(lines.filter(i => i.item && !canonicalItem(i.item))).toEqual([])
   })
 })

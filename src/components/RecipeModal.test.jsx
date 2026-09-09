@@ -32,14 +32,14 @@ const RECIPE = {
 let api = null
 let closeModalOnly = () => {}
 
-function Harness({ recipeKey = 3, onClose, editable = false }) {
+function Harness({ recipeKey = 3, onClose, editable = false, recipe = RECIPE }) {
   api = useApp()
   const [open, setOpen] = useState(true)
   closeModalOnly = () => setOpen(false)
   if (!open) return null
   return (
     <RecipeModal
-      recipe={RECIPE}
+      recipe={recipe}
       recipeKey={recipeKey}
       editable={editable}
       onClose={onClose || closeModalOnly}
@@ -145,6 +145,35 @@ describe('ratings and notes are addressed by recipe key', () => {
 
     expect(api.ratings['u_abc']).toBe(5)
     expect(api.ratings['Test Carbonara']).toBeUndefined()
+  })
+})
+
+/**
+ * The imported recipes are CC-BY-SA, and that licence is only satisfied while
+ * the credit is shown alongside the recipe — a note in the repo is not enough.
+ * See LICENSE-DATA.md.
+ */
+describe('attribution', () => {
+  const LICENSED = {
+    ...RECIPE,
+    source: 'Wikibooks Cookbook',
+    sourceUrl: 'https://en.wikibooks.org/wiki/Cookbook:Test_Dish',
+    license: 'CC-BY-SA-4.0',
+  }
+
+  it('credits the source and links the licence', async () => {
+    renderModal({ recipe: LICENSED })
+
+    const src = await screen.findByRole('link', { name: 'Wikibooks Cookbook' })
+    expect(src).toHaveAttribute('href', LICENSED.sourceUrl)
+    expect(screen.getByRole('link', { name: /CC BY-SA 4\.0/ }))
+      .toHaveAttribute('href', 'https://creativecommons.org/licenses/by-sa/4.0/')
+  })
+
+  it('says nothing for a recipe that carries no licence', async () => {
+    renderModal()
+    await screen.findByText('Boil the pasta')
+    expect(screen.queryByText(/adapted from/i)).toBeNull()
   })
 })
 

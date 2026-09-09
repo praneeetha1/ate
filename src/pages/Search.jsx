@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import RECIPES from '../data/recipes.json'
+import { VISIBLE_CATALOG } from '../utils/recipe'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
@@ -19,7 +19,7 @@ import Icon from '../components/Icon'
  */
 const CATALOG_INGREDIENTS = (() => {
   const seen = new Set()
-  RECIPES.forEach(r => r.ingredients.forEach(ing => {
+  VISIBLE_CATALOG.forEach(({ r }) => r.ingredients.forEach(ing => {
     if (!ing.item) return
     const core = canonicalItem(ing.item)
     if (core.length > 1) seen.add(core)
@@ -77,7 +77,7 @@ export default function Search({ onOpen }) {
   // Search now spans the user's own recipes as well as the catalog — they were
   // previously unreachable from this page entirely.
   const searchable = useMemo(() => [
-    ...RECIPES.map((r, i) => ({ r, key: i })),
+    ...VISIBLE_CATALOG.map(({ r, i }) => ({ r, key: i })),
     ...userRecipes.map(r => ({ r, key: 'u_' + r.id })),
   ], [userRecipes])
 

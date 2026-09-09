@@ -3,7 +3,7 @@ import RECIPES from '../data/recipes.json'
 import {
   keyToText, keyFromText, isUserRecipeKey, isCatalogKey, userRecipeId,
   keyForName, resolveRecipe, toUserRecipeRow, normalizeUserRecipe,
-  tagStyles, applyFilters, ingredientLabel, CATALOG_CATEGORIES,
+  tagStyles, applyFilters, ingredientLabel, CATALOG_CATEGORIES, VISIBLE_CATALOG,
 } from './recipe'
 import { parseFrac } from './fractions'
 
@@ -160,6 +160,46 @@ describe('catalog data integrity', () => {
     for (const c of CATALOG_CATEGORIES) {
       expect(tagStyles(c)).not.toContain('bg-warm-tan')
     }
+  })
+})
+
+/**
+ * A catalog key *is* the array index, and seven tables store it as bare text
+ * with no foreign key. So the array is append-only: retiring a recipe sets
+ * `hidden` instead of splicing it out, because splicing slides every later
+ * index down one and silently repoints saved ratings, notes, favourites and
+ * shopping-list rows at the neighbouring recipe.
+ */
+describe('retired recipes', () => {
+  const hidden = RECIPES.filter(r => r.hidden)
+
+  it('has some, and leaves them out of what gets offered', () => {
+    expect(hidden.length).toBeGreaterThan(0)
+    expect(VISIBLE_CATALOG.length).toBe(RECIPES.length - hidden.length)
+    expect(VISIBLE_CATALOG.some(({ r }) => r.hidden)).toBe(false)
+  })
+
+  // The guard that matters: an entry's key has to be its real index, or every
+  // card on the home page opens the wrong recipe.
+  it('pairs every visible recipe with its true catalog index', () => {
+    for (const { r, i } of VISIBLE_CATALOG) expect(RECIPES[i]).toBe(r)
+  })
+
+  /**
+   * Hidden means "stop offering this", never "this is gone". A rating, a
+   * shared link or a shopping-list row from before a recipe was retired still
+   * has to resolve to the same recipe it always did.
+   */
+  it('still resolves a retired recipe by its key', () => {
+    const at = RECIPES.findIndex(r => r.hidden)
+    expect(resolveRecipe(at)).toBe(RECIPES[at])
+    expect(resolveRecipe(String(at))).toBe(RECIPES[at])
+  })
+
+  it('keeps retired recipes out of the category list', () => {
+    const onlyHidden = new Set(hidden.map(r => r.category))
+    for (const { r } of VISIBLE_CATALOG) onlyHidden.delete(r.category)
+    for (const cat of onlyHidden) expect(CATALOG_CATEGORIES).not.toContain(cat)
   })
 })
 

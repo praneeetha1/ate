@@ -392,6 +392,28 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
             ))}
           </ol>
 
+          {/* Attribution. Not decoration: the imported recipes are CC-BY-SA,
+              which is only satisfied while the credit travels with the recipe
+              wherever it's shown. See LICENSE-DATA.md. */}
+          {recipe.license && recipe.sourceUrl && (
+            <p className="mt-4 pt-3 border-t border-dashed border-rim text-[0.72rem] text-muted leading-relaxed">
+              Adapted from{' '}
+              <a
+                href={recipe.sourceUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="underline text-ink hover:text-accent-dk transition-colors"
+              >{recipe.source}</a>
+              , used under{' '}
+              <a
+                href="https://creativecommons.org/licenses/by-sa/4.0/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="underline text-ink hover:text-accent-dk transition-colors"
+              >CC BY-SA 4.0</a>.
+            </p>
+          )}
+
           {/* Notes & Ratings */}
           <div className="mt-5 pt-4 border-t border-dashed border-ink">
             <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-ink">

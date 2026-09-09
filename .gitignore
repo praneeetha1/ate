@@ -1,4 +1,8 @@
 recipes_raw.json
+# Importer output, merged into src/data/recipes.json. Regenerate with
+# scripts/import_wikibooks.py; re-merging is idempotent (it skips names the
+# catalog already has).
+src/data/recipes.wikibooks.json
 .DS_Store
 .env
 .env.local

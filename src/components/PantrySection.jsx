@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import RECIPES from '../data/recipes.json'
+import { VISIBLE_CATALOG } from '../utils/recipe'
 import { usePantry } from '../context/PantryContext'
 import { PANTRY_STAPLES, canonicalItem, isNeverShopped } from '../utils/ingredients'
 import { PANTRY_LABELS } from '../utils/pantry'
@@ -26,11 +26,18 @@ import Icon from './Icon'
  * no surprise relabelling between the button and the chip it produces.
  */
 const QUICK_ADD_GROUPS = [
-  { title: 'Produce',            items: ['garlic', 'onion', 'tomato', 'potato', 'carrot', 'bell pepper', 'spinach', 'cucumber', 'lemon', 'avocado'] },
-  { title: 'Dairy & Eggs',       items: ['cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese'] },
-  { title: 'Meat & Seafood',     items: ['chicken', 'ground beef', 'bacon', 'shrimp'] },
+  { title: 'Produce',            items: ['garlic', 'onion', 'tomato', 'potato', 'carrot', 'bell pepper', 'spinach', 'cucumber', 'lemon', 'avocado', 'green chili', 'cauliflower', 'okra', 'eggplant', 'green pea', 'coconut'] },
+  { title: 'Dairy & Eggs',       items: ['cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese', 'paneer', 'cream'] },
+  { title: 'Meat & Seafood',     items: ['chicken', 'ground beef', 'bacon', 'shrimp', 'lamb'] },
   { title: 'Grains & Bread',     items: ['rice', 'pasta', 'bread', 'tortilla'] },
-  { title: 'Herbs & Condiments', items: ['basil', 'cilantro', 'parsley', 'ginger', 'ketchup', 'mustard', 'mayonnaise'] },
+  { title: 'Herbs & Condiments', items: ['basil', 'cilantro', 'parsley', 'ginger', 'mint', 'curry leaf', 'ketchup', 'mustard', 'mayonnaise'] },
+  // The spices past the assumed set. PANTRY_STAPLES already covers the dozen
+  // an Indian kitchen always has (turmeric, cumin, garam masala…), so what's
+  // left here is the genuinely optional half — the ones you either keep or
+  // really don't, which is exactly what a one-tap grid is for.
+  { title: 'Spices & Masalas',   items: ['asafoetida', 'fenugreek seed', 'fenugreek leaf', 'carom seed', 'nigella seed', 'fennel seed', 'poppy seed', 'star anise', 'nutmeg', 'saffron', 'chaat masala', 'sambar powder', 'amchur', 'black salt', 'kashmiri red chili powder'] },
+  { title: 'Dals & Legumes',     items: ['toor dal', 'moong dal', 'chana dal', 'urad dal', 'red lentil', 'chickpea', 'kidney bean', 'black-eyed pea'] },
+  { title: 'Flours & Staples',   items: ['gram flour', 'wheat flour', 'semolina', 'flattened rice', 'basmati rice', 'coconut milk', 'tamarind', 'jaggery', 'mustard oil'] },
 ]
 
 /**
@@ -58,7 +65,7 @@ let cachedItems = null
 function knownItems() {
   if (!cachedItems) {
     const seen = new Set()
-    for (const r of RECIPES) {
+    for (const { r } of VISIBLE_CATALOG) {
       for (const ing of r.ingredients) {
         if (!ing.item || isNeverShopped(ing.item)) continue
         const c = canonicalItem(ing.item)

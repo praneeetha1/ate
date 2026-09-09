@@ -34,6 +34,24 @@ export function tagStyles(cat) {
 }
 
 /**
+ * The catalog as it should be offered, paired with each recipe's real key.
+ *
+ * A retired recipe is flagged `hidden` rather than deleted, because a catalog
+ * key *is* the array index and seven tables store it as plain text with no
+ * foreign key — favourites, ratings, notes, shopping_list, list_items,
+ * activity and lists. Splicing one out would slide every later index down by
+ * one and silently repoint every saved row at the neighbouring recipe. So the
+ * array is append-only and the views filter instead.
+ *
+ * resolveRecipe() deliberately still resolves a hidden recipe: an old rating,
+ * a shared link or a shopping-list row from before it was retired should keep
+ * working. `hidden` only means "stop offering this", never "this is gone".
+ */
+export const VISIBLE_CATALOG = RECIPES
+  .map((r, i) => ({ r, i }))
+  .filter(({ r }) => !r.hidden)
+
+/**
  * The categories a user may pick when creating a recipe.
  *
  * Derived from the catalog so a user recipe always lands in a real category —
@@ -41,7 +59,8 @@ export function tagStyles(cat) {
  * 'Sauce', none of which exist in the catalog, so those recipes fell through
  * tagStyles() to the generic swatch and never matched a catalog section.
  */
-export const CATALOG_CATEGORIES = [...new Set(RECIPES.map(r => r.category))].sort()
+export const CATALOG_CATEGORIES =
+  [...new Set(VISIBLE_CATALOG.map(({ r }) => r.category))].sort()
 
 // ── recipe keys ──────────────────────────────────────────────
 // A recipe is addressed by a "key": the catalog index as a number (5) for a

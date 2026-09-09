@@ -1,15 +1,14 @@
 import { useState, useMemo } from 'react'
-import RECIPES from '../data/recipes.json'
 import RecipeCard from '../components/RecipeCard'
 import CreateRecipeModal from '../components/CreateRecipeModal'
-import { applyFilters } from '../utils/recipe'
+import { applyFilters, VISIBLE_CATALOG } from '../utils/recipe'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
 import { pantryFit, compareFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 
-const CATEGORIES = [...new Set(RECIPES.map(r => r.category))]
+const CATEGORIES = [...new Set(VISIBLE_CATALOG.map(({ r }) => r.category))]
 
 const DIET_PILLS = [
   { label: 'All',           value: '' },
@@ -31,7 +30,7 @@ export default function Home({ onOpen }) {
   const { pantryEnabled, pantryReady, pantryState, pantry } = usePantry()
 
   const filtered = useMemo(
-    () => applyFilters(RECIPES.map((r, i) => ({ r, i })), dietFilter, timeFilter),
+    () => applyFilters(VISIBLE_CATALOG, dietFilter, timeFilter),
     [dietFilter, timeFilter],
   )
 
