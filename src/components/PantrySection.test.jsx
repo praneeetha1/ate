@@ -31,10 +31,12 @@ function renderSection({ signedIn = true, pantry = [] } = {}) {
   )
 }
 
+// Non-staples throughout: staples have their own group and are deliberately
+// excluded from these, so a staple here would test nothing.
 const ROWS = [
   { user_id: 'user-1', item: 'garlic',    state: 'have' },
   { user_id: 'user-1', item: 'carrot',    state: 'have' },
-  { user_id: 'user-1', item: 'sugar',     state: 'low'  },
+  { user_id: 'user-1', item: 'basil',     state: 'low'  },
   { user_id: 'user-1', item: 'pecorino',  state: 'out'  },
 ]
 
@@ -88,22 +90,75 @@ describe('Fridge / Pantry section', () => {
     expect(await screen.findByText(/nothing here yet/i)).toBeInTheDocument()
   })
 
-  it('explains the assumed staples rather than listing 20 rows', async () => {
-    renderSection({ pantry: [ROWS[0]] })
+  describe('the assumed-present staples', () => {
+    const staple = name => screen.getByRole('button', { name: new RegExp(`^${name}: `, 'i') })
 
-    // The match lands on the bold lead-in, so read the whole paragraph.
-    const note = (await screen.findByText(/assumed present/i)).closest('p')
-    // Named a few, counted the rest: 20 staples, none contradicted.
-    expect(note.textContent).toMatch(/and 16 others/)
-  })
+    it('lists them as chips, already selected', async () => {
+      renderSection()
+      expect(await screen.findByRole('heading', { name: /assumed present/i })).toBeInTheDocument()
+      expect(staple('salt')).toHaveAttribute('aria-pressed', 'true')
+      expect(staple('olive oil')).toHaveAttribute('aria-pressed', 'true')
+      expect(staple('baking powder')).toHaveAttribute('aria-pressed', 'true')
+    })
 
-  it('does not claim a staple the user has contradicted', async () => {
-    renderSection({ pantry: [{ user_id: 'user-1', item: 'salt', state: 'out' }] })
+    // You can't run out of tap water, and 'salt and pepper' is a matching
+    // artefact for the pair rather than a third thing to own.
+    it('leaves out water, ice and the salt-and-pepper compound', async () => {
+      renderSection()
+      await screen.findByRole('heading', { name: /assumed present/i })
+      for (const skipped of ['water', 'ice', 'salt and pepper']) {
+        expect(screen.queryByRole('button', { name: new RegExp(`^${skipped}: `, 'i') })).toBeNull()
+      }
+    })
 
-    await waitFor(() => expect(screen.getByRole('button', { name: /^salt: out/i })).toBeInTheDocument())
-    const note = screen.getByText(/assumed present/i).closest('p')
-    // 20 staples, one of them explicitly out, so 19 remain assumed.
-    expect(note.textContent).toMatch(/and 15 others/)
+    it('marks one out when unselected', async () => {
+      const user = userEvent.setup()
+      renderSection()
+      await user.click(await screen.findByRole('button', { name: /^salt: assumed present/i }))
+
+      await waitFor(() => expect(h.client.__db.pantry).toEqual([
+        expect.objectContaining({ item: 'salt', state: 'out' }),
+      ]))
+      expect(staple('salt')).toHaveAttribute('aria-pressed', 'false')
+    })
+
+    /**
+     * Absent means assumed-present, so restoring a staple deletes the row
+     * rather than writing an explicit 'have' that only repeats the default.
+     */
+    it('restores one by removing the row, not by storing have', async () => {
+      const user = userEvent.setup()
+      renderSection({ pantry: [{ user_id: 'user-1', item: 'salt', state: 'out' }] })
+
+      await user.click(await screen.findByRole('button', { name: /^salt: out/i }))
+
+      await waitFor(() => expect(h.client.__db.pantry).toEqual([]))
+      expect(staple('salt')).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    it('shows a staple in one place only, never twice', async () => {
+      renderSection({ pantry: [{ user_id: 'user-1', item: 'olive oil', state: 'out' }] })
+      await screen.findByRole('heading', { name: /assumed present/i })
+
+      // It reads as unselected among the staples...
+      expect(staple('olive oil')).toHaveAttribute('aria-pressed', 'false')
+      // ...and does not also appear as a tracked chip in an Out group.
+      expect(screen.queryByRole('heading', { name: /^out/i })).toBeNull()
+      expect(screen.queryByRole('button', { name: /olive oil: out\. change/i })).toBeNull()
+    })
+
+    it('keeps an explicitly tracked staple out of the kitchen list', async () => {
+      renderSection({ pantry: [
+        { user_id: 'user-1', item: 'milk',    state: 'have' },
+        { user_id: 'user-1', item: 'chicken', state: 'have' },
+      ] })
+      const kitchen = await screen.findByRole('heading', { name: /in your kitchen/i })
+
+      // Only the non-staple is counted there; milk belongs to the staples group.
+      expect(kitchen.textContent).toMatch(/\(1\)/)
+      expect(screen.queryByRole('button', { name: /^milk: in your kitchen/i })).toBeNull()
+      expect(staple('milk')).toHaveAttribute('aria-pressed', 'true')
+    })
   })
 
   describe('adding an item', () => {

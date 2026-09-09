@@ -34,6 +34,18 @@ const QUICK_ADD_GROUPS = [
 ]
 
 /**
+ * The staples shown as chips, in rough order of how universal they are.
+ *
+ * Not the whole PANTRY_STAPLES set: water and ice are dropped because you
+ * can't run out of tap water, and 'salt and pepper' is dropped because it's a
+ * matching artefact for the ten ways the catalogue writes that pair, not a
+ * third thing to own alongside salt and pepper.
+ */
+const SHOWN_STAPLES = [...PANTRY_STAPLES].filter(
+  s => !isNeverShopped(s) && s !== 'salt and pepper',
+)
+
+/**
  * Every ingredient the catalogue knows about, canonically, for the add box's
  * suggestions — 300 recipes reduce to 790 distinct kitchen items.
  *
@@ -147,21 +159,30 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
     [pantry],
   )
 
+  /**
+   * Tracked items by state, staples excluded — they have their own group
+   * below, and listing them in both put the same chip on screen twice.
+   */
   const grouped = useMemo(() => {
     const out = { have: [], low: [], out: [] }
     for (const [item, state] of pantry.entries()) {
-      if (out[state]) out[state].push(item)
+      if (out[state] && !PANTRY_STAPLES.has(item)) out[state].push(item)
     }
     for (const list of Object.values(out)) list.sort()
     return out
   }, [pantry])
 
-  // A staple the user has explicitly contradicted appears in its real group
-  // above, so the assumed line must not claim it as well.
-  const assumedStaples = useMemo(
-    () => [...PANTRY_STAPLES].filter(s => !pantry.has(s)).sort(),
-    [pantry],
-  )
+  /**
+   * A staple counts as present unless the user has said otherwise, so the
+   * chips start selected and a tap is how you say "actually, I'm out".
+   *
+   * Tapping an already-out staple removes the row rather than writing an
+   * explicit 'have': absent means assumed-present, so there's no reason to
+   * store a row that says what the default already says.
+   */
+  function toggleStaple(item) {
+    setPantryState(item, pantry.get(item) === 'out' ? 'unknown' : 'out')
+  }
 
   if (!pantryEnabled) {
     return (
@@ -291,15 +312,43 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
             </div>
           )}
 
-          {assumedStaples.length > 4 && (
-            <p className="text-[0.76rem] text-muted mt-3.5 pt-3 border-t border-dashed border-rim">
-              <span className="font-bold">Assumed present:</span>{' '}
-              {assumedStaples.slice(0, 4).join(', ')} and {assumedStaples.length - 4} other
-              {assumedStaples.length - 4 === 1 ? '' : 's'}. Staples aren’t worth
-              tracking one by one, so they count as present until you add one
-              here and mark it <em className="not-italic font-bold">out</em>.
+          {/* Staples, pre-selected. They're assumed present rather than
+              tracked one by one, so the useful interaction is the exception:
+              tap one to say you've actually run out. */}
+          <div className="mt-3.5 pt-3.5 border-t border-dashed border-rim">
+            <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted mb-1 flex items-center gap-1.5">
+              <StateDot state="have" />Assumed present
+            </h3>
+            <p className="text-[0.74rem] text-muted mb-2">
+              Counted as present without being tracked. Tap one if you’ve run out.
             </p>
-          )}
+            <ul className="flex flex-wrap gap-1.5 list-none">
+              {SHOWN_STAPLES.map(item => {
+                const isOut = pantry.get(item) === 'out'
+                return (
+                  <li key={item}>
+                    <button
+                      type="button"
+                      onClick={() => toggleStaple(item)}
+                      aria-pressed={!isOut}
+                      aria-label={`${item}: ${isOut ? 'out' : 'assumed present'}`}
+                      title={isOut ? 'Out — tap to restore' : 'Tap if you’ve run out'}
+                      className={`inline-flex items-center gap-1 border-2 rounded-full px-3 py-[3px] text-[0.8rem] font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                        isOut
+                          ? 'bg-card border-heart text-heart line-through decoration-2'
+                          : 'bg-accent border-ink text-ink opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      {isOut
+                        ? <Icon name="close" size={10} strokeWidth={3} />
+                        : <Icon name="check" size={11} strokeWidth={3} />}
+                      {item}
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
       )}
     </section>
