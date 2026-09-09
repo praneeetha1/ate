@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext'
 import { supabase } from '../lib/supabase'
 import { ingredientLabel, resolveRecipe, keyToText } from '../utils/recipe'
 import { shoppingName, isNeverShopped } from '../utils/ingredients'
+import { usePantry } from '../context/PantryContext'
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import UsernameModal from '../components/UsernameModal'
@@ -18,6 +19,7 @@ export default function Profile({ onOpen }) {
           userRecipes, deleteUserRecipe, syncing } = useApp()
   const { user, profile, signOut, updateProfile } = useAuth()
   const { showError, showToast } = useToast()
+  const { setPantryState } = usePantry()
   const navigate = useNavigate()
 
   const [showCreate,    setShowCreate]    = useState(false)
@@ -368,7 +370,15 @@ export default function Profile({ onOpen }) {
                               <input
                                 type="checkbox"
                                 checked={checked}
-                                onChange={() => toggleShopItem(key, i)}
+                                onChange={() => {
+                                  toggleShopItem(key, i)
+                                  // Ticking something off in the shop means you
+                                  // have it now, so the pantry learns from a
+                                  // gesture the user already makes. Unticking is
+                                  // a correction, not a claim to be out of it,
+                                  // so it deliberately writes nothing.
+                                  if (!checked) setPantryState(ing.item, 'have')
+                                }}
                                 className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px]"
                               />
                               <span className="text-accent-dk font-bold min-w-[56px] shrink-0">{measure}</span>

@@ -4,6 +4,9 @@ import RecipeCard from '../components/RecipeCard'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import { applyFilters } from '../utils/recipe'
 import { useApp } from '../context/AppContext'
+import { usePantry } from '../context/PantryContext'
+import { pantryFit, compareFit } from '../utils/pantry'
+import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 
 const CATEGORIES = [...new Set(RECIPES.map(r => r.category))]
@@ -22,7 +25,9 @@ export default function Home({ onOpen }) {
   const [dietFilter,      setDietFilter]      = useState('')
   const [timeFilter,      setTimeFilter]      = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [pantryMode,     setPantryMode]      = useState(false)
   const { userRecipes } = useApp()
+  const { pantryEnabled, pantryReady, pantryState, pantry } = usePantry()
 
   const filtered = useMemo(
     () => applyFilters(RECIPES.map((r, i) => ({ r, i })), dietFilter, timeFilter),
@@ -37,6 +42,23 @@ export default function Home({ onOpen }) {
   )
 
   const visibleCats = CATEGORIES.filter(cat => filtered.some(({ r }) => r.category === cat))
+
+  /**
+   * Everything the filters allow, ordered by how little you'd have to buy.
+   *
+   * A flat list rather than the category strips: "what can I make" is a
+   * question about the whole catalogue at once, and ranking inside each
+   * category would bury the best answer under whichever heading it fell into.
+   */
+  const ranked = useMemo(() => {
+    if (!pantryMode) return []
+    return [
+      ...filtered,
+      ...filteredMine.map(r => ({ r, i: 'u_' + r.id })),
+    ]
+      .map(p => ({ ...p, fit: pantryFit(p.r, pantryState) }))
+      .sort((a, b) => compareFit(a.fit, b.fit))
+  }, [pantryMode, filtered, filteredMine, pantryState])
 
   function surprise() {
     if (!filtered.length) return
@@ -84,6 +106,18 @@ export default function Home({ onOpen }) {
             </button>
           ))}
         </div>
+        {pantryEnabled && (
+          <>
+            <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
+            <button
+              onClick={() => setPantryMode(p => !p)}
+              aria-pressed={pantryMode}
+              className={`${pillBase} ${pantryMode ? pillActive : pillInactive}`}
+            >
+              <Icon name="plate" size={13} />What can I make
+            </button>
+          </>
+        )}
         <button
           onClick={surprise}
           className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
@@ -94,6 +128,41 @@ export default function Home({ onOpen }) {
         >+ My Recipe</button>
       </div>
 
+      {pantryMode ? (
+        <section aria-labelledby="closest-heading" className="pb-2">
+          <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
+            <h2 id="closest-heading" className="font-display text-[1.1rem] font-semibold text-ink">
+              Closest to ready
+            </h2>
+            <span className="text-[0.72rem] text-muted">{ranked.length} recipes</span>
+          </div>
+
+          {/* An untouched pantry ranks by recipe size alone, which looks like a
+              broken feature unless we say why. */}
+          {pantryReady && pantry.size === 0 && (
+            <p className="mx-5 mb-3 text-[0.78rem] text-muted italic border-2 border-dashed border-rim rounded-xl px-4 py-3">
+              Nothing marked yet — staples like salt and oil are assumed. Open a
+              recipe and tap the dot beside an ingredient to say what you have.
+            </p>
+          )}
+
+          {ranked.length === 0 ? (
+            <p className="text-center py-[60px] font-display text-[1.1rem] text-muted px-5">
+              No recipes match those filters.
+            </p>
+          ) : (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 px-5 pb-6">
+              {ranked.map(({ r, i, fit }) => (
+                <div key={i}>
+                  <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill />
+                  <PantryFit fit={fit} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : (
+      <>
       {/* My Recipes section */}
       {filteredMine.length > 0 && (
         <section className="mb-2" aria-labelledby="my-recipes-heading">
@@ -146,6 +215,8 @@ export default function Home({ onOpen }) {
           )
         })}
       </div>
+      </>
+      )}
     </>
   )
 }

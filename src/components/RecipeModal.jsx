@@ -7,6 +7,7 @@ import { describeError } from '../utils/errors'
 import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
 import Icon from './Icon'
+import PantryMark from './PantryMark'
 
 export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
   const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
@@ -323,16 +324,22 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               const checked = checkedIngs.has(i)
               return (
                 <li key={i} className={`text-[0.88rem] border-b border-[rgba(200,180,130,0.25)] last:border-0 transition-opacity ${checked ? 'opacity-40' : ''}`}>
-                  <label className="flex items-start gap-2.5 py-[5px] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleIng(i)}
-                      className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px] cursor-pointer"
-                    />
-                    <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
-                    <span className="text-ink">{item}</span>
-                  </label>
+                  {/* The pantry marker is a sibling of the label, not inside
+                      it: nesting a button in a label makes every tap on it
+                      toggle the checkbox too. */}
+                  <div className="flex items-start gap-2.5 py-[5px]">
+                    <label className="flex items-start gap-2.5 flex-1 min-w-0 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleIng(i)}
+                        className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px] cursor-pointer"
+                      />
+                      <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
+                      <span className="text-ink">{item}</span>
+                    </label>
+                    <PantryMark item={ing.item} className="mt-[2px]" />
+                  </div>
                 </li>
               )
             })}

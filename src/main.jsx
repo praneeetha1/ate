@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
+import { PantryProvider } from './context/PantryContext'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import App from './App'
@@ -24,7 +25,9 @@ if (configError) {
           <ToastProvider>
             <AuthProvider>
               <AppProvider>
-                <App />
+                <PantryProvider>
+                  <App />
+                </PantryProvider>
               </AppProvider>
             </AuthProvider>
           </ToastProvider>

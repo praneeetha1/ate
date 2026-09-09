@@ -2,6 +2,9 @@ import { useState, useMemo } from 'react'
 import RECIPES from '../data/recipes.json'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
+import { usePantry } from '../context/PantryContext'
+import { pantryFit } from '../utils/pantry'
+import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 
 /** Reduces "flour, sifted (optional)" to "flour" for the suggestion list. */
@@ -40,6 +43,7 @@ function Highlight({ text, query }) {
 
 export default function Search({ onOpen }) {
   const { userRecipes } = useApp()
+  const { pantryEnabled, pantryState, pantry } = usePantry()
 
   const [mode,         setMode]         = useState('name')
   const [nameQuery,    setNameQuery]    = useState('')
@@ -197,16 +201,26 @@ export default function Search({ onOpen }) {
             No recipes found
           </p>
         ) : (
-          results.map(({ r, key, matchCount, total }) => (
-            <div key={key}>
-              <RecipeCard recipe={r} recipeKey={key} onOpen={onOpen} fill />
-              {mode === 'ingredient' && matchCount > 0 && (
-                <p className="text-[0.72rem] text-accent-dk bg-paper border border-t-0 border-ink rounded-b-xl px-4 py-1.5 font-bold -mt-1">
-                  <Icon name="check" size={13} className="inline align-[-2px] mr-1" /> matches {matchCount} of {total} ingredient{total !== 1 ? 's' : ''} you have
-                </p>
-              )}
-            </div>
-          ))
+          results.map(({ r, key, matchCount, total }) => {
+            const matched = mode === 'ingredient' && matchCount > 0
+            return (
+              <div key={key}>
+                <RecipeCard recipe={r} recipeKey={key} onOpen={onOpen} fill />
+                {matched && (
+                  <p className="text-[0.72rem] text-accent-dk bg-paper border border-t-0 border-ink rounded-b-xl px-4 py-1.5 font-bold -mt-1">
+                    <Icon name="check" size={13} className="inline align-[-2px] mr-1" /> matches {matchCount} of {total} ingredient{total !== 1 ? 's' : ''} you have
+                  </p>
+                )}
+                {/* Only when the pantry has something to say, and never
+                    stacked under the ingredient-match line above — two
+                    captions about the same card contradict each other more
+                    often than they help. */}
+                {!matched && pantryEnabled && pantry.size > 0 && (
+                  <PantryFit fit={pantryFit(r, pantryState)} />
+                )}
+              </div>
+            )
+          })
         )}
       </div>
     </>

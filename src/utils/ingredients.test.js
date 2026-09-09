@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { shoppingName, canonicalItem, isNeverShopped } from './ingredients'
+import { shoppingName, canonicalItem, isNeverShopped, isStaple, PANTRY_STAPLES } from './ingredients'
 import RECIPES from '../data/recipes.json'
 
 describe('shoppingName', () => {
@@ -91,6 +91,49 @@ describe('canonicalItem', () => {
   })
 })
 
+describe('salt and pepper', () => {
+  // The catalog writes this ten different ways, across 68 lines. Folding them
+  // stops the pantry offering to track each phrasing as its own item.
+  it('folds every phrasing into one item', () => {
+    for (const s of [
+      'salt and pepper', 'Kosher salt and freshly ground black pepper',
+      'coarse salt and pepper', 'course salt and pepper',
+      'salt and freshly ground black pepper', 'salt and black pepper',
+      'coarse salt and freshly ground pepper',
+    ]) {
+      expect(canonicalItem(s)).toBe('salt and pepper')
+    }
+  })
+
+  it('leaves a dish that merely starts that way alone', () => {
+    expect(canonicalItem('salt and pepper shrimp')).toBe('salt and pepper shrimp')
+  })
+})
+
+describe('isStaple', () => {
+  it('covers the things nobody wants to tick off', () => {
+    for (const s of ['Kosher salt', 'freshly ground black pepper', 'water',
+                     'extra-virgin olive oil', 'vegetable oil', 'eggs',
+                     'unsalted butter', 'granulated sugar', 'all-purpose flour',
+                     'Kosher salt and freshly ground black pepper']) {
+      expect(isStaple(s)).toBe(true)
+    }
+  })
+
+  it('does not claim the things a recipe is actually about', () => {
+    for (const s of ['pecorino', 'guanciale', 'shiitake mushrooms',
+                     'heavy cream', 'garlic', 'onion']) {
+      expect(isStaple(s)).toBe(false)
+    }
+  })
+
+  it('is stated in canonical form, so every entry can be reached', () => {
+    for (const item of PANTRY_STAPLES) {
+      expect(canonicalItem(item)).toBe(item)
+    }
+  })
+})
+
 describe('isNeverShopped', () => {
   it('catches plain water however it is written', () => {
     for (const s of ['water', 'Cold water', 'warm water', 'Boiling water',
@@ -131,6 +174,20 @@ describe('the whole catalog', () => {
     const suppressed = lines.filter(i => isNeverShopped(i.item))
     expect(suppressed.length).toBeGreaterThan(40)
     expect(suppressed.every(i => /water|ice/i.test(i.item))).toBe(true)
+  })
+
+  // The pantry's whole premise: most of a recipe's lines are staples the user
+  // is never asked about, leaving a handful that actually need an answer.
+  it('leaves few enough items per recipe to be worth tracking', () => {
+    const perRecipe = RECIPES.map(r => {
+      const items = new Set(r.ingredients.map(i => canonicalItem(i.item)))
+      return [...items].filter(i => !PANTRY_STAPLES.has(i)).length
+    })
+    const median = perRecipe.sort((a, b) => a - b)[Math.floor(perRecipe.length / 2)]
+    expect(median).toBeLessThanOrEqual(8)
+
+    const stapleLines = lines.filter(i => isStaple(i.item)).length
+    expect(stapleLines / lines.length).toBeGreaterThan(0.25)
   })
 
   it('collapses the vocabulary enough for pantry matching to be possible', () => {

@@ -17,6 +17,7 @@ const UNIQUE_BY = {
   ratings:       ['user_id', 'recipe_key'],
   notes:         ['user_id', 'recipe_key'],
   shopping_list: ['user_id', 'recipe_key'],
+  pantry:        ['user_id', 'item'],
   user_recipes:  ['id'],
   lists:         ['id'],
   list_items:    ['list_id', 'recipe_key'],
@@ -26,7 +27,7 @@ const UNIQUE_BY = {
 
 const EMPTY_DB = () => ({
   profiles: [], favorites: [], ratings: [], notes: [], shopping_list: [],
-  user_recipes: [], lists: [], list_items: [], follows: [], activity: [],
+  pantry: [], user_recipes: [], lists: [], list_items: [], follows: [], activity: [],
 })
 
 export function createMockSupabase(seed = {}) {
@@ -90,7 +91,7 @@ export function createMockSupabase(seed = {}) {
     if (out.id === undefined && ['user_recipes', 'lists', 'activity'].includes(table)) {
       out.id = nextId(table === 'user_recipes' ? 'ur' : table === 'lists' ? 'ls' : 'ac')
     }
-    if (out.id === undefined && ['favorites', 'ratings', 'notes', 'shopping_list', 'list_items'].includes(table)) {
+    if (out.id === undefined && ['favorites', 'ratings', 'notes', 'shopping_list', 'pantry', 'list_items'].includes(table)) {
       out.id = ++idCounter
     }
     if (out.created_at === undefined && table !== 'profiles') {
