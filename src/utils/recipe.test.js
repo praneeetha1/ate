@@ -5,6 +5,7 @@ import {
   keyForName, resolveRecipe, toUserRecipeRow, normalizeUserRecipe,
   tagStyles, applyFilters, ingredientLabel, CATALOG_CATEGORIES,
 } from './recipe'
+import { parseFrac } from './fractions'
 
 describe('recipe keys', () => {
   it('round-trips a catalog key through text form', () => {
@@ -118,6 +119,38 @@ describe('catalog data integrity', () => {
     const real = new Set(RECIPES.map(r => r.category))
     for (const c of CATALOG_CATEGORIES) expect(real.has(c)).toBe(true)
     expect(CATALOG_CATEGORIES.length).toBe(real.size)
+  })
+
+  // Regression: 31 rows held a container size that had split across the
+  // fields — amount:'1 15', unit:'oz', item:'can crushed tomatoes' — from a
+  // source line reading "1 15-oz can crushed tomatoes". parseFrac() matches
+  // neither fraction pattern, falls through to parseFloat and yields 1, so the
+  // row rendered as "1 oz can crushed tomatoes" and scaled off the count
+  // instead of the size. 6 more rows had a range leak into `item`.
+  it('has no amount that parseFrac cannot read', () => {
+    const unreadable = RECIPES.flatMap((r, ri) =>
+      r.ingredients
+        .map((ing, ii) => ({ ri, ii, ing }))
+        .filter(({ ing }) => ing.amount.trim() && parseFrac(ing.amount) === null),
+    )
+    expect(unreadable).toEqual([])
+  })
+
+  it('has no amount holding two separate numbers', () => {
+    const split = RECIPES.flatMap(r =>
+      r.ingredients.filter(ing => /^\d+\s+\d+$/.test(ing.amount.trim())),
+    )
+    expect(split).toEqual([])
+  })
+
+  it('has no item left holding an orphaned unit or range', () => {
+    const leaked = RECIPES.flatMap(r =>
+      r.ingredients.filter(ing =>
+        /^[-\u2013]/.test(ing.item.trim()) ||       // "-ounce salmon fillets"
+        /^\s*to\s+\d/i.test(ing.item),             // "to 1/2 cup ice water"
+      ),
+    )
+    expect(leaked).toEqual([])
   })
 
   it('has a tag colour for every catalog category', () => {

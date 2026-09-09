@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { supabase } from '../lib/supabase'
 import { ingredientLabel, resolveRecipe, keyToText } from '../utils/recipe'
+import { shoppingName, isNeverShopped } from '../utils/ingredients'
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import UsernameModal from '../components/UsernameModal'
@@ -344,27 +345,40 @@ export default function Profile({ onOpen }) {
                     >Remove</button>
                   </div>
                   <ul className="list-none">
-                    {recipe.ingredients.map((ing, i) => {
-                      const checked = isShopItemChecked(key, i)
-                      const { measure, item } = ingredientLabel(ing, 1)
-                      return (
-                        <li
-                          key={i}
-                          className={`border-b border-[rgba(200,180,130,0.2)] last:border-0 text-[0.86rem] transition-all hover:bg-paper ${checked ? 'opacity-40' : ''}`}
-                        >
-                          <label className="flex items-start gap-2.5 px-3.5 py-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => toggleShopItem(key, i)}
-                              className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px]"
-                            />
-                            <span className="text-accent-dk font-bold min-w-[56px] shrink-0">{measure}</span>
-                            <span className="text-ink">{item}</span>
-                          </label>
-                        </li>
-                      )
-                    })}
+                    {recipe.ingredients
+                      // Index has to be captured before filtering: the checked
+                      // state and toggleShopItem both address ingredients by
+                      // their position in the recipe, not in this list.
+                      .map((ing, i) => ({ ing, i }))
+                      .filter(({ ing }) => !isNeverShopped(ing.item))
+                      .map(({ ing, i }) => {
+                        const checked = isShopItemChecked(key, i)
+                        // The catalog's `item` is a cooking string — prep, notes
+                        // and alternatives inline, up to 128 chars. None of that
+                        // helps in a shop, and the recipe view still shows it in
+                        // full, so the list renders the shopping name instead.
+                        const { measure } = ingredientLabel(ing, 1)
+                        const item = shoppingName(ing.item)
+                        return (
+                          <li
+                            key={i}
+                            className={`border-b border-[rgba(200,180,130,0.2)] last:border-0 text-[0.86rem] transition-all hover:bg-paper ${checked ? 'opacity-40' : ''}`}
+                          >
+                            <label className="flex items-start gap-2.5 px-3.5 py-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleShopItem(key, i)}
+                                className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px]"
+                              />
+                              <span className="text-accent-dk font-bold min-w-[56px] shrink-0">{measure}</span>
+                              {/* The full string stays reachable — some of the
+                                  dropped detail matters once you're cooking. */}
+                              <span className="text-ink" title={ing.item}>{item}</span>
+                            </label>
+                          </li>
+                        )
+                      })}
                   </ul>
                 </div>
               )

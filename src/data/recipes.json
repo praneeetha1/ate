@@ -315,9 +315,9 @@
         "item": "italian seasoning"
       },
       {
-        "amount": "1 15",
-        "unit": "oz",
-        "item": "can crushed Italian tomatoes"
+        "amount": "1",
+        "unit": "can",
+        "item": "crushed Italian tomatoes (15 oz)"
       },
       {
         "amount": "",
@@ -523,9 +523,9 @@
         "item": "unsalted butter, cold and cut into small pieces"
       },
       {
-        "amount": "1/4",
-        "unit": "",
-        "item": "to 1/2 cup ice water"
+        "amount": "1/2",
+        "unit": "cup",
+        "item": "ice water (start with 1/4 cup)"
       }
     ],
     "steps": [
@@ -1034,9 +1034,9 @@
         "item": "garlic cloves, minced"
       },
       {
-        "amount": "1 28",
-        "unit": "oz",
-        "item": "can diced tomatoes"
+        "amount": "1",
+        "unit": "can",
+        "item": "diced tomatoes (28 oz)"
       },
       {
         "amount": "3/4",
@@ -1394,9 +1394,9 @@
         "item": "Kosher salt and freshly ground pepper"
       },
       {
-        "amount": "4 6",
+        "amount": "4",
         "unit": "",
-        "item": "-ounce center-cut skinless halibut fillets (1 3/4 inches thick)"
+        "item": "6-ounce center-cut skinless halibut fillets (1 3/4 inches thick)"
       },
       {
         "amount": "2",
@@ -1574,9 +1574,9 @@
         "item": "wasabi paste or powder"
       },
       {
-        "amount": "4 4",
+        "amount": "4",
         "unit": "",
-        "item": "-ounce salmon fillets"
+        "item": "4-ounce salmon fillets"
       }
     ],
     "steps": [
@@ -1664,9 +1664,9 @@
         "item": "pecans, chopped"
       },
       {
-        "amount": "9",
+        "amount": "1",
         "unit": "",
-        "item": "-inch unbaked pie shell"
+        "item": "9-inch unbaked pie shell"
       }
     ],
     "steps": [
@@ -1688,8 +1688,8 @@
     "ingredients": [
       {
         "amount": "4",
-        "unit": "",
-        "item": "(1 oz.) squares Godiva cooking chocolate or 4 oz. Baker's German sweet chocolate"
+        "unit": "square",
+        "item": "Godiva cooking chocolate (1 oz each, or 4 oz Baker's German sweet chocolate)"
       },
       {
         "amount": "1/2",
@@ -2252,9 +2252,9 @@
         "item": "can unsweetened coconut milk"
       },
       {
-        "amount": "1 14",
-        "unit": "oz",
-        "item": "can sweetened condensed milk"
+        "amount": "1",
+        "unit": "can",
+        "item": "sweetened condensed milk (14 oz)"
       },
       {
         "amount": "1",
@@ -4848,7 +4848,7 @@
       {
         "amount": "4",
         "unit": "",
-        "item": "-ounce skinless trout fillets"
+        "item": "skinless trout fillets"
       },
       {
         "amount": "3",
@@ -5257,9 +5257,9 @@
         "item": "Kosher salt and freshly ground pepper"
       },
       {
-        "amount": "2 28",
-        "unit": "oz",
-        "item": "cans whole San Marzano tomatoes, crushed by hand"
+        "amount": "2",
+        "unit": "can",
+        "item": "whole San Marzano tomatoes (28 oz), crushed by hand"
       },
       {
         "amount": "3",
@@ -5713,9 +5713,9 @@
         "item": "dry white wine, such as Chardonnay"
       },
       {
-        "amount": "1 8",
-        "unit": "oz",
-        "item": "jar sun-dried tomatoes in oil, drained and patted dry"
+        "amount": "1",
+        "unit": "jar",
+        "item": "sun-dried tomatoes in oil (8 oz), drained and patted dry"
       },
       {
         "amount": "1",
@@ -7012,9 +7012,9 @@
         "item": "celery, diced"
       },
       {
-        "amount": "2 16",
-        "unit": "oz",
-        "item": "can diced tomatoes in juice (or substitute 2 small cans of tomato sauce)"
+        "amount": "2",
+        "unit": "can",
+        "item": "diced tomatoes in juice (16 oz, or substitute 2 small cans of tomato sauce)"
       },
       {
         "amount": "4",
@@ -7057,19 +7057,19 @@
         "item": "beef bouillon"
       },
       {
-        "amount": "1 16",
-        "unit": "oz",
-        "item": "can corn"
+        "amount": "1",
+        "unit": "can",
+        "item": "corn (16 oz)"
       },
       {
-        "amount": "1 16",
-        "unit": "oz",
-        "item": "can green beans"
+        "amount": "1",
+        "unit": "can",
+        "item": "green beans (16 oz)"
       },
       {
-        "amount": "1 16",
-        "unit": "oz",
-        "item": "can green peas"
+        "amount": "1",
+        "unit": "can",
+        "item": "green peas (16 oz)"
       }
     ],
     "steps": [
@@ -7150,9 +7150,9 @@
         "item": "black beans, rinsed and drained"
       },
       {
-        "amount": "1 15",
-        "unit": "oz",
-        "item": "can tomato sauce"
+        "amount": "1",
+        "unit": "can",
+        "item": "tomato sauce (15 oz)"
       },
       {
         "amount": "1",
@@ -8433,9 +8433,9 @@
         "item": "chicken broth"
       },
       {
-        "amount": "1 12",
-        "unit": "oz",
-        "item": "bottle English ale"
+        "amount": "1",
+        "unit": "bottle",
+        "item": "English ale (12 oz)"
       },
       {
         "amount": "1",
@@ -8500,9 +8500,9 @@
         "item": "garlic clove, pressed"
       },
       {
-        "amount": "1 15",
-        "unit": "oz",
-        "item": "can crushed tomatoes, undrained"
+        "amount": "1",
+        "unit": "can",
+        "item": "crushed tomatoes (15 oz), undrained"
       },
       {
         "amount": "1 1/2",
@@ -8608,9 +8608,9 @@
         "item": "Kosher salt and freshly ground pepper"
       },
       {
-        "amount": "4 7",
+        "amount": "4",
         "unit": "",
-        "item": "-inch sourdough bread boules (round loaves)"
+        "item": "7-inch sourdough bread boules (round loaves)"
       },
       {
         "amount": "4",
@@ -8685,9 +8685,9 @@
         "item": "cooked white beans, such as Great Northern (rinsed, if canned)"
       },
       {
-        "amount": "1 14",
-        "unit": "oz",
-        "item": "can whole tomatoes with juice, chopped into 1/2-inch pieces"
+        "amount": "1",
+        "unit": "can",
+        "item": "whole tomatoes with juice (14 oz), chopped into 1/2-inch pieces"
       },
       {
         "amount": "1/2",
@@ -10869,9 +10869,9 @@
     ],
     "ingredients": [
       {
-        "amount": "1 6",
+        "amount": "1",
         "unit": "",
-        "item": "-inch whole-wheat flatbread, such as naan or pocketless pita"
+        "item": "6-inch whole-wheat flatbread, such as naan or pocketless pita"
       },
       {
         "amount": "3",
@@ -12270,9 +12270,9 @@
         "item": "garlic clove, pressed"
       },
       {
-        "amount": "2 14",
-        "unit": "oz",
-        "item": "can artichoke hearts in water, drained, divided"
+        "amount": "2",
+        "unit": "can",
+        "item": "artichoke hearts in water (14 oz), drained, divided"
       },
       {
         "amount": "4",
@@ -12801,9 +12801,9 @@
         "item": "frozen diced butternut squash, thawed"
       },
       {
-        "amount": "1 15",
-        "unit": "oz",
-        "item": "can black beans"
+        "amount": "1",
+        "unit": "can",
+        "item": "black beans (15 oz)"
       },
       {
         "amount": "1",
@@ -13804,9 +13804,9 @@
     "dietary": [],
     "ingredients": [
       {
-        "amount": "1 14",
-        "unit": "oz",
-        "item": "package pita bread"
+        "amount": "1",
+        "unit": "package",
+        "item": "pita bread (14 oz)"
       },
       {
         "amount": "",
@@ -13834,9 +13834,9 @@
         "item": "Greek seasoning"
       },
       {
-        "amount": "1 16",
-        "unit": "oz",
-        "item": "container prepared hummus"
+        "amount": "1",
+        "unit": "container",
+        "item": "prepared hummus (16 oz)"
       },
       {
         "amount": "1 1/2",
@@ -13915,9 +13915,9 @@
         "item": "tomato, finely chopped"
       },
       {
-        "amount": "1 15",
-        "unit": "oz",
-        "item": "can black beans, rinsed and drained"
+        "amount": "1",
+        "unit": "can",
+        "item": "black beans (15 oz), rinsed and drained"
       },
       {
         "amount": "",
@@ -14338,9 +14338,9 @@
         "item": "capers"
       },
       {
-        "amount": "2",
+        "amount": "3",
         "unit": "",
-        "item": "to 3 fresh basil leaves"
+        "item": "fresh basil leaves (2 to 3)"
       },
       {
         "amount": "1",
@@ -15023,9 +15023,9 @@
         "item": "ground cumin"
       },
       {
-        "amount": "2 14",
-        "unit": "oz",
-        "item": "cans black-eyed peas, 1 undrained; 1 drained and rinsed"
+        "amount": "2",
+        "unit": "can",
+        "item": "black-eyed peas (14 oz), 1 undrained; 1 drained and rinsed"
       },
       {
         "amount": "3",
@@ -16787,8 +16787,8 @@
       },
       {
         "amount": "1",
-        "unit": "",
-        "item": "-inch piece of ginger, peeled and sliced"
+        "unit": "inch",
+        "item": "piece of ginger, peeled and sliced"
       },
       {
         "amount": "2",
@@ -17048,9 +17048,9 @@
         "item": "mini burger recipe"
       },
       {
-        "amount": "1 2",
-        "unit": "",
-        "item": "-inch length of carrot, sliced into 1/4 inch rounds"
+        "amount": "2",
+        "unit": "inch",
+        "item": "length of carrot, sliced into 1/4 inch rounds"
       },
       {
         "amount": "1/2",
@@ -17217,9 +17217,9 @@
         "item": "semolina"
       },
       {
-        "amount": "4",
-        "unit": "",
-        "item": "to 4 1/2 cups Italian-style flour"
+        "amount": "4 1/2",
+        "unit": "cup",
+        "item": "Italian-style flour (start with 4 cups)"
       },
       {
         "amount": "1",
@@ -17307,9 +17307,9 @@
     ],
     "ingredients": [
       {
-        "amount": "1 6",
-        "unit": "oz",
-        "item": "can tomato paste (6oz can is about 2/3 cup)"
+        "amount": "1",
+        "unit": "can",
+        "item": "tomato paste (6 oz, about 2/3 cup)"
       },
       {
         "amount": "1/2",
@@ -17532,9 +17532,9 @@
         "item": "large green cabbage leaf"
       },
       {
-        "amount": "1 2",
-        "unit": "",
-        "item": "-inch length English cucumber, sliced into thin rounds"
+        "amount": "2",
+        "unit": "inch",
+        "item": "length English cucumber, sliced into thin rounds"
       },
       {
         "amount": "1/2",
@@ -17823,9 +17823,9 @@
         "item": "Cumin Powder"
       },
       {
-        "amount": "1 2",
-        "unit": "",
-        "item": "-inch piece Ginger"
+        "amount": "2",
+        "unit": "inch",
+        "item": "piece Ginger"
       },
       {
         "amount": "3",
@@ -19581,9 +19581,9 @@
         "item": "raisins"
       },
       {
-        "amount": "1 14",
-        "unit": "oz",
-        "item": "can condensed milk"
+        "amount": "1",
+        "unit": "can",
+        "item": "condensed milk (14 oz)"
       },
       {
         "amount": "2",
@@ -19914,9 +19914,9 @@
         "item": "cold unsalted butter, cut into small pieces"
       },
       {
-        "amount": "3",
-        "unit": "",
-        "item": "to 5 tablespoons ice water"
+        "amount": "5",
+        "unit": "tablespoon",
+        "item": "ice water (start with 3 tbsp)"
       },
       {
         "amount": "3",
@@ -20437,9 +20437,9 @@
     ],
     "ingredients": [
       {
-        "amount": "1/2",
+        "amount": "2/3",
         "unit": "cup",
-        "item": "to 2/3 cup lukewarm water, Use the greater amount in winter or in a dry climate; the lesser amount in summer or a humid climate."
+        "item": "lukewarm water (1/2 cup in humid weather)"
       },
       {
         "amount": "6",
