@@ -26,6 +26,7 @@ export default function Home({ onOpen }) {
   const [timeFilter,      setTimeFilter]      = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [pantryMode,     setPantryMode]      = useState(false)
+  const [catFilter,      setCatFilter]       = useState('')
   const { userRecipes } = useApp()
   const { pantryEnabled, pantryReady, pantryState, pantry } = usePantry()
 
@@ -61,6 +62,29 @@ export default function Home({ onOpen }) {
       .map(p => ({ ...p, fit: pantryFit(p.r, pantryState) }))
       .sort((a, b) => compareFit(a.fit, b.fit))
   }, [pantryEnabled, pantryMode, pantry, filtered, filteredMine, pantryState])
+
+  /**
+   * The categories actually represented in the ranking, in catalogue order.
+   *
+   * Derived from the results rather than from the full category list so no
+   * pill ever leads to an empty screen — and so a category that only exists
+   * among the user's own recipes still gets one.
+   */
+  const rankedCats = useMemo(() => {
+    const present = new Set(ranked.map(({ r }) => r.category))
+    return [
+      ...CATEGORIES.filter(c => present.has(c)),
+      ...[...present].filter(c => !CATEGORIES.includes(c)).sort(),
+    ]
+  }, [ranked])
+
+  // Category narrowing applies to the full ranked list only. The "Closest to
+  // ready" strip stays unfiltered: it's a preview of your best options
+  // overall, and its pills aren't on screen to explain a narrowed one.
+  const rankedVisible = useMemo(
+    () => (catFilter ? ranked.filter(({ r }) => r.category === catFilter) : ranked),
+    [ranked, catFilter],
+  )
 
   function surprise() {
     if (!filtered.length) return
@@ -162,8 +186,36 @@ export default function Home({ onOpen }) {
             <h2 id="closest-heading" className="font-display text-[1.1rem] font-semibold text-ink">
               Closest to ready
             </h2>
-            <span className="text-[0.72rem] text-muted">{ranked.length} recipes</span>
+            <span className="text-[0.72rem] text-muted">{rankedVisible.length} recipes</span>
           </div>
+
+          {/* Course filter, only in this mode: the flat ranking replaces the
+              category strips, so this is what puts "just breakfast" back. */}
+          {rankedCats.length > 1 && (
+            <div
+              className="flex items-center gap-2 px-5 pb-3 overflow-x-auto scrollbar-hide"
+              role="group"
+              aria-label="Filter by category"
+            >
+              {/* "Any course", not "All" — the diet row above already has an
+                  All pill, and two identically named buttons on one screen is
+                  ambiguous in the UI and indistinguishable to a screen
+                  reader. Matches the existing "Any time" wording. */}
+              <button
+                onClick={() => setCatFilter('')}
+                aria-pressed={catFilter === ''}
+                className={`${pillBase} ${catFilter === '' ? pillActive : pillInactive}`}
+              >Any course</button>
+              {rankedCats.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setCatFilter(cat)}
+                  aria-pressed={catFilter === cat}
+                  className={`${pillBase} ${catFilter === cat ? pillActive : pillInactive}`}
+                >{cat}</button>
+              ))}
+            </div>
+          )}
 
           {/* An untouched pantry ranks by recipe size alone, which looks like a
               broken feature unless we say why. */}
@@ -175,13 +227,13 @@ export default function Home({ onOpen }) {
             </p>
           )}
 
-          {ranked.length === 0 ? (
+          {rankedVisible.length === 0 ? (
             <p className="text-center py-[60px] font-display text-[1.1rem] text-muted px-5">
               No recipes match those filters.
             </p>
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 px-5 pb-6">
-              {ranked.map(({ r, i, fit }) => (
+              {rankedVisible.map(({ r, i, fit }) => (
                 <div key={i}>
                   <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill />
                   <PantryFit fit={fit} />

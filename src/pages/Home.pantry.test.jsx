@@ -174,3 +174,90 @@ describe('the Closest to ready strip', () => {
     expect(toggle()).toHaveAttribute('aria-pressed', 'true')
   })
 })
+
+describe('filtering what I can make by category', () => {
+  const catGroup = () => screen.getByRole('group', { name: /filter by category/i })
+  const count = () => Number(screen.getByText(/\d+ recipes/).textContent.match(/\d+/)[0])
+  const titles = () => [...document.querySelectorAll('.grid > div')]
+    .map(d => d.querySelector('button')?.textContent.trim()).filter(Boolean)
+
+  async function openMode(user) {
+    await user.click(await screen.findByRole('button', { name: /what can i make/i }))
+    await screen.findByRole('heading', { name: /closest to ready/i })
+  }
+
+  it('offers a pill per course, plus All', async () => {
+    const user = userEvent.setup()
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await openMode(user)
+
+    const pills = [...catGroup().querySelectorAll('button')].map(b => b.textContent.trim())
+    // Not "All": the diet row already owns that label.
+    expect(pills[0]).toBe('Any course')
+    for (const cat of ['Breakfast', 'Drink', 'Main Dish', 'Dessert']) {
+      expect(pills).toContain(cat)
+    }
+  })
+
+  it('narrows the ranking to one course', async () => {
+    const user = userEvent.setup()
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await openMode(user)
+    const all = count()
+
+    await user.click(screen.getByRole('button', { name: 'Breakfast' }))
+
+    await waitFor(() => expect(count()).toBeLessThan(all))
+    expect(screen.getByRole('button', { name: 'Breakfast' })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  // The ranking is the point of the mode, so narrowing must not reorder it.
+  it('keeps closest-first order inside a course', async () => {
+    const user = userEvent.setup()
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await openMode(user)
+    await user.click(screen.getByRole('button', { name: 'Breakfast' }))
+
+    await waitFor(() => expect(titles().length).toBeGreaterThan(2))
+    const missing = [...document.querySelectorAll('.grid > div')]
+      .map(d => d.textContent.match(/Missing (\d+) of/))
+      .map(m => (m ? Number(m[1]) : 0))
+    for (let i = 1; i < missing.length; i++) {
+      expect(missing[i]).toBeGreaterThanOrEqual(missing[i - 1])
+    }
+  })
+
+  it('goes back to everything on Any course', async () => {
+    const user = userEvent.setup()
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await openMode(user)
+    const all = count()
+
+    await user.click(screen.getByRole('button', { name: 'Drink' }))
+    await waitFor(() => expect(count()).toBeLessThan(all))
+    await user.click(screen.getByRole('button', { name: 'Any course' }))
+
+    await waitFor(() => expect(count()).toBe(all))
+  })
+
+  it('stacks with the diet and time filters', async () => {
+    const user = userEvent.setup()
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await openMode(user)
+
+    await user.click(screen.getByRole('button', { name: 'Main Dish' }))
+    const justCourse = count()
+    await user.click(screen.getByRole('button', { name: /under 30 min/i }))
+
+    await waitFor(() => expect(count()).toBeLessThan(justCourse))
+  })
+
+  // The pills explain a narrowed list; the strip is an unnarrowed preview, so
+  // showing them there would describe something that isn't happening.
+  it('does not put the pills on the Closest to ready strip', async () => {
+    renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    await screen.findByRole('heading', { name: /closest to ready/i })
+
+    expect(screen.queryByRole('group', { name: /filter by category/i })).toBeNull()
+  })
+})
