@@ -48,10 +48,32 @@ const LEADING_FLUFF_WORDS = [
   'fresh', 'freshly', 'finely', 'thinly',
   'roughly', 'coarsely', 'large', 'medium', 'small', 'extra',
 ]
-const LEADING_FLUFF = ['(?:best|good)[- ]quality', ...LEADING_FLUFF_WORDS].join('|')
+// The "-sized" forms come first: alternation is ordered, and a bare "medium"
+// would match "medium sized onion" and leave a stranded "sized".
+const LEADING_FLUFF = [
+  '(?:best|good)[- ]quality',
+  '(?:medium|large|small)[- ]sized',
+  ...LEADING_FLUFF_WORDS,
+].join('|')
 
 // Notes aimed at the cook mid-recipe rather than at the shopper.
-const ASIDES = /\b(for (?:serving|garnish(?:ing)?|brushing|drizzling|dusting|greasing|decorating|(?:deep[- ]|shallow[- ]|pan[- ])?frying)|to taste|plus more.*|divided|optional|(?:at )?room temperature)\b/gi
+const ASIDES = /\b(for (?:serving|garnish(?:ing)?|brushing|drizzling|dusting|greasing|decorating|(?:deep[- ]|shallow[- ]|pan[- ])?frying)|to taste|plus more.*|such as.*|divided|optional|(?:at )?room temperature)\b/gi
+
+/**
+ * A quantity written as prose instead of a number.
+ *
+ * "A few drops rosewater", "About 500 ml vegetable oil", "a medium sized
+ * onion". These reach the item field because there's no numeral for an
+ * importer to lift into `amount`, so without this they become pantry rows
+ * and suggestion entries in their own right.
+ */
+const PROSE_QUANTITY =
+  /^(?:(?:a few|a couple(?: of)?|about|approximately|around|some|enough|an?)\s+)+(?:\d+(?:\.\d+)?\s*)?/i
+
+// A measure left stranded at the front once the prose quantity came off, as
+// in "A few drops rosewater" -> "drops rosewater".
+const LEADING_MEASURE =
+  /^(?:ml|l|g|kg|oz|lb|cups?|tsps?|tbsps?|teaspoons?|tablespoons?|drops?|strands?|pinch(?:es)?|dash(?:es)?|handfuls?|sprigs?|cloves?|slices?|pieces?)\s+/i
 
 const TRAILING_PREP_RE = new RegExp(`\\b(?:${TRAILING_PREP})\\b\\s*$`, 'i')
 const LEADING_FLUFF_RE = new RegExp(`^(?:${LEADING_FLUFF})\\s+`, 'i')
@@ -67,21 +89,38 @@ export function shoppingName(raw) {
   if (!raw) return ''
   const original = String(raw).trim()
 
+  // Trimmed first because every clause after the head one arrives with the
+  // space that followed its comma, and the rules below are anchored at ^.
   const tidy = t => t
+    .trim()
     .replace(ASIDES, '')
+    .replace(PROSE_QUANTITY, '')
+    .replace(LEADING_MEASURE, '')
+    .replace(/^of\s+/i, '')
     .replace(TRAILING_PREP_RE, '')
     .replace(LEADING_FLUFF_RE, '')
     .replace(/\s+/g, ' ')
-    .replace(/^[-.\s·]+|[-.\s·]+$/g, '')
+    .replace(/^[-.,;\s·]+|[-.,;\s·]+$/g, '')
 
   const whole = original.replace(/\s*\([^)]*\)/g, '')  // "(about 10 cups)"
-  // Head clause only: "leeks, white parts only" -> "leeks".
-  let s = tidy(whole.split(/[,;]/)[0])
 
-  // Unless the head clause is nothing but modifiers. "skinless, boneless
-  // chicken thighs" would otherwise shop for "skinless" and — once the
-  // matcher strips that too — match on nothing at all.
-  if (!s || isAllModifiers(s)) s = tidy(whole) || s
+  /**
+   * The first clause that actually names something.
+   *
+   * Normally that's the head clause: "leeks, white parts only" -> "leeks".
+   * But a line can lead with modifiers — "skinless, boneless chicken thighs"
+   * — and stopping at "skinless" shops for nothing, then matches nothing once
+   * canonicalItem() strips it too. Walking on to the next clause reaches the
+   * chicken. Keeping the whole string instead (which is what this did first)
+   * left a stranded leading comma the moment the modifiers came back out.
+   */
+  const clauses = whole.split(/[,;]/)
+  let s = ''
+  for (const clause of clauses) {
+    const t = tidy(clause)
+    if (t && !isAllModifiers(t)) { s = t; break }
+  }
+  if (!s) s = tidy(clauses[0]) || tidy(whole)
 
   // A handful of catalog rows are malformed (a recipe note that leaked into the
   // item field). Better to show the raw string than an empty row.
@@ -318,7 +357,11 @@ export function canonicalItem(raw) {
     .replace(/\s+/g, ' ')
     .trim()
     .replace(CONTAINERS, '')
-    .replace(/^[-.\s]+|[-.\s]+$/g, '')
+    // CONTAINERS takes the count with it — "3 cloves of garlic" -> "of
+    // garlic" — so the linking word has to come off on this side too, after
+    // it rather than before.
+    .replace(/^of\s+/, '')
+    .replace(/^[-.,;\s]+|[-.,;\s]+$/g, '')
 
   // "Kosher salt and freshly ground black pepper" and nine other phrasings all
   // mean the same two staples. Folding them here rather than adding ten alias
@@ -441,6 +484,30 @@ export function matchesIngredient(canonicalIngredients, selected) {
   const escaped = selected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const word = new RegExp(`\\b${escaped}(?:e?s)?\\b`)
   return canonicalIngredients.some(c => word.test(c))
+}
+
+/**
+ * The names worth suggesting for what's been typed so far, best first.
+ *
+ * Exact match, then names starting with the query, then anything containing
+ * it; shorter names win inside a band. The ordering is the point: plain
+ * alphabetical with a cap made the obvious answer unreachable, because typing
+ * "tomato" filled every slot with "cherry tomato", "grape tomato", "plum
+ * tomato"… and never offered "tomato" itself.
+ *
+ * Capped hard, because these render in a dropdown under the box rather than a
+ * scrolling panel — a list long enough to need scrolling is a list nobody
+ * reads to the end of.
+ */
+export function rankSuggestions(names, query, limit = 8, exclude = []) {
+  const q = String(query || '').trim().toLowerCase()
+  if (!q) return []
+  const skip = new Set(exclude)
+  const rank = n => (n === q ? 0 : n.startsWith(q) ? 1 : 2)
+  return names
+    .filter(n => n.includes(q) && !skip.has(n))
+    .sort((a, b) => rank(a) - rank(b) || a.length - b.length || a.localeCompare(b))
+    .slice(0, limit)
 }
 
 /**

@@ -3,9 +3,10 @@ import { VISIBLE_CATALOG } from '../utils/recipe'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
-import { canonicalItem, matchesIngredient } from '../utils/ingredients'
+import { canonicalItem, matchesIngredient, rankSuggestions } from '../utils/ingredients'
 import { pantryFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
+import Highlight from '../components/Highlight'
 import Icon from '../components/Icon'
 
 /**
@@ -29,19 +30,6 @@ const CATALOG_INGREDIENTS = (() => {
 
 function scoreRecipe(canonicalIngredients, selected) {
   return selected.filter(sel => matchesIngredient(canonicalIngredients, sel)).length
-}
-
-function Highlight({ text, query }) {
-  if (!query) return text
-  const idx = text.toLowerCase().indexOf(query.toLowerCase())
-  if (idx === -1) return text
-  return (
-    <>
-      {text.slice(0, idx)}
-      <em className="text-accent-dk font-bold not-italic">{text.slice(idx, idx + query.length)}</em>
-      {text.slice(idx + query.length)}
-    </>
-  )
 }
 
 export default function Search({ onOpen }) {
@@ -100,16 +88,10 @@ export default function Search({ onOpen }) {
    * unreachable: typing "tomato" filled every slot with "cherry tomato",
    * "grape tomato", "plum tomato"… and never offered "tomato" itself.
    */
-  const suggestions = useMemo(() => {
-    if (!ingQuery) return []
-    const q = ingQuery.trim().toLowerCase()
-    if (!q) return []
-    const rank = n => (n === q ? 0 : n.startsWith(q) ? 1 : 2)
-    return allIngredients
-      .filter(n => n.includes(q) && !selectedIngs.includes(n))
-      .sort((a, b) => rank(a) - rank(b) || a.length - b.length || a.localeCompare(b))
-      .slice(0, 12)
-  }, [ingQuery, selectedIngs, allIngredients])
+  const suggestions = useMemo(
+    () => rankSuggestions(allIngredients, ingQuery, 12, selectedIngs),
+    [ingQuery, selectedIngs, allIngredients],
+  )
 
   function addIngredient(name) {
     if (!selectedIngs.includes(name)) setSelectedIngs(p => [...p, name])

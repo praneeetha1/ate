@@ -225,11 +225,111 @@ describe('Fridge / Pantry section', () => {
       expect(h.client.__db.pantry).toEqual([])
     })
 
-    it('offers the catalogue as suggestions', async () => {
+  })
+
+  /**
+   * This was a native <datalist>, which browsers render in their own panel —
+   * hundreds of rows tall, in no useful order, and impossible to theme. It's
+   * now a short ranked list under the box.
+   */
+  describe('the suggestion list', () => {
+    const box = () => screen.getByLabelText(/add an item to your pantry/i)
+    const list = () => screen.queryByRole('list', { name: /matching ingredients/i })
+    const shown = () =>
+      [...(list()?.querySelectorAll('button') || [])].map(b => b.textContent.trim())
+
+    // The pantry loads asynchronously, so the box isn't there on first paint.
+    async function ready(opts) {
+      const user = userEvent.setup()
+      renderSection(opts)
+      await screen.findByLabelText(/add an item to your pantry/i)
+      return user
+    }
+
+    it('stays out of the way until something is typed', async () => {
       renderSection()
       await screen.findByLabelText(/add an item to your pantry/i)
-      const options = document.querySelectorAll('#pantry-items option')
-      expect(options.length).toBeGreaterThan(500)
+      expect(list()).toBeNull()
+    })
+
+    it('offers a short list, not the whole vocabulary', async () => {
+      const user = await ready()
+      await user.type(box(), 'to')
+
+      await waitFor(() => expect(list()).toBeInTheDocument())
+      // The catalogue has hundreds of matches for "to"; a dropdown that long
+      // is one nobody reads to the end of.
+      expect(shown().length).toBeGreaterThan(0)
+      expect(shown().length).toBeLessThanOrEqual(8)
+    })
+
+    // Ranked by what's typed: exact first, then prefix, then contains. Plain
+    // alphabetical made the obvious answer unreachable.
+    it('puts the closest match first', async () => {
+      const user = await ready()
+      await user.type(box(), 'tomato')
+
+      await waitFor(() => expect(list()).toBeInTheDocument())
+      expect(shown()[0]).toBe('tomato')
+    })
+
+    it('adds the one you click', async () => {
+      const user = await ready()
+      await user.type(box(), 'panee')
+      await waitFor(() => expect(shown()[0]).toBe('paneer'))
+
+      // Clicked as the list renders it: Highlight splits the typed part into
+      // its own element, so the row is addressed the same way shown() reads it.
+      await user.click(list().querySelector('button'))
+
+      await waitFor(() => expect(h.client.__db.pantry).toEqual([
+        expect.objectContaining({ item: 'paneer', state: 'have' }),
+      ]))
+      expect(box()).toHaveValue('')
+    })
+
+    /**
+     * Enter takes the top suggestion, so a half-typed word doesn't become a
+     * pantry row of its own. Something the catalogue has never heard of still
+     * gets in, because then there is no suggestion to take.
+     */
+    it('completes a half-typed name on Enter', async () => {
+      const user = await ready()
+      await user.type(box(), 'panee{Enter}')
+
+      await waitFor(() => expect(h.client.__db.pantry).toEqual([
+        expect.objectContaining({ item: 'paneer', state: 'have' }),
+      ]))
+    })
+
+    it('still takes a name the catalogue has never heard of', async () => {
+      const user = await ready()
+      await user.type(box(), 'zzzfruit{Enter}')
+
+      await waitFor(() => expect(h.client.__db.pantry).toEqual([
+        expect.objectContaining({ item: 'zzzfruit', state: 'have' }),
+      ]))
+    })
+
+    // It's already in a list below; offering it again only leads to the
+    // "already on the list" note.
+    it('does not offer something already tracked', async () => {
+      const user = await ready({ pantry: [{ user_id: 'user-1', item: 'paneer', state: 'have' }] })
+      await user.type(box(), 'panee')
+
+      // The box matched something, just never the row already tracked.
+      await waitFor(() => expect(box()).toHaveValue('panee'))
+      expect(shown()).not.toContain('paneer')
+    })
+
+    it('closes on Escape', async () => {
+      const user = await ready()
+      await user.type(box(), 'tomato')
+      await waitFor(() => expect(list()).toBeInTheDocument())
+
+      await user.type(box(), '{Escape}')
+
+      await waitFor(() => expect(list()).toBeNull())
     })
   })
 

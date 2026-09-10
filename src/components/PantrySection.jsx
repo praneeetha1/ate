@@ -1,8 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
 import { VISIBLE_CATALOG } from '../utils/recipe'
 import { usePantry } from '../context/PantryContext'
-import { PANTRY_STAPLES, canonicalItem, isNeverShopped } from '../utils/ingredients'
+import { PANTRY_STAPLES, canonicalItem, isNeverShopped, rankSuggestions } from '../utils/ingredients'
 import { PANTRY_LABELS } from '../utils/pantry'
+import Highlight from './Highlight'
 import Icon from './Icon'
 
 /**
@@ -115,7 +116,47 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
   const { pantry, setPantryState, cyclePantry, pantryEnabled, pantryReady } = usePantry()
   const [draft, setDraft] = useState('')
   const [note,  setNote]  = useState('')
+  const [showSuggest, setShowSuggest] = useState(false)
   const inputRef = useRef(null)
+
+  /**
+   * A short, ranked list rather than the whole vocabulary.
+   *
+   * Eight is the cap because these sit under the box: a dropdown long enough
+   * to scroll is one nobody reads to the end of. Anything already tracked is
+   * left out — it's in the lists below, and offering it again would only lead
+   * to the "already on the list" note.
+   */
+  const suggestions = useMemo(
+    () => rankSuggestions(knownItems(), draft, 8, [...pantry.keys()]),
+    [draft, pantry],
+  )
+
+  /** Add the item under the cursor, and leave the box ready for the next one. */
+  function pickSuggestion(item) {
+    setPantryState(item, 'have')
+    setDraft('')
+    setNote('')
+    setShowSuggest(false)
+    inputRef.current?.focus()
+  }
+
+  /**
+   * Enter takes the top suggestion when there is one, so "chick" adds chicken
+   * rather than a pantry row literally called "chick". With nothing matching,
+   * it falls through to the form and adds whatever was typed — which is how
+   * something the catalogue has never heard of still gets in.
+   */
+  function onDraftKey(e) {
+    if (e.key === 'Escape') { setShowSuggest(false); return }
+    if (e.key === 'Enter' && showSuggest && suggestions.length) {
+      const typed = canonicalItem(draft)
+      if (suggestions[0] !== typed) {
+        e.preventDefault()
+        pickSuggestion(suggestions[0])
+      }
+    }
+  }
 
   /**
    * Adding is only possible here now that recipe rows are read-only, so this
@@ -124,6 +165,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
    */
   function addItem(e) {
     e.preventDefault()
+    setShowSuggest(false)
     const item = canonicalItem(draft)
     if (!item) { inputRef.current?.focus(); return }
     if (isNeverShopped(draft)) {
@@ -213,19 +255,43 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
       ) : (
         <div className="px-4 pb-4">
           <form onSubmit={addItem} className="flex gap-2 mb-4">
-            <input
-              ref={inputRef}
-              value={draft}
-              onChange={e => { setDraft(e.target.value); setNote('') }}
-              list="pantry-items"
-              placeholder="Add something you have…"
-              aria-label="Add an item to your pantry"
-              maxLength={80}
-              className="flex-1 min-w-0 text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
-            />
-            <datalist id="pantry-items">
-              {knownItems().map(i => <option key={i} value={i} />)}
-            </datalist>
+            {/* Relative, so the suggestion list can hang under the box.
+                This used to be a native <datalist>, which the browser renders
+                in its own OS-styled panel — hundreds of rows tall, in no
+                useful order, and impossible to theme. */}
+            <div className="flex-1 min-w-0 relative">
+              <input
+                ref={inputRef}
+                value={draft}
+                onChange={e => { setDraft(e.target.value); setNote(''); setShowSuggest(true) }}
+                onKeyDown={onDraftKey}
+                onBlur={() => setTimeout(() => setShowSuggest(false), 150)}
+                placeholder="Add something you have…"
+                aria-label="Add an item to your pantry"
+                aria-expanded={showSuggest && suggestions.length > 0}
+                autoComplete="off"
+                maxLength={80}
+                className="w-full text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+              />
+              {showSuggest && suggestions.length > 0 && (
+                <ul
+                  aria-label="Matching ingredients"
+                  className="absolute top-[calc(100%+4px)] left-0 right-0 bg-card border-2 border-ink rounded-xl shadow-warm-lg overflow-hidden z-50 list-none"
+                >
+                  {suggestions.map(name => (
+                    <li key={name}>
+                      <button
+                        type="button"
+                        onMouseDown={() => pickSuggestion(name)}
+                        className="w-full text-left px-3.5 py-2 text-[0.85rem] cursor-pointer border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors"
+                      >
+                        <Highlight text={name} query={draft.trim()} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <button
               type="submit"
               className="bg-accent text-ink border-2 border-ink shadow-pop press rounded-xl px-4 text-[0.8rem] font-bold whitespace-nowrap hover:bg-accent-dk transition-colors"
