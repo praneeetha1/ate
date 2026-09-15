@@ -21,13 +21,11 @@ const UNIQUE_BY = {
   user_recipes:  ['id'],
   lists:         ['id'],
   list_items:    ['list_id', 'recipe_key'],
-  follows:       ['follower_id', 'following_id'],
-  activity:      ['id'],
 }
 
 const EMPTY_DB = () => ({
   profiles: [], favorites: [], ratings: [], notes: [], shopping_list: [],
-  pantry: [], user_recipes: [], lists: [], list_items: [], follows: [], activity: [],
+  pantry: [], user_recipes: [], lists: [], list_items: [],
 })
 
 export function createMockSupabase(seed = {}) {
@@ -88,7 +86,7 @@ export function createMockSupabase(seed = {}) {
 
   function withDefaults(table, row) {
     const out = { ...row }
-    if (out.id === undefined && ['user_recipes', 'lists', 'activity'].includes(table)) {
+    if (out.id === undefined && ['user_recipes', 'lists'].includes(table)) {
       out.id = nextId(table === 'user_recipes' ? 'ur' : table === 'lists' ? 'ls' : 'ac')
     }
     if (out.id === undefined && ['favorites', 'ratings', 'notes', 'shopping_list', 'pantry', 'list_items'].includes(table)) {

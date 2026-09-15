@@ -24,8 +24,8 @@ create table if not exists public.profiles (
   username_set boolean default false,
   avatar_url   text,
   bio          text,
-  -- When true, this user's recipes / saves / lists / activity are visible only
-  -- to themselves. Public profile pages read through is_public_profile().
+  -- When true, this user's recipes / saves / lists are visible only to
+  -- themselves. The read policies branch on is_public_profile().
   is_private   boolean not null default false,
   created_at   timestamptz default now(),
   constraint username_format check (username is null or username ~ '^[a-z0-9_]{3,20}$'),
@@ -139,7 +139,7 @@ create policy "Users can manage own ratings"
 
 
 -- ── notes ────────────────────────────────────────────────────
--- Private: no public read policy, unlike favorites/lists/activity.
+-- Private: no public read policy, unlike favorites/lists.
 create table if not exists public.notes (
   id          bigint generated always as identity primary key,
   user_id     uuid not null references auth.users(id) on delete cascade,
@@ -240,7 +240,6 @@ begin
   delete from public.favorites     where recipe_key = key;
   delete from public.shopping_list where recipe_key = key;
   delete from public.list_items    where recipe_key = key;
-  delete from public.activity      where recipe_key = key;
   delete from public.ratings       where recipe_key = key;
   delete from public.notes         where recipe_key = key;
   return old;
@@ -310,86 +309,6 @@ create policy "Public can view public list items"
   ));
 
 create index if not exists list_items_list_idx on public.list_items (list_id);
-
-
--- ── follows ───────────────────────────────────────────────────
-create table if not exists public.follows (
-  follower_id  uuid not null references auth.users(id) on delete cascade,
-  following_id uuid not null references auth.users(id) on delete cascade,
-  created_at   timestamptz default now(),
-  primary key (follower_id, following_id),
-  check (follower_id != following_id)
-);
-
-alter table public.follows enable row level security;
-
-drop policy if exists "Users can manage own follows" on public.follows;
-create policy "Users can manage own follows"
-  on public.follows for all
-  using (auth.uid() = follower_id)
-  with check (auth.uid() = follower_id);
-
-drop policy if exists "Anyone can view follows" on public.follows;
-create policy "Anyone can view follows"
-  on public.follows for select using (true);
-
--- following_id is not the leading column of the PK, so follower-count queries
--- need their own index.
-create index if not exists follows_following_id_idx on public.follows (following_id);
-
-
--- ── activity ──────────────────────────────────────────────────
-create table if not exists public.activity (
-  id          uuid default gen_random_uuid() primary key,
-  user_id     uuid not null references auth.users(id) on delete cascade,
-  type        text not null,
-  recipe_key  text,          -- catalog index as text, or "u_<uuid>"
-  recipe_name text,
-  list_name   text,
-  rating      smallint,
-  created_at  timestamptz default now(),
-  constraint activity_type_valid check (type in ('saved', 'created', 'rated', 'listed')),
-  constraint activity_recipe_name_len check (recipe_name is null or length(recipe_name) <= 200)
-);
-
-alter table public.activity enable row level security;
-
-drop policy if exists "Users can insert own activity" on public.activity;
-create policy "Users can insert own activity"
-  on public.activity for insert
-  with check (auth.uid() = user_id);
-
-drop policy if exists "Public can view public activity" on public.activity;
-create policy "Public can view public activity"
-  on public.activity for select
-  using (auth.uid() = user_id or public.is_public_profile(user_id));
-
-drop policy if exists "Users can delete own activity" on public.activity;
-create policy "Users can delete own activity"
-  on public.activity for delete
-  using (auth.uid() = user_id);
-
-create index if not exists activity_user_created
-  on public.activity (user_id, created_at desc);
-
--- The Friends feed subscribes to postgres_changes on this table.
--- Adding to a publication requires owning it, and on some projects that is a
--- role you are not. Degrade to a notice rather than aborting the whole
--- migration: everything else here matters more than the live feed, which can be
--- enabled from the dashboard (Database -> Replication) instead.
-do $$
-begin
-  if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
-    raise notice 'supabase_realtime publication not found; skipping realtime for activity';
-  elsif not exists (
-    select 1 from pg_publication_tables
-    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'activity'
-  ) then
-    alter publication supabase_realtime add table public.activity;
-  end if;
-exception when insufficient_privilege then
-  raise notice 'insufficient privilege to add activity to supabase_realtime; enable it from the dashboard (Database -> Replication)';
-end $$;
 
 
 -- ── pantry ───────────────────────────────────────────────────

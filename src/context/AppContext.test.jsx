@@ -263,44 +263,6 @@ describe('legacy local data hydration', () => {
   })
 })
 
-describe('activity feed writes', () => {
-  it('replaces rather than accumulates a save event, and clears it on unsave', async () => {
-    h.client = createMockSupabase(seedProfile('user-1'))
-    renderApp()
-    await waitFor(() => expect(api).not.toBeNull())
-    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
-    await waitFor(() => expect(api.syncing).toBe(false))
-
-    await act(async () => { api.toggleFav(4, 'Toast') })
-    await waitFor(() => expect(h.client.__db.activity.filter(a => a.type === 'saved')).toHaveLength(1))
-
-    await act(async () => { api.toggleFav(4, 'Toast') })   // unsave
-    await act(async () => { api.toggleFav(4, 'Toast') })   // re-save
-    await waitFor(() => expect(h.client.__db.activity.filter(a => a.type === 'saved')).toHaveLength(1))
-
-    await act(async () => { api.toggleFav(4, 'Toast') })   // unsave again
-    await waitFor(() => expect(h.client.__db.activity.filter(a => a.type === 'saved')).toHaveLength(0))
-  })
-
-  it('logs a rating only at 4+ stars and withdraws it when lowered', async () => {
-    h.client = createMockSupabase(seedProfile('user-1'))
-    renderApp()
-    await waitFor(() => expect(api).not.toBeNull())
-    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
-    await waitFor(() => expect(api.syncing).toBe(false))
-
-    await act(async () => { api.setRating(9, 2, 'Meh') })
-    await waitFor(() => expect(h.client.__db.ratings).toHaveLength(1))
-    expect(h.client.__db.activity.filter(a => a.type === 'rated')).toHaveLength(0)
-
-    await act(async () => { api.setRating(9, 5, 'Meh') })
-    await waitFor(() => expect(h.client.__db.activity.filter(a => a.type === 'rated')).toHaveLength(1))
-
-    await act(async () => { api.setRating(9, 1, 'Meh') })
-    await waitFor(() => expect(h.client.__db.activity.filter(a => a.type === 'rated')).toHaveLength(0))
-  })
-})
-
 describe('ratings and notes are keyed by recipe key', () => {
   it('does not share a rating between a user recipe and a catalog recipe of the same name', async () => {
     h.client = createMockSupabase(seedProfile('user-1'))

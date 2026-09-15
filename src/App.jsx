@@ -9,8 +9,6 @@ import Search from './pages/Search'
 import Saved from './pages/Saved'
 import Pantry from './pages/Pantry'
 import Profile from './pages/Profile'
-import Friends from './pages/Friends'
-import UserProfile from './pages/UserProfile'
 import Auth from './pages/Auth'
 import ResetPassword from './pages/ResetPassword'
 import { useApp } from './context/AppContext'
@@ -18,7 +16,6 @@ import { useAuth } from './context/AuthContext'
 import { useToast } from './context/ToastContext'
 import { supabase } from './lib/supabase'
 import { resolveRecipe, isCatalogKey, normalizeUserRecipe } from './utils/recipe'
-import UsernameModal from './components/UsernameModal'
 
 export class ErrorBoundary extends Component {
   state = { error: null }
@@ -69,8 +66,6 @@ export default function App() {
   const { user, profile, loading: authLoading } = useAuth()
   const { showError } = useToast()
   const navigate = useNavigate()
-
-  const needsUsername = user && profile && !profile.username_set
 
   const openModal  = useCallback((key, recipe) => {
     setModalKey(key)
@@ -156,15 +151,12 @@ export default function App() {
           <Route path="/saved"          element={<Saved       onOpen={openModal} />} />
           <Route path="/pantry"         element={<Pantry />} />
           <Route path="/profile"        element={<Profile     onOpen={openModal} />} />
-          <Route path="/friends"        element={<Friends     onOpen={openModal} />} />
-          <Route path="/user/:username" element={<UserProfile onOpen={openModal} />} />
           <Route path="/login"          element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*"               element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <BottomNav />
-      {needsUsername && <UsernameModal />}
       {modalRecipe && (
         <RecipeModal
           recipe={modalRecipe}

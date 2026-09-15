@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
         return
       }
 
-      // No profile row — create one so the username prompt can appear.
+      // No profile row yet — create one so bio and privacy have somewhere to live.
       const { data: created, error: insertErr } = await supabase
         .from('profiles')
         .insert({ id: uid })
@@ -112,22 +112,6 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
-  async function updateUsername(username) {
-    const clean = username.toLowerCase().trim()
-    const { error } = await supabase
-      .from('profiles')
-      .update({ username: clean, username_set: true })
-      .eq('id', user.id)
-    // Catch the DB unique constraint violation (23505) with a friendly message.
-    // This is race-safe: no TOCTOU window between a pre-check and the update.
-    if (error?.code === '23505') throw new Error('Username already taken')
-    // 23514 is the username_format check — the modal validates first, so this
-    // is only reachable if the two rules ever drift apart.
-    if (error?.code === '23514') throw new Error('That username isn’t allowed')
-    if (error) throw error
-    setProfile(prev => ({ ...prev, username: clean, username_set: true }))
-  }
-
   async function updateProfile(updates) {
     const { error } = await supabase
       .from('profiles')
@@ -143,7 +127,7 @@ export function AuthProvider({ children }) {
       user, profile, loading,
       signUp, signIn, signInWithGoogle, signOut,
       sendPasswordReset, updatePassword,
-      updateUsername, updateProfile,
+      updateProfile,
     }}>
       {children}
     </AuthContext.Provider>

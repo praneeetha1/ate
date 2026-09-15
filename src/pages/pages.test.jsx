@@ -12,7 +12,6 @@ vi.mock('../lib/supabase', () => ({
 }))
 
 const { default: Profile }     = await import('./Profile')
-const { default: UserProfile } = await import('./UserProfile')
 const { default: Saved }       = await import('./Saved')
 const { AppProvider, useApp }  = await import('../context/AppContext')
 const { AuthProvider }         = await import('../context/AuthContext')
@@ -162,108 +161,6 @@ describe('Profile — bio and privacy', () => {
     await act(async () => { box.click() })
 
     await waitFor(() => expect(h.client.__db.profiles[0].is_private).toBe(true))
-  })
-})
-
-describe('UserProfile', () => {
-  const other = {
-    profiles: [
-      { id: 'user-1', username: 'cook',  username_set: true, is_private: false },
-      { id: 'user-2', username: 'chandu', username_set: true, is_private: false, bio: 'Bakes daily' },
-    ],
-    user_recipes: [{ ...USER_RECIPE, id: 'ur-9', user_id: 'user-2', name: 'Chandu Cake' }],
-    favorites: [
-      { id: 1, user_id: 'user-2', recipe_key: '5' },
-      { id: 2, user_id: 'user-2', recipe_key: 'u_ur-9' },
-    ],
-    activity: [
-      { id: 'ac-1', user_id: 'user-2', type: 'created', recipe_key: 'u_ur-9', recipe_name: 'Chandu Cake', created_at: new Date().toISOString() },
-    ],
-  }
-
-  function renderUserProfile(username, onOpen = () => {}) {
-    return render(
-      <MemoryRouter initialEntries={[`/user/${username}`]}>
-        <ToastProvider>
-          <AuthProvider>
-            <AppProvider>
-              <Expose />
-              <Routes>
-                <Route path="/user/:username" element={<UserProfile onOpen={onOpen} />} />
-              </Routes>
-            </AppProvider>
-          </AuthProvider>
-        </ToastProvider>
-      </MemoryRouter>
-    )
-  }
-
-  it('finds a profile regardless of the URL’s casing', async () => {
-    // Regression: usernames are stored lowercase, so /user/Chandu 404'd.
-    h.client = createMockSupabase(other)
-    renderUserProfile('Chandu')
-    expect(await screen.findByRole('heading', { name: '@chandu' })).toBeTruthy()
-    expect(screen.getByText('Bakes daily')).toBeTruthy()
-  })
-
-  it('reports a genuinely missing user as not found', async () => {
-    h.client = createMockSupabase(other)
-    renderUserProfile('nobody')
-    expect(await screen.findByText('User not found')).toBeTruthy()
-  })
-
-  // Regression: the raw DB string "5" was handed to onOpen, fell through the
-  // numeric branch in App, resolved to nothing, and the modal never opened.
-  it('opens a saved catalog recipe with a numeric key', async () => {
-    const onOpen = vi.fn()
-    h.client = createMockSupabase(other)
-    renderUserProfile('chandu', onOpen)
-    await screen.findByRole('heading', { name: '@chandu' })
-
-    await act(async () => { screen.getByRole('tab', { name: /Saved/ }).click() })
-    await act(async () => { screen.getByText(RECIPES[5].name).closest('button').click() })
-
-    expect(onOpen).toHaveBeenCalled()
-    expect(typeof onOpen.mock.calls[0][0]).toBe('number')
-    expect(onOpen.mock.calls[0][0]).toBe(5)
-  })
-
-  it('passes the recipe object when opening someone else’s user recipe', async () => {
-    const onOpen = vi.fn()
-    h.client = createMockSupabase(other)
-    renderUserProfile('chandu', onOpen)
-    await screen.findByRole('heading', { name: '@chandu' })
-
-    await act(async () => { screen.getByRole('tab', { name: /Recipes/ }).click() })
-    await act(async () => { screen.getByText('Chandu Cake').closest('button').click() })
-
-    // The viewer doesn't own it, so it can't be resolved from `userRecipes`.
-    expect(onOpen).toHaveBeenCalledWith('u_ur-9', expect.objectContaining({ name: 'Chandu Cake' }))
-  })
-
-  it('shows a preview card for a user recipe in the activity feed', async () => {
-    h.client = createMockSupabase(other)
-    renderUserProfile('chandu')
-    await screen.findByRole('heading', { name: '@chandu' })
-    // Regression: activity rows for user recipes returned null and rendered no card.
-    expect(await screen.findByText(/created/)).toBeTruthy()
-    expect(screen.getAllByText('Chandu Cake').length).toBeGreaterThan(0)
-  })
-
-  it('follows and unfollows, adjusting the count', async () => {
-    h.client = createMockSupabase(other)
-    renderUserProfile('chandu')
-    await screen.findByRole('heading', { name: '@chandu' })
-    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
-
-    const follow = await screen.findByRole('button', { name: 'Follow' })
-    await act(async () => { follow.click() })
-
-    await waitFor(() => expect(h.client.__db.follows).toHaveLength(1))
-    expect(h.client.__db.follows[0]).toMatchObject({ follower_id: 'user-1', following_id: 'user-2' })
-
-    await act(async () => { screen.getByRole('button', { name: 'Following' }).click() })
-    await waitFor(() => expect(h.client.__db.follows).toHaveLength(0))
   })
 })
 

@@ -139,46 +139,6 @@ describe('routing', () => {
   })
 })
 
-describe('username prompt', () => {
-  it('prompts a new account that has no username yet', async () => {
-    h.client = createMockSupabase({
-      profiles: [{ id: 'user-1', username: null, username_set: false }],
-    })
-    renderApp()
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
-
-    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
-
-    expect(await screen.findByRole('heading', { name: 'Choose your username' })).toBeTruthy()
-    // The first-run prompt has no escape hatch — an account needs a handle.
-    expect(screen.queryByRole('button', { name: 'Cancel' })).toBeNull()
-  })
-
-  it('does not prompt once a username is set', async () => {
-    renderApp()
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
-    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
-
-    expect(screen.queryByRole('heading', { name: 'Choose your username' })).toBeNull()
-  })
-
-  // Regression: fetchProfile used single() and swallowed the error, leaving
-  // profile null forever — so the prompt never appeared and the account stayed
-  // permanently without a handle.
-  it('self-heals a missing profile row and then prompts', async () => {
-    h.client = createMockSupabase({ profiles: [] })
-    renderApp()
-    await waitFor(() => expect(screen.queryByText('Loading…')).toBeNull())
-
-    await act(async () => { h.client.__setSession(fakeSession('user-1')) })
-
-    await waitFor(() => expect(h.client.__db.profiles).toHaveLength(1))
-    expect(h.client.__db.profiles[0].id).toBe('user-1')
-    expect(await screen.findByRole('heading', { name: 'Choose your username' })).toBeTruthy()
-  })
-})
-
 describe('ConfigError', () => {
   it('explains which credential is missing', () => {
     render(<ConfigError message="VITE_SUPABASE_URL is not set." />)

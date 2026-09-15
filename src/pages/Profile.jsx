@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -10,7 +10,6 @@ import { usePantry } from '../context/PantryContext'
 import PantrySection from '../components/PantrySection'
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
-import UsernameModal from '../components/UsernameModal'
 import Icon from '../components/Icon'
 
 const MAX_BIO = 300
@@ -25,10 +24,8 @@ export default function Profile({ onOpen }) {
 
   const [showCreate,    setShowCreate]    = useState(false)
   const [editingRecipe, setEditingRecipe] = useState(null)
-  const [editUsername,  setEditUsername]  = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [deleting,      setDeleting]      = useState(null)
-  const [counts,        setCounts]        = useState({ followers: 0, following: 0 })
 
   const [editingBio, setEditingBio] = useState(false)
   const [bioDraft,   setBioDraft]   = useState('')
@@ -46,27 +43,6 @@ export default function Profile({ onOpen }) {
     ? `@${profile.username}`
     : (user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Home cook')
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url
-
-  useEffect(() => {
-    if (!user) { setCounts({ followers: 0, following: 0 }); return }
-    let cancelled = false
-
-    Promise.all([
-      supabase.from('follows').select('follower_id',  { count: 'exact', head: true }).eq('following_id', user.id),
-      supabase.from('follows').select('following_id', { count: 'exact', head: true }).eq('follower_id',  user.id),
-    ])
-      .then(([followerRes, followingRes]) => {
-        if (cancelled) return
-        if (followerRes.error || followingRes.error) throw followerRes.error || followingRes.error
-        setCounts({ followers: followerRes.count || 0, following: followingRes.count || 0 })
-      })
-      .catch(err => {
-        if (cancelled) return
-        console.error('Follower count lookup failed:', err)
-      })
-
-    return () => { cancelled = true }
-  }, [user?.id])
 
   async function handleSaveBio(e) {
     e.preventDefault()
@@ -105,7 +81,6 @@ export default function Profile({ onOpen }) {
 
   return (
     <>
-      {editUsername && <UsernameModal onClose={() => setEditUsername(false)} />}
       {showCreate && (
         <CreateRecipeModal
           onClose={() => setShowCreate(false)}
@@ -130,13 +105,6 @@ export default function Profile({ onOpen }) {
           </div>
         )}
         <h1 className="font-display text-[1.3rem] font-semibold text-ink">{displayName}</h1>
-
-        {user && (
-          <div className="flex gap-5 text-[0.82rem] text-muted">
-            <span><strong className="text-ink font-bold">{counts.followers}</strong> followers</span>
-            <span><strong className="text-ink font-bold">{counts.following}</strong> following</span>
-          </div>
-        )}
 
         {user ? (
           <div className="flex flex-col items-center gap-2 mt-0.5 w-full max-w-sm">
@@ -175,16 +143,6 @@ export default function Profile({ onOpen }) {
                     onClick={() => { setBioDraft(profile?.bio || ''); setEditingBio(true) }}
                     className={`${smallBtn} border-ink text-ink hover:bg-accent hover:text-ink`}
                   >{profile?.bio ? 'Edit bio' : 'Add bio'}</button>
-                  <button
-                    onClick={() => setEditUsername(true)}
-                    className={`${smallBtn} border-ink text-ink hover:bg-accent hover:text-ink`}
-                  >{profile?.username_set ? 'Edit username' : 'Set username'}</button>
-                  {profile?.username && (
-                    <Link
-                      to={`/user/${profile.username}`}
-                      className={`${smallBtn} border-ink text-muted hover:bg-paper hover:text-accent`}
-                    >View public profile</Link>
-                  )}
                   <button
                     onClick={() => signOut().catch(err => { console.error(err); showError('Could not sign out.') })}
                     className={`${smallBtn} border-ink text-muted hover:text-heart hover:border-heart`}

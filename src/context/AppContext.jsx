@@ -280,9 +280,6 @@ export function AppProvider({ children }) {
         } else if (uploaded?.length) {
           // insert().select() returns rows in the order they were supplied.
           uploaded.forEach((row, i) => localIdMap.set('u_' + fresh[i].id, 'u_' + row.id))
-          for (const row of uploaded) {
-            await logActivityFor(ownerId, 'created', { recipe_key: 'u_' + row.id, recipe_name: row.name })
-          }
           if (!await addRecipesToMyRecipesList(ownerId, uploaded)) ok = false
         }
       }
@@ -497,48 +494,10 @@ export function AppProvider({ children }) {
     return out
   }
 
-  // ── activity ───────────────────────────────────────────────
-  /**
-   * Records a feed event, replacing any previous event of the same kind for the
-   * same recipe.
-   *
-   * Re-saving a recipe used to append another row every time, and un-saving
-   * left the old one behind, so the feed accumulated events for actions that
-   * had since been undone.
-   */
-  async function logActivityFor(ownerId, type, payload) {
-    if (!ownerId) return
-    if (payload.recipe_key) {
-      await Promise.resolve(
-        supabase.from('activity').delete().match({
-          user_id: ownerId, type, recipe_key: keyToText(payload.recipe_key),
-        })
-      ).catch(err => console.error('Could not clear previous activity:', err))
-    }
-    await run(
-      supabase.from('activity').insert({ user_id: ownerId, type, ...payload }),
-      'Could not update your activity feed.',
-    )
-  }
-
-  function logActivity(type, payload) {
-    if (!uid) return
-    logActivityFor(uid, type, payload)
-  }
-
-  function removeActivity(type, key) {
-    if (!uid) return
-    run(
-      supabase.from('activity').delete().match({ user_id: uid, type, recipe_key: keyToText(key) }),
-      null,
-    )
-  }
-
   // ── favorites ──────────────────────────────────────────────
-  // Note on all the handlers below: the Supabase call and any activity logging
-  // happen *outside* the setState updater. Previously they lived inside it, and
-  // React 18's StrictMode double-invokes updaters — so every one of these fired
-  // twice in development, duplicating activity rows.
+  // Note on all the handlers below: the Supabase call happens *outside* the
+  // setState updater. It used to live inside, and React 18's StrictMode
+  // double-invokes updaters, so every one of these fired twice in development.
   function toggleFav(key, recipeName) {
     const wasFav = dataRef.current.favorites.has(key)
 
@@ -555,13 +514,11 @@ export function AppProvider({ children }) {
         supabase.from('favorites').delete().match({ user_id: uid, recipe_key }),
         'Could not remove favorite.',
       )
-      removeActivity('saved', key)
     } else {
       run(
         supabase.from('favorites').upsert({ user_id: uid, recipe_key }, { onConflict: 'user_id,recipe_key' }),
         'Could not save favorite.',
       )
-      if (recipeName) logActivity('saved', { recipe_key, recipe_name: recipeName })
     }
   }
 
@@ -584,17 +541,11 @@ export function AppProvider({ children }) {
         ),
         'Could not save rating.',
       )
-      if (value >= 4 && recipeName) {
-        logActivity('rated', { recipe_key: prop, recipe_name: recipeName, rating: value })
-      } else {
-        removeActivity('rated', key)
-      }
     } else {
       run(
         supabase.from('ratings').delete().match({ user_id: uid, recipe_key: prop }),
         'Could not remove rating.',
       )
-      removeActivity('rated', key)
     }
   }
 
@@ -747,7 +698,6 @@ export function AppProvider({ children }) {
 
       const normalized = normalizeUserRecipe(created)
       commit(d => ({ ...d, userRecipes: [normalized, ...d.userRecipes] }))
-      logActivity('created', { recipe_key: 'u_' + created.id, recipe_name: created.name })
       await addRecipesToMyRecipesList(uid, [created])
       return normalized
     }
@@ -896,11 +846,6 @@ export function AppProvider({ children }) {
       ),
       'Could not add to list.',
     )
-    if (recipeName) {
-      logActivity('listed', {
-        recipe_key: keyToText(key), recipe_name: recipeName, list_name: list.name,
-      })
-    }
   }
 
   function removeFromList(listId, key) {

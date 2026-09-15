@@ -331,7 +331,8 @@
       "Makes about 2 1/2 cups (20 fl oz/625mL)"
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Roasted Salmon with Walnut-Pepper Relish",
@@ -630,7 +631,8 @@
       "If storing, leave fat layer intact to seal the stock.",
       "Before using, remove the fat that has collected on the surface."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Chervil cream",
@@ -924,7 +926,8 @@
       "In a bowl, combine all the ingredients and stir until the sugar dissolves. Store in a covered container in the refrigerator; it will keep for up to 1 month."
     ],
     "timeMinutes": 10,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Shrimp and cabbage stir fry",
@@ -1308,7 +1311,8 @@
       "Preheat oven to 400F. Pierce potatoes all over with fork and place directly on oven rack. Bake for 50 minutes. Meanwhile, cook apples in butter until tender. Spoon onto the baked sweet potatoes, top with cheddar and broil to melt. Top with crumbled bacon."
     ],
     "timeMinutes": 65,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Ina Garten's Pesto",
@@ -2708,7 +2712,8 @@
       "Make ahead: Dough can be refrigerated overnight or frozen for up to 3 months. Let chilled dough stand at room temperature for 10 minutes and fozen dough thaw before using."
     ],
     "timeMinutes": 20,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Cherry couscous pudding",
@@ -3548,7 +3553,8 @@
     "steps": [
       "Heat oil in a small non-stick skillet. Once hot, add veggies and saute until soft. Meanwhile, beat greek seasoning and feta into eggs. Once veggies are at desired doneness, add egg mixture to skillet and gently stir until cooked. Serve immediately."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Best Oatmeal Ever",
@@ -3591,7 +3597,8 @@
     "steps": [
       "To prepare, once oatmeal has been sufficiently cooked, add diced apples and nut butter. Stir for 2-3 minutes.\n2. Serve into a bowl and mix in cinnamon, flax seeds, maple syrup/agave. Stir and enjoy!"
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Spinach souffle",
@@ -4078,7 +4085,8 @@
       "Slide one egg onto each muffin."
     ],
     "timeMinutes": 10,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "English muffin with apple and cheddar",
@@ -4260,7 +4268,8 @@
       "Heat to boiling. Then, stir the mixture constantly for one minute. Add the diced egg to the mixture. Serve with toast, english muffin, or boiled potatoes."
     ],
     "timeMinutes": 7,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Korean scallion pancakes with vegetable salad",
@@ -4432,7 +4441,8 @@
       "Top cereal with apple butter, sugar, and walnuts."
     ],
     "timeMinutes": 10,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Mexican potato omelet",
@@ -4662,7 +4672,8 @@
       "Top the English muffin with the mustard, avocado, and dill, dividing evenly. Serve with the eggs."
     ],
     "timeMinutes": 10,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Baked English Muffins",
@@ -7354,7 +7365,8 @@
       "Cook leeks, carrots, onion, and garlic, covered stirring occasionally in a medium saucepan over medium heat for 10 minutes.\n2. Add water, parsley, thyme, bay leaf, and peppercorns. Raise heat to high. Bring to a boil, reduce heat. Simmer, uncovered, for 30 minutes. Pour through a cheesecloth-lined strainer; discard solids.",
       "Storage: stock can be refrigerated for up to 2 days or frozen for up to 3 months."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Creamy tomato soup",
@@ -7545,7 +7557,8 @@
       "Whisk all the ingredients together in a small saucepan, place over medium heat.",
       "When mixture begins to bubble reduce heat to low and simmer for 30 minutes. Cover and cool. Refrigerate when cold"
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Smoky Sweet-Potato Soup",
@@ -8323,7 +8336,8 @@
       "Place a steamer basket in a saucepan with 2 inches simmering water. Add cauliflower, cover, and steam until tender when pierced with a knife, about 8 minutes. Transfer to a bowl and toss with zest, juice, and red pepper. Season with salt and pepper. Serve warm or at room temperature."
     ],
     "timeMinutes": 18,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Mushroom and lentil soup",
@@ -9875,7 +9889,8 @@
       "In a medium bowl, whisk together buttermilk, sour cream, and mayonnaise. Whisk in remaining ingredients. Season to taste with salt and pepper."
     ],
     "timeMinutes": 45,
-    "servings": 16
+    "servings": 16,
+    "hidden": true
   },
   {
     "name": "Creamy ranch dressing",
@@ -9924,7 +9939,8 @@
       "Whisk together all ingredients in bowl. Season to taste with salt and pepper."
     ],
     "timeMinutes": 10,
-    "servings": 16
+    "servings": 16,
+    "hidden": true
   },
   {
     "name": "Warm shrimp and potato salad",
@@ -10075,7 +10091,8 @@
       "In a medium bowl, whisk together the egg yolk, lemon juice, garlic, Worcestershire, pepper flakes, mustard, and anchovies. Slowly whisk in the oils to emulsify. Season, to taste, with salt and pepper."
     ],
     "timeMinutes": 20,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Asian Salad",
@@ -10499,7 +10516,8 @@
       "Whisk together all ingredients in a bowl."
     ],
     "timeMinutes": 5,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Light Italian dressing",
@@ -10569,7 +10587,8 @@
       "Whisk in 1/4 cup water, the vinegar, lemon juice, dijon mustard, sugar, olive oil, garlic, oregano, basil, salt, and pepper to taste."
     ],
     "timeMinutes": 5,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Flaky Buttermilk Biscuits",
@@ -13503,7 +13522,8 @@
       "Makes approximately 3/4 cup."
     ],
     "timeMinutes": 10,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Goat cheese, sun dried tomato, and pesto torta",
@@ -14573,7 +14593,8 @@
     "steps": [
       "In a pot that covers the potatoes with water, bring to a boil. The sweet potatoes are done when they are fork tender.\n2. Mash the potatoes with a hand mixer (or fork or masher) and slowly add in butter and milk until potatoes are creamy and mashed to your preferred consistency. Add a touch of cinnamon for added flavour."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Spicy Rice Casserole",
@@ -14801,7 +14822,8 @@
       "Taste and add a bit more sugar if you want.",
       "Serve warm or room temperature."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Joan's Broccoli Madness",
@@ -15018,7 +15040,8 @@
       "Melt butter in large saute pan over medium heat. Add carrots, orange juice, and thyme; cook, stirring occasionally, until carrots are tender, about 5 minutes. Season with salt and pepper. Serve warm."
     ],
     "timeMinutes": 15,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Tex-mex rice and black eyed peas",
@@ -15370,7 +15393,8 @@
       "Bring all ingredients except red onion to a boil in a small saucepan. Remove from heat and let cool, 5 minutes. Toss with red onion in a bowl; cover and chill at least 4 hours, stirring occasionally."
     ],
     "timeMinutes": 10,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Baked Beans",
@@ -16065,7 +16089,8 @@
       "This does keep in the refrigerator for a couple of days."
     ],
     "timeMinutes": 19,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Sweet pepper and onion confit",
@@ -16119,7 +16144,7 @@
   },
   {
     "name": "Steakhouse steaks",
-    "category": "Drink",
+    "category": "Main Dish",
     "dietary": [
       "vegetarian"
     ],
@@ -16167,7 +16192,7 @@
   },
   {
     "name": "Vegetarian Steamed Dumplings",
-    "category": "Drink",
+    "category": "Snack & Appetizer",
     "dietary": [
       "vegetarian"
     ],
@@ -16341,7 +16366,8 @@
       "To serve, stir in seltzer and divide among ice-filled glasses. Trop with lemon slices and mint."
     ],
     "timeMinutes": 12,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Simple syrup",
@@ -16406,7 +16432,8 @@
       "Bring Nocello, whiskey, simple syrup, and lemon juice to a simmer in a medium saucepan. Divide among 4 mugs, and garnish each with a cinnamon stick."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Blood orange cocktails",
@@ -16481,7 +16508,8 @@
       "Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."
     ],
     "timeMinutes": 5,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "White sangria",
@@ -16534,7 +16562,8 @@
     "steps": [
       "Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Rose sangria",
@@ -16588,7 +16617,8 @@
       "Mix the wine, liqueur, and sugar in a pictcher, stirring to dissolve the sugar, then add the fruit.\n2. Refrigerate at least 1 hour and up to 1 day.\n3. Add the seltzer just before serving."
     ],
     "timeMinutes": 10,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Lemonade",
@@ -16668,7 +16698,8 @@
       "Place Irish cream, Frangelico, and Kahlua in a coffee mug; pour over coffee. Top with whipped cream and sanding sugar, if desired."
     ],
     "timeMinutes": 5,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Hot buttered rum",
@@ -16722,7 +16753,8 @@
       "In a bowl, cream together the butter, sugar, cinnamon, nutmeg, cloves, and salt. Refrigerate until almost firm. Spoon about 2 tablespoons of the butter mixture into 12 small mugs. Pour about 3 ounces of rum into each mug (filling about halfway). Top with boiling water (to fill the remaining half), stir well, and serve immediately."
     ],
     "timeMinutes": 5,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Aged Eggnog",
@@ -16791,7 +16823,8 @@
       "In fact, there's nothing that says you couldn't age it a year, but I've just never been able to wait that long. (And yes, you can also drink it right away.)",
       "Makes ~3L/24cups for the full recipe. 18-20 \"servings\" fit a growler well."
     ],
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Mulled cranberry apple cider",
@@ -16848,7 +16881,8 @@
       "If using sweetener, start with a couple tablespoons and increase as desired. \n• If using pure unsweetened cranberry juice (instead of a juice blend), reduce the amount to 2 cups and increase the apple cider/juice to 6 cups."
     ],
     "timeMinutes": 40,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Malted hot cocoa",
@@ -16892,7 +16926,8 @@
       "Mix all ingredients by sifting or whisking together in a large bowl until evenly incorporated. Store at room temperature in an airtight container.",
       "Each serving is 1/4 cup mix in 1 cup hot milk."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Apple-Brie Panini",
@@ -17285,7 +17320,8 @@
       "Yield: 4 12\" pizzas, 6 to 8 servings each.\nTo freeze: After dividing dough in step 5, wrap ball of dough in plastic wrap and freeze. Allow to defrost in refrigerator and then set out at room temperature for about 30 minutes before shaping crust."
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Quick pickled red onion",
@@ -17388,7 +17424,8 @@
       "Combine all ingredients in a small bowl; mix well. Set aside about 15 minutes for flavors to develop."
     ],
     "timeMinutes": 5,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Asparagus pesto",
@@ -18105,7 +18142,8 @@
       "Grind fenugreek seeds in grinder or with mortar and pestle. Add to onion mixture along with remaining ingredients, and stir until combined.",
       "Transfer to a parchment-paper-lined large 4-sided sheet pan and spread as thinly and evenly as possible. Bake, stirring occasionally with a skewer to separate onions, until well browned and barely moist, 1 to 1 1/4 hours."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Spicy salmon onigirazu",
@@ -18270,7 +18308,8 @@
     "steps": [
       "Mix all ingredients together and allow to sit for at least 30 minutes. Refrigerate leftovers."
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Kaeshi",
@@ -18455,7 +18494,8 @@
       "Bring water to a boil either in a kettle or in the microwave. Tear dried peppers and place in a 2 cup pyrex measuring cup. Pour boiling water over peppers to cover and allow to sit 30 minutes or until softened.",
       "(original recipe missing a step, so I'm guessing) Place softened peppers in the bowl of a food processor. Process until a paste consistency.",
       "Add a bit of reserved liquid one tablespoon at a time to thin paste if necessary. Add cumin, garlic, salt, and pepper. Pulse to combine. Store in the refrigerator in a covered container for 5 days . May freeze in an ice cube tray for longer storage."
-    ]
+    ],
+    "hidden": true
   },
   {
     "name": "Cold soba and shrimp fritter bento",
@@ -18765,7 +18805,8 @@
       "Full recipe yield about 1/3 cup."
     ],
     "timeMinutes": 10,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Okra with ginger soy sauce",
@@ -18957,7 +18998,8 @@
     "steps": [
       "Mix all ingredients. 1 serving should fill a standard spice jar (might need a little compaction due to air introduced when mixing)."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Matt's Fajita Seasoning",
@@ -19016,7 +19058,8 @@
       "Mix all ingredients.",
       "Use 2-3 tbsp per pound of meat. Less for beef, more for chicken/turkey."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Garlic and soy-glazed shrimp",
@@ -20396,7 +20439,8 @@
       "Bring milk, water, cocoa powder, and sugar to a simmer in a saucepan, whisking until the limps dissolve. Remove from heat, add chocolate chips and stir until the chocolate melts. Let cool 5 minutes, then pour into an ice cube tray and freeze."
     ],
     "timeMinutes": 15,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Ghirardelli Ultimate Double Chocolate Cookies",
