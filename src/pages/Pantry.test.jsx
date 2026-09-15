@@ -10,7 +10,7 @@ vi.mock('../lib/supabase', () => ({
   appUrl: 'http://localhost:3000/ate/',
 }))
 
-const { default: Profile } = await import('./Profile')
+const { default: Pantry }  = await import('./Pantry')
 const { AppProvider }      = await import('../context/AppContext')
 const { PantryProvider }   = await import('../context/PantryContext')
 const { AuthProvider }     = await import('../context/AuthContext')
@@ -26,7 +26,7 @@ vi.mock('react-router-dom', async orig => ({
 // a can of crushed tomatoes, salt and pepper.
 const MARINARA = 5
 
-function renderProfile({ pantry = [] } = {}) {
+function renderPantry({ pantry = [] } = {}) {
   h.client = createMockSupabase({
     profiles: [{ id: 'user-1', username: 'cook', username_set: true }],
     __session: fakeSession('user-1'),
@@ -37,7 +37,7 @@ function renderProfile({ pantry = [] } = {}) {
     <ToastProvider>
       <AuthProvider>
         <AppProvider>
-          <PantryProvider><Profile onOpen={() => {}} /></PantryProvider>
+          <PantryProvider><Pantry onOpen={() => {}} /></PantryProvider>
         </AppProvider>
       </AuthProvider>
     </ToastProvider>
@@ -48,8 +48,8 @@ beforeEach(() => { localStorage.clear() })
 
 describe('ticking a shopping item', () => {
   /**
-   * Scoped to the shopping list: the Fridge / Pantry section sits on the same
-   * page now, so an item can legitimately appear twice — once as something you
+   * Scoped to the shopping list: the Fridge / Pantry section sits directly
+   * above it, so an item can legitimately appear twice — once as something you
    * have, once as something you're buying.
    */
   const shoppingRow = async name => {
@@ -61,7 +61,7 @@ describe('ticking a shopping item', () => {
 
   it('records it as in the kitchen', async () => {
     const user = userEvent.setup()
-    renderProfile()
+    renderPantry()
 
     // The row renders the shopping name, not the recipe's "garlic, minced".
     const box = await shoppingRow('garlic')
@@ -78,7 +78,7 @@ describe('ticking a shopping item', () => {
   // would put a wrong answer into the pantry on every fumbled tap.
   it('writes nothing when unticked', async () => {
     const user = userEvent.setup()
-    renderProfile({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
+    renderPantry({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
 
     const box = await shoppingRow('garlic')
 
@@ -97,7 +97,7 @@ describe('ticking a shopping item', () => {
 
   it('still ticks the item off the shopping list itself', async () => {
     const user = userEvent.setup()
-    renderProfile()
+    renderPantry()
 
     const box = await shoppingRow('garlic')
     await user.click(box)

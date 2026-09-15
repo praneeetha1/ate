@@ -149,7 +149,7 @@ export default function App() {
           <Route path="/"               element={<Home        onOpen={openModal} />} />
           <Route path="/search"         element={<Search      onOpen={openModal} />} />
           <Route path="/saved"          element={<Saved       onOpen={openModal} />} />
-          <Route path="/pantry"         element={<Pantry />} />
+          <Route path="/pantry"         element={<Pantry      onOpen={openModal} />} />
           <Route path="/profile"        element={<Profile     onOpen={openModal} />} />
           <Route path="/login"          element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />

@@ -13,6 +13,7 @@ vi.mock('../lib/supabase', () => ({
 
 const { default: Profile }     = await import('./Profile')
 const { default: Saved }       = await import('./Saved')
+const { default: Pantry }      = await import('./Pantry')
 const { AppProvider, useApp }  = await import('../context/AppContext')
 const { AuthProvider }         = await import('../context/AuthContext')
 const { ToastProvider }        = await import('../context/ToastContext')
@@ -60,7 +61,7 @@ beforeEach(() => {
   api = null
 })
 
-describe('Profile — shopping list', () => {
+describe('Fridge — shopping list', () => {
   // Regression: only numeric catalog keys were resolved here, so adding a user
   // recipe to the shopping list persisted but rendered nothing at all.
   it('renders the ingredients of a user recipe added to the list', async () => {
@@ -69,7 +70,7 @@ describe('Profile — shopping list', () => {
       shopping_list: [{ id: 1, user_id: 'user-1', recipe_key: 'u_ur-1', checked: [1] }],
     }))
 
-    renderPage(<Profile onOpen={() => {}} />)
+    renderPage(<Pantry onOpen={() => {}} />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
@@ -91,7 +92,7 @@ describe('Profile — shopping list', () => {
       shopping_list: [{ id: 1, user_id: 'user-1', recipe_key: 'u_ur-1', checked: [] }],
     }))
 
-    renderPage(<Profile onOpen={() => {}} />)
+    renderPage(<Pantry onOpen={() => {}} />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))

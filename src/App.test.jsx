@@ -59,6 +59,28 @@ describe('auth gating', () => {
   })
 })
 
+describe('the bottom nav', () => {
+  const tabs = async () => {
+    const nav = await screen.findByRole('navigation', { name: 'Main' })
+    return [...nav.querySelectorAll('a')].map(a => a.textContent.trim())
+  }
+
+  // The Fridge took the slot Friends used to hold. It's the thing you check
+  // before deciding what to cook, so it earns a tab rather than living at the
+  // bottom of Profile.
+  it('offers the Fridge where Friends used to be', async () => {
+    renderApp()
+    await waitFor(async () => expect(await tabs()).toContain('Fridge'))
+    expect(await tabs()).toEqual(['Home', 'Search', 'Saved', 'Fridge', 'Profile'])
+  })
+
+  it('no longer offers Friends', async () => {
+    renderApp()
+    await screen.findByRole('navigation', { name: 'Main' })
+    expect(await tabs()).not.toContain('Friends')
+  })
+})
+
 describe('shared recipe links', () => {
   it('opens a catalog recipe from ?r=', async () => {
     setQuery('?r=42')

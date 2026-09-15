@@ -1,18 +1,21 @@
 import PantrySection from '../components/PantrySection'
+import ShoppingList from '../components/ShoppingList'
 
 /**
- * The Fridge / Pantry page.
+ * The Fridge page: what you have, directly above what you still need.
  *
- * Reached from the fridge icon in the header. The same section also sits on
- * Profile beside the Shopping List — the two belong together, since one is
- * what you have and the other is what you still need — but the pantry earns a
- * direct route as well: it's the thing you check before deciding what to cook,
- * and that shouldn't mean scrolling past your recipes and bio to find it.
+ * Both halves used to sit at the bottom of Profile, behind a bio and a grid of
+ * your own recipes. They are the two things you open in a kitchen or a shop,
+ * so they get the tab — and Profile goes back to being about you rather than
+ * about your groceries.
  */
-export default function Pantry() {
+export default function Pantry({ onOpen }) {
   return (
     <div className="max-w-[720px] mx-auto pb-4">
-      <PantrySection headingId="pantry-page-heading" />
+      <div className="border-b border-ink">
+        <PantrySection headingId="pantry-page-heading" />
+      </div>
+      <ShoppingList onOpen={onOpen} />
     </div>
   )
 }
