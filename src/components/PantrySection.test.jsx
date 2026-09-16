@@ -4,6 +4,10 @@ import userEvent from '@testing-library/user-event'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
 import { canonicalItem, isStaple } from '../utils/ingredients'
 
+vi.mock('../data/recipes.json', async () => ({
+  default: (await import('../test/catalogFixture')).default,
+}))
+
 const h = vi.hoisted(() => ({ client: null }))
 vi.mock('../lib/supabase', () => ({
   get supabase() { return h.client },

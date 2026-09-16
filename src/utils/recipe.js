@@ -58,9 +58,14 @@ export const VISIBLE_CATALOG = RECIPES
  * the hardcoded list this replaced offered 'Appetizer' / 'Soup' / 'Snack' /
  * 'Sauce', none of which exist in the catalog, so those recipes fell through
  * tagStyles() to the generic swatch and never matched a catalog section.
+ *
+ * From the whole catalog rather than the visible slice, deliberately: this is
+ * the list you may *file a new recipe under*, and retiring the last visible
+ * drink is no reason to stop someone writing one. Deriving it from
+ * VISIBLE_CATALOG shrank the options every time the catalog was curated.
  */
 export const CATALOG_CATEGORIES =
-  [...new Set(VISIBLE_CATALOG.map(({ r }) => r.category))].sort()
+  [...new Set(RECIPES.map(r => r.category))].sort()
 
 // ── recipe keys ──────────────────────────────────────────────
 // A recipe is addressed by a "key": the catalog index as a number (5) for a

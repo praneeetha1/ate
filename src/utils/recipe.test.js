@@ -196,10 +196,17 @@ describe('retired recipes', () => {
     expect(resolveRecipe(String(at))).toBe(RECIPES[at])
   })
 
-  it('keeps retired recipes out of the category list', () => {
+  /**
+   * The opposite of what this once asserted, and deliberately so. The list is
+   * what a new recipe may be *filed under*, so it covers every category the
+   * catalog knows — including ones only retired recipes are left in. Deriving
+   * it from the visible slice meant curating the last drink out of the catalog
+   * also removed Drink as something you could write.
+   */
+  it('still offers a category whose only recipes are retired', () => {
     const onlyHidden = new Set(hidden.map(r => r.category))
     for (const { r } of VISIBLE_CATALOG) onlyHidden.delete(r.category)
-    for (const cat of onlyHidden) expect(CATALOG_CATEGORIES).not.toContain(cat)
+    for (const cat of onlyHidden) expect(CATALOG_CATEGORIES).toContain(cat)
   })
 })
 

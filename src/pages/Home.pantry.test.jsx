@@ -3,6 +3,10 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
 
+vi.mock('../data/recipes.json', async () => ({
+  default: (await import('../test/catalogFixture')).default,
+}))
+
 const h = vi.hoisted(() => ({ client: null }))
 vi.mock('../lib/supabase', () => ({
   get supabase() { return h.client },
@@ -104,9 +108,9 @@ describe('the must-use filter', () => {
   })
 
   /**
-   * Word boundaries, not name equality. Only 8 recipes list plain "chicken";
-   * the rest say "chicken breast" or "chicken thigh", and an equality test
-   * would miss every one of them.
+   * Word boundaries, not name equality. One fixture recipe lists plain
+   * "chicken" and another "boneless chicken breast" — an equality test would
+   * find only the first.
    */
   it('counts a recipe whose chicken is a cut, not the bare word', async () => {
     const user = await openRanking([OWNED[0]])
@@ -114,8 +118,8 @@ describe('the must-use filter', () => {
 
     await user.click(chip('chicken'))
 
-    // More than the handful that say exactly "chicken".
-    await waitFor(() => expect(shownCount()).toBeGreaterThan(8))
+    // Both, not just the one naming the bare word.
+    await waitFor(() => expect(shownCount()).toBe(2))
   })
 
   // A staple is present without ever being tracked, so it qualifies too.

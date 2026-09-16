@@ -36,28 +36,22 @@ function renderApp({ route = '/', signedIn = true, pantry = [] } = {}) {
   )
 }
 
-const fridgeIcon = () => screen.getByRole('link', { name: /fridge and pantry/i })
-
 beforeEach(() => { localStorage.clear() })
 
-describe('the fridge icon in the header', () => {
-  it('is there for a signed-in cook', async () => {
-    renderApp()
-    await waitFor(() => expect(fridgeIcon()).toBeInTheDocument())
-  })
+/**
+ * The Fridge used to be reached by an icon in the header. It has a nav tab
+ * now, and two controls opening the same page is one more than the page
+ * needs, so the icon is gone.
+ */
+describe('reaching the Fridge page', () => {
+  const tab = () => screen.getByRole('link', { name: /fridge/i })
 
-  it('is not there for a guest', async () => {
-    renderApp({ signedIn: false })
-    await waitFor(() => expect(screen.getByRole('heading', { name: 'Main Dish' })).toBeInTheDocument())
-    expect(screen.queryByRole('link', { name: /fridge and pantry/i })).toBeNull()
-  })
-
-  it('opens the Fridge / Pantry page', async () => {
+  it('opens from the Fridge tab', async () => {
     const user = userEvent.setup()
     renderApp({ pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'out' }] })
-    await waitFor(() => expect(fridgeIcon()).toBeInTheDocument())
+    await waitFor(() => expect(tab()).toBeInTheDocument())
 
-    await user.click(fridgeIcon())
+    await user.click(tab())
 
     expect(await screen.findByRole('heading', { name: /fridge \/ pantry/i })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: /^pecorino: out/i })).toBeInTheDocument()
@@ -68,12 +62,26 @@ describe('the fridge icon in the header', () => {
     expect(await screen.findByRole('heading', { name: /fridge \/ pantry/i })).toBeInTheDocument()
   })
 
-  // The wordmark has to stay centred, so the icon is positioned out of flow
-  // rather than sitting beside it in a row.
-  it('leaves the wordmark in place', async () => {
+  // Both halves of the page live here now, so the shopping list has to come
+  // with it rather than staying behind on Profile.
+  it('carries the shopping list', async () => {
+    renderApp({ route: '/pantry' })
+    expect(await screen.findByRole('region', { name: /shopping list/i })).toBeInTheDocument()
+  })
+
+  /**
+   * The old header icon was hidden from guests. The tab isn't, so the page
+   * itself has to explain the sign-in rather than showing an empty kitchen.
+   */
+  it('asks a guest to sign in rather than showing nothing', async () => {
+    renderApp({ route: '/pantry', signedIn: false })
+    expect(await screen.findByText(/sign in to keep track/i)).toBeInTheDocument()
+  })
+
+  it('no longer puts a fridge icon in the header', async () => {
     renderApp()
-    await waitFor(() => expect(fridgeIcon()).toBeInTheDocument())
-    expect(fridgeIcon().className).toMatch(/absolute/)
+    await waitFor(() => expect(tab()).toBeInTheDocument())
+    expect(screen.queryByRole('link', { name: /fridge and pantry/i })).toBeNull()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('ate')
   })
 })

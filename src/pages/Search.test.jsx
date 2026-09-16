@@ -3,6 +3,10 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMockSupabase } from '../test/supabaseMock'
 
+vi.mock('../data/recipes.json', async () => ({
+  default: (await import('../test/catalogFixture')).default,
+}))
+
 const h = vi.hoisted(() => ({ client: null }))
 vi.mock('../lib/supabase', () => ({
   get supabase() { return h.client },

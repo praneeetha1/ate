@@ -82,7 +82,8 @@
       "Spread the butter mixture evenly over the shrimp. Bake for 10 to 12 minutes until hot and bubbly. If you like the top browned, place under a broiler for 1-3 minutes (keep an eye on it). Serve with lemon wedges and French bread.",
       "Note: if using fresh shrimp, arrange for presentation. Starting from the outer edge of a 14-inch oval gratin dish, arrange the shrimp in a single layer cut side down with the tails curling up and towards the center of the dish. Pour the remaining marinade over the shrimp."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Pot Roast Carbonnade",
@@ -156,7 +157,8 @@
       "Cover the pot and put it in the oven to braise until the beef is tender, about 2 hours.",
       "Remove the pot from the oven and transfer the pot roast to a serving dish."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Berry Sauce",
@@ -248,7 +250,8 @@
       "Put a little pile of cornichon matchsticks and some watercress leaves on top and serve with a big lob of apple sauce, a squeeze of lemon juice and a drizzle of extra virgin olive oil."
     ],
     "timeMinutes": 25,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Oregano Marinated Chicken",
@@ -291,7 +294,8 @@
       "To cook the chicken: Heat a nonstick skillet or grill pan over high heat. Add the chicken breasts and cook, turning once, until well browned, about 4 to 5 minutes on each side or until cooked through. Let the chicken rest on a cutting board for a few minutes before slicing it into thin strips."
     ],
     "timeMinutes": 45,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Marinara Sauce",
@@ -438,7 +442,8 @@
       "Let rest 5 minutes, then transfer to a platter and top with the relish."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Shrimp and edamame with lime",
@@ -495,7 +500,8 @@
       "Season to taste with salt and pepper; serve with rice and lime wedges, if desired."
     ],
     "timeMinutes": 38,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Pate brisee",
@@ -539,7 +545,8 @@
       "To make pastry leaves for garnishing: roll out dough to a 1/4-inch thickness on a lightly floured surface and cut out leaves using floured leaf-shaped cookie cutters. Bake on a parchment-lined baking sheet at 350F, rotating sheet halfway throuh, until pale gold, about 12 minutes."
     ],
     "timeMinutes": 15,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Homemade beef stock",
@@ -725,7 +732,8 @@
       "Combine marinade ingredients, except lemon slices, in a small saucepan and bring to a boil. Remove from heat and allow to cool to room temperature. Add lemon and pour cooled marinade over fish and marinate refrigerated for 2 to 4 hours. Turn fish occasionally.",
       "To serve: Grill or broil on both sides until just done, approximately 4 to 5 minutes per side. Be careful not to overcook. Salmon should still be translucent in the center. Serve with Soba Noodle Salad on the side."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Grilled salmon gyros",
@@ -882,7 +890,8 @@
       "Put the pita bread on grill to heat through.",
       "Serve by cutting pitas in half, filling them with salmon, and topping them with the tomato mixture and the cucumber dill sauce. Add iceberg lettuce, if desired, and serve."
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Homemade ponzu sauce",
@@ -1016,7 +1025,8 @@
       "Stir the hoisin sauce mixture, then add to the wok and simmer, stirring occasionally, 2 minutes. Stir in the scallion greens. Serve with rice, if desired."
     ],
     "timeMinutes": 17,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Salmon and potatoes in tomato sauce",
@@ -1077,7 +1087,8 @@
       "If cooking for 2 servings, reduce the cook times of all phases by 2 minutes."
     ],
     "timeMinutes": 51,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Hawaiian style short ribs (slow cooker)",
@@ -1146,7 +1157,8 @@
       "Cook's Note:\nTo store, refrigerate short ribs and cooking liquid in an airtight container for up to 3 days."
     ],
     "timeMinutes": 320,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Salmon Tuscano with Herbed Orzo",
@@ -1236,7 +1248,8 @@
       "Rub salmon with salt, pepper and half of the chopped basil. Using the same saucepan from the onions, sauté salmon in the remaining olive oil, until golden on each side. Cook flesh side first, then approximately 5 minutes per side.",
       "Serve salmon atop a small bed of orzo, dazzled with the warm tomato and olive salsa."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Smoked salmon baked potatoes",
@@ -1371,7 +1384,8 @@
       "Serve, or store the pesto in the refrigerator or freezer with a thin film of olive oil on top."
     ],
     "timeMinutes": 15,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Broiled halibut with ricotta-pea puree",
@@ -1444,7 +1458,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/broiled-halibut-with-ricotta-pea-puree-recipe.html?oc=linkback"
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Mayonnaise",
@@ -1499,7 +1514,8 @@
       "1 serving makes ~1 cup of mayo."
     ],
     "timeMinutes": 10,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Homemade pecan and maple nut butter",
@@ -1687,7 +1703,8 @@
       "* For a sweeter, lighter pie: add more sugar and use fewer pecans; for a denser, less sweet pie: add more pecans and use less sugar.",
       "* The buttery flavour and the lard-induced flakiness of a butter and lard crust make it the perfect one for a perfect pecan pie. And a Southern pecan pie authority I know suggests that you roll out the dough a little thicker than usual; a thick, richly shortened crust provides an appetizing balance to the sweetness of the filling."
     ],
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Godiva Angel Pie",
@@ -1763,7 +1780,8 @@
       "If it is too warm, the mixture will thin out.",
       "If this happens, chill until it is thick enough to put in shell."
     ],
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Onion Pie",
@@ -1816,7 +1834,8 @@
       "Spoon the onions into the crust, then pour the egg mixture over them.  Sprinkle with Parmesan.",
       "Bake for 30-40 minutes until set and golden."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Godiva Dark Chocolate Cheesecake",
@@ -1879,7 +1898,8 @@
       "Brush some tempered Godiva Dark Chocolate onto a strip of acetate and, while it is still fluid, smooth over the top of the molded cheesecake.",
       "Once the chocolate has cooled and completely crystallized, remove the acetate, revealing a shiny and textured chocolate finish."
     ],
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Hot Cocoa",
@@ -1924,7 +1944,8 @@
       "Bring milk to a simmer in a saucepan over medium heat. Whisk cocoa/sugar mix into the milk. Add the chopped chocolate and reduce heat to low and simmer, stirring, until the chocolate melts and the cocoa is thick, about 2 minutes. Divide among mugs and garnish each with homemade marshmallows or whipped cream."
     ],
     "timeMinutes": 5,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Greek yogurt with homemade honeycomb",
@@ -2000,7 +2021,8 @@
       "Using a blender, blitz the raspberries and blueberries together with little caster sugar until smooth. Add a drop of lavender essence. Strain the mixture through a sieve to create a fresh coulis. Taste to check consistency and flavour, add a spoonful of water or sugar as necessary.",
       "Lightly mix almost all of the honeycomb through the yoghurt. Spoon into individual serving glasses and pour the coulis on top. Garnish with lavender flowers and a sprinkling of the remaining honeycomb. Serve immediately."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Cherry-lime cups",
@@ -2080,7 +2102,8 @@
       "Meanwhile, make filling: in a medium bowl, whisk together eggs, flour, sugar, lime juice, and salt. Place 3 cherry halves into each crust and divide filling among each. Bake until filling is set, about 25 minutes. With the tip of a knife or small offset spatula, remove cups from pan. Let cool completely on a wire rack.",
       "To store, refrigerate in an airtight container, up to 1 day."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Strawberries and cream bars",
@@ -2131,7 +2154,8 @@
       "Freeze until firm, about 4 hours (or, covered, up to 3 days), before cutting into 12 squares."
     ],
     "timeMinutes": 25,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Frozen chocolate mousse trifles",
@@ -2182,7 +2206,8 @@
       "Fill each of four small glasses with 1/4 cup cake and top with heaping 1/4 cup mousse. Repeat to make a second layer with remaining cake and mousse. Freeze until firm, 3 hours (or up to overnight). Let sit 10 minutes at room temperature, then finely grate chocolate over tops to serve."
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Frozen lemon souffle",
@@ -2247,7 +2272,8 @@
       "To serve, remove parchment, top with raspberries and dust with confectioners' sugar."
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Coconut lime semifreddo",
@@ -2308,7 +2334,8 @@
       "Layer mango on top and serve."
     ],
     "timeMinutes": 30,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Sweet cherry granita",
@@ -2421,7 +2448,8 @@
       "Transfer the cookies to wire racks to cool completely.",
       "Yield: 2 dozen"
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Pumpkin mousse",
@@ -2513,7 +2541,8 @@
       "Divide mousse among 8 to 10 glasses; refrigerate until set, at least 2 hours, or up to 1 day, covered with plastic wrap. If desired, top each with a dollop of sweetened whipped cream and a pastry leaf before serving.",
       "Food safety note: the eggs in this recipe are not cooked"
     ],
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Salted caramel six layer chocolate cake",
@@ -2668,7 +2697,8 @@
       "Storage: Frosted cake can be refrigerated for up to 3 days."
     ],
     "timeMinutes": 80,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Hazelnut pastry dough",
@@ -2777,7 +2807,8 @@
       "Bring milks, sugar, almond extract, and a pinch of salt to a boil in a saucepan over medium heat. Add couscous, dried cherries and cinnamon stick; cover and cook 2 minutes. Remove from the heat and let sit, covered, 8 minutes. Fluff with a fork, remove the cinnamon stick and divide among bowls. Top with toasted almond slices and honey, if desired."
     ],
     "timeMinutes": 7,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Chocolate chestnut mousse",
@@ -2823,7 +2854,8 @@
       "Divide the mousse among dessert glasses. Top with the reserved whipped cream. Remelt the remaining chocolate in the microwave, if necessary, then drizzle on top."
     ],
     "timeMinutes": 25,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Melomakarona - Honey Cookies with Walnuts",
@@ -2942,7 +2974,8 @@
       "Using a fork or small spatula, remove the cookie from the syrup and place on a platter or plate. Press ground walnuts lightly into the tops of the cookies (syrup will help it adhere) and sprinkle lightly with ground cinnamon.",
       "Do not refrigerate Melomakarona as they will harden. Store in an airtight container at room temperature."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Gluten-free chocolate chips cookies",
@@ -3024,7 +3057,8 @@
       "Yield: 3 dozen cookies"
     ],
     "timeMinutes": 28,
-    "servings": 3
+    "servings": 3,
+    "hidden": true
   },
   {
     "name": "Homemade candy canes",
@@ -3115,7 +3149,8 @@
       "Repeat this process with the remaining 3/4 of the candy, one piece of each color at a time.",
       "Allow candy to cool until completely hard; about 15 minutes. Wrap each cane in plastic wrap to keep it from sticking. Store in an airtight jar for several months."
     ],
-    "servings": 16
+    "servings": 16,
+    "hidden": true
   },
   {
     "name": "Pecan Pie",
@@ -3187,7 +3222,8 @@
       "Bake on cookie sheet at 350 degrees for 50 minutes."
     ],
     "timeMinutes": 70,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Pretzel shortbread bar",
@@ -3250,7 +3286,8 @@
       "Remove shortbread from pan, and cut into 1/2-inch wide rectangles using a serrated knife."
     ],
     "timeMinutes": 45,
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Broken glass cupcakes",
@@ -3376,7 +3413,8 @@
       "Storage: frosted cupcakes can be refrigerated for up to 1 day. Top with caramel shards and cherry preserves just before serving."
     ],
     "timeMinutes": 90,
-    "servings": 42
+    "servings": 42,
+    "hidden": true
   },
   {
     "name": "Smoked Salmon Ebelskivers",
@@ -3462,7 +3500,8 @@
       "Transfer the finished pancakes to a platter and keep warm  in the oven while you repeat to make 2 more batches. Serve right away."
     ],
     "timeMinutes": 33,
-    "servings": 3
+    "servings": 3,
+    "hidden": true
   },
   {
     "name": "The Shake",
@@ -3515,7 +3554,8 @@
     "steps": [
       "Combine all ingredients in blender. Blend until smooth."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Breakfast Mediterranean Scramble",
@@ -3650,7 +3690,8 @@
       "Bake in the oven for 10 minutes, or until well risen, golden, and firm. Serve.",
       "Rather than fresh spinach, one can use 3.5oz per serving cooked spinach, chopped or pureed."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Pecan molasses granola",
@@ -3706,7 +3747,8 @@
       "Each serving is 1/2 cup."
     ],
     "timeMinutes": 35,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Potato hash with spinach and eggs",
@@ -3779,7 +3821,8 @@
       "Sprinkle with Parmesan and parsley and serve immediately."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Chocolate babka",
@@ -3931,7 +3974,8 @@
       "Preheat the oven to 350 degrees F. Brush the loaf with the beaten egg, then sprinkle with the streusel. Bake until the bread is golden and springs back when pressed, 1 hour to 1 hour, 10 minutes. Loosen with a knife, then let cool in the pan, 1 hour. Unmold onto a rack to finish cooling."
     ],
     "timeMinutes": 120,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Bavarian kartofflepuffer (potato pancakes)",
@@ -3989,7 +4033,8 @@
       "Let pancakes drain on a plate with paper towels.",
       "Serve with a garden salad or alone with some apple sauce or berry jam on the side."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Baked eggs and grits",
@@ -4039,7 +4084,8 @@
       "Divide grits among dishes. Make a well in each, then crack an egg into each well; season. Bake on a rimmed baking sheet, until whites are set but yolks are still runny, about 20 minutes, rotating sheet halfway through. To serve, top grits with remaining 2 tablespoons cheddar and a sprinkle of pepper."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Open face egg and tomato sandwich",
@@ -4218,7 +4264,8 @@
       "Yield: about 22 filled cookies."
     ],
     "timeMinutes": 42,
-    "servings": 22
+    "servings": 22,
+    "hidden": true
   },
   {
     "name": "Egg sauce",
@@ -4375,7 +4422,8 @@
       "Repeat with remaining batter, adding an additional 1/2 tsp of the canola oil after each pancake. Top pancakes with salad and drizzle with remaining sauce from mixing bowl. Sprinkle with peanuts."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Perfect soft cooked egg",
@@ -4577,7 +4625,8 @@
       "Finally, sprinkle with parmesan and chives."
     ],
     "timeMinutes": 27,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Morning pizza",
@@ -4632,7 +4681,8 @@
       "Spread ricotta on bread, top with herbs and tomato, and drizzle with oil. Season with salt and pepper to taste. Broil for 3 minutes, then top with parmesan and serve."
     ],
     "timeMinutes": 17,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Mustard, Avocado, and Dill on a Whole-Wheat Muffin With Boiled Egg",
@@ -4768,7 +4818,8 @@
       "Yield: 12 muffins."
     ],
     "timeMinutes": 40,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Savory Oatmeal and Soft-Cooked Egg",
@@ -4818,7 +4869,8 @@
       "Serve oatmeal in a bowl topped with cheese, egg, and scallion greens."
     ],
     "timeMinutes": 10,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Oatmeal-crusted trout",
@@ -4889,7 +4941,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/oatmeal-crusted-trout-recipe.html?oc=linkback"
     ],
     "timeMinutes": 40,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Salt-baked walnut brioche scones",
@@ -5022,7 +5075,8 @@
       "Remove the dumplings and repeat the procedure with the remaining batter.",
       "In a medium saute pan, add butter, and melt over medium heat until butter turns a light brown. Add garlic and cook until it becomes lightly colored. Add spaetzle to the pan to heat through. Add parsley, cheese, salt and pepper, to taste."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Stove top mac and cheese",
@@ -5082,7 +5136,8 @@
       "Whisk together the eggs, milk, hot sauce, salt, pepper, and mustard. Stir into the pasta and add the cheese. Over low heat continue to stir for 3 minutes or until creamy.",
       "(This recipe originally called for 6oz milk.  It is reduced as an experiment.)"
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Handmade Pasta",
@@ -5134,7 +5189,8 @@
       "Cover with a tea towel until ready to cook.  (The past may be made an hour ahead of time or frozen for up to 1 month.",
       "Defrost in refrigerator.)  Fresh pasta will cook, in boiling salted water, in about 2-3 minutes."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Straw and Hay Fettuccine Tangle",
@@ -5171,7 +5227,8 @@
       "Salt the pasta water well and cook the pasta until just tender. Drain and toss immediately with the asparagus pesto (1/4 cup per serving), stirring in more afterward depending on how heavily coated you like your pasta. Serve sprinkled with the remaining toasted pine nuts, a dusting of Parmesan, and a quick drizzle of extra-virgin olive oil."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Pesto Orzo with Peas",
@@ -5353,7 +5410,8 @@
       "Let rest before serving."
     ],
     "timeMinutes": 212,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Three cheese macaroni",
@@ -5598,7 +5656,8 @@
       "Fry eggs over easy. Dish the pasta, and top with egg and a little more parmesan."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Squash lasagna with fresh basil",
@@ -5696,7 +5755,8 @@
       "Top with additional basil and diced tomato, if desired."
     ],
     "timeMinutes": 65,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Creamy Broccoli & Sun-Dried Tomato Orzotto",
@@ -5820,7 +5880,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/anne-burrell/gnocchi-with-prosciutto-spring-peas-and-chanterelles-recipe/index.html?oc=linkback"
     ],
     "timeMinutes": 75,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Grilled Cheese & Tomato Skillet",
@@ -5901,7 +5962,8 @@
       "Add oil, onion, and garlic to skillet; cook over medium-high heat 2–3 minutes or until onion is translucent, stirring frequently. Carefully add diced tomatoes, broth, pasta, cream, salt and black pepper. Bring to a boil. Cover and cook 6–8 minutes or until pasta is still slightly firm, stirring occasionally.",
       "Remove skillet from heat; add half of the cheese and stir until cheese is completely melted. Top with remaining cheese. Cover and let stand 3–4 minutes or until cheese is melted. Arrange bread in an overlapping circular pattern around edge of skillet. Garnish with reserved tomatoes and parsley, if desired."
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Baked Penne with Roasted Vegetables",
@@ -6014,7 +6076,8 @@
       "Pour the pasta into a greased 9 by 13-inch pan. Top with the remaining 1/3 cup Parmesan and butter pieces. Bake until top is golden and cheese melts, about 25 minutes."
     ],
     "timeMinutes": 65,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Pasta with escarole",
@@ -6139,7 +6202,8 @@
       "Add shrimp to pasta and toss, adding enough pasta water to create a light sauce that coats pasta."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Skillet shrimp and orzo",
@@ -6212,7 +6276,8 @@
       "Toss shrimp with 1 teaspoon oil and 1/4 teaspoon each salt and pepper. Remove skillet from heat and place shrimp on top of orzo. Heat broiler. Broil until shrimp are opaque throughout, 4 minutes. Sprinkle with basil and serve."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Penne with Butternut Squash and Goat Cheese",
@@ -6289,7 +6354,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/giada-de-laurentiis/penne-with-butternut-squash-and-goat-cheese-recipe.html?oc=linkback"
     ],
     "timeMinutes": 68,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Wild mushroom and cauliflower lasagna",
@@ -6492,7 +6558,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/bobby-flay/wild-mushroom-and-cauliflower-lasagna-recipe.html?oc=linkback"
     ],
     "timeMinutes": 185,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Shrimp Scampi with Pasta",
@@ -6569,7 +6636,8 @@
       "Serve the shrimp scampi over your choice of pasta or zucchini noodles."
     ],
     "timeMinutes": 19,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Pesto Cavatelli w/ Mushrooms and Spicy Breadcrumbs",
@@ -6738,7 +6806,8 @@
       "Fold in the macaroni then move to a 4-quart casserole or soufflé dish.",
       "Sprinkle with the remaining cheese, then toss the breadcrumbs with the melted butter and distribute evenly over the top. Bake for 30 minutes, cool for 5 minutes, then serve to a grateful world."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Cavatelli and kale with fried rosemary and walnuts",
@@ -6837,7 +6906,8 @@
       "Enjoy!"
     ],
     "timeMinutes": 35,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Soba Noodle Bento",
@@ -7102,7 +7172,8 @@
     "steps": [
       "In a large soup pot, brown ground beef and onion, drain off fat.  Add remaining ingredients EXCEPT for last 3 items (canned vegetables).  Simmer on low heat until vegetables are tender, about an hour.  Add canned vegetables and simmer 5 minutes.  Remove bay leaf and serve."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Vegetarian Chili",
@@ -7232,7 +7303,8 @@
       "Top each serving with a dollop of sour cream and spoonful of avocado or [guacamole](http://www.xanthir.com/recipes/showrecipe.php?id=28).",
       "Sprinkle with [Essence](http://www.xanthir.com/recipes/showrecipe.php?id=id4) and green onions and serve."
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Lentil Soup",
@@ -7306,7 +7378,8 @@
       "Using a stick blender, puree to your preferred consistency (optional).",
       "Serve immediately."
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Vegetable Stock",
@@ -7434,7 +7507,8 @@
       "Add salt and pepper to taste.",
       "For vegans or non-creamy soup, thin with water if needed."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Parker's split pea soup",
@@ -7503,7 +7577,8 @@
       "Serve hot."
     ],
     "timeMinutes": 100,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Heinz Chili Sauce",
@@ -7625,7 +7700,8 @@
       "Heat oil in a large pot over medium heat.  Cook garlic and leek until soft and translucent, about 4 minutes.  Add apple, celery, and ginger, and cook for 3 minutes.  Add sweet potatoes and stock, and simmer until sweet potatoes are tender, about 15 minutes.",
       "Add chipotle chiles.  Puree until smooth.  Season with salt and pepper.  Sprinkle with pepitas before serving."
     ],
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "French onion soup",
@@ -7754,7 +7830,8 @@
       "Add the lentils, cumin, and chicken stock; stir to combine. Simmer until lentils are cooked and falling apart, 20 to 25 minutes.",
       "To serve, divide the hot soup among four soup plates, and garnish with the reserved bacon and additional sage."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Green pea soup with cheddar scallion panini",
@@ -7814,7 +7891,8 @@
       "Working in batches, puree soup in a blender until smooth (filling blender only halfway to prevent spattering). If necessary, adjust consistency with a little bit of water. Season with salt, pepper, and lemon juice. Slice each panini into four \"fingers, and serve with soup."
     ],
     "timeMinutes": 20,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Broccoli soup with cheddar toasts",
@@ -7880,7 +7958,8 @@
       "Remove soup from heat, and let cool, about 10 minutes. Fill a blender no more than halfway to puree soup in batches until smooth. Return soup to pot; stir in milk and cayenne. Cook over medium heat until heated through (do not boil).",
       "Heat broiler. Divide cheese among bread slices; toast under broiler until melted and golden brown, 45 to 60 seconds. Divide soup among bowls. Top each bowl with a cheese toast, and serve."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Coconut shrimp soup",
@@ -7959,7 +8038,8 @@
       "Add shrimp; stir until opaque, about 1 minute. Remove pot from heat, and stir in lime juice; season with salt. Ladle into serving bowls, and garnish with scallions."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Hearty spinach and chickpea soup",
@@ -8029,7 +8109,8 @@
       "Stir in spinach and cook, uncovered, until just wilted, about 1 minute. Season with salt and pepper. Garnish with cheese; serve immediately."
     ],
     "timeMinutes": 45,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Mushroom soup",
@@ -8207,7 +8288,8 @@
       "Strain pumpkin-seed mixture, reserving broth and discarding solids. Add broth to pumpkin-wine mixture. Bring to a simmer; cook 20 minutes. Let cool.",
       "Pass soup through a food mill into a clean saucepan, or puree in a food processor in small batches until smooth. (If soup does not reach desired consistency using a food processor, press it through a fine sieve to remove any remaining lumps.) Heat soup in a saucepan over medium-high heat. Stir in cream, sugar, salt, and pepper, and serve"
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Smoky Yukon Gold Potato Chowder",
@@ -8297,7 +8379,8 @@
       "Blend soup until smooth.",
       "Stir in milk. Cook, uncovered, over medium heat 2-3 minutes or until simmering. Stir in cheese, salt and black pepper. Cook 2-3 minutes or until cheese is melted. Garnish each serving with sour cream, chives and additional paprika, if desired."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Chili Lemon Cauliflower",
@@ -8412,7 +8495,8 @@
       "Add thyme, lentils, soy sauce, lemon, and water; bring to a boil. Reduce heat, partially cover, and simmer until lentils are tender, about 25 minutes. Season to taste with salt and pepper. Serve soup topped with yogurt.",
       "Alternate recipe: use half rice and half lentils.  Add the rice with the water; cook for 15 minutes on medium, before boiling.  Then add lentils, bring to a boil, and simmer for 25 minutes."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Cheddar beer soup",
@@ -8512,7 +8596,8 @@
       "Discard the bay leaf. Serve soup in bowls with bread and crumbled bacon."
     ],
     "timeMinutes": 40,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Tomato-Basil Soup with Ricotta Dumplings",
@@ -8592,7 +8677,8 @@
       "Ladle soup into bowls; sprinkle with thinly sliced fresh basil."
     ],
     "timeMinutes": 24,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Almost famous broccoli cheddar soup",
@@ -8875,7 +8961,8 @@
       "Pair this soup with a salad and bread for lunch or a light supper."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Texas chili potato skins",
@@ -8919,7 +9006,8 @@
       "Pierce potatoes with a fork. Bake directly on the oven rack at 350F until tender, about 1 hour/ Let cool, then quarter lengthwise and scoop out the flesh, leaving a 1/4-inch shell. Brush both sides with melted butter and season with salt and pepper. Bake, skin-side up, at 450F until crisp, about 15 minutes. Add your toppings."
     ],
     "timeMinutes": 75,
-    "servings": 16
+    "servings": 16,
+    "hidden": true
   },
   {
     "name": "Greek Salad",
@@ -8992,7 +9080,8 @@
     "steps": [
       "In a small bowl, whisk together the lemon juice, garlic, salt, and oil. Set aside.   In a large bowl lightly toss the lettuce with the olives, cheese, cucumber, tomatoes, onion, oregano, and black pepper. Let sit up to 2 hours.  To serve, toss salad with dressing and place sliced chicken on top."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Sherry Vinaigrette",
@@ -9035,7 +9124,8 @@
     "steps": [
       "Whisk together the shallot, vinegar, mustard, salt, and pepper in a small bowl. Slowly whisk in the oil until emulsified."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Margherita Salad",
@@ -9130,7 +9220,8 @@
       "Heat the olive oil in a large skillet over medium-high heat. Add the breadcrumbs, season with salt and pepper and cook, stirring occasionally, until golden, about 2 minutes. Add the remaining parmesan and the parsley and cook until toasted, about 1 more minute.",
       "Toss the salad greens, mozzarella, and remaining basil in a large bowl. Toss with the dressing, then sprinkle with the breadcrumb mixture."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Mexican Ensalada",
@@ -9207,7 +9298,8 @@
       "Includes recipe for [basil-lime vinaigrette](http://www.xanthir.com/recipes/showrecipe.php?id=id6).",
       "Alternate dressing (for 2 servings):\n1/2 lemon, juiced; 1 tbsp apple cider vinegar; 2 tbsp olive oil; 2 tablespoons cilantro, chopped"
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Super Protein Salad",
@@ -9275,7 +9367,8 @@
     "steps": [
       "Combine olive oil, vinegar, mustard, salt and pepper to taste. Toss with other ingredients in a bowl and serve."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Extreme Green Salad",
@@ -9340,7 +9433,8 @@
       "Whisk together all the dressing ingredients in a small bowl. Drizzle over the salad and toss lightly to coat.",
       "Sprinkle with sesame seeds and serve."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Popeye's Muscle Salad",
@@ -9409,7 +9503,8 @@
       "Combine all ingredients in a bowl, toss, and serve.",
       "Use whatever vinaigrette you want."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Basil-Lime Vinaigrette",
@@ -9452,7 +9547,8 @@
     "steps": [
       "In a small bowl, combine the lime zest, lime juice, balsamic vinegar, basil, and cumin. Slowly add the oil, whisking constantly until the mixture thickens. Season with salt and pepper, to taste."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Citrus Rice Salad",
@@ -9511,7 +9607,8 @@
       "To make the dressing, combine the orange zest and juice, lemon juice, and shallot. Whisk in the olive oil and season with a few pinches of salt and a few grinds of pepper.",
       "Toss the hot rice with the spinach, pine nuts, citrus dressing, then top with the feta. Taste for seasoning and sprinkle with a bit more salt if needed."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Almond Caesar salad with croutons",
@@ -9581,7 +9678,8 @@
       "For dressing: Meanwhile, process almonds, parmesan, anchovies, and garlic in a food processor until finely chopped. Transfer to a large mixing bowl. Add dijon and lemon juice, whisk until just combined. Drizzle in olive oil and whisk constantly until thoroughly combined. Season with salt and pepper if needed.",
       "Toss dressing with lettuce and croutons."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Soba salad with asparagus and shrimp",
@@ -9654,7 +9752,8 @@
       "Drain noodles and rinse under cool water.",
       "Meanwhile, in a small bowl, whisk together soy sauce oil, vinegar, and sugar. Divide noodles among bowls and drizzle with dressing. Top with asparagus and shrimp and sprinkle with scallions and herbs."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Brown rice, chickpea, feta, and mint salad",
@@ -9720,7 +9819,8 @@
       "Stir in cheese, tomatoes, mint, and onion. Season with salt. Refrigerate until ready to serve.",
       "Can be refrigerated for up to 2 days."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Roasted Shallot Vinaigrette",
@@ -9768,7 +9868,8 @@
     "steps": [
       "Preheat oven to 400°.\nWrap shallot in foil. Bake at 400° for 35 minutes; cool for 10 minutes. Peel and mince. Combine shallot, vinegar, oil, sugar, mustard, salt, and pepper in a large bowl; stir well with a whisk."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Peanut Noodle Salad",
@@ -10029,7 +10130,8 @@
       "Toss the romaine in a serving bowl with the lemon juice, olive oil, and salt and pepper to taste. Add the warm shrimp and vegetables and toss to combine. Top with the feta."
     ],
     "timeMinutes": 45,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Caesar Salad Dressing",
@@ -10147,7 +10249,8 @@
       "Peel and julienne carrot and cucumber. Chop bell pepper and green onion.",
       "Add carrot, cucumber, bell pepper and green onion to dressing mixture. Toss vegetables to coat. Serve immediately."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Dang cold Asian noodle salad",
@@ -10238,7 +10341,8 @@
       "Garnish with sesame seeds and peanuts."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Herb crusted salmon with spinach salad",
@@ -10301,7 +10405,8 @@
       "Place salmon on prepared sheet; season with salt and pepper. Spread top of fillets with Dijon; top with crumb mixture, pressing gently to adhere. Roast until salmon is opaque throughout, 11 to 13 minutes.",
       "Meanwhile, in a large bowl, combine lemon juice and remaining oil; season with salt and pepper. Add spinach and onion; toss to combine. Serve salmon with spinach salad."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Black bean salad with chipotle honey dressing",
@@ -10350,7 +10455,8 @@
       "Mix all ingredients, toss with dressing."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Marinated feta, spinach & poached egg salad",
@@ -10447,7 +10553,8 @@
       "Serve with toasted breads slices."
     ],
     "timeMinutes": 20,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Light ranch dressing",
@@ -10659,7 +10766,8 @@
       "Discard excess dough.",
       "Brush biscuit tops with melted butter.  Bake, without opening oven door, until tops are golden brown and crisp, 15 to 17 minutes.  Let cool on baking sheet 5 to 10 minutes before serving."
     ],
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Drop biscuits (Cook's Illustrated)",
@@ -10819,7 +10927,8 @@
       "Remove the baking sheet to a wire rack and cool for 5 minutes. Using a spatula, transfer the scones to the wire rack to cool. Recut into wedges, if necessary. Serve warm, or cool completely and store in an airtight container in the refrigerator."
     ],
     "timeMinutes": 35,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Millet bread (Corn-free cornbread)",
@@ -10896,7 +11005,8 @@
       "Let cool for 10 minutes before serving."
     ],
     "timeMinutes": 30,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Sauteed Mushrooms with Toasted Flatbread and Baked Eggs",
@@ -10961,7 +11071,8 @@
       "Make 4 shallow wells in mushroom mixture and crack 1 egg into each well. Transfer to oven and cook until egg whites have just set, about 4 minutes. Season eggs with salt and red-pepper flakes."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Irish Buttermilk Brown Bread",
@@ -11015,7 +11126,8 @@
       "Remove the bread from the oven, tip it out of the pan, and cool on a rack."
     ],
     "timeMinutes": 60,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Toasted Panko Breadcrumbs",
@@ -11104,7 +11216,8 @@
       "Place a third mushroom cap on top and finish by drizzling with additional vinaigrette and garnishing with chopped chives, if desired.",
       "[Sherry Vinaigrette](http://www.xanthir.com/recipes/showrecipe.php?id=18)"
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Green-packed Stir Fry with Fresh Herbs",
@@ -11194,7 +11307,8 @@
       "Serve over cooked rice.",
       "Nutrition information does not include stir-fry sauce."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Black bean and cheese tacos",
@@ -11269,7 +11383,8 @@
       "Season to taste with salt and pepper if needed. Serve with tortillas, cheese, avocado, lettuce, and jalapenos."
     ],
     "timeMinutes": 15,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Tofu and Sweet Potato Jambalaya",
@@ -11345,7 +11460,8 @@
       "Stir in tofu and onions.",
       "Cook 1 to 2 minutes or until heated through."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Wild Mushroom Risotto",
@@ -11498,7 +11614,8 @@
       "In a small bowl, stir together ricotta, oil and garlic; season with salt and pepper. Spread ricotta mixture on dough, leaving a 1/2-inch border. Top with mozzarella, then Parmesan. Brush oil on edge of dough. Bake until crust is golden and cheese is melted and browned in spots, 12 to 14 minutes.",
       "In a small bowl, toss arugula with oil and season to taste with salt and pepper. Top pizza with arugula and serve."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Pesto",
@@ -11543,7 +11660,8 @@
       "Place basil, pine nuts, and garlic in food processor or blender. Pulse until finely chopped. With motor running, slowly drizzle in olive oil. Blend a few minutes, stopping occasionally to scrape sides, until smooth.",
       "Stir in grated Parmesan. Taste for seasoning and add salt and pepper to taste, if desired. Yields about 1 1/4 cup pesto."
     ],
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Baked eggs and beans on toast",
@@ -11634,7 +11752,8 @@
       "Meanwhile, make toast. Butter it when it comes out. (Or make skillet toast with butter over high heat, 1 minute per side or until browned.)",
       "Toss the tomatoes, parsley and remaining olive oil, and salt and pepper to taste in a bowl. Serve the beans and eggs topped with tomato salad, and toast on the side."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Roasted cauliflower and white beans",
@@ -11694,7 +11813,8 @@
       "Remove sheet from oven. Add beans, lemon zest, and red-pepper flakes to cauliflower, sprinkle with panko mixture and roast until panko is golden brown, about 5-7 minutes."
     ],
     "timeMinutes": 35,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Smoky white bean and arugula panini",
@@ -11775,7 +11895,8 @@
       "Heat grill pan or griddle over medium heat. Cook panini 2-3 minutes per side or until grill marks appear and bread is golden brown. Cook in batches if needed. Slice panini in half crosswise; serve immediately."
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Easy chickpea and vegetable curry",
@@ -11863,7 +11984,8 @@
       "Add lemon juice, peas, and salt to pan; simmer 4-5 minutes or until cauliflower is tender. Serve curry with rice."
     ],
     "timeMinutes": 40,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Chiles Rellenos",
@@ -12035,7 +12157,8 @@
       "Divide the chickpea filling among the naan bread. Drizzle with some of the yogurt sauce and roll up. Serve with chips."
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "French-Onion Stuffed Potatoes",
@@ -12157,7 +12280,8 @@
       "Meanwhile, roast the asparagus at 400F for 5 minutes, then let cool and chop to bite-size. Add asparagus and peas to the risotto about 1 minute before risotto is done.",
       "Remove from heat; stir in lemon zest and juice, parsley, cheese, and remaining 2 tablespoons oil. Season with salt and pepper. Serve immediately with additional cheese and lemon zest."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Veggie Pizza",
@@ -12222,7 +12346,8 @@
       "Mix oil and garlic together in small bowl.  Brush onto pizza crust, then bake for 5 minutes, or until garlic is fragrant.",
       "Mix together cheese and italian seasoning.  Sprinkle on crust.  Top with veggies, then finish with parmesan.  Bake for an additional 7-10 minutes, until cheese is melted."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Slow-Cooker Greek Stuffed Peppers",
@@ -12285,7 +12410,8 @@
       "To make in the oven: Preheat oven to 350 degrees. In step 2, use a 5-quart Dutch oven or ovenproof pot with a tight-fitting lid; add 1 cup water. Cover; bake until peppers are tender, about 1 hour. Proceed with step 3."
     ],
     "timeMinutes": 260,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Mediterranean Patio Pizza",
@@ -12380,7 +12506,8 @@
       "For cheese spread, finely chop enough artichoke hearts to make 1/4 cup. Combine with cream cheese, half of the feta cheese and oregano in bowl; mix well. Spread mixture evenly over crust.",
       "For toppers, quarter remaining artichoke hearts. Arrange them and all other vegetables over cream cheese mixture. Sprinkle with remaining feta cheese and pine nuts.  Drizzle with salad dressing just before serving."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "All-day minestrone (slow cooker)",
@@ -12516,7 +12643,8 @@
       "Preheat oven to 400F. Pierce potatoes all over with fork. Bake potatoes for 1 hour. Meanwhile, mash the avocados, lime juice, red onion, cilantro, jalapeno, and salt. Spoon onto baked potatoes. Top with tomato."
     ],
     "timeMinutes": 75,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Samosa baked potatoes",
@@ -12586,7 +12714,8 @@
       "When potatoes are done, remove and let cool for a few minutes. Scoop out their flesh, mash with onion mixture, and stuff back into the skins. Top with yogurt and cilantro."
     ],
     "timeMinutes": 75,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Pinto bean and poblano tacos",
@@ -12664,7 +12793,8 @@
       "Serve with lime, and garnish with cilantro."
     ],
     "timeMinutes": 33,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Muttar paneer",
@@ -12738,7 +12868,8 @@
       "In which case, take off the foil and add the paneer cubes to warm them through before serving."
     ],
     "timeMinutes": 40,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Tofu Parmesan",
@@ -12811,7 +12942,8 @@
       "When everything's finished, plate the spinach with the tofu on top, and serve with garlic bread."
     ],
     "timeMinutes": 35,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Squash and bean burritos",
@@ -12888,7 +13020,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/food-network-kitchens/chicken-and-bean-burritos-recipe.html?oc=linkback"
     ],
     "timeMinutes": 40,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Guacamole",
@@ -12941,7 +13074,8 @@
     "steps": [
       "Place all ingredients in a bowl with a flat bottom and mash it with a potato masher.  Alternatively, you can mix everything briefly in a food processor.\n2. Stir well and keep refrigerated. This dish will brown on the areas exposed to air within a few hours, so serve it shortly after making it or just stir again before serving."
     ],
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "The Original Chex Party Mix",
@@ -13015,7 +13149,8 @@
       "Place in the oven and bake for 1 hour, stirring every 15 minutes.",
       "Spread mix out to cool before storing."
     ],
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Roasted salsa",
@@ -13069,7 +13204,8 @@
       "For green salsa, use 1 1/2 lbs tomatillos and omit lime juice."
     ],
     "timeMinutes": 23,
-    "servings": 3
+    "servings": 3,
+    "hidden": true
   },
   {
     "name": "Kalitsounia Kritis: Sweet Cheese Pastries from Crete",
@@ -13240,7 +13376,8 @@
       "Serve with toasted bread and vegetable sticks."
     ],
     "timeMinutes": 16,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Salsa fresca",
@@ -13294,7 +13431,8 @@
       "In a mixing bowl, combine all ingredients together. Toss thoroughly. Let stand 15 minutes before serving. Yields 2 cups."
     ],
     "timeMinutes": 10,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Spanakopita",
@@ -13365,7 +13503,8 @@
       "Bake until phyllo is golden and crisp on top, about 30 minutes. Let cool 15 minutes before cutting  into squares. Serve warm or at room temperature."
     ],
     "timeMinutes": 70,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Creamy artichoke dip",
@@ -13424,7 +13563,8 @@
       "Makes 2 cups."
     ],
     "timeMinutes": 10,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Cheese crackers",
@@ -13476,7 +13616,8 @@
       "Store crackers in an airtight container, up to 1 day."
     ],
     "timeMinutes": 25,
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Taco Spread",
@@ -13595,7 +13736,8 @@
       "Baked potato  \nDollop on cooked potatoes",
       "Flatbread pizza  \nSpread leftover torta on focaccia and top with grilled vegetables."
     ],
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Bruschetta baked potatoes",
@@ -13644,7 +13786,8 @@
       "Preheat oven to 400F. Pierce potatoes all over with fork. Place directly on oven rack and bake for 1 hour. Meanwhile, toss remaining ingredients in a bowl. Slice open potatoes and fluff with fork. Spoon tomato mixture onto potatoes and serve."
     ],
     "timeMinutes": 75,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Ranch dip with vegetables",
@@ -13720,7 +13863,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/ranch-dip-with-vegetables.html?oc=linkback"
     ],
     "timeMinutes": 10,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Classic cheese fondue (for Cuisinart Fondue Pot)",
@@ -13839,7 +13983,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/articles/50-deviled-eggs.page-1.html?oc=linkback"
     ],
     "timeMinutes": 25,
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Greek layered dip with pita chips",
@@ -13923,7 +14068,8 @@
       "Read more at: http://www.foodnetwork.com/recipes/sandra-lee/greek-layered-dip-with-pita-chips-recipe.html?oc=linkback"
     ],
     "timeMinutes": 10,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Mini Tostadas",
@@ -14013,7 +14159,8 @@
       "Filling can be prepared up to 4 hours ahead if refrigerated. Let come to room temperature before assembling and serving."
     ],
     "timeMinutes": 25,
-    "servings": 36
+    "servings": 36,
+    "hidden": true
   },
   {
     "name": "Caprese Skewers",
@@ -14070,7 +14217,8 @@
       "Can be assembled up to 3 hours in advance. Do not refrigerate."
     ],
     "timeMinutes": 20,
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Herbed biscuits with smoked salmon",
@@ -14207,7 +14355,8 @@
       "Mix the rest of the ingredients, and then add the cooled onions. Refrigerate and stir again before serving."
     ],
     "timeMinutes": 25,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Frisco gourmet potato skins",
@@ -14256,7 +14405,8 @@
       "Add topping mixture to skins and bake for 5 more minutes."
     ],
     "timeMinutes": 75,
-    "servings": 16
+    "servings": 16,
+    "hidden": true
   },
   {
     "name": "Toasted ravioli potato skins",
@@ -14306,7 +14456,8 @@
       "Bake 5 more minutes."
     ],
     "timeMinutes": 75,
-    "servings": 16
+    "servings": 16,
+    "hidden": true
   },
   {
     "name": "Sweet, Spicy & Salty Candied Pecans",
@@ -14354,7 +14505,8 @@
       "Note: Make sure you're using parchment paper and not wax paper. Wax paper is not nonstick."
     ],
     "timeMinutes": 15,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Tapenade",
@@ -14504,7 +14656,8 @@
       "Enjoy!"
     ],
     "timeMinutes": 34,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Lovely Lentils",
@@ -14555,7 +14708,8 @@
       "Add 1 cup of water along with lentils and allow to simmer (uncovered) for about 20-30 minutes until they are soft.",
       "Add rosemary and drizzle olive oil near the end."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Sweet Mashed Potatoes",
@@ -14720,7 +14874,8 @@
       "Season to taste with salt and pepper and serve garnished with the remaining chives."
     ],
     "timeMinutes": 23,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Roasted potatoes and tomatoes",
@@ -14765,7 +14920,8 @@
       "Cut potatoes lengthwise into eighths. Toss with olive oil, tomatoes, rosemary, garlic cloves, salt and pepper. Put cut-side down on the hot baking sheet and roast 15 minutes. Flip the mixture and roast 10 more minutes."
     ],
     "timeMinutes": 35,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Spiced Apple Sauce",
@@ -14874,7 +15030,8 @@
     "steps": [
       "Mix the first five ingredients in a large bowl.\nIn a second bowl, beat dressing ingredients together gently until smooth.\nToss the salad with the dressing approximately 10 minutes before serving to allow flavors to meld. Serve on chilled salad dishes."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Artichoke, Leek, and Potato Casserole",
@@ -15001,7 +15158,8 @@
       "Add red pepper flakes, season with salt and pepper, and transfer to serving bowl.  Toss with lemon zest, lemon juice, parmesan, and walnuts.  Serve warm or at room temperature."
     ],
     "timeMinutes": 20,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Glazed carrots",
@@ -15109,7 +15267,8 @@
       "Cook, stirring occasionally, until the beans are creamy and tender, about 12 minutes.",
       "Fluff the rice with a fork and divide among bowls. Add the spinach and cilantro to the black-eyed pea mixture and stir until wilted, about 1 minute; spoon evenly over the rice. Top each serving with a few avocado slices, some cheese and more salsa. Serve with sour cream or Greek yogurt, if desired."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Spicy sauteed kale with lemon",
@@ -15158,7 +15317,8 @@
       "In a large skillet, heat oil and chile over medium-high. Add lemon and honey and cook, stirring until lemon begins to break down, about 2 minutes. Add kale and cook, stirring, until just wilted, about 3 minutes. Add scallions, season with salt, and cook 1 minutes. Serve warm or at room temperature."
     ],
     "timeMinutes": 20,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Sushi rice",
@@ -15211,7 +15371,8 @@
       "Yield: about 4 cups"
     ],
     "timeMinutes": 25,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Grilled salmon sushi rice bowl",
@@ -15306,7 +15467,8 @@
       "Cook, turning once, until it turns opaque and just begins to flake, 2 to 3 minutes on each side.",
       "To serve, divide the rice among 4 bowls. Top with a piece of fish and some asparagus. Pour 1/4 cup of the sauce over the fish in each bowl. Garnish each serving with the sesame oil, green onions, avocado, cucumber, pickled ginger and sesame seeds."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Brussels sprouts with maple and cayenne",
@@ -15354,7 +15516,8 @@
       "Drizzle brussels sprouts with maple syrup mixture, stir to coat and roast 1 minute."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Pickled red onions",
@@ -15467,7 +15630,8 @@
       "Preheat crock pot insert on low while prepping ingredients. Heat a cast-iron Dutch oven over medium heat and cook bacon, onion, and jalapeno as directed above. Pour into crock pot. Add remaining ingredients, stir well, and cook for 7 hours on low or until the beans are tender."
     ],
     "timeMinutes": 380,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Scalloped Yukon Gold and Sweet Potato Gratin",
@@ -15628,7 +15792,8 @@
       "5 Drizzle the soy sauce all around the rice and toss. Add the peas and carrots, the cooked eggs, shrimp and sesame oil, tossing to mix the rice evenly with all of the ingredients. Let everything heat back up again, until the rice grains are so hot they practically dance! Taste and add an additional 1 teaspoon of soy sauce if needed."
     ],
     "timeMinutes": 20,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Couscous stuffed bellpeppers with basil sauce",
@@ -15845,7 +16010,8 @@
       "Add the cilantro to the rice mixture and toss, then top with shrimp and remaining lime juice."
     ],
     "timeMinutes": 30,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Southwestern brown rice bowl",
@@ -15961,7 +16127,8 @@
       "Divide the rice among 4 bowls and top with black beans, guacamole, pico, shredded lettuce, bell peppers and cheese. Add extra cilantro to garnish if desired."
     ],
     "timeMinutes": 20,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Hoisin-Lime Salmon with Asparagus Couscous",
@@ -16049,7 +16216,8 @@
       "Serve immediately."
     ],
     "timeMinutes": 17,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Carrot kinpira",
@@ -16140,7 +16308,8 @@
       "Mixed with pasta\nHeat up and add some cold rice; stir-fry for a quick vegetable fried rice. (No added oil needed since there’s enough in the confit)\nAs an omelette filling - great for a Spanish omelette or tortilla\nWrap with rice paper\nOn a sandwich (e.g. feta or fresh goats cheese, the confit, and some arugula on a crusty roll)\nJust tucked into a corner of your bento box!"
     ],
     "timeMinutes": 50,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Steakhouse steaks",
@@ -16188,7 +16357,8 @@
       "Top each steak with a tablespoon of butter, if using, and place the skillet in the oven. Cook the steaks until they reach 120 degrees F for rare or 125 degrees F for medium-rare on an instant-read thermometer. (To test the steaks, insert the thermometer sideways to be sure you're actually testing the middle of the steak.)",
       "Remove the steaks to a serving platter, cover tightly with aluminum foil and allow to rest at room temperature for 10 minutes. Serve hot with [Roquefort Cheese Sauce](http://www.xanthir.com/recipes/showrecipe.php?id=62) on the side."
     ],
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Vegetarian Steamed Dumplings",
@@ -16315,7 +16485,8 @@
       "Repeat until all dumplings are cooked.",
       "To make dipping sauce, whisk together ingredients in a small bowl."
     ],
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Emeril's strawberry lemonade",
@@ -17011,7 +17182,8 @@
       "Serve the sandwiches with the soup."
     ],
     "timeMinutes": 18,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Baja fish tacos",
@@ -17186,7 +17358,8 @@
       "Drain well before adding to bento box.\n6.",
       "For rice: Pack rice into the bento box and sprinkle with the sesame salt."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Fresh salmon mini burgers",
@@ -17243,7 +17416,8 @@
       "Mix all ingredients except butter and oil very well with your hands until everything sticks together. Form into mini burger patties. Fry on both sides in a mixture of butter and vegetable oil over medium heat until just cooked through."
     ],
     "timeMinutes": 23,
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Pizza dough",
@@ -17364,7 +17538,8 @@
       "Place the jar in the fridge to sit for at least 30 minutes before using. You can still taste and adjust the salt to preference once they are ready to eat."
     ],
     "timeMinutes": 5,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Pizza sauce from tomato paste",
@@ -17647,7 +17822,8 @@
       "Put just enough water in a small pan to cover the broccoli. Bring the water to a boil, add a pinch of salt, and put in the broccoli florets. Boil for 2-3 minutes, drain the water, and run cold tap water over the broccoli to cool quickly and fix the bright green color. Drain well. Use broccoli and cherry tomatoes to fill in gaps in the bento box."
     ],
     "timeMinutes": 27,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Tamagoyaki Bento",
@@ -17759,7 +17935,8 @@
       "If you want a little more kick, add togarashi to the eggs, and/or drizzle some sriracha or other chili sauce on top of the bowl when done."
     ],
     "timeMinutes": 30,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Fried Shrimp Bento",
@@ -17854,7 +18031,8 @@
       "To pack bento:",
       "Put the **dipping sauce** of your choice in the sauce cup, to tuck into a corner of the bento box. Pack **carrot and celeriac salad** and **dressed broccoli**. Place shrimp on top of rice, if possible."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Restaurant Style Butter Chicken in Slow Cooker",
@@ -17956,7 +18134,8 @@
       "Before serving, after the cooker timer is up, add heavy cream and mix well. Taste and adjust salt. Leave on warm until ready to serve."
     ],
     "timeMinutes": 195,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Smoky Seared Cod with Roasted Potatoes & Dates",
@@ -18050,7 +18229,8 @@
       "Enjoy!"
     ],
     "timeMinutes": 50,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Vadouvan curry spice blend",
@@ -18847,7 +19027,8 @@
       "To Store\nYou can keep the leftovers in an airtight container and store in the refrigerator for up to 2 days."
     ],
     "timeMinutes": 7,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Weeknight Hero spice blend",
@@ -18960,7 +19141,8 @@
       "Stir in hot sauce until blended. Serve with tostadas."
     ],
     "timeMinutes": 10,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Southern Spice Blend",
@@ -19185,7 +19367,8 @@
       "Serve the cooked shrimp with the rice and broccoli. Garnish the broccoli with the toasted breadcrumbs. Serve the spicy pepper sauce and remaining lime wedges (if desired) on the side. Enjoy!"
     ],
     "timeMinutes": 50,
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Chocolate cheesecake squares",
@@ -19311,7 +19494,8 @@
       "Whisk cornstarch, sugar, cocoa powder, cinnamon, and salt in a medium saucepan. Add milks, whisking. Bring to a boil over medium-high heat, whisking constantly. Cook until thickened, about 1 minute. Whisk in chocolate; cook until chocolate has melted, about 1 minute.",
       "Divide evenly among six 4-ounce cups. To prevent a skin from forming, press plastic wrap onto surface of pudding. Refrigerate until set, at least 1 hour and up to overnight. Serve garnished with chocolate shavings and cinnamon sticks."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Creepy crawly cake",
@@ -19436,7 +19620,8 @@
       "Storage: Decorated cake can be refrigerated for up to 3 days, but the ganache with not be as shiny,. Bring to room temperature before serving."
     ],
     "timeMinutes": 65,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Chocolate-Hazelnut Icebox Cake",
@@ -19517,7 +19702,8 @@
       "Pipe chocolate flower on Parchment Paper; refrigerate 15 minutes or until \nset."
     ],
     "timeMinutes": 20,
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Simple lemon cake",
@@ -19608,7 +19794,8 @@
       "Remove cake from pan and let cool completely on rack, 1 hour. (Store cooled cake, tightly wrapped in plastic, at room temperature up to 1 day.) Dust with confectioners' sugar and serve with raspberries and cream, if desired."
     ],
     "timeMinutes": 60,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Gooey layered everything bars",
@@ -19683,7 +19870,8 @@
       "Store in an airtight container, at room temperature up to 3 days."
     ],
     "timeMinutes": 60,
-    "servings": 18
+    "servings": 18,
+    "hidden": true
   },
   {
     "name": "Pear and chocolate brioche bread pudding",
@@ -19759,7 +19947,8 @@
       "Bake until brioche is puffed and custard is just set, 50 to 60 minutes. Let cool slightly. Serve warm or at room temperature."
     ],
     "timeMinutes": 75,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Salted chocolate milk",
@@ -19804,7 +19993,8 @@
       "Spoon about 2.5 tbsp of the chocolate syrup into each glass. Add 1 1/2 cups milk and a generous pinch of salt. Stir until the syrup and salt dissolves."
     ],
     "timeMinutes": 10,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Chocolate banana ice cream pie",
@@ -19860,7 +20050,8 @@
       "Remove the pie from the freezer 20 minutes before serving. Beat the cream and confectioners' sugar with a mixer until soft peaks form, then spread over the pie. Top with toasted coconut, if desired."
     ],
     "timeMinutes": 30,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Granitaville",
@@ -19917,7 +20108,8 @@
       "Garnish with lime slices."
     ],
     "timeMinutes": 10,
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Maple brown butter semifreddo",
@@ -19966,7 +20158,8 @@
       "Serve topped with hazelnuts if desired."
     ],
     "timeMinutes": 25,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Brown sugar buttermilk pie",
@@ -20064,7 +20257,8 @@
       "How to Crimp a Crust: Using a knuckle on one hand and the thumb and forefinger of the other, crimp the rim of the crust."
     ],
     "timeMinutes": 65,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Apple brandy brown betty",
@@ -20129,7 +20323,8 @@
       "Cover with foil and bake until mixture is bubbling and apples are tender, about 40 minutes. Uncover and bake until top is browned, 10 to 15 minutes. Let cool 15 minutes. Serve with ice cream or whipped cream."
     ],
     "timeMinutes": 70,
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Pumpkin chocolate whoopie pies",
@@ -20200,7 +20395,8 @@
       "In a medium bowl, using an electric mixer, beat room temperature butter, 1/2 cup cream, cocoa powder, and confectioners' sugar on medium-high until fluffy, 2 minutes. Spread filling on flat side of half the cookies; sandwich with remaining cookies. To serve, dust with confectioners' sugar."
     ],
     "timeMinutes": 29,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Towering flourless chocolate cake",
@@ -20304,7 +20500,8 @@
       "Spread the meringue on the cake."
     ],
     "timeMinutes": 85,
-    "servings": 10
+    "servings": 10,
+    "hidden": true
   },
   {
     "name": "Lemon white chocolate cookies",
@@ -20510,7 +20707,8 @@
       "Preheat oven to 375°. Dip dough using small or large cookie scoop onto cookie sheets\nlined with either parchment paper, non-stick foil or silicone baking liner. Bake about 9 minutes\nfor small ones, 11 minutes for large ones. Cool several minutes before removing from cookie\nsheets.",
       "Makes about 24 large cookies or 40 small cookies."
     ],
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Brazilian sweet bread",
@@ -20609,7 +20807,8 @@
       "Yield: 1 large loaf, about 16 servings."
     ],
     "timeMinutes": 65,
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Chocolate dipped coconut macaroons",
@@ -20674,7 +20873,8 @@
       "Yield: 33 macaroons.",
       "tips from our bakers\nCoconut cream, sweetened condensed coconut milk, is the coconut equivalent of sweetened condensed milk. Substitute sweetened condensed milk, if desired.\nCoconut milk powder adds flavor and helps the macaroons hold their nice, smooth shape. Leave it out if you like."
     ],
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Peppermint crunch bark",
@@ -20716,7 +20916,8 @@
       "Yield: about 2 dozen pieces."
     ],
     "timeMinutes": 30,
-    "servings": 24
+    "servings": 24,
+    "hidden": true
   },
   {
     "name": "Appam (Fermented Rice Pancake)",
@@ -20778,7 +20979,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Appam_(Fermented_Rice_Pancake)",
     "license": "CC-BY-SA-4.0",
     "servings": 12,
-    "timeMinutes": 3
+    "timeMinutes": 3,
+    "hidden": true
   },
   {
     "name": "Arisa Pitha (Fried Indian Sweet Rice Pastry)",
@@ -20851,7 +21053,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Arisa_Pitha_(Fried_Indian_Sweet_Rice_Pastry)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Baingan Bartha (South Indian Eggplant with Chili) II",
@@ -20933,7 +21136,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Baingan_Bartha_(South_Indian_Eggplant_with_Chili)_II",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Baingan Bartha (South Indian Eggplant with Coconut and Chili) I",
@@ -21057,7 +21261,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Basic_Indian_Tomato_Gravy",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "hidden": true
   },
   {
     "name": "Bengal Potatoes",
@@ -21106,7 +21311,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Bengal_Potatoes",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Bhuna Khichuri (Bengali Rice and Lentils)",
@@ -21226,7 +21432,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Bhuna_Khichuri_(Bengali_Rice_and_Lentils)",
     "license": "CC-BY-SA-4.0",
     "servings": 2,
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "hidden": true
   },
   {
     "name": "Bonda (South Indian Vegetable Fritter)",
@@ -21318,7 +21525,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Bonda_(South_Indian_Vegetable_Fritter)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Borhani (Spiced Yogurt Drink)",
@@ -21396,7 +21604,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Borhani_(Spiced_Yogurt_Drink)",
     "license": "CC-BY-SA-4.0",
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Bread Filled with Potato Curry (Pani Puri)",
@@ -21496,7 +21705,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Bread_Filled_with_Potato_Curry_(Pani_Puri)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Buttermilk Curry Soup (Kadi Pakora)",
@@ -21663,7 +21873,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chakarai_Pongal_(Sweet_Rice_and_Black_Gram_Pudding)",
     "license": "CC-BY-SA-4.0",
-    "servings": 8
+    "servings": 8,
+    "hidden": true
   },
   {
     "name": "Chapati",
@@ -21707,7 +21918,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chapati",
     "license": "CC-BY-SA-4.0",
     "servings": 8,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Chicken Biryani",
@@ -21806,7 +22018,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Biryani",
     "license": "CC-BY-SA-4.0",
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Chicken Curry",
@@ -21975,7 +22188,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Curry",
     "license": "CC-BY-SA-4.0",
     "servings": 8,
-    "timeMinutes": 90
+    "timeMinutes": 90,
+    "hidden": true
   },
   {
     "name": "Chicken Madras",
@@ -22071,7 +22285,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Madras",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Chicken Tikka",
@@ -22246,7 +22461,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Tikka_Masala",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Chicken Vindaloo",
@@ -22354,7 +22570,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Vindaloo",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Chickpea Curry (Masaledaar Chole)",
@@ -22438,7 +22655,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chickpea_Curry_(Masaledaar_Chole)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Cholley (Chickpea Curry)",
@@ -22589,7 +22807,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Churri_(Indian_Yogurt_Herb_Sauce)",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Coconut Barfi",
@@ -22633,7 +22852,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Coconut_Barfi",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Coconut Chutney (North Indian)",
@@ -22681,7 +22901,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Coconut_Chutney_(North_Indian)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Coconut Chutney (South Indian)",
@@ -22755,7 +22976,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Coconut_Chutney_(South_Indian)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Coriander Chutney",
@@ -22801,7 +23023,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Coriander_Chutney",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Corom Chatni (Mango Chutney with Hot Chillies)",
@@ -22850,7 +23073,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Corom_Chatni_(Mango_Chutney_with_Hot_Chillies)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Curried Chiles (Mirchi ka Salan)",
@@ -22958,7 +23182,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Curried_Chiles_(Mirchi_ka_Salan)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Dabeli (Potato-stuffed Buns with Chutney)",
@@ -23065,7 +23290,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Dabeli_(Potato-stuffed_Buns_with_Chutney)",
     "license": "CC-BY-SA-4.0",
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Dahi Baingana (Fried Eggplant in Yogurt)",
@@ -23132,7 +23358,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Dahi_Baingana_(Fried_Eggplant_in_Yogurt)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Dal Makhani (Black Gram with Cream)",
@@ -23250,7 +23477,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Dal_Makhani_(Black_Gram_with_Cream)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "hidden": true
   },
   {
     "name": "Deep Fried Chickpea Dough Balls (Chyueeam)",
@@ -23309,7 +23537,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Deep_Fried_Chickpea_Dough_Balls_(Chyueeam)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 530
+    "timeMinutes": 530,
+    "hidden": true
   },
   {
     "name": "Deep Fried Chickpea Dough Curry Snacks (Pakoda)",
@@ -23407,7 +23636,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Deep_Fried_Chickpea_Dough_Curry_Snacks_(Pakoda)",
     "license": "CC-BY-SA-4.0",
     "servings": 2,
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "hidden": true
   },
   {
     "name": "Deep Fried Chiles Filled with Chickpea Flour (Mirchi Bhajji)",
@@ -23467,7 +23697,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Deep_Fried_Chiles_Filled_with_Chickpea_Flour_(Mirchi_Bhajji)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "hidden": true
   },
   {
     "name": "Deep Fried Chiles Stuffed with Potato (Mirchi Bada)",
@@ -23534,7 +23765,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Deep_Fried_Chiles_Stuffed_with_Potato_(Mirchi_Bada)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Deep Fried Lentil Dough Balls (Punugu)",
@@ -23582,7 +23814,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Deep_Fried_Lentil_Dough_Balls_(Punugu)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Dharwad Pedha (Sweetened Paneer Cheese)",
@@ -23642,7 +23875,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Dharwad_Pedha_(Sweetened_Paneer_Cheese)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Dhokla (Steamed Black Gram Bread)",
@@ -23787,7 +24021,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Egg_Rice",
     "license": "CC-BY-SA-4.0",
     "servings": 2,
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "hidden": true
   },
   {
     "name": "Egg Roast",
@@ -23875,7 +24110,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Egg_Roast",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Fried Wheat Bread Balls (Bhatoora)",
@@ -23927,7 +24163,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Fried_Wheat_Bread_Balls_(Bhatoora)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Gajjar Halwa (Carrot Pudding)",
@@ -23990,7 +24227,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Gajjar_Halwa_(Carrot_Pudding)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Ghevar (Rajasthani Honeycomb Fritter)",
@@ -24100,7 +24338,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Green_Mango_and_Cumin_Drink_(Aam_Panna)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Homemade Paneer",
@@ -24128,7 +24367,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Homemade_Paneer",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Hyderabad Biryani",
@@ -24276,7 +24516,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Hyderabad_Biryani",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Hyderabadi Fried Bread with Syrup and Nuts (Double ka meetha)",
@@ -24350,7 +24591,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Hyderabadi_Fried_Bread_with_Syrup_and_Nuts_(Double_ka_meetha)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Idiyappam (South Indian Rice Noodles)",
@@ -24394,7 +24636,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Idiyappam_(South_Indian_Rice_Noodles)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "hidden": true
   },
   {
     "name": "Idli (Steamed Rice and Black Gram Bread)",
@@ -24531,7 +24774,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Baked_Yoghurt_with_Saffron_and_Cardamom",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Indian Beans",
@@ -24596,7 +24840,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Beans",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Indian Butter Chicken I",
@@ -24688,7 +24933,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Butter_Chicken_I",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Indian Curry Marinade",
@@ -24757,7 +25003,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Curry_Marinade",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Indian Hard Tack (Baati)",
@@ -24804,7 +25051,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Hard_Tack_(Baati)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "hidden": true
   },
   {
     "name": "Indian Moong Dal",
@@ -24861,7 +25109,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Moong_Dal",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Indian Omelet",
@@ -24929,7 +25178,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Omelet",
     "license": "CC-BY-SA-4.0",
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Indian Potatoes",
@@ -24984,7 +25234,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Potatoes",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Indian Rice",
@@ -25034,7 +25285,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Indian_Rice",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Jal-jeera (Cumin Mango Lemonade)",
@@ -25079,7 +25331,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Jal-jeera_(Cumin_Mango_Lemonade)",
     "license": "CC-BY-SA-4.0",
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Jalebi (Fritters in Syrup)",
@@ -25155,7 +25408,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Jalebi_(Fritters_in_Syrup)",
     "license": "CC-BY-SA-4.0",
-    "servings": 7
+    "servings": 7,
+    "hidden": true
   },
   {
     "name": "Jigarthanda Milk",
@@ -25252,7 +25506,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Jigarthanda_Milk",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Kaju Barfi (Indian Cashew Milk Confection)",
@@ -25296,7 +25551,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Kaju_Barfi_(Indian_Cashew_Milk_Confection)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Kal Kals (Sweet Curled Fritters)",
@@ -25343,7 +25599,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Kal_Kals_(Sweet_Curled_Fritters)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Kashmiri Pulao",
@@ -25446,7 +25703,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Kashmiri_Pulao",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "hidden": true
   },
   {
     "name": "Katchi Biryani",
@@ -25583,7 +25841,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Katchi_Biryani",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Keralan Prawns",
@@ -25660,7 +25919,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Keralan_Prawns",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Keralan Vegetable Stew",
@@ -25837,7 +26097,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Kesari_(South_Indian_Semolina_Pudding)",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Khandvi (Rolled Chickpea Noodles)",
@@ -25911,7 +26172,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Khandvi_(Rolled_Chickpea_Noodles)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Khara Pongal (Rice and Mung Bean Porridge)",
@@ -26089,7 +26351,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Khichdi_(South_Asian_Rice_and_Lentils)",
     "license": "CC-BY-SA-4.0",
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Khus Khus Halwa",
@@ -26140,7 +26403,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Khus_Khus_Halwa",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Kuddi (Spiced Yogurt Sauce)",
@@ -26201,7 +26465,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Kuddi_(Spiced_Yogurt_Sauce)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "hidden": true
   },
   {
     "name": "Kulfi (South Asian Frozen Custard)",
@@ -26245,7 +26510,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Kulfi_(South_Asian_Frozen_Custard)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 420
+    "timeMinutes": 420,
+    "hidden": true
   },
   {
     "name": "Lemon Pickle I",
@@ -26383,7 +26649,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Lemon_Pickle_II",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "hidden": true
   },
   {
     "name": "Lemon Rice",
@@ -26456,7 +26723,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Lemon_Rice",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Lentil, Potato, and Tomato Curry",
@@ -26534,7 +26802,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Lentil,_Potato,_and_Tomato_Curry",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Madras Filter Coffee",
@@ -26573,7 +26842,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Madras_Filter_Coffee",
     "license": "CC-BY-SA-4.0",
-    "servings": 1
+    "servings": 1,
+    "hidden": true
   },
   {
     "name": "Maharashtrian Baingan Bartha (South Indian Eggplant with Chili)",
@@ -26655,7 +26925,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Maharashtrian_Baingan_Bartha_(South_Indian_Eggplant_with_Chili)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Maharashtrian Deep Fried Chickpea Dough Curry Snacks (Pakoda)",
@@ -26718,7 +26989,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Maharashtrian_Deep_Fried_Chickpea_Dough_Curry_Snacks_(Pakoda)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Makki di Roti (Indian Cornmeal Flatbread)",
@@ -26753,7 +27025,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Makki_di_Roti_(Indian_Cornmeal_Flatbread)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Malai Mixed Vegetable Curry",
@@ -26865,7 +27138,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Malai_Mixed_Vegetable_Curry",
     "license": "CC-BY-SA-4.0",
     "servings": 10,
-    "timeMinutes": 30
+    "timeMinutes": 30,
+    "hidden": true
   },
   {
     "name": "Malvani Chicken Curry",
@@ -27023,7 +27297,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Mango_Chutney_(Chunky)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Mango and Coconut Chutney (Am ki Chatni)",
@@ -27076,7 +27351,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Mango_and_Coconut_Chutney_(Am_ki_Chatni)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Mango and Yellow Split Pea Curry",
@@ -27165,7 +27441,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Mango_and_Yellow_Split_Pea_Curry",
     "license": "CC-BY-SA-4.0",
     "servings": 2,
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "hidden": true
   },
   {
     "name": "Masala Chai I",
@@ -27240,7 +27517,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Masala_Chai_I",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Matar Paneer",
@@ -27348,7 +27626,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Matar_Paneer",
     "license": "CC-BY-SA-4.0",
     "servings": 3,
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "hidden": true
   },
   {
     "name": "Medu Vada (South Indian Savory Lentil Donut)",
@@ -27406,7 +27685,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Medu_Vada_(South_Indian_Savory_Lentil_Donut)",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Mild Salty Lassi",
@@ -27462,7 +27742,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Mild_Salty_Lassi",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Mishti Doi (Bengali Sweetened Yogurt)",
@@ -27503,7 +27784,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Mishti_Doi_(Bengali_Sweetened_Yogurt)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Mukimo",
@@ -27557,7 +27839,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Mukimo",
     "license": "CC-BY-SA-4.0",
     "servings": 6,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Murgh Musallam (Indian Stewed Spiced Chicken)",
@@ -27707,7 +27990,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Murgh_Musallam_(Indian_Stewed_Spiced_Chicken)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Murghi Korma (Chicken Korma)",
@@ -27832,7 +28116,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Murghi_Korma_(Chicken_Korma)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 50
+    "timeMinutes": 50,
+    "hidden": true
   },
   {
     "name": "Naan",
@@ -27880,7 +28165,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Naan",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 120
+    "timeMinutes": 120,
+    "hidden": true
   },
   {
     "name": "North Indian Fermented Bread (Batooru)",
@@ -27919,7 +28205,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:North_Indian_Fermented_Bread_(Batooru)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Onion Chutney",
@@ -27972,7 +28259,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Onion_Chutney",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Paneer Butter Masala",
@@ -28077,7 +28365,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Paneer_Butter_Masala",
     "license": "CC-BY-SA-4.0",
     "servings": 2,
-    "timeMinutes": 25
+    "timeMinutes": 25,
+    "hidden": true
   },
   {
     "name": "Papaya Lassi",
@@ -28121,7 +28410,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Papaya_Lassi",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Phulourie (Split Pea Fritters)",
@@ -28184,7 +28474,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Phulourie_(Split_Pea_Fritters)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Pickled Green Mango (Aavakaaya)",
@@ -28254,7 +28545,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Pickled_Green_Mango_(Aavakaaya)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Pigeon Pea and Fenugreek Curry (Methi Tadka Dal)",
@@ -28379,7 +28671,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Pigeon_Pea_and_Fenugreek_Curry_(Methi_Tadka_Dal)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "hidden": true
   },
   {
     "name": "Pohe (Spiced Flattened Rice)",
@@ -28452,7 +28745,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Pohe_(Spiced_Flattened_Rice)",
     "license": "CC-BY-SA-4.0",
     "servings": 1,
-    "timeMinutes": 15
+    "timeMinutes": 15,
+    "hidden": true
   },
   {
     "name": "Pork Aachi",
@@ -28525,7 +28819,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Pork_Aachi",
     "license": "CC-BY-SA-4.0",
     "servings": 2,
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "hidden": true
   },
   {
     "name": "Potato Curry (Aloo Masala)",
@@ -28595,7 +28890,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Potato_Curry_(Aloo_Masala)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 20
+    "timeMinutes": 20,
+    "hidden": true
   },
   {
     "name": "Potato and Cauliflower Curry (Aloo Gobi)",
@@ -28676,7 +28972,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Potato_and_Cauliflower_Curry_(Aloo_Gobi)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Potato-Chickpea Curry",
@@ -28850,7 +29147,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Prawn_Curry",
     "license": "CC-BY-SA-4.0",
     "servings": 6,
-    "timeMinutes": 40
+    "timeMinutes": 40,
+    "hidden": true
   },
   {
     "name": "Pudina Hilsa (Bengali Fish with Mint)",
@@ -28911,7 +29209,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Pudina_Hilsa_(Bengali_Fish_with_Mint)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Puliyodarai (South Indian Tamarind Rice)",
@@ -29059,7 +29358,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Pulse_Chutney",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Puri (Indian Fried Flatbread)",
@@ -29115,7 +29415,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Puri_(Indian_Fried_Flatbread)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Puttu (Steamed Rice Flour and Coconut)",
@@ -29157,7 +29458,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Puttu_(Steamed_Rice_Flour_and_Coconut)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Ragi Dosa (South Indian Millet and Rice Pancake)",
@@ -29197,7 +29499,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Ragi_Dosa_(South_Indian_Millet_and_Rice_Pancake)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Raita",
@@ -29256,7 +29559,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Raita",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Rasam (Tamarind and Tomato Soup)",
@@ -29373,7 +29677,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rasam_(Tamarind_and_Tomato_Soup)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Rasmalai (Indian Cheese and Milk Dessert)",
@@ -29488,7 +29793,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rava_Dosa_(Indian_Semolina_Pancake)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Rice Modak (Coconut Pastries) I",
@@ -29558,7 +29864,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rice_Modak_(Coconut_Pastries)_I",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Rice Modak (Coconut Pastries) II",
@@ -29630,7 +29937,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rice_Modak_(Coconut_Pastries)_II",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Rice with Lemon Coconut and Eggplant (Vangibhat)",
@@ -29707,7 +30015,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rice_with_Lemon_Coconut_and_Eggplant_(Vangibhat)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Rosogulla (Bengali Milk Balls in Syrup)",
@@ -29785,7 +30094,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rosogulla_(Bengali_Milk_Balls_in_Syrup)",
     "license": "CC-BY-SA-4.0",
     "servings": 6,
-    "timeMinutes": 45
+    "timeMinutes": 45,
+    "hidden": true
   },
   {
     "name": "Salty (Namkin) Lassi",
@@ -29834,7 +30144,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Salty_(Namkin)_Lassi",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Sambar I",
@@ -29919,7 +30230,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sambar_I",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Sambar II (Kerala/Tamil style)",
@@ -30002,7 +30314,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sambar_II_(Kerala%2FTamil_style)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Sambar III",
@@ -30155,7 +30468,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sambar_III",
     "license": "CC-BY-SA-4.0",
-    "servings": 5
+    "servings": 5,
+    "hidden": true
   },
   {
     "name": "Samosa",
@@ -30240,7 +30554,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Samosa",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Sev Puri (Crispy Indian Snack with Potato)",
@@ -30303,7 +30618,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sev_Puri_(Crispy_Indian_Snack_with_Potato)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Sheer Khurma",
@@ -30380,7 +30696,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sheer_Khurma",
     "license": "CC-BY-SA-4.0",
-    "servings": 12
+    "servings": 12,
+    "hidden": true
   },
   {
     "name": "Shirmal (Persian Saffron Flatbread)",
@@ -30440,7 +30757,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Shirmal_(Persian_Saffron_Flatbread)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Shrimp Curry",
@@ -30496,7 +30814,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Shrimp_Curry",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Soji (Indian Wheat Pudding)",
@@ -30556,7 +30875,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Soji_(Indian_Wheat_Pudding)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "South Indian Millet Swallow (Mudde)",
@@ -30590,7 +30910,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:South_Indian_Millet_Swallow_(Mudde)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Spicy Chilli Chicken",
@@ -30694,7 +31015,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Spicy_Chilli_Chicken",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Sweet Lassi",
@@ -30738,7 +31060,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sweet_Lassi",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Sweet Mango Lassi",
@@ -30774,7 +31097,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sweet_Mango_Lassi",
     "license": "CC-BY-SA-4.0",
-    "servings": 6
+    "servings": 6,
+    "hidden": true
   },
   {
     "name": "Sylheti Beef Curry",
@@ -30878,7 +31202,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sylheti_Beef_Curry",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 120
+    "timeMinutes": 120,
+    "hidden": true
   },
   {
     "name": "Sylheti Biryani",
@@ -30972,7 +31297,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Sylheti_Biryani",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Tadka Dhal (Spiced Lentil Curry) I",
@@ -31056,7 +31382,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Tadka_Dhal_(Spiced_Lentil_Curry)_I",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Tadka Dhal (Spiced Lentil Curry) II",
@@ -31159,7 +31486,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Tadka_Dhal_(Spiced_Lentil_Curry)_II",
     "license": "CC-BY-SA-4.0",
-    "servings": 2
+    "servings": 2,
+    "hidden": true
   },
   {
     "name": "Tamate Ka Kut (Hyderabadi Tomato Curry)",
@@ -31254,7 +31582,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Tamate_Ka_Kut_(Hyderabadi_Tomato_Curry)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Tamil Spice Mix (Milagai Podi)",
@@ -31293,7 +31622,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Tamil_Spice_Mix_(Milagai_Podi)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Tandoori Masala",
@@ -31394,7 +31724,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Tandoori_Masala",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Tandoori Tofu",
@@ -31439,7 +31770,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Tandoori_Tofu",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Thalassery Biryani",
@@ -31638,7 +31970,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Thalassery_Biryani",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 60
+    "timeMinutes": 60,
+    "hidden": true
   },
   {
     "name": "Traditional Pilau Rice",
@@ -31835,7 +32168,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Upeseru_(Indian_Lentils_with_Greens)",
     "license": "CC-BY-SA-4.0",
-    "servings": 4
+    "servings": 4,
+    "hidden": true
   },
   {
     "name": "Upma (Indian Semolina Porridge)",
@@ -31935,7 +32269,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Upma_(Indian_Semolina_Porridge)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Uppittu (Indian Semolina Porridge)",
@@ -32010,7 +32345,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Uppittu_(Indian_Semolina_Porridge)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Vedhmi (Sweet Stuffed Flatbread)",
@@ -32069,7 +32405,8 @@
     ],
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Vedhmi_(Sweet_Stuffed_Flatbread)",
-    "license": "CC-BY-SA-4.0"
+    "license": "CC-BY-SA-4.0",
+    "hidden": true
   },
   {
     "name": "Wheat Modak (Coconut Pastries)",
@@ -32136,7 +32473,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Wheat_Modak_(Coconut_Pastries)",
     "license": "CC-BY-SA-4.0",
-    "servings": 20
+    "servings": 20,
+    "hidden": true
   },
   {
     "name": "Yogurt Curry Soup (Kadhi)",
