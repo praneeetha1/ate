@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { useDialog } from '../hooks/useDialog'
 import { CATALOG_CATEGORIES } from '../utils/recipe'
+import { importRecipe, looksLikeUrl } from '../utils/importRecipe'
 
 const DIETARY = ['vegetarian', 'vegan', 'gluten-free', 'dairy-free']
 
@@ -41,8 +42,58 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     recipe?.ingredients?.length ? recipe.ingredients.map(i => ({ ...emptyIng(), ...i })) : [emptyIng()],
   )
   const [steps,    setSteps]    = useState(recipe?.steps?.length ? [...recipe.steps] : [''])
+  const [image,    setImage]    = useState(recipe?.image ?? recipe?.image_url ?? '')
+  const [source,   setSource]   = useState(recipe?.sourceUrl ?? recipe?.source_url ?? '')
   const [saving,   setSaving]   = useState(false)
   const [error,    setError]    = useState('')
+
+  const [paste,     setPaste]     = useState('')
+  const [importing, setImporting] = useState(false)
+  const [note,      setNote]      = useState('')
+
+  /**
+   * Fill the form from an imported recipe.
+   *
+   * Lands as a draft rather than saving: a model can misread a quantity, and a
+   * wrong "2 tbsp" is only caught by a person looking at it. Everything stays
+   * editable, and nothing is written until Save.
+   */
+  function applyDraft(draft) {
+    setName(draft.name ?? '')
+    if (draft.category) setCategory(draft.category)
+    setDietary(draft.dietary ?? [])
+    setTime(draft.timeMinutes ?? '')
+    setServings(draft.servings ?? '')
+    setIngs(draft.ingredients?.length
+      ? draft.ingredients.map(i => ({ ...emptyIng(), ...i }))
+      : [emptyIng()])
+    setSteps(draft.steps?.length ? [...draft.steps] : [''])
+    setImage(draft.image ?? '')
+    setSource(draft.sourceUrl ?? '')
+  }
+
+  async function handleImport() {
+    const value = paste.trim()
+    if (!value || importing) return
+    setImporting(true)
+    setError('')
+    setNote('')
+    try {
+      // A link gets fetched; anything else is treated as the recipe text
+      // itself, which is how a YouTube description or a pasted caption gets in.
+      const { recipe: draft, warning } = await importRecipe(
+        looksLikeUrl(value) ? { url: value } : { text: value },
+      )
+      applyDraft(draft)
+      setPaste('')
+      setNote(warning || `Imported “${draft.name}”. Check it over before saving.`)
+    } catch (err) {
+      console.error('Recipe import failed:', err)
+      setError(err.message || 'Could not import that recipe.')
+    } finally {
+      setImporting(false)
+    }
+  }
 
   function toggleDietary(d) {
     setDietary(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])
@@ -94,6 +145,10 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
       steps:        cleanSteps,
       time_minutes: positiveInt(time),
       servings:     positiveInt(servings),
+      // Linked, never copied: the image stays on whoever's server published
+      // it, which costs no storage and keeps the credit where it belongs.
+      image_url:    image.trim() || null,
+      source_url:   source.trim() || null,
     }
 
     setSaving(true)
@@ -140,6 +195,41 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
         </div>
 
         <form onSubmit={handleSave} className="p-5 flex flex-col gap-5">
+
+          {/* Import first, because typing a recipe in by hand is the thing
+              nobody does twice. Only when creating: re-importing over a recipe
+              you're editing would silently overwrite your own edits. */}
+          {!isEdit && (
+            <div className="border-2 border-dashed border-rim rounded-xl p-3.5 bg-paper">
+              <label className={labelCls} htmlFor="recipe-import">
+                Import from a link or pasted text
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="recipe-import"
+                  value={paste}
+                  onChange={e => { setPaste(e.target.value); setNote('') }}
+                  onKeyDown={e => {
+                    // Enter here means import, not submit — the form would
+                    // otherwise try to save a recipe that isn't filled in yet.
+                    if (e.key === 'Enter') { e.preventDefault(); handleImport() }
+                  }}
+                  placeholder="Paste a recipe link, or the text itself…"
+                  disabled={importing}
+                  className={inputCls + ' flex-1 min-w-0'}
+                />
+                <button
+                  type="button"
+                  onClick={handleImport}
+                  disabled={importing || !paste.trim()}
+                  className="shrink-0 bg-accent text-ink border-2 border-ink shadow-pop press rounded-xl px-4 text-[0.8rem] font-bold hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:shadow-none"
+                >{importing ? 'Reading…' : 'Import'}</button>
+              </div>
+              {note && (
+                <p role="status" className="text-[0.75rem] text-muted italic mt-2">{note}</p>
+              )}
+            </div>
+          )}
 
           <div>
             <label className={labelCls} htmlFor="recipe-name">Recipe Name *</label>
@@ -196,6 +286,28 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                 placeholder="e.g. 4"
                 className={inputCls}
               />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls} htmlFor="recipe-image">Photo URL</label>
+              <input
+                id="recipe-image"
+                type="url"
+                value={image}
+                onChange={e => setImage(e.target.value)}
+                placeholder="Filled in automatically when you import"
+                className={inputCls}
+              />
+              {image && (
+                // A broken link is worth seeing now rather than discovering on
+                // the card later, so the preview stands in for validation.
+                <img
+                  src={image}
+                  alt=""
+                  onError={e => { e.currentTarget.style.display = 'none' }}
+                  onLoad={e => { e.currentTarget.style.display = '' }}
+                  className="mt-2 w-full h-28 object-cover rounded-xl border-2 border-ink"
+                />
+              )}
             </div>
             <div>
               <span className={labelCls} id="dietary-label">Dietary</span>

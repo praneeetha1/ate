@@ -15,6 +15,28 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
     <div
       className={`group bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-x-[2px] hover:-translate-y-[2px] flex flex-col overflow-hidden ${fill ? 'w-full' : 'w-[240px]'}`}
     >
+      {/* Only when there is one. Most of the catalog has no photo, and a grid
+          of grey placeholders reads worse than a grid of clean text cards, so
+          the no-image layout stays exactly as it was. */}
+      {recipe.image && (
+        <button
+          type="button"
+          onClick={() => onOpen(recipeKey)}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="block w-full border-b-2.5 border-ink bg-paper"
+        >
+          <img
+            src={recipe.image}
+            alt=""
+            loading="lazy"
+            // A dead link is common with linked images, and a broken-image
+            // glyph is worse than no image: drop the whole frame instead.
+            onError={e => { e.currentTarget.parentElement.style.display = 'none' }}
+            className="w-full h-[132px] object-cover"
+          />
+        </button>
+      )}
       <div className="p-4 pb-3 flex items-start gap-2.5">
         <div className="flex-1 min-w-0">
           {/* A real button rather than a div+onClick, so the card is reachable

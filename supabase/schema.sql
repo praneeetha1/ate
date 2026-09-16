@@ -195,9 +195,15 @@ create table if not exists public.user_recipes (
   steps        text[] not null default '{}',
   time_minutes integer,
   servings     integer,
+  -- Linked, not stored: an imported recipe's photo stays on the publisher's
+  -- server, which costs no storage and keeps it where its owner put it.
+  image_url    text,
+  source_url   text,
   created_at   timestamptz default now(),
   updated_at   timestamptz default now(),
-  constraint user_recipes_name_len check (length(name) between 1 and 200)
+  constraint user_recipes_name_len check (length(name) between 1 and 200),
+  constraint user_recipes_image_url_len  check (image_url  is null or length(image_url)  <= 2000),
+  constraint user_recipes_source_url_len check (source_url is null or length(source_url) <= 2000)
 );
 
 alter table public.user_recipes enable row level security;

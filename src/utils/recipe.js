@@ -145,7 +145,14 @@ export function applyFilters(pairs, dietFilter, timeFilter) {
 
 /** DB rows use snake_case time_minutes; the UI uses camelCase timeMinutes. */
 export function normalizeUserRecipe(r) {
-  return { ...r, timeMinutes: r.time_minutes }
+  return {
+    ...r,
+    timeMinutes: r.time_minutes,
+    // Catalog recipes carry `image`/`sourceUrl`; the DB spells them
+    // snake_case. Mapping here means everything downstream reads one name.
+    image:       r.image_url  ?? r.image,
+    sourceUrl:   r.source_url ?? r.sourceUrl,
+  }
 }
 
 /**
@@ -153,12 +160,14 @@ export function normalizeUserRecipe(r) {
  *
  * `timeMinutes` in particular is added by normalizeUserRecipe and is NOT a
  * column — leaving it in made every offline-created recipe fail to upload with
- * a PGRST204 error.
+ * a PGRST204 error. `image` and `sourceUrl` are the same shape of mistake:
+ * normalizeUserRecipe adds them as the camelCase reading of image_url and
+ * source_url, and the columns are the snake_case ones.
  */
 export function toUserRecipeRow(recipe) {
   const {
     id: _id, user_id: _uid, created_at: _created, updated_at: _updated,
-    timeMinutes: _tm, ...row
+    timeMinutes: _tm, image: _img, sourceUrl: _src, ...row
   } = recipe
   return row
 }

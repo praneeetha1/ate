@@ -1,4 +1,6 @@
 recipes_raw.json
+# Supabase CLI link state — machine-local, and it identifies your project.
+supabase/.temp/
 # Importer output, merged into src/data/recipes.json. Regenerate with
 # scripts/import_wikibooks.py; re-merging is idempotent (it skips names the
 # catalog already has).
