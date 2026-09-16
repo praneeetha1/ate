@@ -2,20 +2,20 @@ import PantrySection from '../components/PantrySection'
 import ShoppingList from '../components/ShoppingList'
 
 /**
- * The Fridge page: what you have, directly above what you still need.
+ * The Fridge page: what you still need, then what you already have.
  *
- * Both halves used to sit at the bottom of Profile, behind a bio and a grid of
- * your own recipes. They are the two things you open in a kitchen or a shop,
- * so they get the tab — and Profile goes back to being about you rather than
- * about your groceries.
+ * The shopping list leads. It's the half you open standing in a shop, while
+ * the pantry is maintenance you do occasionally — "read-mostly", as the notes
+ * put it. It used to sit underneath, behind a hundred-odd quick-add and staple
+ * chips, which put the thing you actually use several screens down.
  */
 export default function Pantry() {
   return (
     <div className="max-w-[720px] mx-auto pb-4">
       <div className="border-b border-ink">
-        <PantrySection headingId="pantry-page-heading" />
+        <ShoppingList />
       </div>
-      <ShoppingList />
+      <PantrySection headingId="pantry-page-heading" />
     </div>
   )
 }

@@ -91,6 +91,8 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
   const [draft, setDraft] = useState('')
   const [note,  setNote]  = useState('')
   const [showSuggest, setShowSuggest] = useState(false)
+  // Collapsed by default: stocking up is a first-run job, not a daily one.
+  const [showStock,   setShowStock]   = useState(false)
   const inputRef = useRef(null)
 
   /**
@@ -327,9 +329,28 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
             )
           })}
 
-          {/* Quick add sits at the bottom, below what you already have: it's a
-              shortcut for filling the lists above, so it reads as a source to
-              draw from rather than part of the kitchen itself. */}
+          {/* Stocking up, folded away.
+              Quick add and the assumed staples are 104 chips between them —
+              several phone screens — and they're setup UI: you use them when
+              first filling the kitchen, then almost never again. Leaving them
+              open permanently pushed everything below off the page. */}
+          <div className="mt-4 pt-3.5 border-t border-dashed border-rim">
+            <button
+              type="button"
+              onClick={() => setShowStock(v => !v)}
+              aria-expanded={showStock}
+              aria-controls="stock-kitchen"
+              className="w-full flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted hover:text-accent-dk transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+            >
+              <Icon name="plus" size={13} strokeWidth={3} />
+              Stock my kitchen
+              <span className="ml-auto text-warm-tan font-normal normal-case tracking-normal">
+                {showStock ? 'Hide' : 'Show'}
+              </span>
+            </button>
+          </div>
+
+          <div id="stock-kitchen" hidden={!showStock}>
           {quickAddGroups.length > 0 && (
             <div className="mt-4 pt-3.5 border-t border-dashed border-rim">
               <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted mb-2.5 flex items-center gap-1.5">
@@ -395,6 +416,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                 )
               })}
             </ul>
+          </div>
           </div>
         </div>
       )}

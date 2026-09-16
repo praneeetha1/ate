@@ -35,6 +35,18 @@ function renderSection({ signedIn = true, pantry = [] } = {}) {
   )
 }
 
+/**
+ * Quick add and the assumed staples live behind a "Stock my kitchen"
+ * disclosure now, collapsed by default — 104 chips between them was several
+ * screens of setup UI sitting above everything you use daily.
+ */
+async function renderStocked(opts) {
+  const user = userEvent.setup()
+  renderSection(opts)
+  await user.click(await screen.findByRole('button', { name: /stock my kitchen/i }))
+  return user
+}
+
 // Non-staples throughout: staples have their own group and are deliberately
 // excluded from these, so a staple here would test nothing.
 const ROWS = [
@@ -98,7 +110,7 @@ describe('Fridge / Pantry section', () => {
     const staple = name => screen.getByRole('button', { name: new RegExp(`^${name}: `, 'i') })
 
     it('lists them as chips, already selected', async () => {
-      renderSection()
+      await renderStocked()
       expect(await screen.findByRole('heading', { name: /assumed present/i })).toBeInTheDocument()
       expect(staple('salt')).toHaveAttribute('aria-pressed', 'true')
       expect(staple('olive oil')).toHaveAttribute('aria-pressed', 'true')
@@ -108,7 +120,7 @@ describe('Fridge / Pantry section', () => {
     // You can't run out of tap water, and 'salt and pepper' is a matching
     // artefact for the pair rather than a third thing to own.
     it('leaves out water, ice and the salt-and-pepper compound', async () => {
-      renderSection()
+      await renderStocked()
       await screen.findByRole('heading', { name: /assumed present/i })
       for (const skipped of ['water', 'ice', 'salt and pepper']) {
         expect(screen.queryByRole('button', { name: new RegExp(`^${skipped}: `, 'i') })).toBeNull()
@@ -116,8 +128,7 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('marks one out when unselected', async () => {
-      const user = userEvent.setup()
-      renderSection()
+      const user = await renderStocked()
       await user.click(await screen.findByRole('button', { name: /^salt: assumed present/i }))
 
       await waitFor(() => expect(h.client.__db.pantry).toEqual([
@@ -131,8 +142,7 @@ describe('Fridge / Pantry section', () => {
      * rather than writing an explicit 'have' that only repeats the default.
      */
     it('restores one by removing the row, not by storing have', async () => {
-      const user = userEvent.setup()
-      renderSection({ pantry: [{ user_id: 'user-1', item: 'salt', state: 'out' }] })
+      const user = await renderStocked({ pantry: [{ user_id: 'user-1', item: 'salt', state: 'out' }] })
 
       await user.click(await screen.findByRole('button', { name: /^salt: out/i }))
 
@@ -141,7 +151,7 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('shows a staple in one place only, never twice', async () => {
-      renderSection({ pantry: [{ user_id: 'user-1', item: 'olive oil', state: 'out' }] })
+      await renderStocked({ pantry: [{ user_id: 'user-1', item: 'olive oil', state: 'out' }] })
       await screen.findByRole('heading', { name: /assumed present/i })
 
       // It reads as unselected among the staples...
@@ -152,7 +162,7 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('keeps an explicitly tracked staple out of the kitchen list', async () => {
-      renderSection({ pantry: [
+      await renderStocked({ pantry: [
         { user_id: 'user-1', item: 'milk',    state: 'have' },
         { user_id: 'user-1', item: 'chicken', state: 'have' },
       ] })
@@ -341,7 +351,7 @@ describe('Fridge / Pantry section', () => {
     const chip = name => screen.getByRole('button', { name: `Add ${name}` })
 
     it('offers a grouped set of common household items', async () => {
-      renderSection()
+      await renderStocked()
       expect(await screen.findByRole('heading', { name: /quick add/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: 'Produce' })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: 'Dairy & Eggs' })).toBeInTheDocument()
@@ -351,7 +361,7 @@ describe('Fridge / Pantry section', () => {
     // The whole point: staples are already assumed, so tapping one here would
     // only ever undo that assumption for free.
     it('never offers an assumed staple', async () => {
-      renderSection()
+      await renderStocked()
       await screen.findByRole('heading', { name: /quick add/i })
       for (const staple of ['salt', 'water', 'sugar', 'egg', 'milk', 'butter']) {
         expect(screen.queryByRole('button', { name: `Add ${staple}` })).toBeNull()
@@ -359,8 +369,7 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('adds an item in one tap', async () => {
-      const user = userEvent.setup()
-      renderSection()
+      const user = await renderStocked()
       await user.click(await screen.findByRole('button', { name: 'Add garlic' }))
 
       await waitFor(() => expect(h.client.__db.pantry).toEqual([
@@ -374,8 +383,7 @@ describe('Fridge / Pantry section', () => {
      * too put the same chip on screen twice saying the same thing.
      */
     it('drops an item from the grid once it is added', async () => {
-      const user = userEvent.setup()
-      renderSection()
+      const user = await renderStocked()
       await user.click(await screen.findByRole('button', { name: 'Add garlic' }))
 
       await waitFor(() => expect(screen.queryByRole('button', { name: 'Add garlic' })).toBeNull())
@@ -384,7 +392,7 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('does not offer anything already tracked, in any state', async () => {
-      renderSection({ pantry: [
+      await renderStocked({ pantry: [
         { user_id: 'user-1', item: 'garlic', state: 'have' },
         { user_id: 'user-1', item: 'tomato', state: 'out' },
         { user_id: 'user-1', item: 'basil',  state: 'low' },
@@ -399,7 +407,7 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('hides a category once everything in it is tracked', async () => {
-      renderSection({ pantry: ['rice', 'pasta', 'bread', 'tortilla'].map(item => (
+      await renderStocked({ pantry: ['rice', 'pasta', 'bread', 'tortilla'].map(item => (
         { user_id: 'user-1', item, state: 'have' }
       )) })
       await screen.findByRole('heading', { name: /quick add/i })
@@ -411,7 +419,7 @@ describe('Fridge / Pantry section', () => {
     // Guards the promise in the module's doc comment: the label you tap is
     // exactly what gets stored, with no canonicalisation surprise in between.
     it('labels every chip with its own canonical name', async () => {
-      renderSection()
+      await renderStocked()
       await screen.findByRole('heading', { name: /quick add/i })
 
       const labels = screen.getAllByRole('button', { name: /^Add / })
