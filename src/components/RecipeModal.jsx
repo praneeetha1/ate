@@ -4,6 +4,7 @@ import { useToast } from '../context/ToastContext'
 import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId } from '../utils/recipe'
 import { describeError } from '../utils/errors'
+import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
 import Icon from './Icon'
@@ -13,10 +14,55 @@ import { pantryFit } from '../utils/pantry'
 
 export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
   const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
-          lists, addToList, removeFromList, createList } = useApp()
+          lists, addToList, removeFromList, createList, createUserRecipe, userRecipes } = useApp()
   const { showToast, showError } = useToast()
   const { pantryState, pantryEnabled } = usePantry()
   const [editing,     setEditing]     = useState(false)
+  const [copying,     setCopying]     = useState(false)
+
+  /**
+   * Someone else's recipe, opened from a shared link.
+   *
+   * A catalog recipe is already in everyone's app, and your own is editable —
+   * so this is the only case with nothing you can do but read it. `editable`
+   * is false for catalog recipes too, hence the second half.
+   */
+  const isSomeoneElses = isUserRecipeKey(recipeKey) && !editable
+  const alreadyCopied  = isSomeoneElses &&
+    userRecipes.some(r => r.name === recipe.name && r.source_url)
+
+  /**
+   * Take a copy rather than a reference.
+   *
+   * The sharer can edit or delete theirs at any time, and a link that rots is
+   * worse than no link — so the recipient gets their own row, which they can
+   * then change without it meaning anything to the original.
+   */
+  async function handleCopy() {
+    if (copying) return
+    setCopying(true)
+    try {
+      const created = await createUserRecipe({
+        name:         recipe.name,
+        category:     recipe.category,
+        dietary:      recipe.dietary ?? [],
+        ingredients:  recipe.ingredients ?? [],
+        steps:        recipe.steps ?? [],
+        time_minutes: recipe.timeMinutes ?? recipe.time_minutes ?? null,
+        servings:     recipe.servings ?? null,
+        image_url:    recipe.image ?? recipe.image_url ?? null,
+        // Where it came from, so a copied recipe can still be traced back.
+        source_url:   recipe.sourceUrl ?? recipe.source_url ??
+                      `${appUrl}?u=${userRecipeId(recipeKey)}`,
+      })
+      showToast(`Saved “${created.name}” to your recipes`, 'success')
+    } catch (err) {
+      console.error('Copying a shared recipe failed:', err)
+      showError(describeError(err, 'Could not save this recipe.'))
+    } finally {
+      setCopying(false)
+    }
+  }
 
   // Stand the trap down while the edit dialog is stacked on top of this one.
   const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing })
@@ -203,6 +249,16 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
             </div>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
+            {/* The whole point of a shared link: keeping the recipe, not just
+                reading it once. Labelled rather than an icon, because it's the
+                only thing a visitor can usefully do here. */}
+            {isSomeoneElses && (
+              <button
+                onClick={handleCopy}
+                disabled={copying || alreadyCopied}
+                className="shrink-0 bg-accent text-ink border-2 border-ink shadow-pop press rounded-full px-3 py-[5px] text-[0.75rem] font-bold whitespace-nowrap hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:shadow-none"
+              >{alreadyCopied ? 'In your recipes' : copying ? 'Saving…' : '+ Add to my recipes'}</button>
+            )}
             {editable && (
               <button
                 className={`${iconBtn} text-warm-tan hover:text-accent`}

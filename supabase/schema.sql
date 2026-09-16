@@ -24,8 +24,9 @@ create table if not exists public.profiles (
   username_set boolean default false,
   avatar_url   text,
   bio          text,
-  -- When true, this user's recipes / saves / lists are visible only to
-  -- themselves. The read policies branch on is_public_profile().
+  -- When true, shared recipe links (?u=<uuid>) stop resolving for anyone but
+  -- the owner. Only user_recipes still branches on is_public_profile();
+  -- saves, lists and list items are owner-only regardless (migration 010).
   is_private   boolean not null default false,
   created_at   timestamptz default now(),
   constraint username_format check (username is null or username ~ '^[a-z0-9_]{3,20}$'),
@@ -106,10 +107,6 @@ create policy "Users can manage own favorites"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
-drop policy if exists "Public can view public favorites" on public.favorites;
-create policy "Public can view public favorites"
-  on public.favorites for select
-  using (auth.uid() = user_id or public.is_public_profile(user_id));
 
 create index if not exists favorites_user_idx on public.favorites (user_id);
 
@@ -139,7 +136,7 @@ create policy "Users can manage own ratings"
 
 
 -- ── notes ────────────────────────────────────────────────────
--- Private: no public read policy, unlike favorites/lists.
+-- Private, like everything else here except user_recipes: owner-only reads.
 create table if not exists public.notes (
   id          bigint generated always as identity primary key,
   user_id     uuid not null references auth.users(id) on delete cascade,
@@ -274,10 +271,6 @@ create policy "Users can manage own lists"
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
-drop policy if exists "Public can view public lists" on public.lists;
-create policy "Public can view public lists"
-  on public.lists for select
-  using (auth.uid() = user_id or public.is_public_profile(user_id));
 
 create index if not exists lists_user_idx on public.lists (user_id);
 
@@ -305,14 +298,6 @@ create policy "Users can manage own list items"
     where l.id = list_items.list_id and l.user_id = auth.uid()
   ));
 
-drop policy if exists "Public can view public list items" on public.list_items;
-create policy "Public can view public list items"
-  on public.list_items for select
-  using (exists (
-    select 1 from public.lists l
-    where l.id = list_items.list_id
-      and (l.user_id = auth.uid() or public.is_public_profile(l.user_id))
-  ));
 
 create index if not exists list_items_list_idx on public.list_items (list_id);
 

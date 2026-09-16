@@ -150,14 +150,14 @@ describe('Profile — bio and privacy', () => {
     })
   })
 
-  it('toggles the private-profile flag', async () => {
+  it('toggles the private-recipes flag', async () => {
     h.client = createMockSupabase(seed())
     renderPage(<Profile onOpen={() => {}} />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
 
-    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    const box = await screen.findByRole('checkbox', { name: /Private recipes/ })
     expect(box.checked).toBe(false)
     await act(async () => { box.click() })
 
@@ -353,7 +353,7 @@ describe('Profile > privacy toggle without migration 006', () => {
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
 
-    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    const box = await screen.findByRole('checkbox', { name: /Private recipes/ })
     expect(box).toBeDisabled()
     expect(screen.getByText(/006_hardening\.sql/)).toBeTruthy()
   })
@@ -365,7 +365,7 @@ describe('Profile > privacy toggle without migration 006', () => {
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
 
-    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    const box = await screen.findByRole('checkbox', { name: /Private recipes/ })
     expect(box).toBeEnabled()
     expect(screen.queryByText(/006_hardening\.sql/)).toBeNull()
   })
@@ -380,7 +380,7 @@ describe('Profile > privacy toggle without migration 006', () => {
     h.client.__failOn('profiles', 'update', {
       code: '42703', message: 'column "is_private" of relation "profiles" does not exist',
     })
-    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    const box = await screen.findByRole('checkbox', { name: /Private recipes/ })
     await act(async () => { box.click() })
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/migration may not have been applied/)
@@ -393,11 +393,11 @@ describe('Profile > privacy toggle without migration 006', () => {
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
 
-    const box = await screen.findByRole('checkbox', { name: /Private profile/ })
+    const box = await screen.findByRole('checkbox', { name: /Private recipes/ })
     await act(async () => { box.click() })
 
     await waitFor(() => expect(h.client.__db.profiles[0].is_private).toBe(true))
     expect(await screen.findByRole('status', { name: '' })).toBeTruthy()
-    expect(screen.getByText('Your profile is now private.')).toBeTruthy()
+    expect(screen.getByText('Shared recipe links are now off.')).toBeTruthy()
   })
 })

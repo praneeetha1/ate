@@ -57,8 +57,8 @@ export default function Profile({ onOpen }) {
       await updateProfile({ is_private: next })
       showToast(
         next
-          ? 'Your profile is now private.'
-          : 'Your profile is now public.',
+          ? 'Shared recipe links are now off.'
+          : 'Shared recipe links will work again.',
         'info',
       )
     } catch (err) {
@@ -156,9 +156,10 @@ export default function Profile({ onOpen }) {
                   className="accent-accent w-[16px] h-[16px] shrink-0 mt-[2px]"
                 />
                 <span>
-                  <span className="block text-[0.82rem] font-bold text-ink">Private profile</span>
+                  <span className="block text-[0.82rem] font-bold text-ink">Private recipes</span>
                   <span className="block text-[0.75rem] text-muted">
-                    Hide your recipes, saved recipes, lists and activity from everyone else.
+                    Stop shared recipe links working for anyone but you. Your saved
+                    recipes, lists and notes are private either way.
                   </span>
                 </span>
               </label>

@@ -177,6 +177,60 @@ describe('attribution', () => {
   })
 })
 
+/**
+ * The point of a shared link is keeping the recipe, not reading it once. A
+ * copy rather than a reference: the sharer can edit or delete theirs at any
+ * time, and a link that rots is worse than no link.
+ */
+describe('saving someone else’s shared recipe', () => {
+  const SHARED = 'u_5b1d7c3e-0000-4000-8000-000000000001'
+  const copyBtn = () => screen.queryByRole('button', { name: /add to my recipes/i })
+
+  // Signed in, because that's the case that reaches the database — a guest's
+  // copy goes to the local slice and uploads when they sign in.
+  beforeEach(() => {
+    h.client = createMockSupabase({
+      profiles: [{ id: 'user-1', username: 'cook', username_set: true }],
+      __session: fakeSession('user-1'),
+    })
+  })
+
+  it('offers to save a recipe opened from someone else’s link', async () => {
+    renderModal({ recipeKey: SHARED, editable: false })
+    await waitFor(() => expect(copyBtn()).toBeInTheDocument())
+  })
+
+  // Already in everyone's app — there is nothing to copy.
+  it('does not offer it for a catalog recipe', async () => {
+    renderModal({ recipeKey: 3, editable: false })
+    await screen.findByRole('heading', { name: 'Test Carbonara' })
+    expect(copyBtn()).toBeNull()
+  })
+
+  // Yours already: the pencil is the right affordance, not a second copy.
+  it('does not offer it for your own recipe', async () => {
+    renderModal({ recipeKey: SHARED, editable: true })
+    await screen.findByRole('heading', { name: 'Test Carbonara' })
+    expect(copyBtn()).toBeNull()
+  })
+
+  it('copies it into your own recipes', async () => {
+    const user = userEvent.setup()
+    renderModal({ recipeKey: SHARED, editable: false })
+    await waitFor(() => expect(copyBtn()).toBeInTheDocument())
+
+    await user.click(copyBtn())
+
+    await waitFor(() => expect(h.client.__db.user_recipes).toHaveLength(1))
+    const saved = h.client.__db.user_recipes[0]
+    expect(saved.name).toBe('Test Carbonara')
+    expect(saved.ingredients).toHaveLength(2)
+    expect(saved.steps).toEqual(['Boil the pasta', 'Toss off the heat'])
+    // Provenance, so a copied recipe can still be traced back.
+    expect(saved.source_url).toContain(SHARED.slice(2))
+  })
+})
+
 describe('ingredient scaling', () => {
   it('multiplies amounts and labels by servings', async () => {
     renderModal()
