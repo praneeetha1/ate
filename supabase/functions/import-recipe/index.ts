@@ -67,6 +67,46 @@ Rules:
 - NEVER invent a quantity. If the source doesn't give one, use "".
 - If the input is not a recipe, return {"error":"not a recipe"}.`
 
+const YOUTUBE =
+  /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/
+
+function unescapeEntities(s: string): string {
+  return s
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+}
+
+/** A <meta> value, whichever order the attributes happen to be in. */
+function meta(html: string, prop: string): string {
+  const m =
+    html.match(new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']*)["']`, 'i')) ??
+    html.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:property|name)=["']${prop}["']`, 'i'))
+  return m ? unescapeEntities(m[1]) : ''
+}
+
+/**
+ * A video's title, description and thumbnail.
+ *
+ * A YouTube page is a JavaScript shell — stripping its tags yields nothing a
+ * model can read, which is why pasting a video link used to fail. The real
+ * description is in the `ytInitialPlayerResponse` blob the page ships with, as
+ * a JSON-escaped string, and the thumbnail is in the usual og: tags.
+ *
+ * This only ever works as well as the creator's description. Plenty of cooking
+ * channels put the full recipe there; plenty put "link in bio". The caller
+ * says so plainly rather than feeding the model a description with no recipe
+ * in it and passing on whatever it invents.
+ */
+function youtubeContent(html: string) {
+  let description = ''
+  const m = html.match(/"shortDescription":"((?:[^"\\]|\\.)*)"/)
+  if (m) {
+    try { description = JSON.parse(`"${m[1]}"`) } catch { /* leave it blank */ }
+  }
+  return { description, title: meta(html, 'og:title'), image: meta(html, 'og:image') }
+}
+
 /** Strip a page to something worth spending tokens on. */
 function pageToText(html: string): string {
   // A recipe page that publishes JSON-LD has already done the extraction work,
@@ -148,6 +188,9 @@ Deno.serve(async req => {
   const { url, text, imageBase64 } = body ?? {}
   let content: unknown
   let sourceUrl: string | null = null
+  // A video has a thumbnail but the description never names it, so it comes
+  // from the page rather than from anything the model returns.
+  let fallbackImage = ''
 
   try {
     if (url) {
@@ -162,7 +205,20 @@ Deno.serve(async req => {
         redirect: 'follow',
       })
       if (!page.ok) return bad(`That page returned ${page.status}.`)
-      content = pageToText(await page.text())
+      const html = await page.text()
+
+      if (YOUTUBE.test(target.href)) {
+        const video = youtubeContent(html)
+        // Short enough to be "subscribe for more" and nothing else. Better to
+        // say so than to hand the model 40 characters and publish its guess.
+        if (video.description.trim().length < 40) {
+          return bad('That video’s description has no recipe in it. Open the video, copy the ingredients and method from the description, and paste those here instead.')
+        }
+        fallbackImage = video.image
+        content = `${video.title}\n\n${video.description}`.slice(0, 12000)
+      } else {
+        content = pageToText(html)
+      }
       if (!content) return bad('Nothing readable on that page.')
     } else if (text) {
       content = String(text).slice(0, 12000)
@@ -231,6 +287,7 @@ Deno.serve(async req => {
     if (parsed?.error) return bad('That doesn’t look like a recipe.')
 
     const recipe = normalize(parsed, sourceUrl)
+    if (!recipe.image && fallbackImage) recipe.image = fallbackImage
     if (!recipe.ingredients.length && !recipe.steps.length) {
       return bad('No ingredients or steps found there.')
     }
