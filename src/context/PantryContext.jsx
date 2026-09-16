@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { supabase } from '../lib/supabase'
 import { useAuth } from './AuthContext'
 import { useToast } from './ToastContext'
-import { canonicalItem, isStaple } from '../utils/ingredients'
+import { canonicalItem, isStaple, varietalHead } from '../utils/ingredients'
 import { nextPantryState } from '../utils/pantry'
 import { describeError } from '../utils/errors'
 
@@ -104,6 +104,15 @@ export function PantryProvider({ children }) {
     const item = canonicalItem(raw)
     if (!item) return 'unknown'
     if (pantry.has(item)) return pantry.get(item)
+
+    // Falling back to the generic: having "mushrooms" answers for a recipe
+    // asking for button mushrooms, and "chicken" for chicken breast. Scoped to
+    // the heads where the varietal is a cultivar or a cut rather than a
+    // different purchase — see VARIETAL_HEADS. An exact row always wins, so
+    // marking "button mushroom" out still sticks for that one specifically.
+    const head = varietalHead(item)
+    if (head && pantry.has(head)) return pantry.get(head)
+
     return uid && isStaple(item) ? 'have' : 'unknown'
   }, [pantry, uid])
 

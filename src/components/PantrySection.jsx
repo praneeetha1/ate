@@ -1,45 +1,14 @@
 import { useMemo, useRef, useState } from 'react'
 import { VISIBLE_CATALOG } from '../utils/recipe'
 import { usePantry } from '../context/PantryContext'
-import { PANTRY_STAPLES, canonicalItem, isNeverShopped, rankSuggestions } from '../utils/ingredients'
+import {
+  PANTRY_STAPLES, KNOWN_INGREDIENTS, COMMON_INGREDIENT_GROUPS as QUICK_ADD_GROUPS,
+  canonicalItem, isNeverShopped, rankSuggestions,
+} from '../utils/ingredients'
 import { PANTRY_LABELS } from '../utils/pantry'
 import Highlight from './Highlight'
 import Icon from './Icon'
 
-/**
- * A quick-tap grid for the household items people almost always have on hand,
- * as an alternative to typing every one into the add box.
- *
- * Deliberately not "the most common catalogue ingredients" — that list is
- * garlic, onion, lemon juice, parmesan… which is really "what recipes call
- * for", not "what's usually in a kitchen". Bread, chicken, and rice barely
- * appear in the catalogue's own ingredient lines (they're often the recipe
- * itself, not an ingredient of it) but are exactly the kind of thing this grid
- * exists for. So this list is hand-picked for real-world commonness, not
- * derived from ingredient frequency.
- *
- * Excludes anything in PANTRY_STAPLES — those are already assumed present,
- * so a tap here would only ever be undoing that assumption for free, which
- * isn't the job of a fast-add grid.
- *
- * Every label is verified (in PantrySection.test.jsx) to be its own
- * canonicalItem() output, so what the user taps is exactly what gets stored —
- * no surprise relabelling between the button and the chip it produces.
- */
-const QUICK_ADD_GROUPS = [
-  { title: 'Produce',            items: ['garlic', 'onion', 'tomato', 'potato', 'carrot', 'bell pepper', 'spinach', 'cucumber', 'lemon', 'avocado', 'green chili', 'cauliflower', 'okra', 'eggplant', 'green pea', 'coconut'] },
-  { title: 'Dairy & Eggs',       items: ['cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese', 'paneer', 'cream'] },
-  { title: 'Meat & Seafood',     items: ['chicken', 'ground beef', 'bacon', 'shrimp', 'lamb'] },
-  { title: 'Grains & Bread',     items: ['rice', 'pasta', 'bread', 'tortilla'] },
-  { title: 'Herbs & Condiments', items: ['basil', 'cilantro', 'parsley', 'ginger', 'mint', 'curry leaf', 'ketchup', 'mustard', 'mayonnaise'] },
-  // The spices past the assumed set. PANTRY_STAPLES already covers the dozen
-  // an Indian kitchen always has (turmeric, cumin, garam masala…), so what's
-  // left here is the genuinely optional half — the ones you either keep or
-  // really don't, which is exactly what a one-tap grid is for.
-  { title: 'Spices & Masalas',   items: ['asafoetida', 'fenugreek seed', 'fenugreek leaf', 'carom seed', 'nigella seed', 'fennel seed', 'poppy seed', 'star anise', 'nutmeg', 'saffron', 'chaat masala', 'sambar powder', 'amchur', 'black salt', 'kashmiri red chili powder'] },
-  { title: 'Dals & Legumes',     items: ['toor dal', 'moong dal', 'chana dal', 'urad dal', 'red lentil', 'chickpea', 'kidney bean', 'black-eyed pea'] },
-  { title: 'Flours & Staples',   items: ['gram flour', 'wheat flour', 'semolina', 'flattened rice', 'basmati rice', 'coconut milk', 'tamarind', 'jaggery', 'mustard oil'] },
-]
 
 /**
  * The staples shown as chips, in rough order of how universal they are.
@@ -54,18 +23,23 @@ const SHOWN_STAPLES = [...PANTRY_STAPLES].filter(
 )
 
 /**
- * Every ingredient the catalogue knows about, canonically, for the add box's
- * suggestions — 300 recipes reduce to 790 distinct kitchen items.
+ * Everything the add box will suggest: what the app knows, plus whatever the
+ * visible catalog happens to use.
+ *
+ * Seeded from KNOWN_INGREDIENTS rather than the catalog alone. Building it from
+ * recipes only meant curating the catalog quietly took 37 ingredients out of
+ * search — you could tap "paneer" in the grid below but never find it by
+ * typing, and shrimp, lamb and fish disappeared entirely.
  *
  * Built on first use, not at module load. App.jsx imports the /pantry route
  * eagerly, so doing this at import cost every cold start ~7ms locally (more on
- * a slow phone) to populate a datalist most sessions never open. Cached after
- * the first call, since the catalogue can't change at runtime.
+ * a slow phone) to populate a list most sessions never open. Cached after the
+ * first call, since neither source changes at runtime.
  */
 let cachedItems = null
 function knownItems() {
   if (!cachedItems) {
-    const seen = new Set()
+    const seen = new Set(KNOWN_INGREDIENTS)
     for (const { r } of VISIBLE_CATALOG) {
       for (const ing of r.ingredients) {
         if (!ing.item || isNeverShopped(ing.item)) continue

@@ -9,6 +9,10 @@ import {
 import {
   scopeFor, loadSlice, saveSlice, clearScope, migrateLegacyKeys,
 } from '../utils/storage'
+import { canonicalItem, shoppingName, isNeverShopped } from '../utils/ingredients'
+import {
+  shoppableIngredients, mergeItem, withoutRecipe, itemsToRows, rowsToItems,
+} from '../utils/shopping'
 import { describeError } from '../utils/errors'
 
 const AppContext = createContext(null)
@@ -42,29 +46,6 @@ function migrateNameKeyedMap(map, ownRecipes) {
 }
 
 /**
- * Normalises checked shopping-list items.
- *
- * The old shape was a flat array of "<key>-<ingredientIndex>" strings; the
- * current one is { "<key>": [ingredientIndex, …] }, matching the DB column.
- */
-function migrateShopChecked(stored) {
-  if (!stored) return {}
-  if (!Array.isArray(stored)) return typeof stored === 'object' ? stored : {}
-
-  const out = {}
-  for (const entry of stored) {
-    const str = String(entry)
-    const dash = str.lastIndexOf('-')
-    if (dash <= 0) continue
-    const key = str.slice(0, dash)
-    const idx = parseInt(str.slice(dash + 1), 10)
-    if (!Number.isFinite(idx)) continue
-    out[key] = [...(out[key] || []), idx].sort((a, b) => a - b)
-  }
-  return out
-}
-
-/**
  * Loads all locally-persisted state for one identity, tagged with its scope.
  *
  * Scope travels *with* the data rather than being tracked separately: the
@@ -79,8 +60,7 @@ function hydrate(scope) {
     favorites:    new Set(loadSlice(scope, 'favs', []).map(keyFromText)),
     ratings:      migrateNameKeyedMap(loadSlice(scope, 'ratings', {}), userRecipes),
     notes:        migrateNameKeyedMap(loadSlice(scope, 'notes', {}), userRecipes),
-    shoppingList: new Set(loadSlice(scope, 'shopping', []).map(keyFromText)),
-    shopChecked:  migrateShopChecked(loadSlice(scope, 'shop_checked', {})),
+    shoppingItems: rowsToItems(loadSlice(scope, 'shopping_items', [])),
     userRecipes,
     lists:        loadSlice(scope, 'lists', []),
   }
@@ -96,7 +76,7 @@ export function AppProvider({ children }) {
   const [data,    setData]    = useState(() => hydrate(scopeFor(null)))
   const [syncing, setSyncing] = useState(false)
 
-  const { favorites, ratings, notes, shoppingList, shopChecked, userRecipes, lists } = data
+  const { favorites, ratings, notes, shoppingItems, userRecipes, lists } = data
 
   /**
    * Always holds the most recently committed state.
@@ -148,8 +128,7 @@ export function AppProvider({ children }) {
       favs:         [...data.favorites].map(keyToText),
       ratings:      data.ratings,
       notes:        data.notes,
-      shopping:     [...data.shoppingList].map(keyToText),
-      shop_checked: data.shopChecked,
+      shopping_items: itemsToRows(data.shoppingItems),
       user_recipes: data.userRecipes,
       lists:        data.lists,
     }
@@ -201,7 +180,7 @@ export function AppProvider({ children }) {
     const guest = hydrate(scopeFor(null))
     const guestHasData =
       guest.userRecipes.length || guest.lists.length || guest.favorites.size ||
-      guest.shoppingList.size || Object.keys(guest.ratings).length ||
+      guest.shoppingItems.size || Object.keys(guest.ratings).length ||
       Object.keys(guest.notes).length
 
     let result = { ok: true, remaining: null }
@@ -239,8 +218,7 @@ export function AppProvider({ children }) {
       favs:         [...guest.favorites].map(keyToText),
       ratings:      { ...guest.ratings },
       notes:        { ...guest.notes },
-      shopping:     [...guest.shoppingList].map(keyToText),
-      shop_checked: { ...guest.shopChecked },
+      shopping_items: itemsToRows(guest.shoppingItems),
       user_recipes: [...guest.userRecipes],
       lists:        [...guest.lists],
     }
@@ -309,22 +287,25 @@ export function AppProvider({ children }) {
       else ok = false
     } else remaining.favs = []
 
-    // 3. Shopping list, including which ingredients were ticked off.
-    const shopRows = [...guest.shoppingList]
-      .map(key => {
-        const recipe_key = remap(key)
-        return recipe_key
-          ? { user_id: ownerId, recipe_key, checked: guest.shopChecked[keyToText(key)] || [] }
-          : null
-      })
-      .filter(Boolean)
+    // 3. Shopping list. Each row's `sources` point at recipes, so the guest
+    //    keys inside them need the same rewrite the rows themselves get — an
+    //    unremapped source would name a recipe id that no longer exists.
+    const shopRows = itemsToRows(guest.shoppingItems).map(row => ({
+      user_id: ownerId,
+      item:    row.item,
+      display: row.display,
+      checked: row.checked,
+      sources: row.sources
+        .map(s => { const key = remap(s.key); return key ? { ...s, key } : null })
+        .filter(Boolean),
+    }))
     if (shopRows.length) {
       if (await run(
-        supabase.from('shopping_list').upsert(shopRows, { onConflict: 'user_id,recipe_key' }),
+        supabase.from('shopping_items').upsert(shopRows, { onConflict: 'user_id,item' }),
         'Your shopping list could not be uploaded.',
-      )) { remaining.shopping = []; remaining.shop_checked = {} }
+      )) remaining.shopping_items = []
       else ok = false
-    } else { remaining.shopping = []; remaining.shop_checked = {} }
+    } else remaining.shopping_items = []
 
     // 4. Ratings and notes.
     const ratingRows = Object.entries(guest.ratings)
@@ -403,7 +384,7 @@ export function AppProvider({ children }) {
       supabase.from('favorites').select('recipe_key').eq('user_id', ownerId),
       supabase.from('ratings').select('recipe_key,recipe_name,rating').eq('user_id', ownerId),
       supabase.from('notes').select('recipe_key,recipe_name,body').eq('user_id', ownerId),
-      supabase.from('shopping_list').select('recipe_key,checked').eq('user_id', ownerId),
+      supabase.from('shopping_items').select('item,display,sources,checked').eq('user_id', ownerId),
       supabase.from('user_recipes').select('*').eq('user_id', ownerId).order('created_at', { ascending: false }),
       supabase.from('lists').select('*, list_items(recipe_key)').eq('user_id', ownerId),
     ])
@@ -452,12 +433,9 @@ export function AppProvider({ children }) {
       notes: notesRes.error
         ? local.notes
         : Object.fromEntries(noteRows.map(n => [keyToText(n.recipe_key), n.body])),
-      shoppingList: shopRes.error
-        ? local.shoppingList
-        : new Set((shopRes.data || []).map(s => keyFromText(s.recipe_key))),
-      shopChecked: shopRes.error
-        ? local.shopChecked
-        : Object.fromEntries((shopRes.data || []).map(s => [keyToText(s.recipe_key), s.checked || []])),
+      shoppingItems: shopRes.error
+        ? local.shoppingItems
+        : rowsToItems(shopRes.data),
       userRecipes: recipesRes.error ? local.userRecipes : fetchedRecipes,
       lists: listsRes.error
         ? local.lists
@@ -577,61 +555,135 @@ export function AppProvider({ children }) {
   }
 
   // ── shopping ───────────────────────────────────────────────
-  function toggleShopping(key) {
-    const wasListed = dataRef.current.shoppingList.has(key)
-    const prop = keyToText(key)
+  // Keyed by ingredient, not by recipe: one row per thing you'd pick up, no
+  // matter how many recipes want it. See src/utils/shopping.js.
 
-    commit(d => {
-      const next    = new Set(d.shoppingList)
-      const checked = { ...d.shopChecked }
-      if (wasListed) { next.delete(key); delete checked[prop] }
-      else next.add(key)
-      return { ...d, shoppingList: next, shopChecked: checked }
-    })
-
-    if (!uid) return
-    if (wasListed) {
-      run(
-        supabase.from('shopping_list').delete().match({ user_id: uid, recipe_key: prop }),
-        'Could not remove from shopping list.',
-      )
-    } else {
-      run(
-        supabase.from('shopping_list').upsert(
-          { user_id: uid, recipe_key: prop, checked: [] },
-          { onConflict: 'user_id,recipe_key' },
-        ),
-        'Could not add to shopping list.',
-      )
-    }
-  }
-
-  /** Ticks or unticks ingredient `index` of the recipe at `key`. */
-  function toggleShopItem(key, index) {
-    const prop    = keyToText(key)
-    const current = dataRef.current.shopChecked[prop] || []
-    const next    = current.includes(index)
-      ? current.filter(i => i !== index)
-      : [...current, index].sort((a, b) => a - b)
-
-    commit(d => ({ ...d, shopChecked: { ...d.shopChecked, [prop]: next } }))
-
-    if (!uid) return
+  function upsertRows(rows) {
+    if (!uid || !rows.length) return
     run(
-      supabase.from('shopping_list').update({ checked: next }).match({ user_id: uid, recipe_key: prop }),
-      'Could not save your checked ingredients.',
+      supabase.from('shopping_items').upsert(
+        rows.map(r => ({
+          user_id: uid, item: r.item, display: r.display,
+          sources: r.sources, checked: r.checked,
+        })),
+        { onConflict: 'user_id,item' },
+      ),
+      'Could not update your shopping list.',
     )
   }
 
-  function isShopItemChecked(key, index) {
-    return (shopChecked[keyToText(key)] || []).includes(index)
+  function deleteRows(items) {
+    if (!uid || !items.length) return
+    run(
+      supabase.from('shopping_items').delete().eq('user_id', uid).in('item', items),
+      'Could not update your shopping list.',
+    )
+  }
+
+  /**
+   * Fold a set of ingredients into the list under one recipe.
+   *
+   * `pantryState` is optional and comes from the caller because AppContext
+   * sits above PantryContext — when it's given, anything already in the
+   * kitchen goes in ticked, so the list shows what's left to buy rather than
+   * everything the recipe needs.
+   */
+  function addIngredientsToShopping(entries, source, pantryState) {
+    if (!entries.length) return
+    // Computed from dataRef *before* committing, never inside the updater:
+    // StrictMode double-invokes updaters, so building the rows-to-write in
+    // there both duplicated them and left them empty at the point of writing.
+    const current = dataRef.current.shoppingItems
+    const written = entries.map(entry => {
+      const row = mergeItem(current.get(entry.item), entry, source)
+      if (pantryState && pantryState(entry.item) === 'have') row.checked = true
+      return row
+    })
+
+    commit(d => {
+      const next = new Map(d.shoppingItems)
+      for (const row of written) next.set(row.item, row)
+      return { ...d, shoppingItems: next }
+    })
+    upsertRows(written)
+  }
+
+  /** Everything a recipe needs, in one go. */
+  function addRecipeToShopping(key, recipe, pantryState) {
+    addIngredientsToShopping(
+      shoppableIngredients(recipe),
+      { key: keyToText(key), name: recipe?.name || '' },
+      pantryState,
+    )
+  }
+
+  /** One ingredient out of a recipe, for when that's all you're missing. */
+  function addShoppingIngredient(key, recipe, ingredient) {
+    const entry = shoppableIngredients({ ingredients: [ingredient] })[0]
+    if (!entry) return
+    addIngredientsToShopping([entry], { key: keyToText(key), name: recipe?.name || '' })
+  }
+
+  /** Something you just thought of, belonging to no recipe. */
+  function addShoppingItem(text) {
+    const item = canonicalItem(text)
+    if (!item || isNeverShopped(text)) return null
+    addIngredientsToShopping(
+      [{ item, display: shoppingName(text) || text, amount: '', unit: '' }],
+      null,
+    )
+    return item
+  }
+
+  /**
+   * Drop one recipe's claim on the list.
+   *
+   * A row wanted by another recipe stays, and so does one you added by hand —
+   * it was never this recipe's to remove.
+   */
+  function removeRecipeFromShopping(key) {
+    const gone = [], kept = []
+    for (const [item, row] of dataRef.current.shoppingItems) {
+      const trimmed = withoutRecipe(row, key)
+      if (!trimmed) gone.push(item)
+      else if (trimmed !== row) kept.push(trimmed)
+    }
+    if (!gone.length && !kept.length) return
+
+    commit(d => {
+      const next = new Map(d.shoppingItems)
+      for (const item of gone) next.delete(item)
+      for (const row of kept) next.set(row.item, row)
+      return { ...d, shoppingItems: next }
+    })
+    upsertRows(kept)
+    deleteRows(gone)
+  }
+
+  function toggleShopItem(item) {
+    const row = dataRef.current.shoppingItems.get(item)
+    if (!row) return false
+    const written = { ...row, checked: !row.checked }
+
+    commit(d => ({ ...d, shoppingItems: new Map(d.shoppingItems).set(item, written) }))
+    upsertRows([written])
+    return written.checked
+  }
+
+  function removeShopItem(item) {
+    commit(d => {
+      const next = new Map(d.shoppingItems)
+      next.delete(item)
+      return { ...d, shoppingItems: next }
+    })
+    deleteRows([item])
   }
 
   function clearShopping() {
-    commit(d => ({ ...d, shoppingList: new Set(), shopChecked: {} }))
+    commit(d => ({ ...d, shoppingItems: new Map() }))
     if (!uid) return
     run(
-      supabase.from('shopping_list').delete().eq('user_id', uid),
+      supabase.from('shopping_items').delete().eq('user_id', uid),
       'Could not clear shopping list.',
     )
   }
@@ -755,18 +807,22 @@ export function AppProvider({ children }) {
     // users' rows — recipe_key is plain text with no foreign key, so nothing
     // cascaded before.
     const purge = d => {
-      const favorites = new Set(d.favorites);    favorites.delete(key)
-      const shopping  = new Set(d.shoppingList); shopping.delete(key)
+      const favorites = new Set(d.favorites); favorites.delete(key)
       const ratings = { ...d.ratings }; delete ratings[prop]
       const notes   = { ...d.notes };   delete notes[prop]
-      const checked = { ...d.shopChecked }; delete checked[prop]
+      // The recipe's claim on the list goes, but a row another recipe still
+      // wants — or one added by hand — stays.
+      const shoppingItems = new Map()
+      for (const [item, row] of d.shoppingItems) {
+        const trimmed = withoutRecipe(row, key)
+        if (trimmed) shoppingItems.set(item, trimmed)
+      }
       return {
         ...d,
         favorites,
-        shoppingList: shopping,
+        shoppingItems,
         ratings,
         notes,
-        shopChecked: checked,
         userRecipes: d.userRecipes.filter(r => r.id !== id),
         lists: d.lists.map(l => ({ ...l, items: l.items.filter(k => k !== key) })),
       }
@@ -869,8 +925,9 @@ export function AppProvider({ children }) {
       favorites,    toggleFav,
       ratings,      setRating,
       notes,        setNote,
-      shoppingList, toggleShopping,
-      toggleShopItem, isShopItemChecked, clearShopping,
+      shoppingItems,
+      addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient,
+      addShoppingItem, toggleShopItem, removeShopItem, clearShopping,
       userRecipes,  createUserRecipe, updateUserRecipe, deleteUserRecipe,
       lists,        createList, deleteList, renameList, addToList, removeFromList,
     }}>

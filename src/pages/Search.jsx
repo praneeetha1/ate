@@ -3,7 +3,7 @@ import { VISIBLE_CATALOG } from '../utils/recipe'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
-import { canonicalItem, matchesIngredient, rankSuggestions } from '../utils/ingredients'
+import { canonicalItem, matchesIngredient, rankSuggestions, KNOWN_INGREDIENTS } from '../utils/ingredients'
 import { pantryFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
 import Highlight from '../components/Highlight'
@@ -19,7 +19,9 @@ import Icon from '../components/Icon'
  * four unrelated suggestions.
  */
 const CATALOG_INGREDIENTS = (() => {
-  const seen = new Set()
+  // Seeded with what the app knows, so curating the catalog can't quietly
+  // remove an ingredient from search.
+  const seen = new Set(KNOWN_INGREDIENTS)
   VISIBLE_CATALOG.forEach(({ r }) => r.ingredients.forEach(ing => {
     if (!ing.item) return
     const core = canonicalItem(ing.item)

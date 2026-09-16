@@ -4,6 +4,8 @@ import { useToast } from '../context/ToastContext'
 import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId } from '../utils/recipe'
 import { describeError } from '../utils/errors'
+import { recipeInShopping } from '../utils/shopping'
+import { shoppingName } from '../utils/ingredients'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
@@ -13,7 +15,8 @@ import { usePantry } from '../context/PantryContext'
 import { pantryFit } from '../utils/pantry'
 
 export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
-  const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingList, toggleShopping,
+  const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingItems,
+          addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient,
           lists, addToList, removeFromList, createList, createUserRecipe, userRecipes } = useApp()
   const { showToast, showError } = useToast()
   const { pantryState, pantryEnabled } = usePantry()
@@ -87,7 +90,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
 
   const keyProp = keyToText(recipeKey)
   const isFav   = favorites.has(recipeKey)
-  const inList  = shoppingList.has(recipeKey)
+  const inList  = recipeInShopping(shoppingItems, recipeKey)
   const rating  = ratings[keyProp] || 0
 
   // Ratings and notes are keyed by recipe key, not recipe name — a user recipe
@@ -277,8 +280,15 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
             <button
               className={`${iconBtn} ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
               onClick={() => {
-                toggleShopping(recipeKey)
-                showToast(inList ? 'Removed from shopping list' : 'Added to shopping list', 'info')
+                if (inList) {
+                  removeRecipeFromShopping(recipeKey)
+                  showToast('Removed from shopping list', 'info')
+                } else {
+                  // Pantry-aware: what you already have goes on ticked, so the
+                  // list shows what's left to buy rather than everything.
+                  addRecipeToShopping(recipeKey, recipe, pantryEnabled ? pantryState : null)
+                  showToast('Added what you need to the shopping list', 'info')
+                }
               }}
               aria-pressed={inList}
               aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
@@ -426,6 +436,16 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                       <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
                       <span className="text-ink">{item}</span>
                     </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        addShoppingIngredient(recipeKey, recipe, ing)
+                        showToast(`Added ${shoppingName(ing.item)} to the shopping list`, 'info')
+                      }}
+                      aria-label={`Add ${shoppingName(ing.item)} to shopping list`}
+                      title="Add just this to the shopping list"
+                      className="shrink-0 grid place-items-center w-6 h-6 mt-[1px] rounded-full text-warm-tan opacity-70 hover:opacity-100 hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    ><Icon name="cart" size={13} /></button>
                     <PantryMark item={ing.item} className="mt-[2px]" />
                   </div>
                 </li>

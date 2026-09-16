@@ -62,15 +62,22 @@ beforeEach(() => {
 })
 
 describe('Fridge — shopping list', () => {
-  // Regression: only numeric catalog keys were resolved here, so adding a user
-  // recipe to the shopping list persisted but rendered nothing at all.
-  it('renders the ingredients of a user recipe added to the list', async () => {
+  // One row per ingredient now, not per recipe — so a row carries its own
+  // measure and names whatever wanted it.
+  const dalRows = checked => [
+    { id: 1, user_id: 'user-1', item: 'toor dal', display: 'toor dal', checked,
+      sources: [{ key: 'u_ur-1', name: 'Nanna Dal', amount: '1', unit: 'cup' }] },
+    { id: 2, user_id: 'user-1', item: 'cumin', display: 'cumin', checked: false,
+      sources: [{ key: 'u_ur-1', name: 'Nanna Dal', amount: '2', unit: 'tsp' }] },
+  ]
+
+  it('renders each item with its measure and where it came from', async () => {
     h.client = createMockSupabase(seed({
-      user_recipes:  [USER_RECIPE],
-      shopping_list: [{ id: 1, user_id: 'user-1', recipe_key: 'u_ur-1', checked: [1] }],
+      user_recipes:   [USER_RECIPE],
+      shopping_items: dalRows(true),
     }))
 
-    renderPage(<Pantry onOpen={() => {}} />)
+    renderPage(<Pantry />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
@@ -78,30 +85,32 @@ describe('Fridge — shopping list', () => {
     expect(await screen.findByText('toor dal')).toBeTruthy()
     expect(screen.getByText('cumin')).toBeTruthy()
     expect(screen.getByText('1 cup')).toBeTruthy()
+    // The recipe that wanted it, as a subtitle rather than a heading.
+    expect(screen.getAllByText('Nanna Dal').length).toBeGreaterThan(0)
 
-    // The persisted `checked` array drives the checkboxes.
-    const boxes = screen.getAllByRole('checkbox', { checked: true })
-    expect(boxes.length).toBeGreaterThanOrEqual(1)
-    expect(api.isShopItemChecked('u_ur-1', 1)).toBe(true)
-    expect(api.isShopItemChecked('u_ur-1', 0)).toBe(false)
+    // The stored flag drives the checkbox, one boolean per item.
+    expect(screen.getAllByRole('checkbox', { checked: true }).length).toBe(1)
+    expect(api.shoppingItems.get('toor dal').checked).toBe(true)
+    expect(api.shoppingItems.get('cumin').checked).toBe(false)
   })
 
-  it('persists a newly ticked ingredient to the database', async () => {
+  it('persists a newly ticked item to the database', async () => {
     h.client = createMockSupabase(seed({
-      user_recipes:  [USER_RECIPE],
-      shopping_list: [{ id: 1, user_id: 'user-1', recipe_key: 'u_ur-1', checked: [] }],
+      user_recipes:   [USER_RECIPE],
+      shopping_items: dalRows(false),
     }))
 
-    renderPage(<Pantry onOpen={() => {}} />)
+    renderPage(<Pantry />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
     await screen.findByText('toor dal')
 
-    await act(async () => { api.toggleShopItem('u_ur-1', 0) })
+    await act(async () => { api.toggleShopItem('toor dal') })
 
     await waitFor(() => {
-      expect(h.client.__db.shopping_list[0].checked).toEqual([0])
+      const saved = h.client.__db.shopping_items.find(r => r.item === 'toor dal')
+      expect(saved.checked).toBe(true)
     })
   })
 })

@@ -17,6 +17,7 @@ const UNIQUE_BY = {
   ratings:       ['user_id', 'recipe_key'],
   notes:         ['user_id', 'recipe_key'],
   shopping_list: ['user_id', 'recipe_key'],
+  shopping_items: ['user_id', 'item'],
   pantry:        ['user_id', 'item'],
   user_recipes:  ['id'],
   lists:         ['id'],
@@ -25,6 +26,7 @@ const UNIQUE_BY = {
 
 const EMPTY_DB = () => ({
   profiles: [], favorites: [], ratings: [], notes: [], shopping_list: [],
+  shopping_items: [],
   pantry: [], user_recipes: [], lists: [], list_items: [],
 })
 
@@ -96,6 +98,10 @@ export function createMockSupabase(seed = {}) {
       out.created_at = new Date(Date.now() - (1000 - idCounter)).toISOString()
     }
     if (table === 'shopping_list' && out.checked === undefined) out.checked = []
+    if (table === 'shopping_items') {
+      if (out.sources === undefined) out.sources = []
+      if (out.checked === undefined) out.checked = false
+    }
     return out
   }
 

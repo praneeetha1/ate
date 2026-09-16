@@ -30,14 +30,17 @@ function renderPantry({ pantry = [] } = {}) {
   h.client = createMockSupabase({
     profiles: [{ id: 'user-1', username: 'cook', username_set: true }],
     __session: fakeSession('user-1'),
-    shopping_list: [{ user_id: 'user-1', recipe_key: String(MARINARA), checked: [] }],
+    shopping_items: [{
+      user_id: 'user-1', item: 'garlic', display: 'garlic', checked: false,
+      sources: [{ key: String(MARINARA), name: 'Marinara Sauce', amount: '2', unit: 'clove' }],
+    }],
     pantry,
   })
   return render(
     <ToastProvider>
       <AuthProvider>
         <AppProvider>
-          <PantryProvider><Pantry onOpen={() => {}} /></PantryProvider>
+          <PantryProvider><Pantry /></PantryProvider>
         </AppProvider>
       </AuthProvider>
     </ToastProvider>
@@ -103,8 +106,8 @@ describe('ticking a shopping item', () => {
     await user.click(box)
 
     await waitFor(() => {
-      const saved = h.client.__db.shopping_list.find(s => s.recipe_key === String(MARINARA))
-      expect(saved.checked.length).toBe(1)
+      const saved = h.client.__db.shopping_items.find(r => r.item === 'garlic')
+      expect(saved.checked).toBe(true)
     })
   })
 })

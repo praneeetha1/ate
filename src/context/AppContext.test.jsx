@@ -26,7 +26,7 @@ function Probe() {
       <span data-testid="lists">{api.lists.map(l => `${l.name}[${l.items.join('|')}]`).join(',')}</span>
       <span data-testid="ratings">{JSON.stringify(api.ratings)}</span>
       <span data-testid="notes">{JSON.stringify(api.notes)}</span>
-      <span data-testid="shopping">{[...api.shoppingList].map(String).sort().join(',')}</span>
+      <span data-testid="shopping">{[...api.shoppingItems.keys()].sort().join(',')}</span>
     </div>
   )
 }
@@ -91,7 +91,7 @@ describe('signing in', () => {
     act(() => api.toggleFav(11, 'Catalog One'))
     act(() => api.setRating(localKey, 5, 'Nanna Pasta'))
     act(() => api.setNote(localKey, 'needs more salt', 'Nanna Pasta'))
-    act(() => api.toggleShopping(localKey))
+    act(() => api.addRecipeToShopping(localKey, local))
     let list
     await act(async () => { list = await api.createList('Weeknights') })
     act(() => api.addToList(list.id, localKey, 'Nanna Pasta'))
@@ -115,7 +115,13 @@ describe('signing in', () => {
       .toEqual(['11', serverKey].sort())
     expect(h.client.__db.ratings[0]).toMatchObject({ recipe_key: serverKey, rating: 5 })
     expect(h.client.__db.notes[0]).toMatchObject({ recipe_key: serverKey, body: 'needs more salt' })
-    expect(h.client.__db.shopping_list[0].recipe_key).toBe(serverKey)
+    // The rows are keyed by ingredient now, so the remap has to reach inside
+    // `sources` — an unremapped one would name a recipe id that never existed
+    // on the server.
+    expect(h.client.__db.shopping_items.length).toBeGreaterThan(0)
+    for (const row of h.client.__db.shopping_items) {
+      for (const src of row.sources) expect(src.key).toBe(serverKey)
+    }
 
     // Regression: lists had no upload path at all and were silently destroyed.
     const names = h.client.__db.lists.map(l => l.name)
@@ -246,21 +252,6 @@ describe('legacy local data hydration', () => {
     expect(JSON.parse(screen.getByTestId('ratings').textContent)).toEqual({ 12: 3 })
   })
 
-  it('converts the old flat shop_checked array into per-recipe indices', async () => {
-    localStorage.setItem('ate:guest:shopping', JSON.stringify(['5', 'u_abc']))
-    localStorage.setItem('ate:guest:shop_checked', JSON.stringify(['5-0', '5-2', 'u_abc-1']))
-
-    h.client = createMockSupabase()
-    renderApp()
-    await waitFor(() => expect(api).not.toBeNull())
-
-    expect(api.isShopItemChecked(5, 0)).toBe(true)
-    expect(api.isShopItemChecked(5, 2)).toBe(true)
-    expect(api.isShopItemChecked(5, 1)).toBe(false)
-    expect(api.isShopItemChecked('u_abc', 1)).toBe(true)
-    // Catalog key 5 must not swallow key 15's entries.
-    expect(api.isShopItemChecked(15, 0)).toBe(false)
-  })
 })
 
 describe('ratings and notes are keyed by recipe key', () => {
@@ -295,7 +286,7 @@ describe('deleting a user recipe', () => {
     const key = 'u_' + created.id
 
     act(() => api.toggleFav(key, 'Doomed'))
-    act(() => api.toggleShopping(key))
+    act(() => api.addRecipeToShopping(key, created))
     act(() => api.setRating(key, 5, 'Doomed'))
     act(() => api.setNote(key, 'note', 'Doomed'))
     await waitFor(() => expect(api.favorites.has(key)).toBe(true))
@@ -303,7 +294,9 @@ describe('deleting a user recipe', () => {
     await act(async () => { await api.deleteUserRecipe(created.id) })
 
     expect(api.favorites.has(key)).toBe(false)
-    expect(api.shoppingList.has(key)).toBe(false)
+    for (const row of api.shoppingItems.values()) {
+      expect(row.sources.some(s => s.key === key)).toBe(false)
+    }
     expect(api.ratings[key]).toBeUndefined()
     expect(api.notes[key]).toBeUndefined()
     expect(api.userRecipes.find(r => r.id === created.id)).toBeUndefined()

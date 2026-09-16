@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { shoppingName, canonicalItem, isNeverShopped, isStaple, PANTRY_STAPLES } from './ingredients'
+import {
+  shoppingName, canonicalItem, isNeverShopped, isStaple, varietalHead,
+  PANTRY_STAPLES, MAIN_INGREDIENTS, KNOWN_INGREDIENTS,
+} from './ingredients'
 import RECIPES from '../data/recipes.json'
 
 describe('shoppingName', () => {
@@ -266,6 +269,131 @@ describe('licensed recipes keep their attribution', () => {
       expect(r.license).toBe('CC-BY-SA-4.0')
       expect(r.sourceUrl).toMatch(/^https:\/\/en\.wikibooks\.org\/wiki\/Cookbook:/)
     }
+  })
+})
+
+/**
+ * Having the generic answers for the varietal — "I have mushrooms" should
+ * satisfy a recipe wanting button mushrooms. Matching only; the shopping list
+ * still names the specific thing you'd buy.
+ */
+describe('varietalHead', () => {
+  const head = s => varietalHead(canonicalItem(s))
+
+  // Modifier first, generic last.
+  it('folds a cultivar onto its generic', () => {
+    expect(head('button mushrooms')).toBe('mushroom')
+    expect(head('cremini mushrooms')).toBe('mushroom')
+    expect(head('red onion')).toBe('onion')
+    expect(head('cherry tomatoes')).toBe('tomato')
+  })
+
+  // Generic first, cut last — the opposite order, which is why both ends
+  // have to be read.
+  it('folds a cut onto its animal', () => {
+    expect(head('boneless chicken breast')).toBe('chicken')
+    expect(head('chicken thighs')).toBe('chicken')
+    expect(head('lamb shoulder')).toBe('lamb')
+  })
+
+  /**
+   * The trap that makes reading the front unconditionally wrong: these all
+   * lead with a generic and none of them is one. Only an actual cut after it
+   * licenses the fold.
+   */
+  it('does not fold a product that merely starts with a generic', () => {
+    for (const s of ['tomato sauce', 'tomato paste', 'chicken stock',
+                     'chicken broth', 'mushroom soup', 'onion powder']) {
+      expect(head(s)).toBe('')
+    }
+  })
+
+  // Swapping these changes the dish, so they stay exact — the same call
+  // canonicalItem() already makes in refusing to fold ground beef into beef.
+  it('leaves flours, rices and meat products alone', () => {
+    for (const s of ['basmati rice', 'bread flour', 'ground beef',
+                     'whole milk', 'pork belly']) {
+      expect(head(s)).toBe('')
+    }
+  })
+
+  it('returns nothing for a generic that is already one word', () => {
+    expect(varietalHead('mushroom')).toBe('')
+  })
+})
+
+/**
+ * Prep can stack, and stripping only the last participle used to leave a
+ * stranded adverb or connective — which then matched nothing at all.
+ */
+describe('stacked prep', () => {
+  it('strips every trailing prep phrase, not just the last', () => {
+    expect(canonicalItem('mushrooms roughly chopped')).toBe('mushroom')
+    expect(canonicalItem('mushrooms cleaned and sliced')).toBe('mushroom')
+    expect(canonicalItem('onions thinly sliced and rinsed')).toBe('onion')
+  })
+
+  it('reaches the item through a quantity fused to its unit', () => {
+    expect(canonicalItem('200g mushrooms')).toBe('mushroom')
+    expect(canonicalItem('2kg onions')).toBe('onion')
+  })
+
+  it('still keeps the words that change the purchase', () => {
+    expect(canonicalItem('ground beef')).toBe('ground beef')
+    expect(shoppingName('cut oats')).toBe('cut oats')
+    expect(canonicalItem('sun-dried tomatoes')).toBe('sun-dried tomato')
+  })
+})
+
+/**
+ * A line offering a substitute is still one thing to buy. Keeping both halves
+ * gave a shopping row that read like a sentence and matched no pantry item.
+ */
+describe('substitutes', () => {
+  it('takes the first alternative', () => {
+    expect(canonicalItem('paneer or chenna')).toBe('paneer')
+    expect(canonicalItem('tomato paste or 4 medium ripe tomatoes')).toBe('tomato paste')
+    expect(canonicalItem('active dry yeast OR 1 tsp baking soda')).toBe('active dry yeast')
+  })
+
+  // Word-bounded, or every one of these would lose its tail.
+  it('leaves words that merely contain "or" alone', () => {
+    for (const s of ['orange', 'oregano', 'orange juice', 'cream of tartar']) {
+      expect(canonicalItem(s)).toBe(s)
+    }
+  })
+})
+
+/**
+ * The suggestion vocabulary used to be built from the catalog alone, so
+ * curating it to 33 recipes silently made 37 known ingredients unsearchable —
+ * you could tap "paneer" in the quick-add grid but never find it by typing.
+ */
+describe('KNOWN_INGREDIENTS', () => {
+  it('covers everything the app can name, catalog or not', () => {
+    const known = new Set(KNOWN_INGREDIENTS)
+    for (const i of ['shrimp', 'paneer', 'lamb', 'fish', 'tofu', 'toor dal', 'asafoetida']) {
+      expect(known.has(i)).toBe(true)
+    }
+  })
+
+  it('includes the staples and the mains', () => {
+    const known = new Set(KNOWN_INGREDIENTS)
+    for (const i of MAIN_INGREDIENTS) expect(known.has(i)).toBe(true)
+    for (const i of PANTRY_STAPLES) {
+      if (!isNeverShopped(i)) expect(known.has(i)).toBe(true)
+    }
+  })
+
+  // Suggesting water would only ever lead to "no need to track water".
+  it('leaves out what nobody buys', () => {
+    for (const i of KNOWN_INGREDIENTS) expect(isNeverShopped(i)).toBe(false)
+  })
+
+  // Every entry is its own canonical form, so tapping a suggestion stores
+  // exactly what was shown — the same promise the quick-add grid makes.
+  it('is canonical throughout', () => {
+    for (const i of KNOWN_INGREDIENTS) expect(canonicalItem(i)).toBe(i)
   })
 })
 

@@ -75,7 +75,37 @@ const PROSE_QUANTITY =
 const LEADING_MEASURE =
   /^(?:ml|l|g|kg|oz|lb|cups?|tsps?|tbsps?|teaspoons?|tablespoons?|drops?|strands?|pinch(?:es)?|dash(?:es)?|handfuls?|sprigs?|cloves?|slices?|pieces?)\s+/i
 
-const TRAILING_PREP_RE = new RegExp(`\\b(?:${TRAILING_PREP})\\b\\s*$`, 'i')
+// Adverbs that only ever qualify a prep word: "roughly chopped", "well
+// drained". Stripped with the participle they belong to, never alone.
+const PREP_ADVERBS = [
+  'finely', 'roughly', 'coarsely', 'thinly', 'thickly', 'freshly',
+  'well', 'lightly', 'thoroughly', 'evenly',
+].join('|')
+
+/**
+ * One trailing prep phrase, with the adverb and connective attached to it.
+ *
+ * Applied repeatedly rather than once, because a line can carry several:
+ * "mushrooms cleaned and sliced" needs two passes, and stripping just the last
+ * participle used to leave "mushrooms and" — which then matched nothing at
+ * all. Same for "mushrooms roughly chopped", which stranded the adverb.
+ */
+const TRAILING_PREP_RE = new RegExp(
+  `[,\\s]*\\b(?:and|or)?\\s*(?:${PREP_ADVERBS})?\\s*\\b(?:${TRAILING_PREP})\\b\\s*$`, 'i',
+)
+
+/** Strips every trailing prep phrase, not just the last one. */
+function stripTrailingPrep(s) {
+  let prev
+  do { prev = s; s = s.replace(TRAILING_PREP_RE, '').trim() } while (s !== prev)
+  // A connective left holding nothing once its participle went.
+  return s.replace(/[,\s]+\b(?:and|or|with)\b\s*$/i, '').trim()
+}
+
+// "200g mushrooms", "2kg onions" — a quantity fused to its unit, which the
+// importer can't lift into `amount` because there is no space to split on.
+const FUSED_QUANTITY_RE =
+  /^\d+(?:\.\d+)?\s*(?:g|kg|ml|l|oz|lb|lbs|cups?|tsps?|tbsps?)\b\s*/i
 const LEADING_FLUFF_RE = new RegExp(`^(?:${LEADING_FLUFF})\\s+`, 'i')
 
 /**
@@ -91,13 +121,14 @@ export function shoppingName(raw) {
 
   // Trimmed first because every clause after the head one arrives with the
   // space that followed its comma, and the rules below are anchored at ^.
-  const tidy = t => t
-    .trim()
-    .replace(ASIDES, '')
-    .replace(PROSE_QUANTITY, '')
-    .replace(LEADING_MEASURE, '')
-    .replace(/^of\s+/i, '')
-    .replace(TRAILING_PREP_RE, '')
+  const tidy = t => stripTrailingPrep(
+    t.trim()
+      .replace(ASIDES, '')
+      .replace(PROSE_QUANTITY, '')
+      .replace(FUSED_QUANTITY_RE, '')
+      .replace(LEADING_MEASURE, '')
+      .replace(/^of\s+/i, ''),
+  )
     .replace(LEADING_FLUFF_RE, '')
     .replace(/\s+/g, ' ')
     .replace(/^[-.,;\s·]+|[-.,;\s·]+$/g, '')
@@ -114,7 +145,12 @@ export function shoppingName(raw) {
    * chicken. Keeping the whole string instead (which is what this did first)
    * left a stranded leading comma the moment the modifiers came back out.
    */
-  const clauses = whole.split(/[,;]/)
+  // "or" separates clauses too. A line offering a substitute — "paneer or
+  // chenna", "tomato paste or 4 ripe tomatoes", "active dry yeast OR 1 tsp
+  // baking soda" — is still one thing to buy, and keeping both halves made a
+  // shopping row that read like a sentence and matched no pantry item at all.
+  // Word-bounded, so "orange" and "oregano" are untouched.
+  const clauses = whole.split(/[,;]|\s+\bor\b\s+/i)
   let s = ''
   for (const clause of clauses) {
     const t = tidy(clause)
@@ -453,6 +489,71 @@ export function isStaple(raw) {
   return PANTRY_STAPLES.has(canonicalItem(raw))
 }
 
+/**
+ * Head nouns where owning the generic means you can cook the specific.
+ *
+ * "I have mushrooms" should satisfy a recipe wanting button mushrooms, and
+ * "I have chicken" one wanting chicken breast — the varietal is a cultivar or
+ * a cut, not a different shop purchase.
+ *
+ * Scoped deliberately, because this is wrong more often than it is right:
+ *
+ *   - Flours, rices and dairy are out. Bread flour is not plain flour, and
+ *     basmati is not any rice — swapping them changes the dish.
+ *   - Beef and pork are out despite being proteins. `ground beef` is a
+ *     product, not a cut of "beef", which is the same call canonicalItem()
+ *     already makes when it refuses to fold ground beef into beef.
+ *
+ * Display is untouched: the shopping list still names the varietal you'd buy.
+ * This only ever loosens *matching*.
+ */
+const VARIETAL_HEADS = new Set([
+  // produce
+  'mushroom', 'onion', 'tomato', 'potato', 'pepper', 'chili', 'spinach',
+  'lettuce', 'cabbage', 'carrot', 'squash', 'pumpkin', 'apple', 'mango',
+  'banana', 'lemon', 'lime', 'orange', 'bean', 'pea', 'lentil',
+  // proteins where the generic implies you have some
+  'chicken', 'fish', 'prawn', 'shrimp', 'lamb', 'mutton', 'crab',
+])
+
+/**
+ * Parts of an animal rather than things in their own right. Only these let the
+ * generic be read off the *front* of a name — see below.
+ */
+const CUTS = new Set([
+  'breast', 'thigh', 'wing', 'leg', 'drumstick', 'fillet', 'filet',
+  'tenderloin', 'loin', 'belly', 'shoulder', 'rib', 'mince', 'cutlet',
+  'escalope', 'steak',
+])
+
+/**
+ * The generic an item is a varietal of, or '' when it isn't one.
+ *
+ * Two shapes, and they put the generic at opposite ends:
+ *
+ *   "button mushroom", "red onion"   — modifier first, generic LAST
+ *   "chicken breast", "lamb shoulder" — generic first, cut LAST
+ *
+ * Reading either end blindly would be wrong: "tomato sauce" and "chicken
+ * stock" also lead with a generic, and neither is a tomato or a chicken. So
+ * the front is only trusted when the word after it is an actual cut.
+ *
+ * A single word is already the generic and returns '' — the caller has an
+ * exact match for that, and this is only ever the fallback.
+ */
+export function varietalHead(canonical) {
+  const words = String(canonical || '').trim().split(/\s+/)
+  if (words.length < 2) return ''
+
+  const last = words[words.length - 1]
+  if (VARIETAL_HEADS.has(last)) return last
+
+  const first = words[0]
+  if (VARIETAL_HEADS.has(first) && CUTS.has(last)) return first
+
+  return ''
+}
+
 /** The distinct canonical items a recipe calls for. */
 export function canonicalItems(recipe) {
   const out = new Set()
@@ -533,3 +634,53 @@ export const MAIN_INGREDIENTS = [
   'cabbage', 'pumpkin',
   'rice', 'basmati rice', 'pasta', 'bread',
 ]
+
+/**
+ * A quick-tap grid for the household items people almost always have on hand,
+ * as an alternative to typing every one into the add box.
+ *
+ * Deliberately not "the most common catalogue ingredients" — that list is
+ * garlic, onion, lemon juice, parmesan… which is really "what recipes call
+ * for", not "what's usually in a kitchen". Bread, chicken, and rice barely
+ * appear in the catalogue's own ingredient lines (they're often the recipe
+ * itself, not an ingredient of it) but are exactly the kind of thing this grid
+ * exists for. So this list is hand-picked for real-world commonness, not
+ * derived from ingredient frequency.
+ *
+ * Excludes anything in PANTRY_STAPLES — those are already assumed present,
+ * so a tap here would only ever be undoing that assumption for free, which
+ * isn't the job of a fast-add grid.
+ *
+ * Every label is verified (in PantrySection.test.jsx) to be its own
+ * canonicalItem() output, so what the user taps is exactly what gets stored —
+ * no surprise relabelling between the button and the chip it produces.
+ */
+export const COMMON_INGREDIENT_GROUPS = [
+  { title: 'Produce',            items: ['garlic', 'onion', 'tomato', 'potato', 'carrot', 'bell pepper', 'spinach', 'cucumber', 'lemon', 'avocado', 'green chili', 'cauliflower', 'okra', 'eggplant', 'green pea', 'coconut'] },
+  { title: 'Dairy & Eggs',       items: ['cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese', 'paneer', 'cream'] },
+  { title: 'Meat & Seafood',     items: ['chicken', 'ground beef', 'bacon', 'shrimp', 'lamb'] },
+  { title: 'Grains & Bread',     items: ['rice', 'pasta', 'bread', 'tortilla'] },
+  { title: 'Herbs & Condiments', items: ['basil', 'cilantro', 'parsley', 'ginger', 'mint', 'curry leaf', 'ketchup', 'mustard', 'mayonnaise'] },
+  // The spices past the assumed set. PANTRY_STAPLES already covers the dozen
+  // an Indian kitchen always has (turmeric, cumin, garam masala…), so what's
+  // left here is the genuinely optional half — the ones you either keep or
+  // really don't, which is exactly what a one-tap grid is for.
+  { title: 'Spices & Masalas',   items: ['asafoetida', 'fenugreek seed', 'fenugreek leaf', 'carom seed', 'nigella seed', 'fennel seed', 'poppy seed', 'star anise', 'nutmeg', 'saffron', 'chaat masala', 'sambar powder', 'amchur', 'black salt', 'kashmiri red chili powder'] },
+  { title: 'Dals & Legumes',     items: ['toor dal', 'moong dal', 'chana dal', 'urad dal', 'red lentil', 'chickpea', 'kidney bean', 'black-eyed pea'] },
+  { title: 'Flours & Staples',   items: ['gram flour', 'wheat flour', 'semolina', 'flattened rice', 'basmati rice', 'coconut milk', 'tamarind', 'jaggery', 'mustard oil'] },
+]
+
+/**
+ * Every ingredient the app can name, whether or not a visible recipe uses one.
+ *
+ * The suggestion lists used to be built from the catalog alone, so curating it
+ * to 33 recipes silently made 37 known ingredients unsearchable — you could
+ * tap "paneer" in the quick-add grid but not find it by typing, and shrimp,
+ * lamb and fish vanished entirely. Seeding from what the app *knows* rather
+ * than what it currently *shows* decouples the vocabulary from curation.
+ */
+export const KNOWN_INGREDIENTS = [...new Set([
+  ...PANTRY_STAPLES,
+  ...MAIN_INGREDIENTS,
+  ...COMMON_INGREDIENT_GROUPS.flatMap(g => g.items),
+])].filter(i => i.length > 1 && !isNeverShopped(i)).sort()
