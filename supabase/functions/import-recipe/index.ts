@@ -67,6 +67,40 @@ Rules:
 - NEVER invent a quantity. If the source doesn't give one, use "".
 - If the input is not a recipe, return {"error":"not a recipe"}.`
 
+/**
+ * Sites that serve a login wall to anything without a session.
+ *
+ * Fetching an Instagram post returns 727 kB of HTML containing `accounts/login`
+ * and no caption — and a *made-up* post id returns the same 200, so there is
+ * nothing to detect after the fact either. Their oEmbed now needs an approved
+ * app, so this isn't a gap to close later; the door is shut.
+ *
+ * Caught before the fetch rather than after: it saves pulling down a megabyte
+ * of login page, and it lets the message name the real problem. The generic
+ * "that doesn't look like a recipe" implied the cook's recipe was at fault
+ * when no link from these hosts can ever work.
+ *
+ * Matched on hostname, not substring — "instagram.com.example.org" is not
+ * Instagram.
+ */
+const CLOSED_PLATFORMS: Array<[RegExp, string]> = [
+  [/(^|\.)instagram\.com$/i, 'Instagram'],
+  [/(^|\.)tiktok\.com$/i,    'TikTok'],
+  [/(^|\.)facebook\.com$/i,  'Facebook'],
+  [/(^|\.)fb\.watch$/i,      'Facebook'],
+  [/(^|\.)threads\.net$/i,   'Threads'],
+  [/(^|\.)x\.com$/i,         'X'],
+  [/(^|\.)twitter\.com$/i,   'X'],
+  [/(^|\.)snapchat\.com$/i,  'Snapchat'],
+]
+
+function closedPlatform(hostname: string): string | null {
+  for (const [pattern, name] of CLOSED_PLATFORMS) {
+    if (pattern.test(hostname)) return name
+  }
+  return null
+}
+
 const YOUTUBE =
   /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/
 
@@ -98,6 +132,49 @@ function meta(html: string, prop: string): string {
  * says so plainly rather than feeding the model a description with no recipe
  * in it and passing on whatever it invents.
  */
+/**
+ * A video's details from the official Data API.
+ *
+ * Scraping the watch page works from a laptop and fails from here: YouTube
+ * serves a consent/bot interstitial to datacenter IPs for most videos — four
+ * real cooking videos tested, all walled, while one heavily-cached video came
+ * through. Consent cookies (CONSENT, SOCS) don't lift it, so this isn't a
+ * header we're missing; the scrape is simply unreliable from a server.
+ *
+ * The API has none of that problem and is free: the default quota is 10,000
+ * units a day and `videos.list` costs 1, so a personal app will never approach
+ * it. Without a key we fall back to scraping, which still works for some
+ * videos and degrades to a clear message for the rest.
+ *
+ * Get a key: Google Cloud console -> enable "YouTube Data API v3" -> create an
+ * API key -> `supabase secrets set YOUTUBE_API_KEY=...`
+ */
+async function youtubeFromApi(videoId: string) {
+  const key = Deno.env.get('YOUTUBE_API_KEY')
+  if (!key) return null
+
+  const endpoint = 'https://www.googleapis.com/youtube/v3/videos'
+    + `?part=snippet&id=${encodeURIComponent(videoId)}&key=${encodeURIComponent(key)}`
+  try {
+    const res = await fetch(endpoint)
+    if (!res.ok) {
+      console.error('youtube data api', res.status, (await res.text()).slice(0, 300))
+      return null
+    }
+    const snippet = (await res.json())?.items?.[0]?.snippet
+    if (!snippet) return null
+    const thumbs = snippet.thumbnails || {}
+    return {
+      description: String(snippet.description || ''),
+      title: String(snippet.title || ''),
+      image: String((thumbs.maxres || thumbs.high || thumbs.medium || {}).url || ''),
+    }
+  } catch (err) {
+    console.error('youtube data api failed', err)
+    return null
+  }
+}
+
 function youtubeContent(html: string) {
   let description = ''
   const m = html.match(/"shortDescription":"((?:[^"\\]|\\.)*)"/)
@@ -226,6 +303,12 @@ Deno.serve(async req => {
       let target: URL
       try { target = new URL(url) } catch { return bad('That doesn’t look like a link.') }
       if (!/^https?:$/.test(target.protocol)) return bad('Only http and https links work.')
+
+      const closed = closedPlatform(target.hostname)
+      if (closed) {
+        return bad(`${closed} doesn’t let apps read posts. Take a screenshot and use the camera button instead — it reads the recipe straight off the picture.`)
+      }
+
       sourceUrl = target.toString()
 
       // Some sites serve a stub to anything that doesn't look like a browser.
@@ -237,11 +320,15 @@ Deno.serve(async req => {
       const html = await page.text()
 
       if (YOUTUBE.test(target.href)) {
-        const video = youtubeContent(html)
+        // The API when a key is configured, the scrape otherwise.
+        const videoId = target.href.match(YOUTUBE)?.[1] ?? ''
+        const video = (videoId && await youtubeFromApi(videoId)) || youtubeContent(html)
         // Short enough to be "subscribe for more" and nothing else. Better to
         // say so than to hand the model 40 characters and publish its guess.
         if (video.description.trim().length < 40) {
-          return bad('That video’s description has no recipe in it. Open the video, copy the ingredients and method from the description, and paste those here instead.')
+          return bad(Deno.env.get('YOUTUBE_API_KEY')
+            ? 'That video’s description has no recipe in it. Open the video, copy the ingredients and method from the description, and paste those here instead.'
+            : 'Couldn’t read that video’s description — YouTube blocks most server-side reads. Copy the recipe out of the description and paste it here, or set YOUTUBE_API_KEY to read videos directly.')
         }
         fallbackImage = video.image
         content = `${video.title}\n\n${video.description}`.slice(0, 12000)

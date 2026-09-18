@@ -155,6 +155,12 @@ export function normalizeUserRecipe(r) {
   }
 }
 
+/** Catalog recipes carry a human `source` name; copied/imported ones don't — fall back to the site's hostname. */
+export function sourceLabel(sourceUrl) {
+  try { return new URL(sourceUrl).hostname.replace(/^www\./, '') }
+  catch { return sourceUrl }
+}
+
 /**
  * Strip UI-only and server-owned fields so the object is safe to INSERT.
  *
