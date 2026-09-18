@@ -5,6 +5,7 @@ import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId } from '../utils/recipe'
 import { describeError } from '../utils/errors'
 import { recipeInShopping } from '../utils/shopping'
+import { renderRecipeCard } from '../utils/recipeImage'
 import { shoppingName } from '../utils/ingredients'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
@@ -22,6 +23,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   const { pantryState, pantryEnabled } = usePantry()
   const [editing,     setEditing]     = useState(false)
   const [copying,     setCopying]     = useState(false)
+  const [sharing,     setSharing]     = useState(false)
 
   /**
    * Someone else's recipe, opened from a shared link.
@@ -172,6 +174,49 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     const shareUrl = isUserRecipeKey(recipeKey)
       ? `${base}?u=${userRecipeId(recipeKey)}`
       : `${base}?r=${recipeKey}`
+
+    /**
+     * A picture first, the link second.
+     *
+     * A link asks the recipient to open an unfamiliar app and wait for a
+     * megabyte of bundle, and it arrives in the chat as a naked URL because
+     * GitHub Pages can't emit per-recipe Open Graph tags. An image just shows
+     * up — and another cook can import it back through the vision importer,
+     * so it isn't a dead end either.
+     *
+     * Everything here degrades quietly: no canvas, a photo whose host sends
+     * no CORS headers, or a browser without file sharing all fall through to
+     * the link rather than failing the share.
+     */
+    if (!sharing) {
+      setSharing(true)
+      try {
+        const blob = await renderRecipeCard(recipe)
+        if (blob) {
+          const file = new File([blob], `${recipe.name.replace(/[^\w]+/g, '-').toLowerCase()}.png`,
+                                { type: 'image/png' })
+          if (navigator.canShare?.({ files: [file] })) {
+            await navigator.share({ files: [file], title: recipe.name })
+            return
+          }
+          // Desktop browsers mostly can't share files, but they can download.
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = file.name
+          a.click()
+          URL.revokeObjectURL(url)
+          showToast('Recipe card saved', 'info')
+          return
+        }
+      } catch (err) {
+        if (err?.name === 'AbortError') return
+        // Not worth a message: the link below is a perfectly good share.
+        console.error('Recipe card failed, falling back to a link:', err)
+      } finally {
+        setSharing(false)
+      }
+    }
 
     try {
       if (navigator.share) {
