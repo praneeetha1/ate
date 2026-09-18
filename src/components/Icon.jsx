@@ -94,6 +94,13 @@ const PATHS = {
       <path d="M8.2 6.1v1.4M8.2 12v2.6" />
     </>
   ),
+  // A camera: body, the little bump over the lens, and the lens itself.
+  camera: (
+    <>
+      <path d="M3.2 8.6a1.8 1.8 0 0 1 1.8-1.8h2.3l1.2-2h7l1.2 2h2.3a1.8 1.8 0 0 1 1.8 1.8v9a1.8 1.8 0 0 1-1.8 1.8H5a1.8 1.8 0 0 1-1.8-1.8Z" />
+      <circle cx="12" cy="13" r="3.6" />
+    </>
+  ),
   pan: (
     <>
       <circle cx="10.2" cy="13.4" r="6.6" />

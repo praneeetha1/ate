@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { useDialog } from '../hooks/useDialog'
 import { CATALOG_CATEGORIES } from '../utils/recipe'
 import { importRecipe, looksLikeUrl } from '../utils/importRecipe'
+import { fileToDataUrl, dataUrlBytes, MAX_TOTAL_BYTES } from '../utils/imageFile'
+import Icon from './Icon'
+import { uploadRecipePhoto } from '../utils/photoUpload'
+import { useAuth } from '../context/AuthContext'
 
 const DIETARY = ['vegetarian', 'vegan', 'gluten-free', 'dairy-free']
 
@@ -27,6 +31,7 @@ function positiveInt(value) {
  */
 export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved }) {
   const { createUserRecipe, updateUserRecipe } = useApp()
+  const { user } = useAuth()
   const { titleId, backdropProps, panelProps } = useDialog({ onClose })
 
   const isEdit = !!recipe
@@ -70,6 +75,68 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     setSteps(draft.steps?.length ? [...draft.steps] : [''])
     setImage(draft.image ?? '')
     setSource(draft.sourceUrl ?? '')
+  }
+
+  const photoRef = useRef(null)
+  const [uploading, setUploading] = useState(false)
+
+  /** Upload a photo of the finished dish and point the recipe at it. */
+  async function handlePhoto(file) {
+    if (!file || uploading) return
+    setUploading(true)
+    setError('')
+    try {
+      setImage(await uploadRecipePhoto(file, user?.id))
+      setNote('Photo uploaded.')
+    } catch (err) {
+      console.error('Photo upload failed:', err)
+      setError(err.message || 'Could not upload that photo.')
+    } finally {
+      setUploading(false)
+      if (photoRef.current) photoRef.current.value = ''
+    }
+  }
+
+  const fileRef = useRef(null)
+
+  /**
+   * Import from photos.
+   *
+   * Plural, because one recipe often doesn't fit in one screenshot — the
+   * ingredients in the first, the method in the second. They go up together
+   * and come back as a single recipe rather than several.
+   *
+   * Each picture is redrawn smaller before it leaves the phone: a raw
+   * screenshot is several megabytes once base64-encoded, which is slow on
+   * mobile data and large enough to be refused outright.
+   */
+  async function handleImages(fileList) {
+    const files = [...(fileList || [])].slice(0, 4)
+    if (!files.length || importing) return
+
+    setImporting(true)
+    setError('')
+    setNote('')
+    try {
+      const images = []
+      for (const file of files) images.push(await fileToDataUrl(file))
+
+      const total = images.reduce((n, img) => n + dataUrlBytes(img), 0)
+      if (total > MAX_TOTAL_BYTES) {
+        throw new Error('Those photos are too large even after shrinking — try fewer at a time.')
+      }
+
+      const { recipe: draft, warning } = await importRecipe({ images })
+      applyDraft(draft)
+      setNote(warning || `Read ${files.length > 1 ? `${files.length} photos` : 'that photo'}. Check it over before saving.`)
+    } catch (err) {
+      console.error('Importing from a photo failed:', err)
+      setError(err.message || 'Could not read a recipe from that.')
+    } finally {
+      setImporting(false)
+      // Cleared so picking the same file again still fires a change event.
+      if (fileRef.current) fileRef.current.value = ''
+    }
   }
 
   async function handleImport() {
@@ -224,6 +291,24 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                   disabled={importing || !paste.trim()}
                   className="shrink-0 bg-accent text-ink border-2 border-ink shadow-pop press rounded-xl px-4 text-[0.8rem] font-bold hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:shadow-none"
                 >{importing ? 'Reading…' : 'Import'}</button>
+                {/* The only route in from Instagram: their API is closed, so a
+                    screenshot is the one thing you can actually get out. */}
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={importing}
+                  aria-label="Import from a photo or screenshot"
+                  title="Import from a photo or screenshot"
+                  className="shrink-0 grid place-items-center w-[38px] bg-card text-ink border-2 border-ink rounded-xl hover:bg-paper transition-colors disabled:opacity-50"
+                ><Icon name="camera" size={16} /></button>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  onChange={e => handleImages(e.target.files)}
+                />
               </div>
               {note && (
                 <p role="status" className="text-[0.75rem] text-muted italic mt-2">{note}</p>
@@ -288,15 +373,33 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
               />
             </div>
             <div className="col-span-2">
-              <label className={labelCls} htmlFor="recipe-image">Photo URL</label>
-              <input
-                id="recipe-image"
-                type="url"
-                value={image}
-                onChange={e => setImage(e.target.value)}
-                placeholder="Filled in automatically when you import"
-                className={inputCls}
-              />
+              <label className={labelCls} htmlFor="recipe-image">Photo</label>
+              <div className="flex gap-2">
+                <input
+                  id="recipe-image"
+                  type="url"
+                  value={image}
+                  onChange={e => setImage(e.target.value)}
+                  placeholder="Filled in when you import, or upload your own"
+                  className={inputCls + ' flex-1 min-w-0'}
+                />
+                {/* An imported recipe links the publisher's picture. This is
+                    for a photo of the thing you actually cooked, which has to
+                    be stored somewhere rather than linked. */}
+                <button
+                  type="button"
+                  onClick={() => photoRef.current?.click()}
+                  disabled={uploading}
+                  className="shrink-0 bg-card text-ink border-2 border-ink rounded-xl px-3 text-[0.78rem] font-bold hover:bg-paper transition-colors disabled:opacity-50"
+                >{uploading ? 'Uploading…' : 'Upload'}</button>
+                <input
+                  ref={photoRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={e => handlePhoto(e.target.files?.[0])}
+                />
+              </div>
               {image && (
                 // A broken link is worth seeing now rather than discovering on
                 // the card later, so the preview stands in for validation.

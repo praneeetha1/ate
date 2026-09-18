@@ -73,7 +73,7 @@ describe('importing a recipe', () => {
     await waitFor(() => expect(screen.getByLabelText(/recipe name/i)).toHaveValue('Lemon Rice'))
     expect(screen.getByLabelText(/time \(minutes\)/i)).toHaveValue(20)
     expect(screen.getByLabelText(/servings/i)).toHaveValue(3)
-    expect(screen.getByLabelText(/photo url/i)).toHaveValue(DRAFT.image)
+    expect(screen.getByLabelText(/^photo$/i)).toHaveValue(DRAFT.image)
     expect(screen.getByDisplayValue('cooked rice')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Temper the spices.')).toBeInTheDocument()
   })

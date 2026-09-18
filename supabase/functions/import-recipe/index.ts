@@ -12,7 +12,7 @@
  *
  *   POST { url }         -> fetch the page, feed it to the model
  *   POST { text }        -> feed the text straight to the model
- *   POST { imageBase64 } -> feed the image to a vision model
+ *   POST { images: [dataUrl] } -> feed the pictures to a vision model
  *   <-   { recipe: {...}, warning? }
  *
  * The model is behind this boundary on purpose. Swapping provider is a change
@@ -185,7 +185,36 @@ Deno.serve(async req => {
   let body: any
   try { body = await req.json() } catch { return bad('Expected a JSON body.') }
 
-  const { url, text, imageBase64 } = body ?? {}
+  const { url, text, images, imageBase64 } = body ?? {}
+
+  /**
+   * Pictures arrive as full `data:image/…;base64,…` URLs, so the file type
+   * travels with the bytes. This used to take bare base64 and label all of it
+   * `image/jpeg`, which was wrong for the PNG a phone screenshot usually is —
+   * it only worked because the model was forgiving.
+   *
+   * An array, because one recipe often doesn't fit in one screenshot: the
+   * ingredients in the first, the method in the second. They go into a single
+   * message so the model reads them as one recipe rather than several.
+   *
+   * `imageBase64` is still accepted so an older client isn't broken by this.
+   */
+  const pictures: string[] = Array.isArray(images)
+    ? images.filter((p: unknown) => typeof p === 'string')
+    : typeof imageBase64 === 'string' && imageBase64
+      ? [`data:image/jpeg;base64,${imageBase64}`]
+      : []
+
+  if (pictures.length) {
+    if (pictures.length > 4) return bad('Four images at most.')
+    if (!pictures.every(p => /^data:image\/(jpe?g|png|webp|gif);base64,/i.test(p))) {
+      return bad('Images must be sent as data URLs.')
+    }
+    const bytes = pictures.reduce((n, p) => n + Math.floor(p.length * 3 / 4), 0)
+    // Beyond this the request is refused upstream anyway, and a clear message
+    // beats a generic 413. The client downscales precisely to stay under it.
+    if (bytes > 6 * 1024 * 1024) return bad('Those images are too large — try fewer, or smaller ones.')
+  }
   let content: unknown
   let sourceUrl: string | null = null
   // A video has a thumbnail but the description never names it, so it comes
@@ -222,18 +251,20 @@ Deno.serve(async req => {
       if (!content) return bad('Nothing readable on that page.')
     } else if (text) {
       content = String(text).slice(0, 12000)
-    } else if (imageBase64) {
-      content = null   // handled below
+    } else if (pictures.length) {
+      content = null   // the images are the content; see below
     } else {
-      return bad('Send a url, text, or imageBase64.')
+      return bad('Send a url, some text, or one or more images.')
     }
 
-    const messages = imageBase64
+    const messages = pictures.length
       ? [
           { role: 'system', content: SYSTEM },
           { role: 'user', content: [
-            { type: 'text', text: 'Extract the recipe from this image.' },
-            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } },
+            { type: 'text', text: pictures.length > 1
+              ? `These ${pictures.length} images are one recipe between them. Extract it once.`
+              : 'Extract the recipe from this image.' },
+            ...pictures.map(p => ({ type: 'image_url', image_url: { url: p } })),
           ] },
         ]
       : [
@@ -245,7 +276,7 @@ Deno.serve(async req => {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: imageBase64 ? VISION_MODEL : MODEL,
+        model: pictures.length ? VISION_MODEL : MODEL,
         messages,
         temperature: 0,               // extraction, not writing
         response_format: { type: 'json_object' },
