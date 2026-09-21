@@ -1,7 +1,6 @@
 # ate. 🍳
 
-A cozy recipe app in a hand-drawn sticker style — browse a 300-recipe catalog,
-cook from your own recipes, and follow what your friends are making.
+A recipe app for when you dont know what to make and dont know what all you even have at home.
 
 **Built with:** Vite + React 18 + React Router (hash routing) + Tailwind CSS,
 with Supabase for auth, Postgres storage and realtime. Installable as a PWA.
@@ -11,12 +10,8 @@ Deployed to GitHub Pages at `/ate/`.
 
 ## Features
 
-- 300-recipe catalog across 12 categories, filterable by diet and cook time
-- Search by recipe name, or by "what can I make?" from ingredients you have
-- Create, edit and delete your own recipes
-- Favourites, custom lists, per-recipe ratings and notes, and a shopping list
-- Follow other cooks and see their activity in a live feed
-- Public profiles at `/user/:username` with an optional private mode
+- Save your current inventory and see what you can make with the ingredients you already have at home 
+- Add your own recipes or import from online, this way you can have all recipes in one place 
 - Works offline; local data syncs up the next time you log in
 
 ## Local development
@@ -27,35 +22,3 @@ npm run dev      # http://localhost:5173/ate/
 npm run build
 npm run lint
 ```
-
-### Environment
-
-Create a `.env.local` with your Supabase project credentials:
-
-```
-VITE_SUPABASE_URL=https://<project>.supabase.co
-VITE_SUPABASE_ANON_KEY=<anon key>
-```
-
-Both are required — the app renders a setup message instead of booting if
-either is missing. The same values are supplied to CI as repository secrets.
-
-## Database
-
-`supabase/schema.sql` is the **current** schema and is what you should run
-against a fresh Supabase project — it already reflects every migration.
-
-`supabase/migrations/*.sql` is the historical, ordered upgrade path for an
-existing project. Run only the ones newer than your deployment. They are
-idempotent and safe to re-run.
-
-## Data pipeline
-
-`scripts/clean_recipes.py` normalises a scraped `recipes_raw.json` (not
-committed) into `src/data/recipes.json`. It is not part of the app build.
-
-`scripts/make_icons.py` redraws `public/icons/*.png` — the PWA and home-screen
-icons — as the "ate." wordmark, using the palette from `tailwind.config.js`.
-The letters are drawn as geometry rather than set as type, so the script needs
-no font and no image library. Re-run it with `python3 scripts/make_icons.py`
-if the brand colours change.
