@@ -24,6 +24,7 @@
  */
 
 import { looksLikeRecipe } from './recipeSignal.ts'
+import { cleanRecipeName } from './recipeName.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -62,6 +63,12 @@ Schema:
 }
 
 Rules:
+- name is the dish alone. Drop "How to make", a trailing "Recipe", the site or
+  channel it came from ("by Tasty", "| Chef Someone"), emoji, ALL-CAPS shouting
+  and marketing words ("EASY", "BEST EVER", "you won't believe"). Keep words
+  that identify the dish, like "Hyderabadi", "South Indian" or "no-bake".
+  "How To Make Macarons Recipe by Tasty" -> "Macarons".
+  "EASY Paneer Butter Masala Recipe | Restaurant Style | Cookd" -> "Paneer Butter Masala".
 - amount is digits only, as written: "2", "1/2", "1 1/2". Empty string if none.
 - unit is a single word: cup, tablespoon, teaspoon, g, ml, clove. Empty if none.
 - item is the ingredient alone, without its quantity.
@@ -233,7 +240,8 @@ function normalize(raw: any, sourceUrl: string | null) {
     .filter(Boolean)
 
   const recipe: Record<string, unknown> = {
-    name: str(raw?.name) || 'Untitled recipe',
+    // Cleaned again here: the rule above is an instruction, not a guarantee.
+    name: cleanRecipeName(str(raw?.name)) || 'Untitled recipe',
     category: CATEGORIES.includes(str(raw?.category)) ? str(raw.category) : 'Main Dish',
     dietary: (Array.isArray(raw?.dietary) ? raw.dietary : []).filter(
       (d: unknown) => typeof d === 'string',
