@@ -23,6 +23,8 @@
  *   supabase functions deploy import-recipe
  */
 
+import { looksLikeRecipe } from './recipeSignal.ts'
+
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -329,6 +331,14 @@ Deno.serve(async req => {
           return bad(Deno.env.get('YOUTUBE_API_KEY')
             ? 'That video’s description has no recipe in it. Open the video, copy the ingredients and method from the description, and paste those here instead.'
             : 'Couldn’t read that video’s description — YouTube blocks most server-side reads. Copy the recipe out of the description and paste it here, or set YOUTUBE_API_KEY to read videos directly.')
+        }
+        // Long enough isn't the same as being a recipe: "follow me on
+        // Instagram, shot on a Sony ZV-E10, music by Epidemic Sound" clears 40
+        // characters easily. Both fields are already in hand, so reading them
+        // costs nothing and saves a model call on links that were never
+        // cooking videos.
+        if (!looksLikeRecipe(`${video.title}\n${video.description}`)) {
+          return bad('That doesn’t look like a cooking video — there’s no recipe in its title or description. If it is one, copy the ingredients and method out of the description and paste them here.')
         }
         fallbackImage = video.image
         content = `${video.title}\n\n${video.description}`.slice(0, 12000)

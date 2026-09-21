@@ -62,7 +62,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.js'],
-    include: ['src/**/*.test.{js,jsx}'],
+    // The Edge Function's pure helpers are tested too. index.ts itself can't be
+    // imported here — it reads Deno.env at module scope — but anything it
+    // delegates to is plain TypeScript and worth pinning down.
+    include: ['src/**/*.test.{js,jsx}', 'supabase/functions/**/*.test.ts'],
     /**
      * Vitest's 5s default is too low for the Home tests, which render the
      * whole visible catalog — a few hundred RecipeCards — and some of which
