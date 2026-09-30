@@ -30,6 +30,26 @@ const CATALOG_INGREDIENTS = (() => {
   return seen
 })()
 
+/**
+ * A few example searches for the empty state, derived from the catalog rather
+ * than hardcoded: every word here appears in at least two visible recipe
+ * names, so tapping one always returns something. A hardcoded "Try 'pasta'"
+ * goes stale the moment the catalog is curated — which it has been, twice.
+ */
+const STARTER_QUERIES = (() => {
+  const STOP = new Set(['and', 'with', 'the', 'for', 'style', 'recipe', 'homemade', 'traditional', 'simple'])
+  const freq = new Map()
+  VISIBLE_CATALOG.forEach(({ r }) => {
+    const words = new Set(String(r.name).toLowerCase().match(/[a-z]{4,}/g) || [])
+    words.forEach(w => { if (!STOP.has(w)) freq.set(w, (freq.get(w) || 0) + 1) })
+  })
+  return [...freq.entries()]
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 6)
+    .map(([w]) => w)
+})()
+
 function scoreRecipe(canonicalIngredients, selected) {
   return selected.filter(sel => matchesIngredient(canonicalIngredients, sel)).length
 }
@@ -210,13 +230,59 @@ export default function Search({ onOpen }) {
       {/* Results */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 p-5 pb-6">
         {results === null ? (
-          <p className="col-span-full text-center py-[60px] text-muted text-[1rem]">
-            {mode === 'name' ? 'Type a recipe name above' : 'Pick ingredients above, then tap Find Recipes'}
-          </p>
+          /*
+           * The blank arrival state used to be one grey line, which on a
+           * desktop viewport left almost the whole screen empty and asked the
+           * cook to invent a query. It now starts the search for them.
+           */
+          <div className="col-span-full py-10 text-center">
+            <p className="font-display text-[1.15rem] text-ink">
+              {mode === 'name' ? 'What are you looking for?' : 'What have you got in?'}
+            </p>
+            {mode === 'name' ? (
+              <>
+                <p className="text-[0.85rem] text-muted mt-1.5">Search by name, or try one of these</p>
+                <ul className="flex flex-wrap justify-center gap-2 mt-4 list-none">
+                  {STARTER_QUERIES.map(q => (
+                    <li key={q}>
+                      <button
+                        onClick={() => setNameQuery(q)}
+                        className="border-2 border-ink bg-card text-ink rounded-full px-3.5 py-1.5 text-[0.8rem] font-bold shadow-pop press hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink transition-colors capitalize"
+                      >{q}</button>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => setMode('ingredient')}
+                  className="mt-6 text-[0.82rem] font-bold text-accent-dk underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                >Or search by what&rsquo;s in your kitchen</button>
+              </>
+            ) : (
+              <>
+                <p className="text-[0.85rem] text-muted mt-1.5">
+                  Add a few ingredients above, then tap Find Recipes to see what you can cook.
+                </p>
+                <button
+                  onClick={() => setMode('name')}
+                  className="mt-6 text-[0.82rem] font-bold text-accent-dk underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                >Or search by name</button>
+              </>
+            )}
+          </div>
         ) : results.length === 0 ? (
-          <p className="col-span-full text-center py-[60px] font-display text-[1.1rem] text-muted">
-            No recipes found
-          </p>
+          /* "No recipes found" alone is a dead end — every branch offers a way out. */
+          <div className="col-span-full py-10 text-center">
+            <p className="font-display text-[1.15rem] text-ink">No recipes found</p>
+            <p className="text-[0.85rem] text-muted mt-1.5">
+              {mode === 'name'
+                ? 'Nothing matches that name. Try a shorter word, or search by ingredient instead.'
+                : 'Nothing uses all of those. Try removing an ingredient.'}
+            </p>
+            <button
+              onClick={() => (mode === 'name' ? setNameQuery('') : setSelectedIngs([]))}
+              className="mt-5 border-2 border-ink bg-card text-ink rounded-full px-4 py-1.5 text-[0.8rem] font-bold shadow-pop press hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink transition-colors"
+            >{mode === 'name' ? 'Clear search' : 'Clear ingredients'}</button>
+          </div>
         ) : (
           results.map(({ r, key, matchCount, total }) => {
             const matched = mode === 'ingredient' && matchCount > 0

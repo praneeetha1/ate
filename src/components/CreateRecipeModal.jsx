@@ -436,7 +436,17 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
             <span className={labelCls}>Ingredients *</span>
             <div className="flex flex-col gap-2">
               {ings.map((ing, i) => (
-                <div key={i} className="flex gap-2 items-center">
+                /*
+                 * Two rows on a phone, one from sm up. At 390px the old single
+                 * flex row pushed the ingredient input past the dialog's right
+                 * edge: `flex-1` cannot shrink an input below its intrinsic
+                 * width unless min-width is overridden, so the row grew wider
+                 * than the dialog instead of fitting inside it.
+                 */
+                <div
+                  key={i}
+                  className="grid gap-2 items-center grid-cols-[4rem_4.5rem_1fr] sm:grid-cols-[4rem_4.5rem_1fr_auto]"
+                >
                   <input
                     value={ing.amount}
                     onChange={e => updateIng(i, 'amount', e.target.value)}
@@ -459,14 +469,19 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     placeholder="Ingredient"
                     aria-label={`Ingredient ${i + 1} name`}
                     maxLength={MAX_ITEM}
-                    className="flex-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    // min-w-0 is what actually lets it shrink; without it the
+                    // input keeps its default intrinsic width and overflows.
+                    className="col-span-3 row-start-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
                   />
                   {ings.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeIng(i)}
                       aria-label={`Remove ingredient ${i + 1}`}
-                      className="text-muted hover:text-heart text-[1.1rem] px-1 transition-colors shrink-0"
+                      // Sits beside the unit on a phone, at the end of the row
+                      // from sm up. A 44px box is the accessible tap target
+                      // review point 22 asks for; the glyph alone was ~20px.
+                      className="col-start-3 row-start-1 justify-self-end sm:col-start-4 grid place-items-center w-11 h-11 -my-1 rounded-xl text-muted hover:text-heart focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink text-[1.1rem] transition-colors"
                     >×</button>
                   )}
                 </div>

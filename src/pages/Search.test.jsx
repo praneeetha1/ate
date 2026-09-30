@@ -154,3 +154,50 @@ describe('ingredient matching', () => {
     expect(resultTitles()).toContain('Old Fashioned Vegetable Soup')
   })
 })
+
+/**
+ * The arrival state. Review point 3: the page used to open on one grey line
+ * and a large blank area, asking the cook to invent a query first.
+ */
+describe('arriving at search with nothing typed', () => {
+  it('offers starter searches instead of a blank page', async () => {
+    renderSearch()
+    expect(await screen.findByText(/what are you looking for/i)).toBeInTheDocument()
+    const chips = document.querySelectorAll('ul li button')
+    expect(chips.length).toBeGreaterThan(0)
+  })
+
+  // Derived from the catalog, so a chip can never be a dead end.
+  it('runs a real search when a starter is tapped', async () => {
+    const user = userEvent.setup()
+    renderSearch()
+    await screen.findByText(/what are you looking for/i)
+
+    const chip = document.querySelector('ul li button')
+    const word = chip.textContent.trim().toLowerCase()
+    await user.click(chip)
+
+    await waitFor(() => expect(screen.queryByText(/what are you looking for/i)).not.toBeInTheDocument())
+    expect(screen.queryByText(/no recipes found/i)).not.toBeInTheDocument()
+    expect(word.length).toBeGreaterThan(3)
+  })
+
+  it('points at ingredient search as the other way in', async () => {
+    const user = userEvent.setup()
+    renderSearch()
+    await user.click(await screen.findByRole('button', { name: /what.s in your kitchen/i }))
+    expect(await screen.findByText(/what have you got in/i)).toBeInTheDocument()
+  })
+})
+
+describe('when a name search finds nothing', () => {
+  it('explains and offers a way out rather than a dead end', async () => {
+    const user = userEvent.setup()
+    renderSearch()
+    await user.type(screen.getByLabelText(/search recipes by name/i), 'zzzzqqq')
+
+    expect(await screen.findByText(/no recipes found/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /clear search/i }))
+    expect(await screen.findByText(/what are you looking for/i)).toBeInTheDocument()
+  })
+})
