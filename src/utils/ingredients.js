@@ -214,6 +214,17 @@ const MATCH_PREP_RE = new RegExp(`(^|[^-\\w])(?:${TRAILING_PREP}|${MATCH_ONLY_PR
  * is a judgement call about two names being the same kitchen item.
  */
 export const INGREDIENT_ALIASES = {
+  // Indian names for things the catalogue lists in English, plus British and
+  // Indian spellings of the same product. Added after live testing showed a
+  // pantry of "cornflour" did not answer a recipe asking for cornstarch.
+  'cornflour': 'cornstarch', 'corn flour': 'cornstarch',
+  'groundnut': 'peanut', 'groundnut oil': 'peanut oil',
+  'mayo': 'mayonnaise',
+  'pudina': 'mint', 'baingan': 'eggplant', 'brinjal': 'eggplant',
+  'tej patta': 'bay leaf', 'tejpatta': 'bay leaf',
+  'kala namak': 'black salt', 'chat masala': 'chaat masala',
+  'asafetida': 'asafoetida', 'hing': 'asafoetida',
+  'ginger root': 'ginger',
   'kosher salt': 'salt', 'coarse salt': 'salt', 'sea salt': 'salt',
   'table salt': 'salt', 'flaky salt': 'salt',
   'black pepper': 'pepper', 'white pepper': 'pepper', 'peppercorn': 'pepper',
@@ -345,6 +356,8 @@ const SPICE_POWDER_RE = new RegExp(`^(${POWDER_IS_THE_SPICE})\\s+powder$`, 'i')
 // "olif". Only the words that actually appear in recipes are listed.
 const IRREGULAR_PLURALS = {
   leaves: 'leaf', loaves: 'loaf', halves: 'half', knives: 'knife',
+  // Already singular. Without this the -es stripper produced "molass".
+  molasses: 'molasses', asafoetida: 'asafoetida',
 }
 
 /**
@@ -514,7 +527,31 @@ const VARIETAL_HEADS = new Set([
   'banana', 'lemon', 'lime', 'orange', 'bean', 'pea', 'lentil',
   // proteins where the generic implies you have some
   'chicken', 'fish', 'prawn', 'shrimp', 'lamb', 'mutton', 'crab',
+  // Staples whose varietals are the same purchase. Added after live testing:
+  // a pantry of "rice" did not answer basmati, "cream" did not answer heavy
+  // cream, "yogurt" did not answer Greek.
+  'rice', 'pasta', 'flour', 'cream', 'yogurt', 'ginger', 'garlic',
 ])
+
+/**
+ * Words that make a varietal a *different purchase* from its head.
+ *
+ * Only consulted for the loosened heads above, and deliberately narrow. The
+ * reviewer's suggested list also blocked "parboiled" and "short-grain", which
+ * would have left the Idli miss they reported as bug one unfixed — those are
+ * still rice, and the pantry should answer for them.
+ *
+ * What is blocked is a product you would buy separately: rice flour is not
+ * flour, sour cream is not cream, ground ginger is not fresh ginger.
+ */
+const VARIETAL_BREAKERS = new RegExp(
+  '\\b(?:paste|powder|sauce|stock|broth|soup|juice|cheese|ice|frozen|pickled|' +
+  'candied|crystalli[sz]ed|dried|ground|fried|coconut|almond|soy|oat|cashew|' +
+  'sour|condensed|evaporated|gram|chickpea|besan|buckwheat|rye|semolina|' +
+  'tapioca|corn|self[- ]raising|self[- ]rising|bread|cake)\\b|' +
+  // Phrases, not bare words: 'rice' alone would block basmati rice, which is
+  // exactly the miss this change exists to fix.
+  '\\b(?:rice|potato|plantain|millet)\\s+flour\\b', 'i')
 
 /**
  * Parts of an animal rather than things in their own right. Only these let the
@@ -542,7 +579,10 @@ const CUTS = new Set([
  * exact match for that, and this is only ever the fallback.
  */
 export function varietalHead(canonical) {
-  const words = String(canonical || '').trim().split(/\s+/)
+  const text = String(canonical || '')
+  if (VARIETAL_BREAKERS.test(text)) return ''
+
+  const words = text.trim().split(/\s+/)
   if (words.length < 2) return ''
 
   const last = words[words.length - 1]

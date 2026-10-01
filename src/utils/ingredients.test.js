@@ -308,11 +308,25 @@ describe('varietalHead', () => {
     }
   })
 
-  // Swapping these changes the dish, so they stay exact — the same call
-  // canonicalItem() already makes in refusing to fold ground beef into beef.
-  it('leaves flours, rices and meat products alone', () => {
-    for (const s of ['basmati rice', 'bread flour', 'ground beef',
-                     'whole milk', 'pork belly']) {
+  /**
+   * Reversed deliberately. This used to assert that 'basmati rice' had no
+   * head, on the reasoning that swapping rices changes the dish. Live testing
+   * with real cooks said otherwise: a pantry of "rice" was expected to answer
+   * a recipe calling for basmati, and the Idli miss was reported as a bug.
+   *
+   * What stays exact is a different *purchase* — rice flour is not flour and
+   * sour cream is not cream, however similar the words look.
+   */
+  it('reads the generic off a varietal of the same purchase', () => {
+    expect(head('basmati rice')).toBe('rice')
+    expect(head('parboiled short-grain rice')).toBe('rice')
+    expect(head('heavy cream')).toBe('cream')
+    expect(head('greek yogurt')).toBe('yogurt')
+  })
+
+  it('still refuses a varietal that is a different purchase', () => {
+    for (const s of ['bread flour', 'rice flour', 'almond flour', 'sour cream',
+                     'cream cheese', 'ginger paste', 'ground beef', 'pork belly']) {
       expect(head(s)).toBe('')
     }
   })
@@ -450,4 +464,37 @@ describe('the whole catalog', () => {
   it('never canonicalises an ingredient down to nothing', () => {
     expect(lines.filter(i => i.item && !canonicalItem(i.item))).toEqual([])
   })
+})
+
+/**
+ * Regressions from a live pantry test. Each of these was reported as a real
+ * miss by a cook using the app signed in, then reproduced here.
+ */
+describe('pantry misses found in live testing', () => {
+  const head = s => varietalHead(canonicalItem(s))
+
+  it.each([
+    ['rice',    'basmati rice'],
+    ['rice',    'parboiled short-grain rice'],
+    ['cream',   'heavy cream'],
+    ['yogurt',  'greek yogurt'],
+    ['pasta',   'fregola sarda pasta'],
+    ['flour',   'all-purpose flour'],
+  ])('a pantry of "%s" answers "%s"', (pantryItem, line) => {
+    expect(head(canonicalItem(line))).toBe(pantryItem)
+  })
+
+  it('folds cornflour into cornstarch', () => {
+    expect(canonicalItem('cornflour')).toBe('cornstarch')
+  })
+
+  // The -es stripper turned this into "molass", so it never matched anything.
+  it('leaves already-singular molasses alone', () => {
+    expect(canonicalItem('molasses')).toBe('molasses')
+  })
+
+  it.each(['pudina', 'baingan', 'hing', 'tej patta', 'kala namak'])(
+    'knows the Indian name %s', name => {
+      expect(canonicalItem(name)).not.toBe(name)
+    })
 })

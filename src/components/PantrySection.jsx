@@ -127,7 +127,12 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
     if (e.key === 'Escape') { setShowSuggest(false); return }
     if (e.key === 'Enter' && showSuggest && suggestions.length) {
       const typed = canonicalItem(draft)
-      if (suggestions[0] !== typed) {
+      // Only reach for the top suggestion when what was typed isn't itself a
+      // real ingredient. Typing "cream" offered "cream cheese" first and Enter
+      // silently added that instead — an exact name must always win over a
+      // ranked guess.
+      const typedIsReal = pantry.has(typed) || knownItems().includes(typed)
+      if (!typedIsReal && suggestions[0] !== typed) {
         e.preventDefault()
         pickSuggestion(suggestions[0])
       }
