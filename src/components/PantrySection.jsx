@@ -296,9 +296,9 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
             if (!items.length) return null
             return (
               <div key={state} className="mb-3.5 last:mb-0">
-                <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted mb-2 flex items-center gap-1.5">
+                <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink mb-2 flex items-center gap-1.5">
                   <StateDot state={state} />{title}
-                  <span className="text-warm-tan font-normal">({items.length})</span>
+                  <span className="text-muted font-normal">({items.length})</span>
                 </h3>
                 <ul className="flex flex-wrap gap-1.5 list-none">
                   {items.map(item => (
@@ -323,9 +323,17 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                         onClick={() => setPantryState(item, 'unknown')}
                         aria-label={`Stop tracking ${item}`}
                         title={`Stop tracking ${item}`}
-                        className="grid place-items-center w-[19px] h-[19px] mr-1 rounded-full opacity-55 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        /*
+                         * The glyph stays small — these chips are deliberately
+                         * compact — but the *hit area* is extended with a
+                         * pseudo-element, so the tap target is ~34x38 without
+                         * changing the chip's size. It reaches up, down and
+                         * right only: growing it leftward would swallow taps
+                         * meant for the cycle button beside it.
+                         */
+                        className="relative grid place-items-center w-[22px] h-[22px] mr-1 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent before:absolute before:content-[''] before:-top-2 before:-bottom-2 before:-right-2 before:left-0"
                       >
-                        <Icon name="close" size={11} strokeWidth={3} />
+                        <Icon name="close" size={12} strokeWidth={3} />
                       </button>
                     </li>
                   ))}
@@ -345,11 +353,11 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
               onClick={() => setShowStock(v => !v)}
               aria-expanded={showStock}
               aria-controls="stock-kitchen"
-              className="w-full flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted hover:text-accent-dk transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+              className="w-full flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink hover:text-accent-dk transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded py-1.5"
             >
               <Icon name="plus" size={13} strokeWidth={3} />
               Stock my kitchen
-              <span className="ml-auto text-warm-tan font-normal normal-case tracking-normal">
+              <span className="ml-auto text-accent-dk font-bold normal-case tracking-normal underline underline-offset-2">
                 {showStock ? 'Hide' : 'Show'}
               </span>
             </button>

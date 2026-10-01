@@ -104,12 +104,15 @@ export default function ShoppingList() {
         )}
 
         {!rows.length ? (
-          <div className="text-center py-[32px] px-5">
-            <p className="font-display text-[1.05rem] text-muted">Nothing here yet</p>
-            <p className="text-[0.8rem] text-muted mt-2 italic">
-              Add something above, or open a recipe and tap the cart to add what it needs.
-            </p>
-          </div>
+          /*
+           * One compact line, not a 100px centred block. This section sits
+           * above the pantry on the Fridge page, and when empty it was taking
+           * roughly the first 340px of a 390px-wide phone — pushing the half
+           * you came to use off the bottom of the screen.
+           */
+          <p className="text-[0.8rem] text-muted italic px-1 pb-1">
+            Nothing to buy yet — add something above, or tap the cart on a recipe.
+          </p>
         ) : (
           <ul className="list-none border-2 border-ink rounded-xl overflow-hidden bg-card">
             {rows.map(row => {

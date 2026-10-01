@@ -438,3 +438,22 @@ describe('Fridge / Pantry section', () => {
     expect(screen.queryByText(/nothing marked yet/i)).toBeNull()
   })
 })
+
+/**
+ * From live testing: typing a real ingredient and pressing Enter added a
+ * different one. The trigger is that suggestions exclude what you already
+ * track — so with "cream" in the pantry, "cream cheese" was ranked first and
+ * Enter silently took it.
+ */
+describe('typing an ingredient you already track', () => {
+  it('does not swap it for the first suggestion', async () => {
+    const user = userEvent.setup()
+    renderSection({ pantry: [{ user_id: 'user-1', item: 'cream', state: 'have' }] })
+
+    const box = await screen.findByLabelText(/add an item to your pantry/i)
+    await user.type(box, 'cream')
+    await user.keyboard('{Enter}')
+
+    expect(screen.queryByRole('button', { name: /^cream cheese:/i })).toBeNull()
+  })
+})
