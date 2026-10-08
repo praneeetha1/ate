@@ -55,7 +55,7 @@ const RANK = { have: 0, low: 1, unknown: 2, out: 3 }
  * cannot be short of tap water, and listing it as owned is just as misleading
  * as listing it as missing.
  */
-export function pantryFit(recipe, pantryState) {
+export function pantryFit(recipe, pantryState, isAssumed = () => false) {
   const seen = new Map()
 
   for (const ing of recipe?.ingredients || []) {
@@ -65,18 +65,25 @@ export function pantryFit(recipe, pantryState) {
     const state = pantryState(ing.item)
     const prev  = seen.get(key)
     if (!prev || RANK[state] > RANK[prev.state]) {
-      seen.set(key, { state, name: shoppingName(ing.item) })
+      seen.set(key, {
+        state,
+        name: shoppingName(ing.item),
+        // Present only because it's an assumed staple, not because anyone said so.
+        assumed: state === 'have' && isAssumed(ing.item),
+      })
     }
   }
 
   const missing = [], low = [], have = []
-  for (const { state, name } of seen.values()) {
-    if (state === 'have') have.push(name)
+  let assumed = 0
+  for (const entry of seen.values()) {
+    const { state, name } = entry
+    if (state === 'have') { have.push(name); if (entry.assumed) assumed++ }
     else if (state === 'low') low.push(name)
     else missing.push(name)
   }
 
-  return { missing, low, have, total: seen.size }
+  return { missing, low, have, assumed, total: seen.size }
 }
 
 /**

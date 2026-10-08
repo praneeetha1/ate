@@ -1,5 +1,28 @@
 import { canonicalItem, shoppingName, isNeverShopped } from './ingredients'
 import { keyToText } from './recipe'
+import { parseFrac, fmtFrac } from './fractions'
+
+/**
+ * Join two measures into one.
+ *
+ * Same unit and both amounts readable -> a real total. Anything else is kept
+ * side by side rather than guessed at: "1 cup + 200 g" has no honest sum
+ * without a density, and a wrong number on a shopping list is worse than two
+ * right ones.
+ */
+function combineMeasure(a, b) {
+  const sameUnit = (a.unit || '').trim().toLowerCase() === (b.unit || '').trim().toLowerCase()
+  const na = parseFrac(a.amount)
+  const nb = parseFrac(b.amount)
+  if (sameUnit && na != null && nb != null) {
+    return { amount: fmtFrac(na + nb), unit: a.unit || b.unit }
+  }
+  const text = [a, b]
+    .map(m => [m.amount, m.unit].filter(Boolean).join(' ').trim())
+    .filter(Boolean)
+    .join(' + ')
+  return { amount: text, unit: '' }
+}
 
 /**
  * The shopping list, keyed by ingredient rather than by recipe.
@@ -30,12 +53,24 @@ export function shoppableIngredients(recipe) {
   for (const ing of recipe?.ingredients || []) {
     if (!ing?.item || isNeverShopped(ing.item)) continue
     const item = canonicalItem(ing.item)
-    if (!item || out.has(item)) continue
+    if (!item) continue
+
+    const entry = { amount: ing.amount || '', unit: ing.unit || '' }
+    const existing = out.get(item)
+    if (existing) {
+      // Still one row — but its quantity is now both lines, not just the
+      // first. Skipping the later line meant Puliyodarai's "1 tbsp + 2 tbsp"
+      // of split peas was shopped as 1 tbsp: the list told you to buy less
+      // than the recipe needs.
+      const merged = combineMeasure(existing, entry)
+      existing.amount = merged.amount
+      existing.unit   = merged.unit
+      continue
+    }
     out.set(item, {
       item,
       display: shoppingName(ing.item) || ing.item,
-      amount:  ing.amount || '',
-      unit:    ing.unit || '',
+      ...entry,
     })
   }
   return [...out.values()]
@@ -100,19 +135,36 @@ export function recipeInShopping(items, recipeKey) {
  * wrong number on a shopping list is worse than two right ones.
  */
 export function measureLabel(row) {
-  const parts = (row.sources || [])
-    .map(s => [s.amount, s.unit].filter(Boolean).join(' ').trim())
-    .filter(Boolean)
-  if (!parts.length) return ''
-  // Identical measures collapse: three recipes each wanting "1 clove" is
-  // "3 clove", not "1 + 1 + 1".
-  const unique = [...new Set(parts)]
-  if (unique.length === 1 && parts.length > 1) {
-    const [amount, ...rest] = unique[0].split(' ')
-    const n = Number(amount)
-    if (Number.isFinite(n)) return [n * parts.length, ...rest].join(' ')
+  const sources = (row.sources || []).filter(s => s.amount || s.unit)
+  if (!sources.length) return ''
+
+  /*
+   * Summed per unit, never deduplicated.
+   *
+   * The old version collapsed identical strings through a Set and then tried
+   * Number() on the amount. Both steps lost food: two half-cups became "1/2
+   * cup" because Number('1/2') is NaN and the Set had already thrown the
+   * duplicate away, and "1 1/2" + "1 1/2" became "2 1/2 cup" because only the
+   * first space-separated token was multiplied.
+   */
+  const totals = new Map()      // unit key -> { unit, total }
+  const unsummable = []
+
+  for (const s of sources) {
+    const n = parseFrac(s.amount)
+    const measure = [s.amount, s.unit].filter(Boolean).join(' ').trim()
+    if (n == null) { unsummable.push(measure); continue }
+    const key = (s.unit || '').trim().toLowerCase()
+    const at = totals.get(key)
+    if (at) at.total += n
+    else totals.set(key, { unit: s.unit || '', total: n })
   }
-  return unique.join(' + ')
+
+  const summed = [...totals.values()]
+    .map(({ unit, total }) => [fmtFrac(total), unit].filter(Boolean).join(' ').trim())
+    .filter(Boolean)
+
+  return [...summed, ...unsummable].join(' + ')
 }
 
 /** Rows as stored locally and on the server. */

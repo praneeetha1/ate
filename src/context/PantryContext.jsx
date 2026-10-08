@@ -27,6 +27,7 @@ const PantryContext = createContext(null)
 const ABSENT = {
   pantry:         new Map(),
   pantryState:    () => 'unknown',
+  isAssumed:      () => false,
   setPantryState: () => {},
   cyclePantry:    () => {},
   pantryReady:    false,
@@ -158,6 +159,23 @@ export function PantryProvider({ children }) {
       })
   }, [uid, commit, showError])
 
+  /**
+   * True when this item only counts as present because it's an assumed
+   * staple — nobody has actually confirmed it.
+   *
+   * The readiness line used to say "You have all 6" when four of the six were
+   * assumptions about flour, eggs and spices. That reads as a checked fact and
+   * isn't one, so the count can now be split.
+   */
+  const isAssumed = useCallback(raw => {
+    const item = canonicalItem(raw)
+    if (!item || !uid) return false
+    if (pantry.has(item)) return false
+    const head = varietalHead(item)
+    if (head && pantry.has(head)) return false
+    return isStaple(item)
+  }, [pantry, uid])
+
   /** One tap: have -> low -> out -> (unknown, or back to have for a staple). */
   const cyclePantry = useCallback(raw => {
     const item = canonicalItem(raw)
@@ -172,6 +190,7 @@ export function PantryProvider({ children }) {
     <PantryContext.Provider value={{
       pantry,
       pantryState,
+      isAssumed,
       setPantryState,
       cyclePantry,
       pantryReady:   ready,

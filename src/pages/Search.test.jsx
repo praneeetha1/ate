@@ -118,7 +118,7 @@ describe('ingredient matching', () => {
     await pickIngredient(user, 'tomato')
     await user.click(screen.getByRole('button', { name: /find recipes/i }))
 
-    expect((await screen.findAllByText(/matches \d+ of \d+/i)).length).toBeGreaterThan(0)
+    expect((await screen.findAllByText(/uses \d+ of your \d+/i)).length).toBeGreaterThan(0)
   })
 
   /**
@@ -132,7 +132,7 @@ describe('ingredient matching', () => {
     await toIngredientMode(user)
     await pickIngredient(user, 'pepper')
     await user.click(screen.getByRole('button', { name: /find recipes/i }))
-    await screen.findAllByText(/matches \d+ of \d+/i)
+    await screen.findAllByText(/uses \d+ of your \d+/i)
 
     const titles = resultTitles()
     expect(titles.length).toBeGreaterThan(0)
@@ -147,7 +147,7 @@ describe('ingredient matching', () => {
     await toIngredientMode(user)
     await pickIngredient(user, 'tomato')
     await user.click(screen.getByRole('button', { name: /find recipes/i }))
-    await screen.findAllByText(/matches \d+ of \d+/i)
+    await screen.findAllByText(/uses \d+ of your \d+/i)
 
     // canonicalItem only singularises the head noun and assumes it comes last,
     // so "diced tomatoes in juice" keeps its plural.

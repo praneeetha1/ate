@@ -86,7 +86,7 @@ describe('pantryFit', () => {
 
   it('never counts water as owned or missing', () => {
     const fit = pantryFit({ ingredients: [{ item: 'water' }, { item: 'ice water' }] }, stateFrom())
-    expect(fit).toEqual({ missing: [], low: [], have: [], total: 0 })
+    expect(fit).toEqual({ missing: [], low: [], have: [], assumed: 0, total: 0 })
   })
 
   it('survives a recipe with no usable ingredients', () => {
@@ -135,5 +135,31 @@ describe('compareFit', () => {
     const close    = ranked.filter(r => r.fit.missing.length <= 2).length
     expect(makeable).toBeLessThan(10)
     expect(close).toBeGreaterThan(20)
+  })
+})
+
+/**
+ * Finding 21: readiness counted assumed staples as confirmed. "You have all 6"
+ * read as a checked fact when four of the six were guesses about flour and
+ * spices, so the count is now split.
+ */
+describe('assumed staples are counted separately', () => {
+  const recipe = { ingredients: [{ item: 'flour' }, { item: 'onion' }] }
+  const haveAll = () => 'have'
+
+  it('reports how many are only assumed', () => {
+    const fit = pantryFit(recipe, haveAll, item => item === 'flour')
+    expect(fit.have).toHaveLength(2)
+    expect(fit.assumed).toBe(1)
+  })
+
+  it('reports none when everything was confirmed', () => {
+    expect(pantryFit(recipe, haveAll, () => false).assumed).toBe(0)
+  })
+
+  // An assumption about something you don't have isn't an assumption you made.
+  it('never counts a missing item as assumed', () => {
+    const fit = pantryFit(recipe, () => 'out', () => true)
+    expect(fit.assumed).toBe(0)
   })
 })

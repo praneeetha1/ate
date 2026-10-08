@@ -20,7 +20,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient,
           lists, addToList, removeFromList, createList, createUserRecipe, userRecipes } = useApp()
   const { showToast, showError } = useToast()
-  const { pantryState, pantryEnabled } = usePantry()
+  const { pantryState, pantryEnabled, isAssumed } = usePantry()
   const [editing,     setEditing]     = useState(false)
   const [copying,     setCopying]     = useState(false)
   const [sharing,     setSharing]     = useState(false)
@@ -86,7 +86,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
 
   // Recomputed as marks change, so the summary above the list stays live.
   const fit = useMemo(
-    () => pantryFit(recipe, pantryState),
+    () => pantryFit(recipe, pantryState, isAssumed),
     [recipe, pantryState],
   )
 

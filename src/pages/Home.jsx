@@ -29,7 +29,7 @@ export default function Home({ onOpen }) {
   const [catFilter,      setCatFilter]       = useState('')
   const [mustHave,       setMustHave]        = useState('')
   const { userRecipes } = useApp()
-  const { pantryEnabled, pantryReady, pantryState, pantry } = usePantry()
+  const { pantryEnabled, pantryReady, pantryState, pantry, isAssumed } = usePantry()
 
   const filtered = useMemo(
     () => applyFilters(VISIBLE_CATALOG, dietFilter, timeFilter),
@@ -62,7 +62,7 @@ export default function Home({ onOpen }) {
     ]
       // `items` is carried alongside the fit so the must-have row can be
       // derived and applied without canonicalising every ingredient again.
-      .map(p => ({ ...p, fit: pantryFit(p.r, pantryState), items: canonicalItems(p.r) }))
+      .map(p => ({ ...p, fit: pantryFit(p.r, pantryState, isAssumed), items: canonicalItems(p.r) }))
       .sort((a, b) => compareFit(a.fit, b.fit))
   }, [pantryEnabled, pantryMode, pantry, filtered, filteredMine, pantryState])
 

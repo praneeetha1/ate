@@ -14,7 +14,7 @@ const NAME_LIMIT = 3
 export default function PantryFit({ fit }) {
   if (!fit || !fit.total) return null
 
-  const { missing, low, total } = fit
+  const { missing, low, total, assumed = 0 } = fit
   const ready = missing.length === 0
 
   const named = missing.slice(0, NAME_LIMIT).join(', ')
@@ -29,7 +29,12 @@ export default function PantryFit({ fit }) {
       {ready ? (
         <>
           <Icon name="check" size={13} className="inline align-[-2px] mr-1" />
-          You have all {total}
+          {/* Assumptions are named rather than folded into the total: four of
+              six being guesses about flour and spices is worth knowing before
+              you start cooking. */}
+          {assumed > 0
+            ? <>You have {total - assumed} of {total}<span className="font-normal"> · {assumed} assumed</span></>
+            : <>You have all {total}</>}
         </>
       ) : (
         <>
