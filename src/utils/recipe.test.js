@@ -211,14 +211,29 @@ describe('retired recipes', () => {
 })
 
 describe('applyFilters', () => {
+  const ing = (...items) => items.map(item => ({ amount: '', unit: '', item }))
   const pairs = [
-    { r: { name: 'a', dietary: ['vegetarian'], timeMinutes: 20 } },
-    { r: { name: 'b', dietary: [], timeMinutes: 90 } },
-    { r: { name: 'c', dietary: ['vegetarian'] } },   // no time
+    { r: { name: 'a', dietary: ['vegetarian'], timeMinutes: 20, ingredients: ing('paneer') } },
+    { r: { name: 'b', dietary: [], timeMinutes: 90, ingredients: ing('chicken thighs') } },
+    { r: { name: 'c', dietary: ['vegetarian'], ingredients: ing('flour') } },   // no time
+    { r: { name: 'd', dietary: ['vegetarian'], timeMinutes: 40, ingredients: ing('2 eggs', 'flour') } },
   ]
 
-  it('filters by diet', () => {
-    expect(applyFilters(pairs, 'vegetarian', '').map(p => p.r.name)).toEqual(['a', 'c'])
+  it('filters by diet the Indian way: veg has no egg, egg is veg plus egg', () => {
+    expect(applyFilters(pairs, 'veg', '').map(p => p.r.name)).toEqual(['a', 'c'])
+    expect(applyFilters(pairs, 'egg', '').map(p => p.r.name)).toEqual(['a', 'c', 'd'])
+    expect(applyFilters(pairs, 'non-veg', '').map(p => p.r.name)).toEqual(['b'])
+  })
+
+  it('reads diet from the ingredients, not just the tag', () => {
+    const kheer = { r: { name: 'Kheer', dietary: [], ingredients: ing('milk', 'rice', 'sugar') } }
+    expect(applyFilters([kheer], 'veg', '')).toHaveLength(1)
+  })
+
+  it('can leave out recipes that need planning ahead', () => {
+    const tikka = { r: { name: 't', ingredients: [], steps: ['Marinate for at least 24 hours.'] } }
+    const quick = { r: { name: 'q', ingredients: [], steps: ['Fry for 5 minutes.'] } }
+    expect(applyFilters([tikka, quick], '', '', { noPlanAhead: true }).map(p => p.r.name)).toEqual(['q'])
   })
 
   it('filters by time and excludes recipes with no time', () => {
@@ -226,7 +241,7 @@ describe('applyFilters', () => {
   })
 
   it('combines both filters', () => {
-    expect(applyFilters(pairs, 'vegetarian', '30').map(p => p.r.name)).toEqual(['a'])
+    expect(applyFilters(pairs, 'veg', '30').map(p => p.r.name)).toEqual(['a'])
   })
 })
 
@@ -243,5 +258,34 @@ describe('ingredientLabel', () => {
 
   it('omits a missing unit', () => {
     expect(ingredientLabel({ amount: '2', unit: '', item: 'eggs' }, 1).measure).toBe('2')
+  })
+
+  it('keeps metric amounts as round numbers and steps up to kg / l', () => {
+    expect(ingredientLabel({ amount: '675', unit: 'g', item: 'chicken' }, 2).measure).toBe('1.35 kg')
+    expect(ingredientLabel({ amount: '65', unit: 'ml', item: 'sultanas' }, 3).measure).toBe('195 ml')
+    expect(ingredientLabel({ amount: '1', unit: 'l', item: 'milk' }, 0.5).measure).toBe('0.5 l')
+  })
+
+  it('scales ranges at both ends instead of dropping the top', () => {
+    expect(ingredientLabel({ amount: '2-3', unit: '', item: 'cloves garlic' }, 2).measure).toBe('4–6')
+    expect(ingredientLabel({ amount: '800 - 1200', unit: 'g', item: 'chicken' }, 1).measure).toBe('0.8–1.2 kg')
+  })
+
+  it('reads a hyphenated mixed number as one amount', () => {
+    expect(ingredientLabel({ amount: '1-1/2', unit: 'cups', item: 'flour' }, 2).measure).toBe('3 cups')
+  })
+
+  it('scales a leading conversion and an estimate, but not a per-unit size', () => {
+    expect(ingredientLabel({ amount: '675', unit: 'g', item: '(1.5 lb) chicken breast' }, 2).item)
+      .toBe('(3 lb) chicken breast')
+    expect(ingredientLabel({ amount: '1/4', unit: '', item: 'red cabbage (about 1 1/2 cups)' }, 2).item)
+      .toBe('red cabbage (about 3 cups)')
+    expect(ingredientLabel({ amount: '1', unit: 'can', item: 'tomatoes (14 oz)' }, 2).item)
+      .toBe('tomatoes (14 oz)')
+  })
+
+  it('leaves the text untouched at the original size', () => {
+    expect(ingredientLabel({ amount: '675', unit: 'g', item: '(1.5 lb) chicken' }, 1))
+      .toEqual({ measure: '675 g', item: '(1.5 lb) chicken' })
   })
 })

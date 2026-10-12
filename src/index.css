@@ -81,3 +81,10 @@ html[data-header-hidden='true'] .sticky-under-header { top: 0; }
 @media (prefers-reduced-motion: reduce) {
   .sticky-under-header { transition: none; }
 }
+
+/* iOS Safari zooms the whole page into any field whose text is under 16px,
+   and doesn't zoom back out. Every input here was 13.6–15.2px. !important
+   because the per-field text-[…] utilities would otherwise win on specificity. */
+@media (pointer: coarse) {
+  input, textarea, select { font-size: 16px !important; }
+}

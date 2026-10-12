@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { looksLikeUrl } from './importRecipe'
+import { looksLikeUrl, findDuplicate } from './importRecipe'
 
 /**
  * Decides whether the import box sends what you pasted as a link to fetch or
@@ -27,5 +27,32 @@ describe('looksLikeUrl', () => {
       null,
       undefined,
     ]) expect(looksLikeUrl(s)).toBe(false)
+  })
+})
+
+describe('findDuplicate', () => {
+  const mine = [
+    { id: 'a', name: 'Paneer Butter Masala', source_url: 'https://www.example.com/paneer-butter-masala/?utm_source=ig' },
+    { id: 'b', name: 'Dal tadka', source_url: 'https://www.youtube.com/watch?v=abc123&t=30s' },
+  ]
+
+  it('matches the same page however the link is dressed up', () => {
+    expect(findDuplicate({ name: 'x', sourceUrl: 'http://example.com/paneer-butter-masala' }, mine))
+      .toMatchObject({ recipe: { id: 'a' }, reason: 'link' })
+    expect(findDuplicate({ name: 'x', sourceUrl: 'https://m.youtube.com/watch?v=abc123' }, mine))
+      .toMatchObject({ recipe: { id: 'b' }, reason: 'link' })
+  })
+
+  it('tells different videos apart', () => {
+    expect(findDuplicate({ name: 'x', sourceUrl: 'https://www.youtube.com/watch?v=zzz' }, mine)).toBeNull()
+  })
+
+  it('falls back to the name, ignoring case, punctuation and "recipe"', () => {
+    expect(findDuplicate({ name: 'Paneer butter masala recipe (restaurant style)!' }, mine))
+      .toMatchObject({ recipe: { id: 'a' }, reason: 'name' })
+  })
+
+  it('finds nothing new as nothing', () => {
+    expect(findDuplicate({ name: 'Rajma', sourceUrl: 'https://example.com/rajma' }, mine)).toBeNull()
   })
 })

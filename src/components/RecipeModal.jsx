@@ -10,6 +10,8 @@ import { shoppingName } from '../utils/ingredients'
 import { formatRecipeTime } from '../utils/formatTime'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
+import CookMode, { PlanAhead } from './CookMode'
+import { leadTimes } from '../utils/steps'
 import Tag from './Tag'
 import Icon from './Icon'
 import PantryMark from './PantryMark'
@@ -25,6 +27,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   const [editing,     setEditing]     = useState(false)
   const [copying,     setCopying]     = useState(false)
   const [sharing,     setSharing]     = useState(false)
+  const [cooking,     setCooking]     = useState(false)
 
   /**
    * Someone else's recipe, opened from a shared link.
@@ -55,6 +58,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
         ingredients:  recipe.ingredients ?? [],
         steps:        recipe.steps ?? [],
         time_minutes: recipe.timeMinutes ?? recipe.time_minutes ?? null,
+        ...((recipe.activeMinutes ?? recipe.active_minutes) ? { active_minutes: recipe.activeMinutes ?? recipe.active_minutes } : {}),
         servings:     recipe.servings ?? null,
         image_url:    recipe.image ?? recipe.image_url ?? null,
         // Where it came from, so a copied recipe can still be traced back.
@@ -71,7 +75,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   }
 
   // Stand the trap down while the edit dialog is stacked on top of this one.
-  const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing })
+  const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing && !cooking })
 
   const [scale,       setScale]       = useState(1)
   const [checkedIngs, setCheckedIngs] = useState(new Set())
@@ -91,7 +95,14 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     [recipe, pantryState],
   )
 
+  const leads   = useMemo(() => leadTimes(recipe), [recipe])
   const keyProp = keyToText(recipeKey)
+  // Where cook mode was left, so the button can offer to pick up from there.
+  const resumeAt = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem(`ate:cook:${keyProp}`))?.index || 0 } catch { return 0 }
+    // Re-read whenever cook mode closes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyProp, cooking])
   const isFav   = favorites.has(recipeKey)
   const inList  = recipeInShopping(shoppingItems, recipeKey)
   const rating  = ratings[keyProp] || 0
@@ -269,9 +280,13 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     )
   }
 
-  const iconBtn = 'transition-all hover:scale-[1.15] p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const iconBtn = 'transition-all hover:scale-[1.15] p-2.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
 
   return (
+    <>
+    {cooking && (
+      <CookMode recipe={recipe} recipeKey={recipeKey} scale={scale} onClose={() => setCooking(false)} />
+    )}
     <div
       className="fixed inset-0 bg-[rgba(60,35,15,0.55)] backdrop-blur-[3px] z-[500] flex items-start justify-center p-4 sm:p-8 overflow-y-auto"
       {...backdropProps}
@@ -426,13 +441,16 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               This recipe has been retired and is no longer available.
             </p>
           ) : (<>
+          {leads.length > 0 && <PlanAhead leads={leads} />}
+
           {/* Ingredients header + scale */}
-          <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-dashed border-ink gap-3">
+          <div className="flex flex-wrap items-center justify-between mb-2.5 pb-1 border-b border-dashed border-ink gap-x-3 gap-y-2">
             <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
               Ingredients
             </h3>
-            <div className="flex gap-1 items-center" role="group" aria-label="Scale ingredients">
-              {[1, 2, 3].map(s => {
+            <div className="flex flex-wrap gap-1.5 items-center" role="group" aria-label="Scale ingredients">
+              {/* Half only where it gives a whole number of servings. */}
+              {[0.5, 1, 2, 3].filter(s => s >= 1 || (recipe.servings || 1) % 2 === 0).map(s => {
                 const base  = recipe.servings || 1
                 const total = base * s
                 const label = total === 1 ? '1 serving' : `${total} servings`
@@ -441,7 +459,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                     key={s}
                     onClick={() => setScale(s)}
                     aria-pressed={scale === s}
-                    className={`rounded-full px-2.5 py-[3px] text-[0.72rem] font-bold transition-all border-2 ${
+                    className={`whitespace-nowrap rounded-full px-3 min-h-[36px] text-[0.78rem] font-bold transition-all border-2 ${
                       scale === s
                         ? 'bg-accent border-ink text-ink shadow-pop'
                         : 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
@@ -472,6 +490,12 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               {fit.low.length > 0 && (
                 <span className="text-muted"> · low on {fit.low.join(', ')}</span>
               )}
+            </p>
+          )}
+
+          {scale !== 1 && (
+            <p className="text-[0.78rem] text-muted italic mb-2">
+              Salt, spices and cooking times don&rsquo;t always scale evenly — taste as you go.
             </p>
           )}
 
@@ -593,7 +617,24 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           </div>
 
         </div>
+
+        {/* Pinned to the bottom of the screen while the recipe scrolls — the
+            one thing you came here to do, at thumb height. */}
+        {!recipe.hidden && recipe.steps?.length > 0 && (
+          // Offset by the backdrop's padding (p-4 / sm:p-8): sticky measures
+          // from inside it, which left a strip of recipe showing underneath.
+          <div className="sticky -bottom-4 sm:-bottom-8 px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] bg-card border-t-2 border-ink rounded-b-2xl">
+            <button
+              onClick={() => setCooking(true)}
+              className="w-full min-h-[52px] bg-accent text-ink border-[2.5px] border-ink shadow-pop press rounded-xl font-display font-semibold text-[1.05rem] flex items-center justify-center gap-2"
+            >
+              <Icon name="pan" size={20} />
+              {resumeAt > 0 ? `Resume cooking · step ${Math.min(resumeAt, recipe.steps.length)}` : 'Start cooking'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
+    </>
   )
 }

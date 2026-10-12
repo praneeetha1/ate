@@ -191,6 +191,8 @@ create table if not exists public.user_recipes (
   ingredients  jsonb not null default '[]',
   steps        text[] not null default '{}',
   time_minutes integer,
+  -- Hands-on part of time_minutes; null when not split. See migration 013.
+  active_minutes integer,
   servings     integer,
   -- Linked, not stored: an imported recipe's photo stays on the publisher's
   -- server, which costs no storage and keeps it where its owner put it.

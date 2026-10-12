@@ -38,9 +38,10 @@ const DRAFT = {
   sourceUrl: 'https://example.com/lemon-rice',
 }
 
-function renderModal() {
+function renderModal({ userRecipes = [] } = {}) {
   h.client = createMockSupabase({
     profiles: [{ id: 'user-1', username: 'cook', username_set: true }],
+    user_recipes: userRecipes,
     __session: fakeSession('user-1'),
   })
   return render(
@@ -71,7 +72,7 @@ describe('importing a recipe', () => {
     await user.click(importBtn())
 
     await waitFor(() => expect(screen.getByLabelText(/recipe name/i)).toHaveValue('Lemon Rice'))
-    expect(screen.getByLabelText(/time \(minutes\)/i)).toHaveValue(20)
+    expect(screen.getByLabelText(/total time/i)).toHaveValue(20)
     expect(screen.getByLabelText(/servings/i)).toHaveValue(3)
     expect(screen.getByLabelText(/^photo$/i)).toHaveValue(DRAFT.image)
     expect(screen.getByDisplayValue('cooked rice')).toBeInTheDocument()
@@ -161,5 +162,25 @@ describe('importing a recipe', () => {
   it('has nothing to import until something is typed', async () => {
     renderModal()
     expect(importBtn()).toBeDisabled()
+  })
+})
+
+describe('importing something you already have', () => {
+  const existing = {
+    id: 'r1', user_id: 'user-1', name: 'Lemon rice (South Indian)', category: 'Main Dish',
+    dietary: [], ingredients: [], steps: ['x'], source_url: 'https://www.example.com/lemon-rice/',
+  }
+
+  it('says so, and offers to keep both', async () => {
+    const user = userEvent.setup()
+    renderModal({ userRecipes: [existing] })
+
+    await user.type(box(), 'https://example.com/lemon-rice')
+    await user.click(importBtn())
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('You already have “Lemon rice (South Indian)”, saved from the same link.')
+    await user.click(screen.getByRole('button', { name: /keep both/i }))
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 })

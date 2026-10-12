@@ -8,22 +8,13 @@ import { pantryFit, compareFit } from '../utils/pantry'
 import { MAIN_INGREDIENTS, canonicalItems, matchesIngredient } from '../utils/ingredients'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
+import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
 
 const CATEGORIES = [...new Set(VISIBLE_CATALOG.map(({ r }) => r.category))]
 
-const DIET_PILLS = [
-  { label: 'All',           value: '' },
-  { label: 'Vegetarian', value: 'vegetarian', icon: 'leaf' },
-]
-const TIME_PILLS = [
-  { label: 'Any time',       value: '' },
-  { label: 'Under 30 min', value: '30', icon: 'clock' },
-  { label: 'Under 1 hr',   value: '60', icon: 'clock' },
-]
-
 export default function Home({ onOpen }) {
-  const [dietFilter,      setDietFilter]      = useState('')
-  const [timeFilter,      setTimeFilter]      = useState('')
+  const [filters,         setFilters]         = useState({ diet: '', time: '', noPlanAhead: false })
+  const [showFilters,     setShowFilters]     = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [pantryMode,     setPantryMode]      = useState(false)
   const [catFilter,      setCatFilter]       = useState('')
@@ -31,17 +22,19 @@ export default function Home({ onOpen }) {
   const { userRecipes } = useApp()
   const { pantryEnabled, pantryReady, pantryState, pantry, isAssumed } = usePantry()
 
+  const { diet: dietFilter, time: timeFilter, noPlanAhead } = filters
   const filtered = useMemo(
-    () => applyFilters(VISIBLE_CATALOG, dietFilter, timeFilter),
-    [dietFilter, timeFilter],
+    () => applyFilters(VISIBLE_CATALOG, dietFilter, timeFilter, { noPlanAhead }),
+    [dietFilter, timeFilter, noPlanAhead],
   )
 
   // The same filters now apply to the My Recipes strip, which previously
   // ignored them and stayed fully visible under any filter.
   const filteredMine = useMemo(
-    () => applyFilters(userRecipes.map(r => ({ r })), dietFilter, timeFilter).map(({ r }) => r),
-    [userRecipes, dietFilter, timeFilter],
+    () => applyFilters(userRecipes.map(r => ({ r })), dietFilter, timeFilter, { noPlanAhead }).map(({ r }) => r),
+    [userRecipes, dietFilter, timeFilter, noPlanAhead],
   )
+  const chips = activeFilterChips(filters)
 
   const visibleCats = CATEGORIES.filter(cat => filtered.some(({ r }) => r.category === cat))
 
@@ -120,12 +113,20 @@ export default function Home({ onOpen }) {
     onOpen(i)
   }
 
-  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 py-[5px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
   const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
   const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
 
   return (
     <>
+      {showFilters && (
+        <FilterSheet
+          filters={filters}
+          onChange={setFilters}
+          count={filtered.length + filteredMine.length}
+          onClose={() => setShowFilters(false)}
+        />
+      )}
       {showCreateModal && (
         <CreateRecipeModal
           onClose={() => setShowCreateModal(false)}
@@ -150,40 +151,40 @@ export default function Home({ onOpen }) {
             <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
           </>
         )}
-        <div className="flex items-center gap-2 shrink-0" role="group" aria-label="Filter by diet">
-          {DIET_PILLS.map(p => (
-            <button
-              key={p.value}
-              onClick={() => setDietFilter(p.value)}
-              aria-pressed={dietFilter === p.value}
-              className={`${pillBase} ${dietFilter === p.value ? pillActive : pillInactive}`}
-            >
-              {p.icon && <Icon name={p.icon} size={13} />}{p.label}
-            </button>
-          ))}
-        </div>
-        <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
-        <div className="flex items-center gap-2 shrink-0" role="group" aria-label="Filter by time">
-          {TIME_PILLS.map(p => (
-            <button
-              key={p.value}
-              onClick={() => setTimeFilter(p.value)}
-              aria-pressed={timeFilter === p.value}
-              className={`${pillBase} ${timeFilter === p.value ? pillActive : pillInactive}`}
-            >
-              {p.icon && <Icon name={p.icon} size={13} />}{p.label}
-            </button>
-          ))}
-        </div>
+        <button
+          onClick={() => setShowFilters(true)}
+          aria-haspopup="dialog"
+          className={`${pillBase} ${chips.length ? pillActive : pillInactive}`}
+        >
+          <Icon name="menu" size={13} />Filters{chips.length > 0 && ` · ${chips.length}`}
+        </button>
         <button
           onClick={surprise}
-          className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
+          className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 min-h-[40px] inline-flex items-center gap-1.5 whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
         ><Icon name="dice" size={14} />Surprise me</button>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 py-[5px] whitespace-nowrap hover:bg-accent-dk transition-all"
+          className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 min-h-[40px] whitespace-nowrap hover:bg-accent-dk transition-all"
         >+ My Recipe</button>
       </div>
+
+      {/* What's narrowing the list, each removable without reopening the sheet. */}
+      {chips.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 px-5 pt-3" aria-label="Active filters">
+          {chips.map(c => (
+            <button
+              key={c.key}
+              onClick={() => setFilters(f => ({ ...f, [c.key]: c.key === 'noPlanAhead' ? false : '' }))}
+              aria-label={`Remove filter: ${c.label}`}
+              className="inline-flex items-center gap-1.5 min-h-[36px] pl-3 pr-2 rounded-full border-2 border-ink bg-accent text-ink text-[0.82rem] font-bold"
+            >{c.label}<Icon name="close" size={14} strokeWidth={3} /></button>
+          ))}
+          <button
+            onClick={() => setFilters({ diet: '', time: '', noPlanAhead: false })}
+            className="min-h-[36px] px-2 text-[0.82rem] font-bold text-muted underline underline-offset-2"
+          >Clear all</button>
+        </div>
+      )}
 
       {/* Once the pantry knows anything, the payoff comes to the user rather
           than waiting behind the toggle. Capped at eight: a strip, not a

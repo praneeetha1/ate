@@ -87,3 +87,19 @@ export function dietContradictions(recipe) {
   }
   return found
 }
+
+/**
+ * Veg, egg or non-veg, read from the ingredients — the three-way split every
+ * Indian menu and packet uses, where "veg" means no egg either.
+ *
+ * Deliberately not from the `dietary` tags: those follow the Western meaning,
+ * under which the omelet and the brownies are "vegetarian". The name is read
+ * too, for the same reason dietContradictions reads it: "Egg curry" and
+ * "Fish tacos" say what they are.
+ */
+export function dietKind(recipe) {
+  const lines = [recipe?.name || '', ...(recipe?.ingredients || []).map(i => i?.item || '')].map(clean)
+  if (lines.some(s => MEAT.test(s))) return 'non-veg'
+  if (lines.some(s => EGG.test(s)))  return 'egg'
+  return 'veg'
+}

@@ -18,10 +18,62 @@ const FOCUSABLE = [
  * Pass `enabled: false` while a nested dialog is open on top of this one, so the
  * two traps don't fight over focus and a single Escape doesn't dismiss both.
  */
+// How many dialogs are open, stacked. Each one owns the history entry at its
+// depth, so Back closes only the top one.
+let openDialogs = 0
+
+/**
+ * The phone's Back button closes the dialog instead of leaving the page.
+ *
+ * Opening pushes a history entry tagged with this dialog's depth; Back pops
+ * it, and only the dialog whose entry went away closes. Closing any other way
+ * (×, Escape, backdrop) pops the entry itself so Back isn't left with a dead
+ * step. Deliberately independent of `enabled`: a dialog stays in the stack
+ * while another is stacked over it.
+ */
+function useBackToClose(onClose) {
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
+  useEffect(() => {
+    const depth = ++openDialogs
+    // Reuse the entry if it's already ours — a remount (StrictMode, or a
+    // dialog replaced by another in the same tick) would otherwise stack a
+    // second one and Back would need pressing twice.
+    if (window.history.state?.ateDialog !== depth) {
+      window.history.pushState({ ...window.history.state, ateDialog: depth }, '')
+    }
+    let closedByBack = false
+
+    function onPop() {
+      if ((window.history.state?.ateDialog ?? 0) >= depth) return
+      closedByBack = true
+      onCloseRef.current?.()
+    }
+    window.addEventListener('popstate', onPop)
+
+    return () => {
+      window.removeEventListener('popstate', onPop)
+      openDialogs--
+      if (closedByBack) return
+      // Deferred, and skipped if another dialog has taken this depth in the
+      // meantime (StrictMode's remount, or one dialog swapping for another).
+      // history.back() fixes its target when called, so going back while a
+      // replacement is pushing lands one entry too far and closes the
+      // replacement as well.
+      setTimeout(() => {
+        if (openDialogs < depth && window.history.state?.ateDialog === depth) window.history.back()
+      }, 0)
+    }
+  }, [])
+}
+
 export function useDialog({ onClose, labelledBy, enabled = true } = {}) {
   const panelRef    = useRef(null)
   const previousRef = useRef(null)
   const titleId     = useId()
+
+  useBackToClose(onClose)
 
   useEffect(() => {
     if (!enabled) return

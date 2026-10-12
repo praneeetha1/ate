@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { useDialog } from '../hooks/useDialog'
 import { CATALOG_CATEGORIES } from '../utils/recipe'
-import { importRecipe, looksLikeUrl } from '../utils/importRecipe'
+import { importRecipe, looksLikeUrl, findDuplicate } from '../utils/importRecipe'
 import { fileToDataUrl, dataUrlBytes, MAX_TOTAL_BYTES } from '../utils/imageFile'
 import Icon from './Icon'
 import { uploadRecipePhoto } from '../utils/photoUpload'
@@ -30,7 +30,7 @@ function positiveInt(value) {
  * path in the UI at all, despite the RLS policy permitting it.
  */
 export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved }) {
-  const { createUserRecipe, updateUserRecipe } = useApp()
+  const { createUserRecipe, updateUserRecipe, userRecipes } = useApp()
   const { user } = useAuth()
   const { titleId, backdropProps, panelProps } = useDialog({ onClose })
 
@@ -42,6 +42,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
   const [time,     setTime]     = useState(
     recipe?.timeMinutes ?? recipe?.time_minutes ?? '' ,
   )
+  const [active,   setActive]   = useState(recipe?.activeMinutes ?? recipe?.active_minutes ?? '')
   const [servings, setServings] = useState(recipe?.servings ?? '')
   const [ings,     setIngs]     = useState(
     recipe?.ingredients?.length ? recipe.ingredients.map(i => ({ ...emptyIng(), ...i })) : [emptyIng()],
@@ -55,6 +56,10 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
   const [paste,     setPaste]     = useState('')
   const [importing, setImporting] = useState(false)
   const [note,      setNote]      = useState('')
+  // A recipe you already have that this looks like, and whether you've said
+  // "keep both". Asked, not refused: two different dals can share a name.
+  const [dup,       setDup]       = useState(null)
+  const [dupAck,    setDupAck]    = useState(false)
 
   /**
    * Fill the form from an imported recipe.
@@ -68,6 +73,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     if (draft.category) setCategory(draft.category)
     setDietary(draft.dietary ?? [])
     setTime(draft.timeMinutes ?? '')
+    setActive(draft.activeMinutes ?? '')
     setServings(draft.servings ?? '')
     setIngs(draft.ingredients?.length
       ? draft.ingredients.map(i => ({ ...emptyIng(), ...i }))
@@ -152,6 +158,8 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
         looksLikeUrl(value) ? { url: value } : { text: value },
       )
       applyDraft(draft)
+      setDup(findDuplicate({ name: draft.name, sourceUrl: draft.sourceUrl }, userRecipes))
+      setDupAck(false)
       setPaste('')
       setNote(warning || `Imported “${draft.name}”. Check it over before saving.`)
     } catch (err) {
@@ -197,8 +205,19 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     // The number inputs have min="1", but that only blocks form submission in
     // some browsers and never blocks typed junk — so validate here too rather
     // than sending NaN to the database.
+    if (!isEdit && !dupAck) {
+      const d = findDuplicate({ name: cleanName, sourceUrl: source }, userRecipes)
+      if (d) { setDup(d); return }
+    }
+
     if (String(time).trim() && positiveInt(time) === null) {
       setError('Time must be a positive number of minutes'); return
+    }
+    if (String(active).trim() && positiveInt(active) === null) {
+      setError('Hands-on time must be a positive number of minutes'); return
+    }
+    if (positiveInt(active) && positiveInt(time) && positiveInt(active) > positiveInt(time)) {
+      setError('Hands-on time can’t be longer than the total time'); return
     }
     if (String(servings).trim() && positiveInt(servings) === null) {
       setError('Servings must be a positive number'); return
@@ -211,6 +230,9 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
       ingredients:  cleanIngs,
       steps:        cleanSteps,
       time_minutes: positiveInt(time),
+      // Only sent when there's something to say (or to clear), so saving keeps
+      // working on a database that hasn't had migration 013 yet.
+      ...(positiveInt(active) || recipe?.active_minutes ? { active_minutes: positiveInt(active) } : {}),
       servings:     positiveInt(servings),
       // Linked, never copied: the image stays on whoever's server published
       // it, which costs no storage and keeps the credit where it belongs.
@@ -316,6 +338,27 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
             </div>
           )}
 
+          {!isEdit && dup && !dupAck && (
+            <div role="alert" className="border-2 border-ink bg-sun rounded-xl px-4 py-3">
+              <p className="text-[0.88rem] text-ink">
+                You already have <span className="font-bold">“{dup.recipe.name}”</span>
+                {dup.reason === 'link' ? ', saved from the same link.' : ' — same name.'}
+              </p>
+              <div className="flex gap-2 mt-2.5">
+                <button
+                  type="button"
+                  onClick={() => { onCreated?.('u_' + dup.recipe.id); onClose() }}
+                  className="min-h-[40px] px-4 rounded-xl border-2 border-ink bg-card font-bold text-[0.85rem] shadow-pop press"
+                >Open yours</button>
+                <button
+                  type="button"
+                  onClick={() => setDupAck(true)}
+                  className="min-h-[40px] px-4 rounded-xl border-2 border-ink bg-accent font-bold text-[0.85rem] shadow-pop press"
+                >Keep both</button>
+              </div>
+            </div>
+          )}
+
           <div>
             <label className={labelCls} htmlFor="recipe-name">Recipe Name *</label>
             <input
@@ -344,12 +387,12 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
               </select>
             </div>
             <div>
-              <label className={labelCls} htmlFor="recipe-time">Time (minutes)</label>
+              <label className={labelCls} htmlFor="recipe-time">Total time (min)</label>
               <input
                 id="recipe-time"
                 type="number"
                 min="1"
-                max="1440"
+                max="20160"
                 value={time}
                 onChange={e => setTime(e.target.value)}
                 placeholder="e.g. 30"
@@ -357,6 +400,9 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
               />
             </div>
           </div>
+          <p className="text-[0.72rem] text-muted -mt-3">
+            Total includes marinating, soaking and resting. Hands-on is just the time you&rsquo;re busy.
+          </p>
 
           <div className="grid grid-cols-2 gap-3 items-start">
             <div>
@@ -369,6 +415,19 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                 value={servings}
                 onChange={e => setServings(e.target.value)}
                 placeholder="e.g. 4"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="recipe-active">Hands-on (min)</label>
+              <input
+                id="recipe-active"
+                type="number"
+                min="1"
+                max="20160"
+                value={active}
+                onChange={e => setActive(e.target.value)}
+                placeholder="optional"
                 className={inputCls}
               />
             </div>

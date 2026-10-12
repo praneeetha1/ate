@@ -410,6 +410,10 @@ export function canonicalItem(raw) {
     // garlic" — so the linking word has to come off on this side too, after
     // it rather than before.
     .replace(/^of\s+/, '')
+    // Same for a conjunction left behind by stripped modifiers: "skinless and
+    // boneless chicken breast" was coming out as "and chicken breast", which
+    // no pantry row ever matches.
+    .replace(/^(?:and|or)\s+/, '')
     .replace(/^[-.,;\s]+|[-.,;\s]+$/g, '')
 
   // "Kosher salt and freshly ground black pepper" and nine other phrasings all

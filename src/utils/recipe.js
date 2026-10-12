@@ -1,5 +1,7 @@
 import RECIPES from '../data/recipes.json'
 import { parseFrac, fmtFrac } from './fractions'
+import { dietKind } from './diet'
+import { leadTimes } from './steps'
 
 // Keyed by the slug that tagKey() produces. Previously these keys were built
 // by hand ("Soup--Stew"), but tagKey turned "Soup & Stew" into "Soup---Stew" —
@@ -126,19 +128,94 @@ export function resolveRecipe(key, userRecipes = []) {
 
 // ── display ──────────────────────────────────────────────────
 
+const GRAMS  = /^(g|grams?)$/i
+const MILLIS = /^(ml|millilit(?:re|er)s?)$/i
+const METRIC = /^(g|grams?|kg|kilograms?|ml|millilit(?:re|er)s?|l|lit(?:re|er)s?)$/i
+
+/**
+ * One scaled amount in the unit's own idiom: fractions for cups and spoons,
+ * round numbers for metric. "675 g" doubled is "1.35 kg", not "1350 g", and
+ * never "1350 ⅛".
+ */
+function scaleAmount(n, unit, scale) {
+  let v = n * scale, u = unit
+  if (!METRIC.test(u || '')) return [fmtFrac(v), u]
+  if (GRAMS.test(u)  && v >= 1000) { v /= 1000; u = 'kg' }
+  if (MILLIS.test(u) && v >= 1000) { v /= 1000; u = 'l' }
+  v = v >= 100 ? Math.round(v / 5) * 5 : v >= 10 ? Math.round(v) : Math.round(v * 100) / 100
+  return [String(v), u]
+}
+
+// "2-3", "2 – 3", "2 to 3". parseFrac alone reads these as a bare 2.
+const RANGE = /^(.+?)\s*(?:-|–|—|to)\s*(.+)$/i
+
+/**
+ * Numbers inside a stretch of ingredient text: "(1.5 lb)" → "(3 lb)".
+ * Decimals stay decimal, everything else becomes a kitchen fraction.
+ */
+function scaleNumbers(text, scale) {
+  return text.replace(/\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?/g, m => {
+    const n = parseFrac(m)
+    if (n == null) return m
+    return m.includes('.') ? String(Math.round(n * scale * 10) / 10) : fmtFrac(n * scale)
+  })
+}
+
+/**
+ * Only the parentheticals that restate the whole amount get scaled: a leading
+ * conversion — "675 g (1.5 lb) chicken" — and an "(about …)" estimate. A
+ * mid-line one is usually per-unit — "1 can tomatoes (14 oz)" — and two cans
+ * are still 14 oz each, so it's left alone.
+ */
+function scaleItem(item, scale) {
+  if (scale === 1 || !item) return item
+  return item
+    .replace(/^\(([^)]*)\)/, (_, inner) => `(${scaleNumbers(inner, scale)})`)
+    .replace(/\(about ([^)]*)\)/gi, (_, inner) => `(about ${scaleNumbers(inner, scale)})`)
+}
+
 export function ingredientLabel(ing, scale = 1) {
-  const n   = parseFrac(ing.amount)
-  const amt = n != null ? fmtFrac(n * scale) : ing.amount
+  const raw = String(ing.amount ?? '').trim()
+  let amt = raw, unit = ing.unit
+  const range = raw.match(RANGE)
+  const lo = range && parseFrac(range[1]), hi = range && parseFrac(range[2])
+  if (lo != null && hi != null && hi > lo) {
+    const [b, u] = scaleAmount(hi, unit, scale)
+    // Both ends in the top end's unit: "800–1.2 kg" reads as nonsense.
+    const [a] = scaleAmount(u === unit ? lo : lo / 1000, u, scale)
+    amt = `${a}–${b}`; unit = u
+  } else {
+    // "1-1/2 cups" is a mixed number written with a hyphen, not a range.
+    const n = lo != null && hi != null && hi < 1 ? lo + hi : parseFrac(raw)
+    if (n != null) [amt, unit] = scaleAmount(n, unit, scale)
+  }
   return {
-    measure: [amt, ing.unit].filter(Boolean).join(' '),
-    item:    ing.item,
+    measure: [amt, unit].filter(Boolean).join(' '),
+    item:    scaleItem(ing.item, scale),
   }
 }
 
-export function applyFilters(pairs, dietFilter, timeFilter) {
+/**
+ * Diet filters, Indian-menu style.
+ * 'veg' excludes egg; 'egg' is veg plus egg (eggetarian); 'vegan' also needs
+ * the tag, since dairy and honey can't be told apart from a veg dish otherwise.
+ */
+const DIET_TEST = {
+  'veg':     r => dietKind(r) === 'veg',
+  'egg':     r => dietKind(r) !== 'non-veg',
+  'non-veg': r => dietKind(r) === 'non-veg',
+  'vegan':   r => (r.dietary || []).includes('vegan') && dietKind(r) === 'veg',
+}
+
+/**
+ * `timeFilter` is minutes of total time. `noPlanAhead` drops anything that
+ * has to marinate, soak, ferment or chill first — "can I make this tonight".
+ */
+export function applyFilters(pairs, dietFilter, timeFilter, { noPlanAhead = false } = {}) {
   return pairs.filter(({ r }) => {
-    if (dietFilter && !(r.dietary || []).includes(dietFilter)) return false
+    if (dietFilter && !DIET_TEST[dietFilter]?.(r)) return false
     if (timeFilter && (!r.timeMinutes || r.timeMinutes > Number(timeFilter))) return false
+    if (noPlanAhead && leadTimes(r).length) return false
     return true
   })
 }
@@ -148,6 +225,7 @@ export function normalizeUserRecipe(r) {
   return {
     ...r,
     timeMinutes: r.time_minutes,
+    activeMinutes: r.active_minutes ?? r.activeMinutes,
     // Catalog recipes carry `image`/`sourceUrl`; the DB spells them
     // snake_case. Mapping here means everything downstream reads one name.
     image:       r.image_url  ?? r.image,
@@ -173,7 +251,7 @@ export function sourceLabel(sourceUrl) {
 export function toUserRecipeRow(recipe) {
   const {
     id: _id, user_id: _uid, created_at: _created, updated_at: _updated,
-    timeMinutes: _tm, image: _img, sourceUrl: _src, ...row
+    timeMinutes: _tm, activeMinutes: _am, image: _img, sourceUrl: _src, ...row
   } = recipe
   return row
 }

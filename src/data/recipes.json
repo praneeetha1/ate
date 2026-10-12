@@ -8855,8 +8855,9 @@
       "Bring the chili to a simmer, then reduce the heat to medium low and cook, stirring occasionally, until the squash is tender and the chili begins to thicken, about 1 hour. (If the soup looks too thick while cooking, add up to 1 cup more water.) Serve topped with a dollop of Greek yogurt and some avocado cubes.",
       "If you’re using dried beans, soak in water overnight, then simmer until just tender, 1 to 1 1/2 hours (or cook 4 to 5 hours in a slow cooker on high)."
     ],
-    "timeMinutes": 85,
-    "servings": 4
+    "timeMinutes": 565,
+    "servings": 4,
+    "activeMinutes": 85
   },
   {
     "name": "Red Lentil Soup with North African Spices",
@@ -19425,8 +19426,9 @@
       "Blend cream cheese and sour cream in food processor until smooth, scraping down sides of bowl as needed. Add cocoa, cornstarch, sugar, egg, and egg white; process until smooth. Pour into pan; sprinkle with chocolate chips.",
       "Bake until just set, 35 to 40 minutes; cool completely in pan. Refrigerate at least 1 hour. Invert onto a tray; peel off paper, and reinvert crust side down. Cut into 9 squares."
     ],
-    "timeMinutes": 50,
-    "servings": 9
+    "timeMinutes": 110,
+    "servings": 9,
+    "activeMinutes": 50
   },
   {
     "name": "Chocolate cinnamon pudding",
@@ -22371,7 +22373,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Chicken_Tikka",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 30
+    "timeMinutes": 1470,
+    "activeMinutes": 30
   },
   {
     "name": "Chicken Tikka Masala",
@@ -23955,7 +23958,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Dhokla_(Steamed_Black_Gram_Bread)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 60
+    "timeMinutes": 540,
+    "activeMinutes": 60
   },
   {
     "name": "Egg Rice",
@@ -27223,7 +27227,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Malvani_Chicken_Curry",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 30
+    "timeMinutes": 90,
+    "activeMinutes": 30
   },
   {
     "name": "Mango Chutney (Chunky)",
@@ -29734,7 +29739,8 @@
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Rasmalai_(Indian_Cheese_and_Milk_Dessert)",
     "license": "CC-BY-SA-4.0",
     "servings": 4,
-    "timeMinutes": 60
+    "timeMinutes": 150,
+    "activeMinutes": 60
   },
   {
     "name": "Rava Dosa (Indian Semolina Pancake)",
@@ -32629,7 +32635,8 @@
       "Store airtight at room temperature for up to a week."
     ],
     "source": "Sally's Baking Addiction",
-    "sourceUrl": "https://sallysbakingaddiction.com/chewy-chocolate-chip-cookies/"
+    "sourceUrl": "https://sallysbakingaddiction.com/chewy-chocolate-chip-cookies/",
+    "activeMinutes": 45
   },
   {
     "name": "Fudgy Brownies",

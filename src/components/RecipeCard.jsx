@@ -3,18 +3,20 @@ import { keyToText, isUserRecipeKey } from '../utils/recipe'
 import { formatRecipeTime } from '../utils/formatTime'
 import Tag from './Tag'
 import Icon from './Icon'
+import DietMark from './DietMark'
+import { leadTimes } from '../utils/steps'
 
 export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
   const { favorites, toggleFav, ratings } = useApp()
 
   const isFav        = favorites.has(recipeKey)
   const rating       = ratings[keyToText(recipeKey)] || 0
-  const isVeg        = (recipe.dietary || []).includes('vegetarian')
+  const planAhead    = leadTimes(recipe).length > 0
   const isUserRecipe = isUserRecipeKey(recipeKey)
 
   return (
     <div
-      className={`group bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-x-[2px] hover:-translate-y-[2px] flex flex-col overflow-hidden ${fill ? 'w-full' : 'w-[240px]'}`}
+      className={`group relative bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-x-[2px] hover:-translate-y-[2px] flex flex-col overflow-hidden ${fill ? 'w-full' : 'w-[240px]'}`}
     >
       {/* Only when there is one. Most of the catalog has no photo, and a grid
           of grey placeholders reads worse than a grid of clean text cards, so
@@ -45,7 +47,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
           <button
             type="button"
             onClick={() => onOpen(recipeKey)}
-            className="text-left w-full font-display font-semibold text-[1.02rem] text-ink leading-tight line-clamp-2 mb-[7px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+            className="text-left w-full font-display font-semibold text-[1.02rem] text-ink leading-tight line-clamp-2 mb-[7px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded after:absolute after:inset-0 after:content-['']"
           >
             {recipe.name}
           </button>
@@ -61,7 +63,10 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
                 <Icon name="clock" size={13} />{formatRecipeTime(recipe)}
               </span>
             )}
-            {isVeg && <Icon name="leaf" size={13} label="Vegetarian" className="text-[#2E8B57]" />}
+            <DietMark recipe={recipe} />
+            {planAhead && (
+              <span className="text-[0.66rem] font-extrabold uppercase tracking-[0.05em] px-2 py-[1px] rounded-full border-2 border-ink bg-sun text-ink">Plan ahead</span>
+            )}
             {rating > 0 && (
               <span className="flex items-center gap-[1px] text-star" aria-label={`Rated ${rating} out of 5`}>
                 {Array.from({ length: rating }, (_, i) => <Icon key={i} name="star" size={11} filled />)}
@@ -71,7 +76,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
         </div>
         <button
           type="button"
-          className={`shrink-0 text-[1.2rem] transition-transform hover:scale-[1.25] active:scale-95 px-[3px] py-[2px] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
+          className={`relative z-10 shrink-0 text-[1.2rem] transition-transform hover:scale-[1.25] active:scale-95 p-2.5 -m-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
           onClick={() => toggleFav(recipeKey, recipe.name)}
           aria-pressed={isFav}
           aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
@@ -80,12 +85,14 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
           <Icon name="heart" size={19} filled={isFav} />
         </button>
       </div>
+      {/* Hover-only, so it only takes up room where there's a hover to reveal
+          it — on a phone it was a permanent blank band under every card. */}
       <button
         type="button"
         onClick={() => onOpen(recipeKey)}
         tabIndex={-1}
         aria-hidden="true"
-        className="font-display text-[0.72rem] font-semibold text-ink bg-sun border-t-2.5 border-ink px-4 py-[7px] text-left opacity-0 group-hover:opacity-100 transition-opacity"
+        className="hidden [@media(hover:hover)]:block font-display text-[0.72rem] font-semibold text-ink bg-sun border-t-2.5 border-ink px-4 py-[7px] text-left opacity-0 group-hover:opacity-100 transition-opacity"
       >
         <span className="inline-flex items-center gap-1.5">{"Let's cook"}<Icon name="arrowRight" size={13} /></span>
       </button>

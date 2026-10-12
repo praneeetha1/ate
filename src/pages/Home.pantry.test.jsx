@@ -139,11 +139,11 @@ describe('the must-use filter', () => {
 describe('what can I make', () => {
   // It changes what the page shows rather than narrowing the catalogue, so it
   // leads the row instead of sitting behind diet and time.
-  it('puts the toggle before the diet and time filters', async () => {
+  it('puts the toggle before the filters', async () => {
     renderHome()
     await waitFor(() => expect(toggle()).toBeInTheDocument())
 
-    const diet = screen.getByRole('button', { name: 'All' })
+    const diet = screen.getByRole('button', { name: /^filters/i })
     const after = toggle().compareDocumentPosition(diet) & Node.DOCUMENT_POSITION_FOLLOWING
     expect(after).toBeTruthy()
   })
@@ -244,7 +244,9 @@ describe('what can I make', () => {
     await user.click(toggle())
     const all = Number((await screen.findByText(/\d+ recipes/)).textContent.match(/\d+/)[0])
 
+    await user.click(screen.getByRole('button', { name: /^filters/i }))
     await user.click(screen.getByRole('button', { name: /under 30 min/i }))
+    await user.click(screen.getByRole('button', { name: /^show \d+ recipe/i }))
 
     await waitFor(async () => {
       const fewer = Number((await screen.findByText(/\d+ recipes/)).textContent.match(/\d+/)[0])
@@ -357,7 +359,9 @@ describe('filtering what I can make by category', () => {
 
     await user.click(screen.getByRole('button', { name: 'Main Dish' }))
     const justCourse = count()
+    await user.click(screen.getByRole('button', { name: /^filters/i }))
     await user.click(screen.getByRole('button', { name: /under 30 min/i }))
+    await user.click(screen.getByRole('button', { name: /^show \d+ recipe/i }))
 
     await waitFor(() => expect(count()).toBeLessThan(justCourse))
   })
@@ -369,5 +373,24 @@ describe('filtering what I can make by category', () => {
     await screen.findByRole('heading', { name: /closest to ready/i })
 
     expect(screen.queryByRole('group', { name: /filter by category/i })).toBeNull()
+  })
+})
+
+describe('the filter sheet', () => {
+  it('filters veg the Indian way and shows a removable chip', async () => {
+    const user = userEvent.setup()
+    renderHome()
+    await screen.findByRole('heading', { name: 'Main Dish' })
+
+    await user.click(screen.getByRole('button', { name: /^filters/i }))
+    await user.click(screen.getByRole('button', { name: 'Veg' }))
+    await user.click(screen.getByRole('button', { name: /^show \d+ recipe/i }))
+
+    // Both are tagged "vegetarian"; only one is veg on an Indian menu.
+    expect(screen.getByRole('button', { name: 'Paneer curry' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Masala omelette' })).toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Remove filter: Veg' }))
+    expect(screen.getByRole('button', { name: 'Masala omelette' })).toBeInTheDocument()
   })
 })

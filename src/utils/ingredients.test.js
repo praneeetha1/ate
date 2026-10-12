@@ -50,6 +50,12 @@ describe('shoppingName', () => {
 })
 
 describe('canonicalItem', () => {
+  it('drops the "and" left between stripped modifiers', () => {
+    expect(canonicalItem('skinless and boneless chicken breast')).toBe('chicken breast')
+    expect(canonicalItem('(1.5 lb) skinless and boneless chicken breast, diced into cubes')).toBe('chicken breast')
+    expect(canonicalItem('salt and pepper')).toBe('salt and pepper')
+  })
+
   it('folds salt, oil and sugar synonyms', () => {
     for (const s of ['Kosher salt', 'coarse salt', 'sea salt', 'Salt, to taste']) {
       expect(canonicalItem(s)).toBe('salt')

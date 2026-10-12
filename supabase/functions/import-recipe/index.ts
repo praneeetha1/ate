@@ -58,6 +58,7 @@ Schema:
   "ingredients": [{ "amount": string, "unit": string, "item": string }],
   "steps": [string],
   "timeMinutes": number or null,
+  "activeMinutes": number or null,
   "servings": number or null,
   "image": string URL or null
 }
@@ -73,6 +74,9 @@ Rules:
 - unit is a single word: cup, tablespoon, teaspoon, g, ml, clove. Empty if none.
 - item is the ingredient alone, without its quantity.
 - steps are the method in order, one sentence or more each, plain text.
+- timeMinutes is the total from start to serving, INCLUDING marinating,
+  soaking, fermenting, chilling and rising. activeMinutes is only the hands-on
+  part, and null unless the source says or the waiting is obvious from the steps.
 - NEVER invent a quantity. If the source doesn't give one, use "".
 - If the input is not a recipe, return {"error":"not a recipe"}.`
 
@@ -250,6 +254,7 @@ function normalize(raw: any, sourceUrl: string | null) {
     steps,
   }
   const t = num(raw?.timeMinutes); if (t) recipe.timeMinutes = t
+  const a = num(raw?.activeMinutes); if (a && (!t || a <= t)) recipe.activeMinutes = a
   const s = num(raw?.servings);    if (s) recipe.servings = s
   const img = str(raw?.image);     if (/^https?:\/\//.test(img)) recipe.image = img
   if (sourceUrl) recipe.sourceUrl = sourceUrl

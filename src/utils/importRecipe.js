@@ -34,3 +34,43 @@ export function looksLikeUrl(value) {
   if (/\s/.test(s)) return false
   return /^https?:\/\/\S+\.\S+/i.test(s)
 }
+
+/** A link reduced to what identifies the page: no scheme, www, tracking or trailing slash. YouTube's ?v= is the page. */
+export function sameLinkKey(url) {
+  try {
+    const u = new URL(String(url).trim())
+    const v = u.searchParams.get('v')
+    return (u.hostname.replace(/^(www|m)\./, '') + u.pathname.replace(/\/+$/, '') + (v ? `?v=${v}` : '')).toLowerCase()
+  } catch { return '' }
+}
+
+/** "Paneer Butter Masala (Restaurant Style)!" and "paneer butter masala" are the same name. */
+export function sameNameKey(name) {
+  return String(name || '').toLowerCase()
+    .replace(/\(.*?\)/g, ' ')
+    .replace(/\brecipe\b/g, ' ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+/**
+ * The recipe you already have that this one probably is.
+ *
+ * Two rules, strongest first: the same source link is certainly the same
+ * recipe; the same name very likely is. Returns { recipe, reason } or null —
+ * the caller asks rather than refusing, since two dals with one name can both
+ * be wanted.
+ */
+export function findDuplicate({ name, sourceUrl }, existing = []) {
+  const link = sourceUrl && sameLinkKey(sourceUrl)
+  if (link) {
+    const hit = existing.find(r => sameLinkKey(r.source_url ?? r.sourceUrl) === link)
+    if (hit) return { recipe: hit, reason: 'link' }
+  }
+  const key = sameNameKey(name)
+  if (key) {
+    const hit = existing.find(r => sameNameKey(r.name) === key)
+    if (hit) return { recipe: hit, reason: 'name' }
+  }
+  return null
+}
