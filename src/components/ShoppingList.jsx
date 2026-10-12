@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
+import { useToast } from '../context/ToastContext'
 import { measureLabel } from '../utils/shopping'
 import Icon from './Icon'
 
@@ -19,6 +20,7 @@ import Icon from './Icon'
 export default function ShoppingList() {
   const { shoppingItems, toggleShopItem, removeShopItem, addShoppingItem, clearShopping } = useApp()
   const { setPantryState } = usePantry()
+  const { showToast, showError } = useToast()
 
   const [draft, setDraft] = useState('')
   const [note,  setNote]  = useState('')
@@ -64,6 +66,30 @@ export default function ShoppingList() {
     if (nowChecked) setPantryState(row.item, 'have')
   }
 
+  /**
+   * Plain text through the share sheet, because the list usually goes to
+   * whoever is at the shop, over WhatsApp. Only what's still to buy.
+   */
+  async function handleShare() {
+    const text = 'Shopping list\n' + rows.filter(r => !r.checked)
+      .map(r => { const m = measureLabel(r); return `• ${m ? m + ' ' : ''}${r.display}` })
+      .join('\n')
+    try {
+      if (navigator.share) {
+        await navigator.share({ text })
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text)
+        showToast('List copied', 'info')
+      } else {
+        showError('Sharing isn’t supported in this browser.')
+      }
+    } catch (err) {
+      if (err?.name === 'AbortError') return
+      console.error('Share failed:', err)
+      showError('Could not share the list.')
+    }
+  }
+
   return (
     <section aria-labelledby="shopping-heading">
       <div className="flex items-center justify-between px-5 py-[18px] pb-3">
@@ -74,10 +100,20 @@ export default function ShoppingList() {
           )}
         </h2>
         {rows.length > 0 && (
-          <button
-            onClick={clearShopping}
-            className="text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent border-ink text-muted hover:text-heart hover:border-heart"
-          >Clear all</button>
+          <div className="flex items-center gap-2">
+            {outstanding > 0 && (
+              <button
+                onClick={handleShare}
+                aria-label="Share shopping list"
+                title="Share list"
+                className="grid place-items-center w-8 h-8 rounded-full border-2 border-ink text-muted hover:text-accent-dk transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              ><Icon name="share" size={15} /></button>
+            )}
+            <button
+              onClick={clearShopping}
+              className="text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent border-ink text-muted hover:text-heart hover:border-heart"
+            >Clear all</button>
+          </div>
         )}
       </div>
 
