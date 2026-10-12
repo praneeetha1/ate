@@ -40,6 +40,16 @@ describe('leadTimes', () => {
     expect(leadTimes(idli).map(l => l.label)).toEqual(['Ferment', 'Soak'])
   })
 
+  it('ignores storage notes and "up to" limits', () => {
+    expect(leadTimes({ steps: [
+      'Fry for 2 minutes each side.',
+      'Store leftover shrimp tightly covered in the refrigerator for up to 3 days.',
+    ] })).toEqual([])
+    expect(leadTimes({ steps: ['Chill the dough, up to 3 days.'] })).toEqual([])
+    expect(leadTimes({ steps: ['Chill for at least 2 hours, or up to 3 days.'] }))
+      .toEqual([{ label: 'Chill', minutes: 120, overnight: false, step: 0 }])
+  })
+
   it('does not count a short rest or a timing in a different sentence', () => {
     expect(leadTimes({ steps: ['Let the dough rest for 10 minutes.'] })).toEqual([])
     expect(leadTimes({ steps: ['Marinate the chicken. Bake for 1 hour.'] })).toEqual([])

@@ -36,12 +36,14 @@ const toMin = (n, unit) =>
 
 /**
  * Every duration mentioned in one step, in order.
- * [{ text, minutes, maxMinutes, overnight }] — `minutes` is the low end of a
- * range, which is when you should first check.
+ * [{ text, minutes, maxMinutes, overnight, upTo }] — `minutes` is the low end
+ * of a range, which is when you should first check. `upTo` marks a limit
+ * ("keeps for up to 3 days") rather than an instruction.
  */
 export function findDurations(step) {
   const out = []
-  for (const m of String(step || '').matchAll(DURATION)) {
+  step = String(step || '')
+  for (const m of step.matchAll(DURATION)) {
     let lo, hi, overnight = false
     if (m[1] != null) {
       lo = hi = num(m[1]) * 60 + +m[2]
@@ -55,7 +57,10 @@ export function findDurations(step) {
       lo = hi = 8 * 60; overnight = true
     }
     if (!(lo > 0)) continue
-    out.push({ text: m[0], minutes: Math.round(lo), maxMinutes: Math.round(hi), overnight })
+    // Only "up to": "soak for no more than 2 hours" caps a soak you still
+    // have to do, whereas "keeps for up to 3 days" is optional.
+    const upTo = /\bup to\s*$/i.test(step.slice(0, m.index))
+    out.push({ text: m[0], minutes: Math.round(lo), maxMinutes: Math.round(hi), overnight, upTo })
   }
   return out
 }
@@ -77,6 +82,8 @@ const PREP = [
   ['Rest',     /\brest\b/i, 60],
 ]
 
+const STORAGE = /\b(store|stored|leftovers?|keeps?|will keep|lasts?)\b/i
+
 /** [{ label, minutes, overnight, step }], longest first, one per kind, at its minimum. */
 export function leadTimes(recipe) {
   const found = new Map()
@@ -84,9 +91,12 @@ export function leadTimes(recipe) {
     // Sentence by sentence, so "Marinate the chicken. Bake for 1 hour" doesn't
     // turn the bake into an hour of marinating.
     for (const sentence of String(step).split(/(?<=[.;!?])\s+/)) {
-      // The first duration is the instruction; later ones are usually
-      // "…or 48 hours for best results" and "…up to 3 days".
-      const [d] = findDurations(sentence)
+      // Storing leftovers isn't prep: "Store in the refrigerator for up to 3
+      // days" was coming out as "Chill for at least 72 h" before you start.
+      if (STORAGE.test(sentence)) continue
+      // The first real instruction; later ones are usually "…or 48 hours for
+      // best results", and an "up to 3 days" is a limit, not a requirement.
+      const d = findDurations(sentence).find(x => !x.upTo)
       if (!d) continue
       for (const [label, rx, min] of PREP) {
         if (!rx.test(sentence)) continue
