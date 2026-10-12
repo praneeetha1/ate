@@ -326,14 +326,14 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                         /*
                          * The glyph stays small — these chips are deliberately
                          * compact — but the *hit area* is extended with a
-                         * pseudo-element, so the tap target is ~34x38 without
+                         * pseudo-element, so the tap target is ~40x52 without
                          * changing the chip's size. It reaches up, down and
                          * right only: growing it leftward would swallow taps
                          * meant for the cycle button beside it.
                          */
-                        className="relative grid place-items-center w-[22px] h-[22px] mr-1 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent before:absolute before:content-[''] before:-top-2 before:-bottom-2 before:-right-2 before:left-0"
+                        className="relative grid place-items-center w-[28px] h-[28px] mr-0.5 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent before:absolute before:content-[''] before:-top-3 before:-bottom-3 before:-right-3 before:left-0"
                       >
-                        <Icon name="close" size={12} strokeWidth={3} />
+                        <Icon name="close" size={14} strokeWidth={3} />
                       </button>
                     </li>
                   ))}

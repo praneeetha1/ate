@@ -7,6 +7,7 @@ import { describeError } from '../utils/errors'
 import { recipeInShopping } from '../utils/shopping'
 import { renderRecipeCard } from '../utils/recipeImage'
 import { shoppingName } from '../utils/ingredients'
+import { formatRecipeTime } from '../utils/formatTime'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
 import Tag from './Tag'
@@ -288,8 +289,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
             </h2>
             <div className="flex items-center gap-2.5 flex-wrap">
               <Tag category={recipe.category} />
-              {recipe.timeMinutes && (
-                <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="clock" size={14} />{recipe.timeMinutes} min</span>
+              {recipe.timeMinutes > 0 && (
+                <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="clock" size={14} />{formatRecipeTime(recipe)}</span>
               )}
               {recipe.servings && (
                 <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="plate" size={14} />{recipe.servings} servings</span>
@@ -411,6 +412,13 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
         {/* ── Body ── */}
         <div className="p-5 pb-6">
 
+          {/* The build stubs hidden recipes down to a name (vite.config.js),
+              so an old link would otherwise open an empty card. */}
+          {recipe.hidden ? (
+            <p className="text-[0.86rem] text-muted">
+              This recipe has been retired and is no longer available.
+            </p>
+          ) : (<>
           {/* Ingredients header + scale */}
           <div className="flex items-center justify-between mb-2.5 pb-1 border-b border-dashed border-ink gap-3">
             <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
@@ -512,6 +520,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               </li>
             ))}
           </ol>
+          </>)}
 
           {/* Attribution. For CC-BY-SA catalog imports this isn't decoration —
               the license is only satisfied while the credit travels with the

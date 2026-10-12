@@ -1,5 +1,6 @@
 import { useApp } from '../context/AppContext'
 import { keyToText, isUserRecipeKey } from '../utils/recipe'
+import { formatRecipeTime } from '../utils/formatTime'
 import Tag from './Tag'
 import Icon from './Icon'
 
@@ -44,7 +45,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
           <button
             type="button"
             onClick={() => onOpen(recipeKey)}
-            className="text-left w-full font-display font-semibold text-[1.02rem] text-ink leading-tight truncate mb-[7px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+            className="text-left w-full font-display font-semibold text-[1.02rem] text-ink leading-tight line-clamp-2 mb-[7px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
           >
             {recipe.name}
           </button>
@@ -55,9 +56,9 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
               </span>
             )}
             <Tag category={recipe.category} />
-            {recipe.timeMinutes && (
+            {recipe.timeMinutes > 0 && (
               <span className="flex items-center gap-1 text-[0.7rem] font-bold text-muted">
-                <Icon name="clock" size={13} />{recipe.timeMinutes} min
+                <Icon name="clock" size={13} />{formatRecipeTime(recipe)}
               </span>
             )}
             {isVeg && <Icon name="leaf" size={13} label="Vegetarian" className="text-[#2E8B57]" />}
