@@ -324,14 +324,12 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                         aria-label={`Stop tracking ${item}`}
                         title={`Stop tracking ${item}`}
                         /*
-                         * The glyph stays small — these chips are deliberately
-                         * compact — but the *hit area* is extended with a
-                         * pseudo-element, so the tap target is ~40x52 without
-                         * changing the chip's size. It reaches up, down and
-                         * right only: growing it leftward would swallow taps
-                         * meant for the cycle button beside it.
+                         * The button itself is the tap target. A ::before
+                         * extending it can't work here: the chip's
+                         * overflow-hidden clips hit-testing too, and without
+                         * it the extension would overlap neighbouring chips.
                          */
-                        className="relative grid place-items-center w-[28px] h-[28px] mr-0.5 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent before:absolute before:content-[''] before:-top-3 before:-bottom-3 before:-right-3 before:left-0"
+                        className="grid place-items-center w-[36px] h-[32px] rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
                       >
                         <Icon name="close" size={14} strokeWidth={3} />
                       </button>

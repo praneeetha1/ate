@@ -282,131 +282,138 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       >
 
         {/* ── Header ── */}
-        <div className="px-5 pt-5 pb-[14px] border-b border-ink flex items-start gap-3.5">
-          <div className="flex-1 min-w-0">
-            <h2 id={titleId} className="font-display text-[1.4rem] font-semibold text-ink leading-tight mb-2.5">
-              {recipe.name}
-            </h2>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Tag category={recipe.category} />
-              {recipe.timeMinutes > 0 && (
-                <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="clock" size={14} />{formatRecipeTime(recipe)}</span>
-              )}
-              {recipe.servings && (
-                <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="plate" size={14} />{recipe.servings} servings</span>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* The whole point of a shared link: keeping the recipe, not just
-                reading it once. Labelled rather than an icon, because it's the
-                only thing a visitor can usefully do here. */}
-            {isSomeoneElses && (
-              <button
-                onClick={handleCopy}
-                disabled={copying || alreadyCopied}
-                className="shrink-0 bg-accent text-ink border-2 border-ink shadow-pop press rounded-full px-3 py-[5px] text-[0.75rem] font-bold whitespace-nowrap hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:shadow-none"
-              >{alreadyCopied ? 'In your recipes' : copying ? 'Saving…' : '+ Add to my recipes'}</button>
-            )}
-            {editable && (
-              <button
-                className={`${iconBtn} text-warm-tan hover:text-accent`}
-                onClick={() => setEditing(true)}
-                aria-label={`Edit ${recipe.name}`}
-                title="Edit recipe"
-              ><Icon name="pencil" size={20} /></button>
-            )}
-            <button
-              className={`${iconBtn} ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
-              onClick={() => toggleFav(recipeKey, recipe.name)}
-              aria-pressed={isFav}
-              aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
-              title="Save recipe"
-            ><Icon name="heart" size={22} filled={isFav} /></button>
-            <button
-              className={`${iconBtn} ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
-              onClick={() => {
-                if (inList) {
-                  removeRecipeFromShopping(recipeKey)
-                  showToast('Removed from shopping list', 'info')
-                } else {
-                  // Pantry-aware: what you already have goes on ticked, so the
-                  // list shows what's left to buy rather than everything.
-                  addRecipeToShopping(recipeKey, recipe, pantryEnabled ? pantryState : null)
-                  showToast('Added what you need to the shopping list', 'info')
-                }
-              }}
-              aria-pressed={inList}
-              aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
-              title="Add to shopping list"
-            ><Icon name="cart" size={21} /></button>
-            <div className="relative" ref={listsRef}>
-              <button
-                className={`${iconBtn} ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
-                onClick={() => setShowLists(p => !p)}
-                aria-expanded={showLists}
-                aria-label="Add to a list"
-                title="Add to list"
-              ><Icon name="list" size={20} /></button>
-              {showLists && (
-                <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
-                  <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
-                    Add to list
-                  </div>
-                  {lists.length === 0 && (
-                    <p className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</p>
-                  )}
-                  {lists.map(l => {
-                    const inL = l.items.includes(recipeKey)
-                    return (
-                      <button
-                        key={l.id}
-                        onClick={() => {
-                          if (inL) removeFromList(l.id, recipeKey)
-                          else addToList(l.id, recipeKey, recipe.name)
-                          showToast(`${inL ? 'Removed from' : 'Added to'} ${l.name}`, 'info')
-                        }}
-                        aria-pressed={inL}
-                        className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
-                      >
-                        <Icon name={inL ? 'check' : 'plus'} size={15} />
-                        <span className="truncate">{l.name}</span>
-                      </button>
-                    )
-                  })}
-                  <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-ink bg-paper">
-                    <input
-                      ref={newListRef}
-                      value={newListName}
-                      onChange={e => setNewListName(e.target.value)}
-                      placeholder="New list…"
-                      aria-label="New list name"
-                      maxLength={60}
-                      className="flex-1 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
-                    />
-                    <button
-                      type="submit"
-                      className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors"
-                    >
-                      Add
-                    </button>
-                  </form>
-                </div>
-              )}
+        <div className="px-5 pt-5 pb-[14px] border-b border-ink">
+          <div className="flex items-start gap-3.5">
+            <div className="flex-1 min-w-0">
+              <h2 id={titleId} className="font-display text-[1.4rem] font-semibold text-ink leading-tight mb-2.5">
+                {recipe.name}
+              </h2>
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <Tag category={recipe.category} />
+                {recipe.timeMinutes > 0 && (
+                  <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="clock" size={14} />{formatRecipeTime(recipe)}</span>
+                )}
+                {recipe.servings && (
+                  <span className="flex items-center gap-1.5 text-[0.78rem] text-muted"><Icon name="plate" size={14} />{recipe.servings} servings</span>
+                )}
+              </div>
             </div>
             <button
-              className={`${iconBtn} text-warm-tan hover:text-accent`}
-              onClick={handleShare}
-              aria-label={`Share ${recipe.name}`}
-              title="Share recipe"
-            ><Icon name="share" size={19} /></button>
-            <button
-              className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="shrink-0 bg-paper border-2 border-ink rounded-full w-8 h-8 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               onClick={onClose}
               aria-label="Close recipe"
               title="Close"
             ><Icon name="close" size={17} strokeWidth={2.6} /></button>
           </div>
+          {/* Actions get their own row: beside the title they squeezed it to
+              a few words a line on a phone. A retired recipe offers none of
+              them — only close, which stays up top. */}
+          {!recipe.hidden && (
+            <div className="flex items-center justify-end gap-1.5 mt-3">
+              {/* The whole point of a shared link: keeping the recipe, not just
+                  reading it once. Labelled rather than an icon, because it's the
+                  only thing a visitor can usefully do here. */}
+              {isSomeoneElses && (
+                <button
+                  onClick={handleCopy}
+                  disabled={copying || alreadyCopied}
+                  className="shrink-0 bg-accent text-ink border-2 border-ink shadow-pop press rounded-full px-3 py-[5px] text-[0.75rem] font-bold whitespace-nowrap hover:bg-accent-dk transition-colors disabled:opacity-50 disabled:shadow-none"
+                >{alreadyCopied ? 'In your recipes' : copying ? 'Saving…' : '+ Add to my recipes'}</button>
+              )}
+              {editable && (
+                <button
+                  className={`${iconBtn} text-warm-tan hover:text-accent`}
+                  onClick={() => setEditing(true)}
+                  aria-label={`Edit ${recipe.name}`}
+                  title="Edit recipe"
+                ><Icon name="pencil" size={20} /></button>
+              )}
+              <button
+                className={`${iconBtn} ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
+                onClick={() => toggleFav(recipeKey, recipe.name)}
+                aria-pressed={isFav}
+                aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
+                title="Save recipe"
+              ><Icon name="heart" size={22} filled={isFav} /></button>
+              <button
+                className={`${iconBtn} ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                onClick={() => {
+                  if (inList) {
+                    removeRecipeFromShopping(recipeKey)
+                    showToast('Removed from shopping list', 'info')
+                  } else {
+                    // Pantry-aware: what you already have goes on ticked, so the
+                    // list shows what's left to buy rather than everything.
+                    addRecipeToShopping(recipeKey, recipe, pantryEnabled ? pantryState : null)
+                    showToast('Added what you need to the shopping list', 'info')
+                  }
+                }}
+                aria-pressed={inList}
+                aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
+                title="Add to shopping list"
+              ><Icon name="cart" size={21} /></button>
+              <div className="relative" ref={listsRef}>
+                <button
+                  className={`${iconBtn} ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                  onClick={() => setShowLists(p => !p)}
+                  aria-expanded={showLists}
+                  aria-label="Add to a list"
+                  title="Add to list"
+                ><Icon name="list" size={20} /></button>
+                {showLists && (
+                  <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
+                    <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
+                      Add to list
+                    </div>
+                    {lists.length === 0 && (
+                      <p className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</p>
+                    )}
+                    {lists.map(l => {
+                      const inL = l.items.includes(recipeKey)
+                      return (
+                        <button
+                          key={l.id}
+                          onClick={() => {
+                            if (inL) removeFromList(l.id, recipeKey)
+                            else addToList(l.id, recipeKey, recipe.name)
+                            showToast(`${inL ? 'Removed from' : 'Added to'} ${l.name}`, 'info')
+                          }}
+                          aria-pressed={inL}
+                          className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
+                        >
+                          <Icon name={inL ? 'check' : 'plus'} size={15} />
+                          <span className="truncate">{l.name}</span>
+                        </button>
+                      )
+                    })}
+                    <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-ink bg-paper">
+                      <input
+                        ref={newListRef}
+                        value={newListName}
+                        onChange={e => setNewListName(e.target.value)}
+                        placeholder="New list…"
+                        aria-label="New list name"
+                        maxLength={60}
+                        className="flex-1 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors"
+                      >
+                        Add
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </div>
+              <button
+                className={`${iconBtn} text-warm-tan hover:text-accent`}
+                onClick={handleShare}
+                aria-label={`Share ${recipe.name}`}
+                title="Share recipe"
+              ><Icon name="share" size={19} /></button>
+            </div>
+          )}
         </div>
 
         {/* ── Body ── */}

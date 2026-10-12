@@ -22740,7 +22740,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Cholley_(Chickpea_Curry)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 765
+    "timeMinutes": 765,
+    "activeMinutes": 45
   },
   {
     "name": "Churri (Indian Yogurt Herb Sauce)",
@@ -24683,7 +24684,7 @@
       "Grind the rice to a paste with about 1 cup of chlorine-free water (less if you can). Grind coarsely if the batter will only be used for idli, but grind finely if it will later be used for dosa.",
       "Mix the rice and urad dal pastes together well, and season with salt.",
       "If desired, stir in the fermentation starter and mix well (see note).",
-      "Set aside somewhere warm like to ferment for 8 hours (see note).",
+      "Set aside somewhere warm to ferment for 8 hours (see note).",
       "Grease one or more idli pans well with ghee or vegetable oil.",
       "Gently spoon the batter into the round indentations of the idli pans. Do not stir or otherwise break the batter. The trapped bubbles should not escape as they are necessary for a fluffy texture.",
       "Steam for 12 minutes in a steamer (16 minutes if using brown rice).",
@@ -24692,8 +24693,8 @@
     "source": "Wikibooks Cookbook",
     "sourceUrl": "https://en.wikibooks.org/wiki/Cookbook:Idli_(Steamed_Rice_and_Black_Gram_Bread)",
     "license": "CC-BY-SA-4.0",
-    "timeMinutes": 1345,
-    "activeMinutes": 30
+    "timeMinutes": 650,
+    "activeMinutes": 35
   },
   {
     "name": "Indian Baked Yoghurt with Saffron and Cardamom",

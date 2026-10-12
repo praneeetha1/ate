@@ -326,3 +326,13 @@ describe('lists', () => {
     })
   })
 })
+
+describe('retired recipe', () => {
+  it('shows the notice and only a close button', async () => {
+    renderModal({ recipe: { name: 'Idiyappam', category: 'Breakfast', dietary: [], ingredients: [], steps: [], hidden: true } })
+    await screen.findByText(/has been retired/)
+    expect(screen.getByRole('button', { name: 'Close recipe' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /share/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /shopping list/i })).toBeNull()
+  })
+})
