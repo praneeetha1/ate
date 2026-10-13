@@ -106,12 +106,12 @@ export default function ShoppingList() {
                 onClick={handleShare}
                 aria-label="Share shopping list"
                 title="Share list"
-                className="grid place-items-center w-11 h-11 rounded-full border-2 border-ink text-muted hover:text-accent-dk transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="grid place-items-center w-11 h-11 rounded-full border-2 border-ink text-muted hover:text-accent-dk transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
               ><Icon name="share" size={15} /></button>
             )}
             <button
               onClick={clearShopping}
-              className="text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent border-ink text-muted hover:text-heart hover:border-heart"
+              className="text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink border-ink text-muted hover:text-heart hover:border-heart"
             >Clear all</button>
           </div>
         )}
@@ -128,7 +128,7 @@ export default function ShoppingList() {
             placeholder="Add something to buy…"
             aria-label="Add an item to your shopping list"
             maxLength={80}
-            className="flex-1 min-w-0 text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+            className="flex-1 min-w-0 text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent-dk text-ink placeholder:text-muted"
           />
           <button
             type="submit"
@@ -147,7 +147,7 @@ export default function ShoppingList() {
            * you came to use off the bottom of the screen.
            */
           <p className="text-[0.8rem] text-muted italic px-1 pb-1">
-            Nothing to buy yet — add something above, or tap the cart on a recipe.
+            Nothing to buy yet — add something above, or tap the bag on a recipe.
           </p>
         ) : (
           <ul className="list-none border-2 border-ink rounded-xl overflow-hidden bg-card">
@@ -165,7 +165,7 @@ export default function ShoppingList() {
                       checked={row.checked}
                       onChange={() => handleToggle(row)}
                       aria-label={row.display}
-                      className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px]"
+                      className="accent-ink w-[15px] h-[15px] shrink-0 mt-[3px]"
                     />
                     <span className="min-w-0">
                       <span className={`block text-[0.88rem] text-ink ${row.checked ? 'line-through' : ''}`}>
@@ -183,7 +183,7 @@ export default function ShoppingList() {
                     type="button"
                     onClick={() => removeShopItem(row.item)}
                     aria-label={`Remove ${row.display} from shopping list`}
-                    className="shrink-0 grid place-items-center w-11 h-11 mr-0.5 rounded-full text-muted hover:opacity-100 hover:text-heart hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="shrink-0 grid place-items-center w-11 h-11 mr-0.5 rounded-full text-muted hover:opacity-100 hover:text-heart hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
                   ><Icon name="close" size={12} strokeWidth={3} /></button>
                 </li>
               )

@@ -4,6 +4,17 @@
 
 /* Google Fonts already loaded via index.html */
 
+/* The hand-drawn alphabet, traced from the sketch sheet into a real font, so
+   titles stay text: they wrap, select, search and read aloud. Letters and
+   digits only — punctuation falls back to Kalam in the same stack. */
+@font-face {
+  font-family: 'AteHand';
+  src: url('./assets/fonts/AteHand.woff2') format('woff2');
+  font-display: swap;
+  /* The drawn x-height is small next to Nunito's; this evens them out. */
+  size-adjust: 115%;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* Single source of truth for the two fixed chrome heights. The sticky filter
@@ -15,15 +26,13 @@
 }
 
 body {
-  /* Dotted paper instead of ruled lines — the sticker ground. */
-  background-color: #FFF4E6;
-  background-image: radial-gradient(circle at 1px 1px, rgba(43, 35, 32, 0.10) 1px, transparent 0);
-  background-size: 16px 16px;
+  /* Plain paper: the drawings carry the texture now. */
+  background-color: #FAF8F5;
   min-height: 100vh;
   overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
-  color: #2B2320;
+  color: #1C1B19;
 }
 
 /* ── Sticker components ─────────────────────────────────────
@@ -31,17 +40,17 @@ body {
    shadow, and the shadow collapses when you press. Anything
    tappable gets .press so the whole app feels physical. */
 .sticker {
-  border: 2.5px solid #2B2320;
-  border-radius: 1.125rem;
+  border: 2.5px solid #1C1B19;
+  border-radius: 6px;
   background: #FFFFFF;
-  box-shadow: 3px 3px 0 #2B2320;
+  box-shadow: 3px 3px 0 #1C1B19;
 }
 .press {
   transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
 }
 .press:active {
   transform: translate(3px, 3px);
-  box-shadow: 0 0 0 #2B2320 !important;
+  box-shadow: 0 0 0 #1C1B19 !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .press, .press:active { transition: none; transform: none; }

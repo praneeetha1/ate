@@ -77,7 +77,7 @@ function StateDot({ state }) {
   return (
     <span
       aria-hidden="true"
-      className={`relative inline-grid place-items-center w-[15px] h-[15px] rounded-full border-2 border-ink overflow-hidden align-[-3px] ${
+      className={`relative inline-grid place-items-center w-[15px] h-[15px] rounded-circle border-2 border-ink overflow-hidden align-[-3px] ${
         state === 'have' ? 'bg-accent' : 'bg-card'
       }`}
     >
@@ -261,7 +261,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                 aria-expanded={showSuggest && suggestions.length > 0}
                 autoComplete="off"
                 maxLength={80}
-                className="w-full text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+                className="w-full text-[0.85rem] border-2 border-ink rounded-xl px-3 py-2 bg-card outline-none focus:border-accent-dk text-ink placeholder:text-muted"
               />
               {showSuggest && suggestions.length > 0 && (
                 <ul
@@ -323,7 +323,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                         onClick={() => cyclePantry(item)}
                         aria-label={`${item}: ${PANTRY_LABELS[state]}. Change what you have.`}
                         title="Change what you have"
-                        className="pl-3 pr-2 py-[3px] text-[0.8rem] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+                        className="pl-3 pr-2 py-[3px] text-[0.8rem] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-inset"
                       >
                         {item}
                       </button>
@@ -338,7 +338,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                          * overflow-hidden clips hit-testing too, and without
                          * it the extension would overlap neighbouring chips.
                          */
-                        className="grid place-items-center w-11 h-11 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+                        className="grid place-items-center w-11 h-11 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-inset"
                       >
                         <Icon name="close" size={14} strokeWidth={3} />
                       </button>
@@ -360,7 +360,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
               onClick={() => setShowStock(v => !v)}
               aria-expanded={showStock}
               aria-controls="stock-kitchen"
-              className="w-full flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink hover:text-accent-dk transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded py-1.5"
+              className="w-full flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink hover:text-accent-dk transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded py-1.5"
             >
               <Icon name="plus" size={13} strokeWidth={3} />
               Stock my kitchen
@@ -388,7 +388,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                           type="button"
                           onClick={() => quickAdd(item)}
                           aria-label={`Add ${item}`}
-                          className="inline-flex items-center gap-1 border-2 border-ink rounded-full px-3 py-[3px] text-[0.8rem] font-bold bg-card text-ink hover:bg-accent transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                          className="inline-flex items-center gap-1 border-2 border-ink rounded-full px-3 py-[3px] text-[0.8rem] font-bold bg-card text-ink hover:bg-accent transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
                         >
                           <Icon name="plus" size={10} strokeWidth={3} />{item}
                         </button>
@@ -421,7 +421,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                       aria-pressed={!isOut}
                       aria-label={`${item}: ${isOut ? 'out' : 'assumed present'}`}
                       title={isOut ? 'Out — tap to restore' : 'Tap if you’ve run out'}
-                      className={`inline-flex items-center gap-1 border-2 rounded-full px-3 py-[3px] text-[0.8rem] font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                      className={`inline-flex items-center gap-1 border-2 rounded-full px-3 py-[3px] text-[0.8rem] font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
                         isOut
                           ? 'bg-card border-heart text-heart line-through decoration-2'
                           : 'bg-accent border-ink text-ink opacity-70 hover:opacity-100'

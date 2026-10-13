@@ -35,7 +35,7 @@ export default function FilterSheet({ filters, onChange, count, onClose }) {
   const set = patch => onChange({ ...filters, ...patch })
 
   const pill = active =>
-    `min-h-[44px] px-4 rounded-full border-2 border-ink text-[0.9rem] font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+    `min-h-[44px] px-4 rounded-full border-2 border-ink text-[0.9rem] font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
       active ? 'bg-accent text-ink shadow-pop' : 'bg-card text-muted hover:bg-paper'
     }`
 
@@ -80,7 +80,7 @@ export default function FilterSheet({ filters, onChange, count, onClose }) {
               type="checkbox"
               checked={filters.noPlanAhead}
               onChange={e => set({ noPlanAhead: e.target.checked })}
-              className="accent-accent w-6 h-6 shrink-0 mt-0.5"
+              className="accent-ink w-6 h-6 shrink-0 mt-0.5"
             />
             <span>
               <span className="block text-[0.95rem] font-bold text-ink">Ready tonight</span>

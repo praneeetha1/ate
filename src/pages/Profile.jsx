@@ -70,7 +70,7 @@ export default function Profile({ onOpen }) {
     }
   }
 
-  const smallBtn = 'text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const smallBtn = 'text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
 
   return (
     <>
@@ -91,9 +91,9 @@ export default function Profile({ onOpen }) {
       {/* Profile section */}
       <div className="flex flex-col items-center px-5 pt-7 pb-5 gap-2.5 border-b border-ink">
         {avatarUrl ? (
-          <img src={avatarUrl} alt="" className="w-20 h-20 rounded-full border-2 border-ink object-cover" />
+          <img src={avatarUrl} alt="" className="w-20 h-20 rounded-circle border-2 border-ink object-cover" />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-warm-tan border-2 border-ink flex items-center justify-center text-[2.5rem]" aria-hidden="true">
+          <div className="w-20 h-20 rounded-circle bg-warm-tan border-2 border-ink flex items-center justify-center text-[2.5rem]" aria-hidden="true">
             <Icon name="user" size={34} />
           </div>
         )}
@@ -114,7 +114,7 @@ export default function Profile({ onOpen }) {
                   rows={3}
                   aria-label="Your bio"
                   placeholder="A line about you and how you cook…"
-                  className="w-full border-2 border-ink rounded-xl px-3 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted"
+                  className="w-full border-2 border-ink rounded-xl px-3 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent-dk resize-none placeholder:text-muted"
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-[0.7rem] text-muted">{bioDraft.length}/{MAX_BIO}</span>
@@ -158,7 +158,7 @@ export default function Profile({ onOpen }) {
                   checked={!!profile?.is_private}
                   onChange={handleTogglePrivacy}
                   disabled={savingPriv || !privacySupported}
-                  className="accent-accent w-[16px] h-[16px] shrink-0 mt-[2px]"
+                  className="accent-ink w-[16px] h-[16px] shrink-0 mt-[2px]"
                 />
                 <span>
                   <span className="block text-[0.82rem] font-bold text-ink">Private recipes</span>
@@ -207,7 +207,7 @@ export default function Profile({ onOpen }) {
                 <div className="flex items-center justify-between px-5 py-2.5 hover:bg-paper transition-colors gap-2">
                   <button
                     type="button"
-                    className="flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+                    className="flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded"
                     onClick={() => onOpen('u_' + r.id)}
                   >
                     <div className="font-display text-[0.95rem] font-semibold text-ink truncate">{r.name}</div>
@@ -221,7 +221,7 @@ export default function Profile({ onOpen }) {
                     <button
                       onClick={() => setEditingRecipe(r)}
                       aria-label={`Edit ${r.name}`}
-                      className="text-[0.72rem] text-muted hover:text-accent transition-colors px-2 py-1 rounded"
+                      className="text-[0.72rem] text-muted hover:text-accent-dk transition-colors px-2 py-1 rounded"
                     >Edit</button>
                     <button
                       onClick={() => setConfirmDelete(r.id)}

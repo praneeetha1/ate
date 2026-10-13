@@ -1,25 +1,18 @@
 import { dietKind } from '../utils/diet'
+import { sketchUrl } from './Icon'
 
 const MARKS = {
-  'veg':     { label: 'Veg',          color: '#1E8E3E', shape: 'dot' },
-  'egg':     { label: 'Contains egg', color: '#D98E04', shape: 'dot' },
-  'non-veg': { label: 'Non-veg',      color: '#A4342A', shape: 'triangle' },
+  'veg':     { label: 'Veg',          file: 'veg' },
+  'egg':     { label: 'Contains egg', file: 'egg' },
+  'non-veg': { label: 'Non-veg',      file: 'nonveg' },
 }
 
 /**
- * The square veg / non-veg mark every Indian cook already reads off a packet:
- * a dot in a square for veg, a triangle for non-veg. Egg gets the dot in
- * amber, the common convention for eggetarian on menus.
+ * The square veg / non-veg mark every Indian cook already reads off a packet,
+ * hand-drawn: a green dot for veg, an amber dot for egg, a red triangle for
+ * non-veg. Shape as well as colour, so it reads without colour too.
  */
 export default function DietMark({ recipe, size = 14 }) {
-  const { label, color, shape } = MARKS[dietKind(recipe)]
-  return (
-    <svg width={size} height={size} viewBox="0 0 14 14" role="img" aria-label={label} className="shrink-0">
-      <title>{label}</title>
-      <rect x="1" y="1" width="12" height="12" rx="2" fill="#fff" stroke={color} strokeWidth="1.6" />
-      {shape === 'dot'
-        ? <circle cx="7" cy="7" r="3" fill={color} />
-        : <path d="M7 3.6 10.4 9.8H3.6Z" fill={color} />}
-    </svg>
-  )
+  const { label, file } = MARKS[dietKind(recipe)]
+  return <img src={sketchUrl(file)} width={size} height={size} alt={label} title={label} className="shrink-0" />
 }

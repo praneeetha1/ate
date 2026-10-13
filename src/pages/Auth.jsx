@@ -58,7 +58,7 @@ export default function Auth() {
     }
   }
 
-  const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted font-sans'
+  const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent-dk transition-colors placeholder:text-muted font-sans'
   const tabCls   = active =>
     `flex-1 py-2.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
       active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
@@ -72,7 +72,7 @@ export default function Auth() {
 
         <div className="text-center mb-8">
           <div className="font-display text-[2.4rem] font-semibold text-accent-dk leading-none">
-            ate<span className="italic font-normal text-accent">.</span>
+            ate<span className="italic font-normal text-accent-dk">.</span>
           </div>
           <p className="text-[0.75rem] text-muted tracking-[0.12em] uppercase mt-1">
             Your cozy recipe companion
@@ -155,11 +155,11 @@ export default function Auth() {
 
             <div className="mt-4 text-center">
               {tab === 'forgot' ? (
-                <button onClick={() => switchTab('login')} className="text-[0.78rem] text-muted hover:text-accent underline">
+                <button onClick={() => switchTab('login')} className="text-[0.78rem] text-muted hover:text-accent-dk underline">
                   Back to log in
                 </button>
               ) : (
-                <button onClick={() => switchTab('forgot')} className="text-[0.78rem] text-muted hover:text-accent underline">
+                <button onClick={() => switchTab('forgot')} className="text-[0.78rem] text-muted hover:text-accent-dk underline">
                   Forgot your password?
                 </button>
               )}

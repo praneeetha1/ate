@@ -124,6 +124,7 @@ describe('reaching the Fridge page', () => {
     renderApp()
     await waitFor(() => expect(tab()).toBeInTheDocument())
     expect(screen.queryByRole('link', { name: /fridge and pantry/i })).toBeNull()
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('ate')
+    // The wordmark is a drawing now; its name is still "ate."
+    expect(screen.getByRole('heading', { level: 1 })).toHaveAccessibleName('ate.')
   })
 })

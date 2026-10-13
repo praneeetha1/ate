@@ -17,6 +17,7 @@ import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
 import CookMode, { PlanAhead, ScaledNote, loadCookSession, clearCookSession } from './CookMode'
 import StepPhoto, { stepImagesOf } from './StepPhoto'
+import { HandNumber } from './Sketch'
 import { leadTimes } from '../utils/steps'
 import Tag from './Tag'
 import Icon from './Icon'
@@ -308,7 +309,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     )
   }
 
-  const iconBtn = 'transition-all hover:scale-[1.15] p-2.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const iconBtn = 'transition-all hover:scale-[1.15] p-2.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
 
   return (
     <>
@@ -351,7 +352,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               </div>
             </div>
             <button
-              className="shrink-0 bg-paper border-2 border-ink rounded-full w-11 h-11 -mt-1.5 -mr-1.5 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="shrink-0 bg-paper border-2 border-ink rounded-full w-11 h-11 -mt-1.5 -mr-1.5 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
               onClick={onClose}
               aria-label="Close recipe"
               title="Close"
@@ -391,7 +392,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   you'd want to read first. Three states: add, update to the
                   servings now picked, or take it off again. */}
               <button
-                className={`inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-full border-2 border-ink text-[0.82rem] font-bold shadow-pop press transition-colors ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap min-h-[44px] px-3 rounded-full border-2 border-ink text-[0.82rem] font-bold shadow-pop press transition-colors ${
                   inList && listScale === scale ? 'bg-accent text-ink' : 'bg-card text-ink hover:bg-paper'
                 }`}
                 onClick={() => {
@@ -458,7 +459,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                         placeholder="New list…"
                         aria-label="New list name"
                         maxLength={60}
-                        className="flex-1 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent text-ink placeholder:text-muted"
+                        className="flex-1 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent-dk text-ink placeholder:text-muted"
                       />
                       <button
                         type="submit"
@@ -578,7 +579,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                       }}
                       aria-label={`Add ${shoppingName(ing.item)} to shopping list`}
                       title="Add just this to the shopping list"
-                      className="shrink-0 grid place-items-center w-11 h-11 -my-2.5 rounded-full text-muted hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      className="shrink-0 grid place-items-center w-11 h-11 -my-2.5 rounded-full text-muted hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
                     ><Icon name="cart" size={13} /></button>
                     <PantryMark item={ing.item} need={needByLine.get(i)} className="mt-[2px]" />
                   </div>
@@ -595,8 +596,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           <ol className="list-none mb-1">
             {recipe.steps.map((step, i) => (
               <li key={i} className="flex gap-3 mb-3.5 text-[0.88rem] leading-relaxed">
-                <span className="bg-accent text-ink border-2 border-ink shadow-pop press w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]" aria-hidden="true">
-                  {i + 1}
+                <span className="w-[26px] shrink-0 flex justify-center items-start pt-[3px] text-ink" aria-hidden="true">
+                  <HandNumber value={i + 1} height={18} />
                 </span>
                 <div className="flex-1 min-w-0">
                   <span className="text-ink">
@@ -651,7 +652,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   onClick={() => handleStarClick(n)}
                   aria-pressed={n <= rating}
                   aria-label={`Rate ${n} star${n > 1 ? 's' : ''}`}
-                  className={`leading-none p-[2px] transition-transform hover:scale-[1.18] active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded ${n <= rating ? 'text-star' : 'text-warm-tan'}`}
+                  className={`leading-none p-[2px] transition-transform hover:scale-[1.18] active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded ${n <= rating ? 'text-star' : 'text-warm-tan'}`}
                 ><Icon name="star" size={24} filled={n <= rating} /></button>
               ))}
               {rating > 0 && (
@@ -667,7 +668,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               maxLength={2000}
               aria-label={`Your notes on ${recipe.name}`}
               placeholder="Jot down substitutions, tips, how it turned out…"
-              className="w-full min-h-[80px] border-2 border-ink rounded-xl px-3 py-2.5 text-[0.86rem] text-ink bg-paper resize-y outline-none focus:border-accent transition-colors leading-relaxed placeholder:text-muted font-sans"
+              className="w-full min-h-[80px] border-2 border-ink rounded-xl px-3 py-2.5 text-[0.86rem] text-ink bg-paper resize-y outline-none focus:border-accent-dk transition-colors leading-relaxed placeholder:text-muted font-sans"
             />
             <div className="text-right text-[0.68rem] text-muted mt-1 h-[14px]" aria-live="polite">
               {savedHint ? 'Saved' : ''}

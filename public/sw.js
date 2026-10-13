@@ -1,8 +1,9 @@
-const CACHE = "ate-v6";
+const CACHE = "ate-v7";   // v7: hand-drawn icons — evicts the cached old ones
 const STATIC = [
   "/ate/icons/icon-192.png",
   "/ate/icons/icon-512.png",
   "/ate/icons/apple-touch-icon.png",
+  "/ate/icons/favicon.png",
 ];
 
 self.addEventListener("install", e => {

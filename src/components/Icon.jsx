@@ -145,14 +145,57 @@ const PATHS = {
 
 export const ICON_NAMES = Object.keys(PATHS)
 
+/**
+ * Hand-drawn versions, from the sketch sheet (public/sketch). Ink drawings are
+ * used as a stencil filled with the current text colour, so they still turn
+ * white on a dark button or coral when active, exactly like the SVGs. Only the
+ * filled star keeps its own drawn colour. Anything not drawn yet falls back to
+ * the SVG below.
+ */
+const SKETCH = {
+  clock: 'clock', leaf: 'leaf', star: 'star', cart: 'cart', search: 'search',
+  heart: 'heart', user: 'user', home: 'home', fridge: 'fridge', camera: 'camera',
+  close: 'close', pencil: 'pencil', share: 'share', book: 'book', list: 'notepad',
+  dice: 'wand', menu: 'menu',
+}
+const FILLED = { heart: 'heart-filled', star: 'star-filled' }
+const KEEPS_COLOUR = new Set(['star-filled'])
+
+export const sketchUrl = file => `${import.meta.env.BASE_URL}sketch/${file}.png`
+
+/** One sketch image as a recolourable stencil. Shared by icons, marks and digits. */
+export function Stencil({ file, width, height, className = '', style, ...rest }) {
+  const url = `url("${sketchUrl(file)}")`
+  return (
+    <span
+      className={`inline-block shrink-0 ${className}`}
+      style={{
+        width, height, backgroundColor: 'currentColor',
+        WebkitMaskImage: url, maskImage: url,
+        WebkitMaskSize: 'contain', maskSize: 'contain',
+        WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'center', maskPosition: 'center',
+        ...style,
+      }}
+      {...rest}
+    />
+  )
+}
+
 export default function Icon({ name, size = 20, filled = false, label, className = '', strokeWidth = 2.2 }) {
   const glyph = PATHS[name]
-  if (!glyph) return null
+  if (!glyph && !SKETCH[name]) return null
 
   // Decorative by default. Pass `label` only where the icon is the sole
   // carrier of meaning, so screen readers don't announce it twice next to
   // a visible text label.
   const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' }
+
+  const file = (filled && FILLED[name]) || SKETCH[name]
+  if (file && KEEPS_COLOUR.has(file)) {
+    return <img src={sketchUrl(file)} width={size} height={size} alt={label || ''} className={`inline-block shrink-0 ${className}`} {...(label ? {} : { 'aria-hidden': 'true' })} />
+  }
+  if (file) return <Stencil file={file} width={size} height={size} className={className} {...a11y} />
 
   return (
     <svg

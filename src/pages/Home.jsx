@@ -116,7 +116,7 @@ export default function Home({ onOpen }) {
     onOpen(i)
   }
 
-  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
   const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
   const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
 

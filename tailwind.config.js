@@ -4,26 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── Sticker-book palette ─────────────────────────────
-        // Warm paper grounds, one hard ink for every outline, and
-        // three candy accents. Everything cute comes from the
-        // ink outline + hard offset shadow, not from the fills.
-        cream:       '#FFF4E6',   // app background
-        paper:       '#FFEBD3',   // secondary surface (header, nav, sunk rows)
-        card:        '#FFFFFF',   // card faces
-        'warm-tan':  '#E4D6C8',   // inactive / disabled marks — never a border
-        rim:         '#2B2320',   // every outline: same ink as text
-        ink:         '#2B2320',
-        muted:       '#6B5C55',
-        accent:      '#FF8B5E',   // coral — primary action
-        'accent-dk': '#E8663A',
-        mint:        '#4EC6B0',   // secondary accent
-        sun:         '#FFD166',   // tertiary accent
-        heart:       '#FF5D73',
-        star:        '#FFB627',
+        // ── Sketchbook palette (sketch-ui branch) ───────────
+        // Ink on paper, and colour only where it means something. The one
+        // accent is the mustard of the drawn star; red is the muted red of the
+        // drawn non-veg mark. Names are kept from the sticker palette so every
+        // component picks this up without a class change.
+        cream:       '#FAF8F5',   // app background: plain paper
+        paper:       '#F2EFEA',   // secondary surface
+        card:        '#FFFFFF',
+        'warm-tan':  '#DCD7CF',   // hairlines, inactive marks
+        rim:         '#1C1B19',
+        ink:         '#1C1B19',
+        muted:       '#5E5852',
+        accent:      '#F6E4A6',   // pastel butter (buttons, active chips)
+        'accent-dk': '#7A5F0E',   // readable text in the accent family
+        mint:        '#86A98A',   // the drawn veg mark's green
+        sun:         '#F5EBC4',   // pale accent for warnings (Plan ahead)
+        heart:       '#B5676B',   // the drawn non-veg mark's red
+        star:        '#E2C76A',
       },
       fontFamily: {
-        display: ['Fredoka', 'ui-rounded', 'system-ui', 'sans-serif'],
+        display: ['AteHand', 'Kalam', 'system-ui', 'sans-serif'],
         sans:    ['Nunito', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       borderWidth: {
@@ -32,20 +33,24 @@ export default {
         '3':     '3px',
       },
       borderRadius: {
-        // Nudged up across the board — 'xl' is the card radius, and
-        // bumping it here rounds every existing rounded-xl at once.
-        lg:  '0.75rem',   // 12px
-        xl:  '1.125rem',  // 18px
-        '2xl': '1.375rem',// 22px
+        // Squarer everywhere, to sit with hand-drawn lines. `full` is a soft
+        // square too; real circles (dots, avatar, badges) use `circle`.
+        DEFAULT: '3px',
+        md:   '4px',
+        lg:   '4px',
+        xl:   '6px',
+        '2xl': '8px',
+        full: '6px',
+        circle: '9999px',
       },
       boxShadow: {
         // Hard offset, no blur. This is the whole look — if you change
         // one thing back, don't change this.
-        pop:       '2px 2px 0 #2B2320',
-        warm:      '3px 3px 0 #2B2320',
-        'warm-lg': '5px 5px 0 #2B2320',
-        'warm-xl': '7px 7px 0 #2B2320',
-        'pop-mint':'3px 3px 0 #4EC6B0, 3px 3px 0 1.5px #2B2320',
+        pop:       '2px 2px 0 #1C1B19',
+        warm:      '3px 3px 0 #1C1B19',
+        'warm-lg': '5px 5px 0 #1C1B19',
+        'warm-xl': '7px 7px 0 #1C1B19',
+        'pop-mint':'3px 3px 0 #4EC6B0, 3px 3px 0 1.5px #1C1B19',
       },
     },
   },

@@ -301,7 +301,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     }
   }
 
-  const inputCls = 'w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-[0.88rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted'
+  const inputCls = 'w-full border-2 border-ink rounded-xl px-3.5 py-2.5 text-[0.88rem] text-ink bg-paper outline-none focus:border-accent-dk transition-colors placeholder:text-muted'
   const labelCls = 'text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted mb-1 block'
 
   return (
@@ -322,7 +322,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="bg-paper border-2 border-ink rounded-full w-8 h-8 text-muted flex items-center justify-center hover:bg-warm-tan hover:text-ink transition-all text-lg leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
           >×</button>
         </div>
 
@@ -555,7 +555,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     placeholder="Amt"
                     aria-label={`Ingredient ${i + 1} amount`}
                     maxLength={16}
-                    className="w-[64px] border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    className="w-[64px] border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent-dk placeholder:text-muted"
                   />
                   <input
                     value={ing.unit}
@@ -563,7 +563,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     placeholder="Unit"
                     aria-label={`Ingredient ${i + 1} unit`}
                     maxLength={24}
-                    className="w-[72px] border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    className="w-[72px] border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent-dk placeholder:text-muted"
                   />
                   <input
                     value={ing.item}
@@ -573,7 +573,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     maxLength={MAX_ITEM}
                     // min-w-0 is what actually lets it shrink; without it the
                     // input keeps its default intrinsic width and overflows.
-                    className="col-span-3 row-start-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
+                    className="col-span-3 row-start-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent-dk placeholder:text-muted"
                   />
                   {ing.item.trim() && (
                     <IngredientMatch
@@ -619,7 +619,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     aria-label={`Step ${i + 1}`}
                     maxLength={MAX_STEP}
                     rows={2}
-                    className="flex-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted leading-relaxed"
+                    className="flex-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent-dk resize-none placeholder:text-muted leading-relaxed"
                   />
                   {stepImages[i] && (
                     <div className="relative shrink-0">
@@ -699,7 +699,7 @@ function IngredientMatch({ ing, index, onPick }) {
           onChange={e => setQ(e.target.value)}
           placeholder="Search ingredients…"
           aria-label={`What ingredient ${index + 1} counts as`}
-          className="w-full border-2 border-ink rounded-lg px-2.5 py-2 text-[0.85rem] bg-paper outline-none focus:border-accent"
+          className="w-full border-2 border-ink rounded-lg px-2.5 py-2 text-[0.85rem] bg-paper outline-none focus:border-accent-dk"
         />
         <div className="flex flex-wrap gap-1.5">
           {options.map(o => (

@@ -34,7 +34,7 @@ export default function ResetPassword() {
     }
   }
 
-  const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent transition-colors placeholder:text-muted'
+  const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent-dk transition-colors placeholder:text-muted'
 
   return (
     <div className="min-h-[calc(100vh-var(--nav-h))] flex items-center justify-center px-5 py-10">

@@ -154,7 +154,7 @@ export default function Saved({ onOpen }) {
                 aria-invalid={!!createError}
                 aria-describedby={createError ? 'create-list-error' : undefined}
                 maxLength={60}
-                className="flex-1 border-2 rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none transition-colors placeholder:text-muted focus:border-accent border-ink aria-[invalid=true]:border-heart"
+                className="flex-1 border-2 rounded-xl px-4 py-2.5 text-[0.9rem] text-ink bg-card outline-none transition-colors placeholder:text-muted focus:border-accent-dk border-ink aria-[invalid=true]:border-heart"
               />
               {/* Deliberately NOT disabled when the field is empty: a disabled
                   button never fires a click, so it reads as broken. Clicking it
@@ -193,11 +193,11 @@ export default function Saved({ onOpen }) {
                             aria-label={`Rename ${list.name}`}
                             maxLength={60}
                             autoFocus
-                            className="flex-1 border-2 border-ink rounded-xl px-2.5 py-1.5 text-[0.88rem] bg-paper outline-none focus:border-accent"
+                            className="flex-1 border-2 border-ink rounded-xl px-2.5 py-1.5 text-[0.88rem] bg-paper outline-none focus:border-accent-dk"
                           />
                           <button
                             type="submit"
-                            className="text-[0.75rem] font-bold text-accent px-2"
+                            className="text-[0.75rem] font-bold text-accent-dk px-2"
                           >Save</button>
                           <button type="button" onClick={() => setRenaming(null)} className="text-[0.75rem] text-muted px-2">Cancel</button>
                         </form>
@@ -207,7 +207,7 @@ export default function Saved({ onOpen }) {
                             type="button"
                             onClick={() => setExpanded(isOpen ? null : list.id)}
                             aria-expanded={isOpen}
-                            className="flex items-center gap-2.5 flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
+                            className="flex items-center gap-2.5 flex-1 min-w-0 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded"
                           >
                             <span className="font-display text-[1rem] font-semibold text-ink truncate">{list.name}</span>
                             <span className="text-[0.72rem] text-muted shrink-0">
@@ -218,7 +218,7 @@ export default function Saved({ onOpen }) {
                             <button
                               onClick={() => { setRenaming(list.id); setRenameValue(list.name) }}
                               aria-label={`Rename ${list.name}`}
-                              className="text-[0.72rem] text-muted hover:text-accent transition-colors px-1.5 py-0.5 rounded"
+                              className="text-[0.72rem] text-muted hover:text-accent-dk transition-colors px-1.5 py-0.5 rounded"
                             >Rename</button>
                             <button
                               onClick={() => setConfirmList(list.id)}

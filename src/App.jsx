@@ -57,7 +57,7 @@ export function Splash({ slowAfter = 10000 }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-3 px-8 text-center" role="status" aria-live="polite">
       <div className="font-display text-[2.4rem] font-semibold text-accent-dk leading-none">
-        ate<span className="italic font-normal text-accent">.</span>
+        ate<span className="italic font-normal text-accent-dk">.</span>
       </div>
       {slow ? (
         <>

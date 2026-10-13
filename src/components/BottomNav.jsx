@@ -22,7 +22,7 @@ export default function BottomNav() {
           to={to}
           end={to === '/'}
           className={({ isActive }) =>
-            `flex-1 flex flex-col items-center justify-center gap-[3px] font-display text-[0.6rem] font-semibold uppercase tracking-[0.07em] transition-colors pb-2 pt-1.5 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
+            `flex-1 flex flex-col items-center justify-center gap-[3px] font-display text-[0.6rem] font-semibold uppercase tracking-[0.07em] transition-colors pb-2 pt-1.5 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-inset ${
               isActive ? 'text-ink' : 'text-muted'
             }`
           }
@@ -32,7 +32,7 @@ export default function BottomNav() {
               {/* The active tab's icon sits in an outlined coral badge — the
                   same ink-outline rule as every other tappable thing. */}
               <span
-                className={`w-7 h-7 grid place-items-center rounded-full transition-all ${
+                className={`w-7 h-7 grid place-items-center rounded-circle transition-all ${
                   isActive ? 'border-2 border-ink bg-accent shadow-pop -translate-y-[1px]' : ''
                 }`}
               >

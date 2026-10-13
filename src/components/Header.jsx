@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useHideOnScroll } from '../hooks/useHideOnScroll'
 import { useApp } from '../context/AppContext'
 import Icon from './Icon'
+import { Logo } from './Sketch'
 
 // Read the one source of truth for the header height (--header-h) so the
 // reveal threshold can't drift from the CSS. Cached — getComputedStyle forces
@@ -44,9 +45,9 @@ export default function Header() {
         hidden ? '-translate-y-full' : 'translate-y-0'
       }`}
     >
-      <Link to="/" className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-xl">
-        <h1 className="font-display text-[2rem] font-bold text-ink leading-none tracking-tight">
-          ate<span className="text-accent">.</span>
+      <Link to="/" className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded-xl">
+        <h1 className="text-ink leading-none">
+          <Logo height={34} />
         </h1>
       </Link>
 
@@ -65,10 +66,10 @@ export default function Header() {
           : 'Shopping list'}
         title="Shopping list"
         className={({ isActive }) =>
-          `absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+          `absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
             isActive
               ? 'border-2 border-ink bg-accent text-ink shadow-pop'
-              : 'text-warm-tan hover:text-accent-dk hover:bg-card'
+              : 'text-ink hover:text-accent-dk hover:bg-card'
           }`
         }
       >
@@ -76,7 +77,7 @@ export default function Header() {
         {toBuy > 0 && (
           <span
             aria-hidden="true"
-            className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 grid place-items-center rounded-full bg-heart text-card border-2 border-paper text-[0.62rem] font-extrabold leading-none"
+            className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 grid place-items-center rounded-circle bg-heart text-card border-2 border-paper text-[0.62rem] font-extrabold leading-none"
           >{toBuy > 9 ? '9+' : toBuy}</span>
         )}
       </NavLink>

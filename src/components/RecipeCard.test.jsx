@@ -57,7 +57,8 @@ describe('the card photo', () => {
    */
   it('renders no frame at all without one', () => {
     renderCard(BASE)
-    expect(document.querySelector('img')).toBeNull()
+    // The photo is the decorative (alt="") image; the veg mark is labelled.
+    expect(document.querySelector('img[alt=""]')).toBeNull()
     expect(screen.getByText('Lemon Rice')).toBeInTheDocument()
   })
 

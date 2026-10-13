@@ -47,7 +47,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
           <button
             type="button"
             onClick={() => onOpen(recipeKey)}
-            className="text-left w-full font-display font-semibold text-[1.02rem] text-ink leading-tight line-clamp-2 mb-[7px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded after:absolute after:inset-0 after:content-['']"
+            className="text-left w-full font-display font-semibold text-[1.02rem] text-ink leading-tight line-clamp-2 mb-[7px] focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded after:absolute after:inset-0 after:content-['']"
           >
             {recipe.name}
           </button>
@@ -76,7 +76,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
         </div>
         <button
           type="button"
-          className={`relative z-10 shrink-0 text-[1.2rem] transition-transform hover:scale-[1.25] active:scale-95 p-2.5 -m-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
+          className={`relative z-10 shrink-0 text-[1.2rem] transition-transform hover:scale-[1.25] active:scale-95 p-2.5 -m-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${isFav ? 'text-heart' : 'text-muted hover:text-heart'}`}
           onClick={() => toggleFav(recipeKey, recipe.name)}
           aria-pressed={isFav}
           aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}

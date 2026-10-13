@@ -18,13 +18,13 @@ import { ingredientLabel } from './recipe'
 
 const W = 1080
 const PAD = 64
-const INK = '#2B2320'
-const MUTED = '#6B5C55'
-const ACCENT = '#E8663A'
-const CREAM = '#FFF4E6'
+const INK = '#1C1B19'
+const MUTED = '#5E5852'
+const ACCENT = '#7A5F0E'
+const CREAM = '#FAF8F5'
 const CARD = '#FFFFFF'
 
-const display = (size, weight = 600) => `${weight} ${size}px Fredoka, ui-rounded, system-ui, sans-serif`
+const display = (size, weight = 600) => `${weight} ${size}px Kalam, Fredoka, system-ui, sans-serif`
 const sans = (size, weight = 600) => `${weight} ${size}px Nunito, ui-sans-serif, system-ui, sans-serif`
 
 /**

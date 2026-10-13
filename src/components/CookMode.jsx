@@ -223,7 +223,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
         <button
           onClick={onClose}
           aria-label="Leave cooking mode"
-          className="w-11 h-11 grid place-items-center rounded-full hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="w-11 h-11 grid place-items-center rounded-full hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
         ><Icon name="close" size={20} strokeWidth={2.6} /></button>
         <div className="flex-1 min-w-0 text-center">
           <h2 id={titleId} className="font-display font-semibold text-[1rem] text-ink truncate">{recipe.name}</h2>
@@ -370,7 +370,7 @@ function IngredientList({ labelled, checked, setChecked }) {
               type="checkbox"
               checked={checked.has(i)}
               onChange={() => toggle(i)}
-              className="accent-accent w-6 h-6 shrink-0 mt-0.5"
+              className="accent-ink w-6 h-6 shrink-0 mt-0.5"
             />
             <span className={`text-[1.1rem] ${checked.has(i) ? 'line-through text-muted' : 'text-ink'}`}>
               {ing.measure && <span className="font-bold text-accent-dk mr-2">{ing.measure}</span>}

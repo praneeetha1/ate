@@ -75,7 +75,7 @@ export default function ShoppingSheet({ recipe, servings, plan, onAdd, onClose }
                                 type="checkbox"
                                 checked={r.checked}
                                 onChange={e => update(r.id, { checked: e.target.checked })}
-                                className="accent-accent w-5 h-5 shrink-0"
+                                className="accent-ink w-5 h-5 shrink-0"
                               />
                             )}
                             <span className="min-w-0">
