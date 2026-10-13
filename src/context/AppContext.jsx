@@ -608,20 +608,24 @@ export function AppProvider({ children }) {
     upsertRows(written)
   }
 
-  /** Everything a recipe needs, in one go. */
-  function addRecipeToShopping(key, recipe, pantryState) {
-    addIngredientsToShopping(
-      shoppableIngredients(recipe),
-      { key: keyToText(key), name: recipe?.name || '' },
-      pantryState,
-    )
+  /**
+   * Everything a recipe needs, in one go, at the servings picked.
+   * Re-adding at another scale replaces the earlier amounts rather than adding to them.
+   */
+  function addRecipeToShopping(key, recipe, pantryState, scale = 1) {
+    const source = { key: keyToText(key), name: recipe?.name || '', scale }
+    addIngredientsToShopping(shoppableIngredients(recipe, scale), source, pantryState)
   }
 
-  /** One ingredient out of a recipe, for when that's all you're missing. */
-  function addShoppingIngredient(key, recipe, ingredient) {
-    const entry = shoppableIngredients({ ingredients: [ingredient] })[0]
+  /**
+   * One ingredient line out of a recipe, for when that's all you're missing.
+   * `line` is its index in the recipe, so two butter lines add up instead of
+   * the second replacing the first, and tapping the same line twice is a no-op.
+   */
+  function addShoppingIngredient(key, recipe, ingredient, line, scale = 1) {
+    const entry = shoppableIngredients({ ingredients: [ingredient] }, scale)[0]
     if (!entry) return
-    addIngredientsToShopping([entry], { key: keyToText(key), name: recipe?.name || '' })
+    addIngredientsToShopping([entry], { key: keyToText(key), name: recipe?.name || '', line, scale })
   }
 
   /** Something you just thought of, belonging to no recipe. */

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { supabase, appUrl } from '../lib/supabase'
 
 const AuthContext = createContext(null)
@@ -7,8 +7,13 @@ export function AuthProvider({ children }) {
   const [user,    setUser]    = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  // The account whose profile we're waiting for. A slow response for an
+  // account you've since switched away from must not paint over the new one.
+  const wanted = useRef(null)
 
   const fetchProfile = useCallback(async uid => {
+    wanted.current = uid
+    const current = () => wanted.current === uid
     try {
       // maybeSingle(), not single(): a missing row is an expected state (the
       // signup trigger can fail, and accounts predating it have no row at all).
@@ -22,6 +27,7 @@ export function AuthProvider({ children }) {
         .maybeSingle()
 
       if (error) throw error
+      if (!current()) return
 
       if (data) {
         setProfile(data)
@@ -36,12 +42,12 @@ export function AuthProvider({ children }) {
         .maybeSingle()
 
       if (insertErr) throw insertErr
-      setProfile(created)
+      if (current()) setProfile(created)
     } catch (err) {
       console.error('fetchProfile failed:', err)
-      setProfile(null)
+      if (current()) setProfile(null)
     } finally {
-      setLoading(false)
+      if (current()) setLoading(false)
     }
   }, [])
 
@@ -65,7 +71,7 @@ export function AuthProvider({ children }) {
       if (!active) return
       setUser(session?.user ?? null)
       if (session?.user) fetchProfile(session.user.id)
-      else { setProfile(null); setLoading(false) }
+      else { wanted.current = null; setProfile(null); setLoading(false) }
     })
 
     return () => { active = false; subscription.unsubscribe() }

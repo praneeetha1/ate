@@ -3,7 +3,7 @@ import RECIPES from '../data/recipes.json'
 import {
   keyToText, keyFromText, isUserRecipeKey, isCatalogKey, userRecipeId,
   keyForName, resolveRecipe, toUserRecipeRow, normalizeUserRecipe,
-  tagStyles, applyFilters, ingredientLabel, CATALOG_CATEGORIES, VISIBLE_CATALOG,
+  tagStyles, applyFilters, ingredientLabel, scaleStep, CATALOG_CATEGORIES, VISIBLE_CATALOG,
 } from './recipe'
 import { parseFrac } from './fractions'
 
@@ -287,5 +287,39 @@ describe('ingredientLabel', () => {
   it('leaves the text untouched at the original size', () => {
     expect(ingredientLabel({ amount: '675', unit: 'g', item: '(1.5 lb) chicken' }, 1))
       .toEqual({ measure: '675 g', item: '(1.5 lb) chicken' })
+  })
+})
+
+describe('scaling never touches times, temperatures or sizes', () => {
+  it('keeps "(about 5 minutes)" at every scale but scales a weight estimate', () => {
+    const butter = { amount: '8', unit: 'tablespoon', item: 'unsalted butter, melted and cooled slightly (about 5 minutes)' }
+    for (const s of [0.5, 2, 3]) expect(ingredientLabel(butter, s).item).toContain('(about 5 minutes)')
+    expect(ingredientLabel({ amount: '1', unit: 'cup', item: 'flour (about 200 g)' }, 2).item).toBe('flour (about 400 g)')
+    expect(ingredientLabel({ amount: '1', unit: '', item: '(9-inch) pie crust' }, 2).item).toBe('(9-inch) pie crust')
+  })
+})
+
+describe('scaleStep', () => {
+  const ings = [
+    { amount: '8', unit: 'tablespoon', item: 'unsalted butter, melted' },
+    { amount: '2', unit: 'tablespoon', item: 'unsalted butter, for brushing' },
+  ]
+  const join = segs => segs.map(s => s.text).join('')
+  const step1 = 'Heat oven to 475°F. Combine buttermilk and 8 tablespoons melted butter, then bake 12 to 14 minutes in a 1/4-cup measure.'
+
+  it('rewrites only the amount that belongs to an ingredient line', () => {
+    const segs = scaleStep(step1, ings, 2)
+    expect(join(segs)).toBe('Heat oven to 475°F. Combine buttermilk and 16 tablespoons melted butter, then bake 12 to 14 minutes in a 1/4-cup measure.')
+    expect(segs.filter(s => s.scaled).map(s => s.line)).toEqual([0])
+  })
+
+  it('tells the two butters apart', () => {
+    const segs = scaleStep('Brush with remaining 2 tablespoons melted butter.', ings, 2)
+    expect(join(segs)).toBe('Brush with remaining 4 tablespoons melted butter.')
+    expect(segs.find(s => s.scaled).line).toBe(1)
+  })
+
+  it('changes nothing at the original size', () => {
+    expect(join(scaleStep(step1, ings, 1))).toBe(step1)
   })
 })

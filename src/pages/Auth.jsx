@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Auth() {
@@ -13,6 +13,10 @@ export default function Auth() {
 
   const { signIn, signUp, signInWithGoogle, sendPasswordReset } = useAuth()
   const navigate = useNavigate()
+  // Where to go back to after signing in, e.g. the Fridge page that sent you
+  // here. Only an in-app path: never a full URL someone could put in a link.
+  const [params] = useSearchParams()
+  const next = /^\/(?!\/)/.test(params.get('next') || '') ? params.get('next') : '/'
 
   function switchTab(next) {
     setTab(next)
@@ -28,7 +32,7 @@ export default function Auth() {
     try {
       if (tab === 'login') {
         await signIn(email, password)
-        navigate('/')
+        navigate(next)
       } else if (tab === 'signup') {
         await signUp(email, password)
         setSuccess('Check your email to confirm your account, then log in.')

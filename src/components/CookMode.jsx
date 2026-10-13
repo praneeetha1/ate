@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useDialog } from '../hooks/useDialog'
-import { ingredientLabel, keyToText } from '../utils/recipe'
-import { findDurations, leadTimes } from '../utils/steps'
+import { ingredientLabel, keyToText, scaleStep } from '../utils/recipe'
+import { findDurations, leadTimes, describeLead } from '../utils/steps'
 import { canonicalItem } from '../utils/ingredients'
 import { formatDuration } from '../utils/formatTime'
 import Icon from './Icon'
@@ -20,9 +20,29 @@ import Icon from './Icon'
 
 const storeKey = key => `ate:cook:${keyToText(key)}`
 
-function load(key) {
-  try { return JSON.parse(localStorage.getItem(storeKey(key))) || null } catch { return null }
+/** A cheap fingerprint of what the session was cooking, so an edited recipe doesn't resume stale progress. */
+function fingerprint(recipe) {
+  const s = JSON.stringify([recipe?.ingredients || [], recipe?.steps || []])
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+  return h
 }
+
+/**
+ * The saved session for this recipe — { index, timers, scale, checked } — or
+ * null when there's none or the recipe has changed since. A stale one is
+ * dropped rather than resumed at a step that may no longer exist.
+ */
+export function loadCookSession(key, recipe) {
+  try {
+    const s = JSON.parse(localStorage.getItem(storeKey(key)))
+    if (!s) return null
+    if (s.fp !== fingerprint(recipe)) { localStorage.removeItem(storeKey(key)); return null }
+    return s
+  } catch { return null }
+}
+export const clearCookSession = key => save(key, null)
+
 function save(key, value) {
   try {
     if (value) localStorage.setItem(storeKey(key), JSON.stringify(value))
@@ -80,41 +100,54 @@ function useWakeLock() {
 const FILLER = new Set(['and', 'with', 'the', 'for', 'fresh', 'dried', 'chopped', 'sliced', 'large',
   'small', 'medium', 'whole', 'ground', 'red', 'green', 'white', 'black', 'boneless', 'skinless', 'powder'])
 
-/** The ingredients a step mentions, matched on their everyday name: "garlic", not "4 large cloves of garlic, finely chopped". */
-function ingredientsIn(step, labelled) {
+/**
+ * The ingredients a step mentions, matched on their everyday name: "garlic",
+ * not "4 large cloves of garlic, finely chopped".
+ *
+ * `pinned` are lines the step names by amount ("8 tablespoons melted butter").
+ * When a step pins one line of a name, the recipe's other lines of that name
+ * are left out — step 1 of the biscuits needs the batter butter, not the
+ * brushing butter too.
+ */
+function ingredientsIn(step, labelled, pinned) {
   const text = step.toLowerCase()
-  return labelled.filter(({ name }) => {
+  const rx = w => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(e?s)?\\b`, 'i')
+  const mentioned = labelled.filter(({ name }) => {
     if (!name || name.length < 3) return false
     // Any word of the everyday name: steps say "the chicken" for "chicken
     // breast" and "the dal" for "toor dal".
-    const rx = w => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(e?s)?\\b`, 'i')
     return rx(name).test(text) || name.split(' ').some(w => w.length >= 3 && !FILLER.has(w) && rx(w).test(text))
   })
+  const pinnedNames = new Set(mentioned.filter(l => pinned.has(l.line)).map(l => l.name))
+  return mentioned.filter(l => !pinnedNames.has(l.name) || pinned.has(l.line))
 }
 
 export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
   const steps = recipe.steps || []
   const last  = steps.length + 1
-  const saved = useMemo(() => load(recipeKey), [recipeKey])
+  const saved = useMemo(() => loadCookSession(recipeKey, recipe), [recipeKey, recipe])
 
   const [index,   setIndex]   = useState(() => Math.min(saved?.index ?? 0, last))
   const [timers,  setTimers]  = useState(() => saved?.timers ?? [])
   const [now,     setNow]     = useState(() => Date.now())
   const [showAll, setShowAll] = useState(false)
-  const [checked, setChecked] = useState(() => new Set())
+  const [checked, setChecked] = useState(() => new Set(saved?.checked ?? []))
   const touch = useRef(null)
 
   const { titleId, panelProps } = useDialog({ onClose })
   useWakeLock()
 
   const labelled = useMemo(
-    () => (recipe.ingredients || []).map(ing => ({ ...ingredientLabel(ing, scale), name: canonicalItem(ing.item) })),
+    () => (recipe.ingredients || []).map((ing, line) => ({ ...ingredientLabel(ing, scale), name: canonicalItem(ing.item), line })),
     [recipe, scale],
   )
   const leads = useMemo(() => leadTimes(recipe), [recipe])
 
   // Survives closing, a reload, or the phone locking mid-simmer.
-  useEffect(() => { save(recipeKey, index === 0 && !timers.length ? null : { index, timers }) }, [recipeKey, index, timers])
+  useEffect(() => {
+    const fresh = index === 0 && !timers.length && !checked.size
+    save(recipeKey, fresh ? null : { index, timers, scale, checked: [...checked], fp: fingerprint(recipe) })
+  }, [recipeKey, recipe, index, timers, scale, checked])
 
   // Ticks only while something is counting down. Finished timers are worked
   // out from their end time rather than counted, so a backgrounded tab that
@@ -169,7 +202,10 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
   }
 
   const step       = index >= 1 && index <= steps.length ? steps[index - 1] : null
-  const stepIngs   = step ? ingredientsIn(step, labelled) : []
+  const segments   = step ? scaleStep(step, recipe.ingredients, scale, ing => canonicalItem(ing.item)) : []
+  const pinned     = new Set(segments.filter(s => s.line != null).map(s => s.line))
+  const stepIngs   = step ? ingredientsIn(step, labelled, pinned) : []
+  const servings   = recipe.servings ? recipe.servings * scale : null
   // One button per distinct time, and none for waits measured in days — those
   // are plan-ahead, not something to watch count down.
   const durations  = step
@@ -226,7 +262,12 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
           </div>
         ) : (
           <>
-            <p className="text-[1.45rem] leading-snug text-ink font-semibold">{step}</p>
+            {scale !== 1 && <ScaledNote recipe={recipe} servings={servings} />}
+            <p className="text-[1.45rem] leading-snug text-ink font-semibold">
+              {segments.map((seg, i) => seg.scaled
+                ? <mark key={i} className="bg-sun text-ink rounded px-1">{seg.text}</mark>
+                : <span key={i}>{seg.text}</span>)}
+            </p>
 
             {stepIngs.length > 0 && (
               <ul className="flex flex-wrap gap-2 mt-5 list-none" aria-label="Quantities for this step">
@@ -304,9 +345,7 @@ export function PlanAhead({ leads, className = '' }) {
       <p className="font-bold text-ink flex items-center gap-2"><Icon name="clock" size={16} />Plan ahead</p>
       <ul className="list-none mt-1">
         {leads.map(l => (
-          <li key={l.label} className="text-ink">
-            {l.label} {l.overnight ? 'overnight' : `for at least ${formatDuration(l.minutes)}`}
-          </li>
+          <li key={`${l.step}-${l.label}`} className="text-ink">{describeLead(l)}</li>
         ))}
       </ul>
     </div>
@@ -338,5 +377,19 @@ function IngredientList({ labelled, checked, setChecked }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+/**
+ * Said once per step while scaled: the amounts we could tie to an ingredient
+ * are adjusted (highlighted); any other number in the step is as the recipe
+ * wrote it, for its original servings.
+ */
+export function ScaledNote({ recipe, servings, className = '' }) {
+  return (
+    <p className={`text-[0.9rem] text-muted mb-3 ${className}`}>
+      Making {servings ?? 'a scaled batch'}{servings ? ' servings' : ''}. <mark className="bg-sun text-ink rounded px-1">Highlighted</mark> amounts
+      are adjusted; other numbers in the steps are as written{recipe.servings ? ` for ${recipe.servings}` : ''}.
+    </p>
   )
 }

@@ -106,7 +106,7 @@ export default function ShoppingList() {
                 onClick={handleShare}
                 aria-label="Share shopping list"
                 title="Share list"
-                className="grid place-items-center w-8 h-8 rounded-full border-2 border-ink text-muted hover:text-accent-dk transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="grid place-items-center w-11 h-11 rounded-full border-2 border-ink text-muted hover:text-accent-dk transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               ><Icon name="share" size={15} /></button>
             )}
             <button
@@ -153,7 +153,7 @@ export default function ShoppingList() {
           <ul className="list-none border-2 border-ink rounded-xl overflow-hidden bg-card">
             {rows.map(row => {
               const measure = measureLabel(row)
-              const from = row.sources.map(s => s.name).filter(Boolean)
+              const from = [...new Set(row.sources.map(s => s.name).filter(Boolean))]
               return (
                 <li
                   key={row.item}
@@ -183,7 +183,7 @@ export default function ShoppingList() {
                     type="button"
                     onClick={() => removeShopItem(row.item)}
                     aria-label={`Remove ${row.display} from shopping list`}
-                    className="shrink-0 grid place-items-center w-7 h-7 mt-2 mr-2 rounded-full text-muted opacity-60 hover:opacity-100 hover:text-heart hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="shrink-0 grid place-items-center w-11 h-11 mr-0.5 rounded-full text-muted hover:opacity-100 hover:text-heart hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   ><Icon name="close" size={12} strokeWidth={3} /></button>
                 </li>
               )

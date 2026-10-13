@@ -2,15 +2,15 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useApp } from '../context/AppContext'
 import { useToast } from '../context/ToastContext'
 import { useDialog } from '../hooks/useDialog'
-import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId, sourceLabel } from '../utils/recipe'
+import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId, sourceLabel, scaleStep } from '../utils/recipe'
 import { describeError } from '../utils/errors'
-import { recipeInShopping } from '../utils/shopping'
+import { recipeInShopping, recipeShoppingScale } from '../utils/shopping'
 import { renderRecipeCard } from '../utils/recipeImage'
-import { shoppingName } from '../utils/ingredients'
+import { shoppingName, canonicalItem } from '../utils/ingredients'
 import { formatRecipeTime } from '../utils/formatTime'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
-import CookMode, { PlanAhead } from './CookMode'
+import CookMode, { PlanAhead, ScaledNote, loadCookSession, clearCookSession } from './CookMode'
 import { leadTimes } from '../utils/steps'
 import Tag from './Tag'
 import Icon from './Icon'
@@ -77,7 +77,9 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   // Stand the trap down while the edit dialog is stacked on top of this one.
   const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing && !cooking })
 
-  const [scale,       setScale]       = useState(1)
+  // Opens at the servings an unfinished cook was using, so resuming after a
+  // reload doesn't quietly drop back to the original amounts.
+  const [scale,       setScale]       = useState(() => loadCookSession(recipeKey, recipe)?.scale || 1)
   const [checkedIngs, setCheckedIngs] = useState(new Set())
   const [noteText,    setNoteText]    = useState('')
   const [savedHint,   setSavedHint]   = useState(false)
@@ -98,13 +100,18 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   const leads   = useMemo(() => leadTimes(recipe), [recipe])
   const keyProp = keyToText(recipeKey)
   // Where cook mode was left, so the button can offer to pick up from there.
-  const resumeAt = useMemo(() => {
-    try { return JSON.parse(localStorage.getItem(`ate:cook:${keyProp}`))?.index || 0 } catch { return 0 }
+  const session = useMemo(
+    () => loadCookSession(recipeKey, recipe),
     // Re-read whenever cook mode closes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyProp, cooking])
+    [keyProp, recipe, cooking],
+  )
+  const resumeAt = session?.index || 0
   const isFav   = favorites.has(recipeKey)
   const inList  = recipeInShopping(shoppingItems, recipeKey)
+  // The servings the whole recipe went on the list at; null if it's only
+  // there line by line, or not at all.
+  const listScale = recipeShoppingScale(shoppingItems, recipeKey)
   const rating  = ratings[keyProp] || 0
 
   // Ratings and notes are keyed by recipe key, not recipe name — a user recipe
@@ -118,7 +125,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   const pendingNote = useRef(null)
 
   useEffect(() => {
-    setScale(1)
+    setScale(loadCookSession(recipeKey, recipe)?.scale || 1)
     setCheckedIngs(new Set())
     setNoteText(savedNote)
     setShowLists(false)
@@ -314,7 +321,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               </div>
             </div>
             <button
-              className="shrink-0 bg-paper border-2 border-ink rounded-full w-8 h-8 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="shrink-0 bg-paper border-2 border-ink rounded-full w-11 h-11 -mt-1.5 -mr-1.5 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               onClick={onClose}
               aria-label="Close recipe"
               title="Close"
@@ -337,39 +344,49 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               )}
               {editable && (
                 <button
-                  className={`${iconBtn} text-warm-tan hover:text-accent`}
+                  className={`${iconBtn} text-muted hover:text-accent-dk`}
                   onClick={() => setEditing(true)}
                   aria-label={`Edit ${recipe.name}`}
                   title="Edit recipe"
                 ><Icon name="pencil" size={20} /></button>
               )}
               <button
-                className={`${iconBtn} ${isFav ? 'text-heart' : 'text-warm-tan hover:text-heart'}`}
+                className={`${iconBtn} ${isFav ? 'text-heart' : 'text-muted hover:text-heart'}`}
                 onClick={() => toggleFav(recipeKey, recipe.name)}
                 aria-pressed={isFav}
                 aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
                 title="Save recipe"
               ><Icon name="heart" size={22} filled={isFav} /></button>
+              {/* Labelled, because it's the one action here with a consequence
+                  you'd want to read first. Three states: add, update to the
+                  servings now picked, or take it off again. */}
               <button
-                className={`${iconBtn} ${inList ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                className={`inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-full border-2 border-ink text-[0.82rem] font-bold shadow-pop press transition-colors ${
+                  inList && listScale === scale ? 'bg-accent text-ink' : 'bg-card text-ink hover:bg-paper'
+                }`}
                 onClick={() => {
-                  if (inList) {
+                  const servings = (recipe.servings || 1) * scale
+                  if (inList && listScale === scale) {
                     removeRecipeFromShopping(recipeKey)
                     showToast('Removed from shopping list', 'info')
                   } else {
                     // Pantry-aware: what you already have goes on ticked, so the
                     // list shows what's left to buy rather than everything.
-                    addRecipeToShopping(recipeKey, recipe, pantryEnabled ? pantryState : null)
-                    showToast('Added what you need to the shopping list', 'info')
+                    addRecipeToShopping(recipeKey, recipe, pantryEnabled ? pantryState : null, scale)
+                    showToast(inList
+                      ? `Shopping list updated for ${servings} serving${servings === 1 ? '' : 's'}`
+                      : 'Added what you need to the shopping list', 'info')
                   }
                 }}
-                aria-pressed={inList}
-                aria-label={inList ? 'Remove from shopping list' : 'Add to shopping list'}
-                title="Add to shopping list"
-              ><Icon name="cart" size={21} /></button>
+                aria-pressed={inList && listScale === scale}
+              >
+                <Icon name="cart" size={18} />
+                {!inList ? 'Add to shopping list'
+                  : listScale === scale ? 'On shopping list' : `Update list to ${(recipe.servings || 1) * scale} servings`}
+              </button>
               <div className="relative" ref={listsRef}>
                 <button
-                  className={`${iconBtn} ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-warm-tan hover:text-accent'}`}
+                  className={`${iconBtn} ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-muted hover:text-accent-dk'}`}
                   onClick={() => setShowLists(p => !p)}
                   aria-expanded={showLists}
                   aria-label="Add to a list"
@@ -422,7 +439,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                 )}
               </div>
               <button
-                className={`${iconBtn} text-warm-tan hover:text-accent`}
+                className={`${iconBtn} text-muted hover:text-accent-dk`}
                 onClick={handleShare}
                 aria-label={`Share ${recipe.name}`}
                 title="Share recipe"
@@ -523,12 +540,12 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                     <button
                       type="button"
                       onClick={() => {
-                        addShoppingIngredient(recipeKey, recipe, ing)
+                        addShoppingIngredient(recipeKey, recipe, ing, i, scale)
                         showToast(`Added ${shoppingName(ing.item)} to the shopping list`, 'info')
                       }}
                       aria-label={`Add ${shoppingName(ing.item)} to shopping list`}
                       title="Add just this to the shopping list"
-                      className="shrink-0 grid place-items-center w-6 h-6 mt-[1px] rounded-full text-warm-tan opacity-70 hover:opacity-100 hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      className="shrink-0 grid place-items-center w-11 h-11 -my-2.5 rounded-full text-muted hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     ><Icon name="cart" size={13} /></button>
                     <PantryMark item={ing.item} className="mt-[2px]" />
                   </div>
@@ -541,13 +558,18 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-ink">
             Steps
           </h3>
+          {scale !== 1 && <ScaledNote recipe={recipe} servings={recipe.servings ? recipe.servings * scale : null} />}
           <ol className="list-none mb-1">
             {recipe.steps.map((step, i) => (
               <li key={i} className="flex gap-3 mb-3.5 text-[0.88rem] leading-relaxed">
                 <span className="bg-accent text-ink border-2 border-ink shadow-pop press w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]" aria-hidden="true">
                   {i + 1}
                 </span>
-                <span className="text-ink">{step}</span>
+                <span className="text-ink">
+                  {scaleStep(step, recipe.ingredients, scale, ing => canonicalItem(ing.item)).map((seg, k) => seg.scaled
+                    ? <mark key={k} className="bg-sun text-ink rounded px-1">{seg.text}</mark>
+                    : <span key={k}>{seg.text}</span>)}
+                </span>
               </li>
             ))}
           </ol>
@@ -631,6 +653,12 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               <Icon name="pan" size={20} />
               {resumeAt > 0 ? `Resume cooking · step ${Math.min(resumeAt, recipe.steps.length)}` : 'Start cooking'}
             </button>
+            {resumeAt > 0 && (
+              <button
+                onClick={() => { clearCookSession(recipeKey); setCooking(true) }}
+                className="w-full min-h-[44px] mt-1 text-[0.85rem] font-bold text-muted underline underline-offset-2"
+              >Start over</button>
+            )}
           </div>
         )}
       </div>

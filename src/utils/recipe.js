@@ -137,11 +137,11 @@ const METRIC = /^(g|grams?|kg|kilograms?|ml|millilit(?:re|er)s?|l|lit(?:re|er)s?
  * round numbers for metric. "675 g" doubled is "1.35 kg", not "1350 g", and
  * never "1350 ⅛".
  */
-function scaleAmount(n, unit, scale) {
+function scaleAmount(n, unit, scale, promote = true) {
   let v = n * scale, u = unit
   if (!METRIC.test(u || '')) return [fmtFrac(v), u]
-  if (GRAMS.test(u)  && v >= 1000) { v /= 1000; u = 'kg' }
-  if (MILLIS.test(u) && v >= 1000) { v /= 1000; u = 'l' }
+  if (promote && GRAMS.test(u)  && v >= 1000) { v /= 1000; u = 'kg' }
+  if (promote && MILLIS.test(u) && v >= 1000) { v /= 1000; u = 'l' }
   v = v >= 100 ? Math.round(v / 5) * 5 : v >= 10 ? Math.round(v) : Math.round(v * 100) / 100
   return [String(v), u]
 }
@@ -149,12 +149,18 @@ function scaleAmount(n, unit, scale) {
 // "2-3", "2 – 3", "2 to 3". parseFrac alone reads these as a bare 2.
 const RANGE = /^(.+?)\s*(?:-|–|—|to)\s*(.+)$/i
 
+// What a number in ingredient prose can be *besides* a quantity: a time, a
+// temperature or a size. "melted and cooled (about 5 minutes)" doubled is
+// still five minutes, and a 7-inch tin doesn't become a 14-inch one.
+const NOT_A_QUANTITY = /^\s*(?:-|–)?\s*(?:min(?:ute)?s?|h(?:ou)?rs?|hours?|sec(?:ond)?s?|°|degrees?|inch(?:es)?|in\b|cm|mm|")/i
+
 /**
  * Numbers inside a stretch of ingredient text: "(1.5 lb)" → "(3 lb)".
  * Decimals stay decimal, everything else becomes a kitchen fraction.
  */
 function scaleNumbers(text, scale) {
-  return text.replace(/\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?/g, m => {
+  return text.replace(/\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?/g, (m, offset) => {
+    if (NOT_A_QUANTITY.test(text.slice(offset + m.length))) return m
     const n = parseFrac(m)
     if (n == null) return m
     return m.includes('.') ? String(Math.round(n * scale * 10) / 10) : fmtFrac(n * scale)
@@ -174,25 +180,34 @@ function scaleItem(item, scale) {
     .replace(/\(about ([^)]*)\)/gi, (_, inner) => `(about ${scaleNumbers(inner, scale)})`)
 }
 
-export function ingredientLabel(ing, scale = 1) {
+/**
+ * One ingredient line at a scale, still in its parts: { amount, unit, item }.
+ *
+ * The shopping list takes it in parts so it can sum by unit; the recipe view
+ * joins it into a label. `promote` steps 1000 g up to 1 kg — right for reading,
+ * wrong for a list that has to add this line to another recipe's grams.
+ */
+export function scaleIngredient(ing, scale = 1, { promote = true } = {}) {
   const raw = String(ing.amount ?? '').trim()
-  let amt = raw, unit = ing.unit
+  let amount = raw, unit = ing.unit || ''
   const range = raw.match(RANGE)
   const lo = range && parseFrac(range[1]), hi = range && parseFrac(range[2])
   if (lo != null && hi != null && hi > lo) {
-    const [b, u] = scaleAmount(hi, unit, scale)
+    const [b, u] = scaleAmount(hi, unit, scale, promote)
     // Both ends in the top end's unit: "800–1.2 kg" reads as nonsense.
-    const [a] = scaleAmount(u === unit ? lo : lo / 1000, u, scale)
-    amt = `${a}–${b}`; unit = u
+    const [a] = scaleAmount(u === unit ? lo : lo / 1000, u, scale, promote)
+    amount = `${a}–${b}`; unit = u
   } else {
     // "1-1/2 cups" is a mixed number written with a hyphen, not a range.
     const n = lo != null && hi != null && hi < 1 ? lo + hi : parseFrac(raw)
-    if (n != null) [amt, unit] = scaleAmount(n, unit, scale)
+    if (n != null) [amount, unit] = scaleAmount(n, unit, scale, promote)
   }
-  return {
-    measure: [amt, unit].filter(Boolean).join(' '),
-    item:    scaleItem(ing.item, scale),
-  }
+  return { amount, unit, item: scaleItem(ing.item, scale) }
+}
+
+export function ingredientLabel(ing, scale = 1) {
+  const { amount, unit, item } = scaleIngredient(ing, scale)
+  return { measure: [amount, unit].filter(Boolean).join(' '), item }
 }
 
 /**
@@ -254,4 +269,60 @@ export function toUserRecipeRow(recipe) {
     timeMinutes: _tm, activeMinutes: _am, image: _img, sourceUrl: _src, ...row
   } = recipe
   return row
+}
+
+// ── amounts inside step text ─────────────────────────────────
+
+const UNIT_WORDS = [
+  ['tbsp', 'tablespoons?|tbsps?|tbs|tbl'],
+  ['tsp',  'teaspoons?|tsps?'],
+  ['cup',  'cups?'],
+  ['g',    'grams?|g'],
+  ['kg',   'kilograms?|kgs?'],
+  ['ml',   'millilit(?:re|er)s?|ml'],
+  ['l',    'lit(?:re|er)s?|l'],
+  ['oz',   'ounces?|oz'],
+  ['lb',   'pounds?|lbs?'],
+]
+const unitKey = u => {
+  const s = String(u || '').trim().toLowerCase().replace(/\.$/, '')
+  for (const [key, rx] of UNIT_WORDS) if (new RegExp(`^(?:${rx})$`).test(s)) return key
+  return null
+}
+const STEP_STOPWORDS = new Set(['and', 'for', 'the', 'with', 'into', 'plus'])
+const STEP_MEASURE = new RegExp(
+  `(\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+(?:\\.\\d+)?|[½⅓⅔¼¾⅛])\\s*(${UNIT_WORDS.map(([, rx]) => rx).join('|')})\\b`,
+  'gi',
+)
+
+/**
+ * A step's text at a scale, as segments: [{ text, scaled, line }].
+ *
+ * Only an amount the step shares with one specific ingredient line is
+ * rewritten — "8 tablespoons melted butter" where the butter line is 8 tbsp.
+ * Everything else stays exactly as written, so 475°F, "12 to 14 minutes" and
+ * a 1/4-cup scoop never move. `line` is the ingredient index it was matched
+ * to, which is also how a step that says which butter gets only that chip.
+ */
+export function scaleStep(step, ingredients = [], scale = 1, nameOf = i => i.item) {
+  const text = String(step || '')
+  const out = []
+  let last = 0
+  for (const m of text.matchAll(STEP_MEASURE)) {
+    const n = parseFrac(m[1]), key = unitKey(m[2])
+    if (n == null || !key) continue
+    const after = text.slice(m.index + m[0].length, m.index + m[0].length + 40).toLowerCase()
+    const line = ingredients.findIndex(ing => {
+      if (parseFrac(ing.amount) !== n || unitKey(ing.unit) !== key) return false
+      const words = String(nameOf(ing) || '').toLowerCase().split(/[^a-z]+/).filter(w => w.length >= 3 && !STEP_STOPWORDS.has(w))
+      return words.some(w => after.includes(w))
+    })
+    if (line < 0) continue
+    if (m.index > last) out.push({ text: text.slice(last, m.index), scaled: false })
+    const [amount] = scaleAmount(n, key, scale, false)
+    out.push({ text: scale === 1 ? m[0] : `${amount} ${m[2]}`, scaled: scale !== 1, line })
+    last = m.index + m[0].length
+  }
+  if (last < text.length) out.push({ text: text.slice(last), scaled: false })
+  return out
 }

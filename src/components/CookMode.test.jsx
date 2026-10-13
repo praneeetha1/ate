@@ -24,7 +24,7 @@ describe('CookMode', () => {
   it('opens on a get-ready screen with plan-ahead and the scaled ingredients', () => {
     render(<CookMode recipe={recipe} recipeKey={7} scale={2} onClose={() => {}} />)
     expect(screen.getByText('Get ready')).toBeInTheDocument()
-    expect(screen.getByText(/Soak for at least 30 min/)).toBeInTheDocument()
+    expect(screen.getByText(/Soak for 30 min/)).toBeInTheDocument()
     expect(screen.getByText('2 cup')).toBeInTheDocument()
   })
 
@@ -90,5 +90,41 @@ describe('CookMode, on messy real-world steps', () => {
     expect(chips).not.toHaveTextContent('cilantro')
     expect(screen.getAllByRole('button', { name: /start .* timer/i }).map(b => b.textContent))
       .toEqual(['Start 2 h timer'])
+  })
+})
+
+describe('CookMode at a different size', () => {
+  const biscuits = {
+    name: 'Biscuits', servings: 8,
+    ingredients: [
+      { amount: '8', unit: 'tablespoon', item: 'unsalted butter, melted and cooled slightly (about 5 minutes)' },
+      { amount: '2', unit: 'tablespoon', item: 'unsalted butter, melted for brushing biscuits' },
+    ],
+    steps: [
+      'Heat oven to 475°F. Combine buttermilk and 8 tablespoons melted butter.',
+      'Bake 12 to 14 minutes. Brush with remaining 2 tablespoons melted butter.',
+    ],
+  }
+
+  it('matches the step text to the chips, and only the butter that step uses', () => {
+    render(<CookMode recipe={biscuits} recipeKey={151} scale={2} onClose={() => {}} />)
+    fireEvent.click(screen.getByRole('button', { name: /start cooking/i }))
+    expect(screen.getByText('16 tablespoons')).toBeInTheDocument()
+    expect(screen.getByText(/475°F/)).toBeInTheDocument()
+    const chips = screen.getByRole('list', { name: /quantities/i })
+    expect(chips).toHaveTextContent('16 tablespoon')
+    expect(chips).not.toHaveTextContent('4 tablespoon')
+    expect(screen.getByText(/making 16 servings/i)).toBeInTheDocument()
+  })
+})
+
+describe('cook sessions', () => {
+  it('keep the servings, and are dropped if the recipe changes', async () => {
+    const { loadCookSession } = await import('./CookMode')
+    const { unmount } = render(<CookMode recipe={recipe} recipeKey={7} scale={2} onClose={() => {}} />)
+    fireEvent.click(screen.getByRole('button', { name: /start cooking/i }))
+    unmount()
+    expect(loadCookSession(7, recipe)).toMatchObject({ index: 1, scale: 2 })
+    expect(loadCookSession(7, { ...recipe, steps: [...recipe.steps, 'Serve.'] })).toBeNull()
   })
 })

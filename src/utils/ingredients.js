@@ -227,6 +227,8 @@ export const INGREDIENT_ALIASES = {
   'ginger root': 'ginger',
   'kosher salt': 'salt', 'coarse salt': 'salt', 'sea salt': 'salt',
   'table salt': 'salt', 'flaky salt': 'salt',
+  'fine salt': 'salt', 'fine sea salt': 'salt', 'iodised salt': 'salt', 'iodized salt': 'salt',
+  'non-iodised salt': 'salt', 'non-iodized salt': 'salt', 'rock salt': 'salt',
   'black pepper': 'pepper', 'white pepper': 'pepper', 'peppercorn': 'pepper',
   'extra-virgin olive oil': 'olive oil', 'virgin olive oil': 'olive oil',
   'egg white': 'egg', 'egg yolk': 'egg',

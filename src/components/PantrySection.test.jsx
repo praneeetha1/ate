@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
 import { canonicalItem, isStaple } from '../utils/ingredients'
 
@@ -27,11 +28,13 @@ function renderSection({ signedIn = true, pantry = [] } = {}) {
     pantry,
   })
   return render(
-    <ToastProvider>
-      <AuthProvider>
-        <PantryProvider><PantrySection /></PantryProvider>
-      </AuthProvider>
-    </ToastProvider>
+    <MemoryRouter>
+      <ToastProvider>
+        <AuthProvider>
+          <PantryProvider><PantrySection /></PantryProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </MemoryRouter>
   )
 }
 
@@ -436,6 +439,8 @@ describe('Fridge / Pantry section', () => {
     renderSection({ signedIn: false })
     expect(await screen.findByText(/sign in to keep track/i)).toBeInTheDocument()
     expect(screen.queryByText(/nothing marked yet/i)).toBeNull()
+    // A way there, that comes back to the fridge afterwards.
+    expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login?next=/pantry')
   })
 })
 

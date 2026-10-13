@@ -23,6 +23,10 @@ export function parseFrac(s) {
   if ((m = s.match(/^(\d*)\s*([\u00bd\u2153\u2154\u00bc\u00be\u215b\u215c\u215d\u215e\u2155\u2156\u2157\u2158\u2159\u215a])$/)))
     return (+m[1] || 0) + VULGAR[m[2]]
 
+  // A range is not a number: parseFloat read "3-4" as 3, and a shopping total
+  // built on that silently drops food. Callers that understand ranges split
+  // them first.
+  if (/^[\d./\s]+\s*(?:-|–|—|to)\s*\d/i.test(s)) return null
   const n = parseFloat(s)
   return isNaN(n) ? null : n
 }

@@ -34,6 +34,27 @@ const ABSENT = {
   pantryEnabled:  false,
 }
 
+// Least available wins when two old names now mean one item: telling someone
+// they have what they'd marked as run out is the worse mistake.
+const SCARCITY = { out: 3, low: 2, have: 1 }
+
+/**
+ * Saved rows keyed by today's canonical names.
+ * Returns the map, the rows to write under their new names, and the old names to delete.
+ */
+export function normalizePantryRows(rows) {
+  const next = new Map()
+  const stale = []
+  for (const r of rows) {
+    const item = canonicalItem(r.item) || r.item
+    if (item !== r.item) stale.push(r.item)
+    const prev = next.get(item)
+    if (!prev || (SCARCITY[r.state] || 0) > (SCARCITY[prev] || 0)) next.set(item, r.state)
+  }
+  const renamed = new Set(rows.filter(r => stale.includes(r.item)).map(r => canonicalItem(r.item)))
+  return { next, stale, migrate: [...renamed].map(item => [item, next.get(item)]) }
+}
+
 export function PantryProvider({ children }) {
   const { user } = useAuth()
   const { showError } = useToast()
@@ -79,7 +100,19 @@ export function PantryProvider({ children }) {
           setReady(true)
           return
         }
-        const next = new Map((data || []).map(r => [r.item, r.state]))
+        const { next, migrate, stale } = normalizePantryRows(data || [])
+        // Rows saved under a name the matcher has since renamed ("cornflour"
+        // is now "cornstarch") are moved to the current name, so reads find
+        // them and a later change or removal reaches them. Best-effort: if it
+        // fails, the next load just does it again.
+        if (stale.length) {
+          Promise.resolve(supabase.from('pantry').upsert(
+            migrate.map(([item, state]) => ({ user_id: uid, item, state, updated_at: new Date().toISOString() })),
+            { onConflict: 'user_id,item' },
+          ))
+            .then(() => supabase.from('pantry').delete().eq('user_id', uid).in('item', stale))
+            .catch(err => console.error('Could not migrate pantry names:', err))
+        }
         pantryRef.current = next
         setPantry(next)
         setReady(true)

@@ -8,6 +8,7 @@ import {
 import { PANTRY_LABELS } from '../utils/pantry'
 import Highlight from './Highlight'
 import Icon from './Icon'
+import { Link } from 'react-router-dom'
 
 
 /**
@@ -218,9 +219,16 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
     return (
       <section aria-labelledby={headingId}>
         <Heading id={headingId} />
-        <p className="text-center py-[40px] px-5 text-[0.85rem] text-muted italic">
-          Sign in to keep track of what’s in your kitchen.
-        </p>
+        <div className="text-center py-[40px] px-5">
+          <p className="text-[0.85rem] text-muted italic">
+            Sign in to keep track of what’s in your kitchen. Your shopping list
+            works without an account, and comes with you when you sign in.
+          </p>
+          <Link
+            to="/login?next=/pantry"
+            className="inline-flex items-center mt-4 min-h-[44px] px-5 rounded-xl border-2 border-ink bg-accent text-ink font-bold shadow-pop press"
+          >Sign in</Link>
+        </div>
       </section>
     )
   }
@@ -329,7 +337,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                          * overflow-hidden clips hit-testing too, and without
                          * it the extension would overlap neighbouring chips.
                          */
-                        className="grid place-items-center w-[36px] h-[32px] rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+                        className="grid place-items-center w-11 h-11 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
                       >
                         <Icon name="close" size={14} strokeWidth={3} />
                       </button>

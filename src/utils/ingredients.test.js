@@ -50,6 +50,10 @@ describe('shoppingName', () => {
 })
 
 describe('canonicalItem', () => {
+  it('reads everyday salt names as salt', () => {
+    for (const s of ['fine salt', 'fine sea salt', 'iodised salt', 'non-iodized salt']) expect(canonicalItem(s)).toBe('salt')
+  })
+
   it('drops the "and" left between stripped modifiers', () => {
     expect(canonicalItem('skinless and boneless chicken breast')).toBe('chicken breast')
     expect(canonicalItem('(1.5 lb) skinless and boneless chicken breast, diced into cubes')).toBe('chicken breast')

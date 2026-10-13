@@ -1,3 +1,5 @@
+import { formatDuration } from './formatTime'
+
 /**
  * Reading times out of free-text steps.
  *
@@ -36,9 +38,11 @@ const toMin = (n, unit) =>
 
 /**
  * Every duration mentioned in one step, in order.
- * [{ text, minutes, maxMinutes, overnight, upTo }] — `minutes` is the low end
- * of a range, which is when you should first check. `upTo` marks a limit
- * ("keeps for up to 3 days") rather than an instruction.
+ * [{ text, minutes, maxMinutes, overnight, upTo, qualifier }] — `minutes` is
+ * the low end of a range, which is when you should first check. `upTo` marks
+ * an optional limit ("keeps for up to 3 days"); `qualifier` is 'min' for "at
+ * least", 'max' for "no more than" / "up to", else ''. Kept so nothing ever
+ * turns a recipe's upper limit into a minimum.
  */
 export function findDurations(step) {
   const out = []
@@ -59,8 +63,11 @@ export function findDurations(step) {
     if (!(lo > 0)) continue
     // Only "up to": "soak for no more than 2 hours" caps a soak you still
     // have to do, whereas "keeps for up to 3 days" is optional.
-    const upTo = /\bup to\s*$/i.test(step.slice(0, m.index))
-    out.push({ text: m[0], minutes: Math.round(lo), maxMinutes: Math.round(hi), overnight, upTo })
+    const before = step.slice(0, m.index)
+    const upTo = /\bup to\s*$/i.test(before)
+    const qualifier = upTo || /\b(no|not) (more|longer) than\s*$|\bat most\s*$/i.test(before) ? 'max'
+      : /\bat least\s*$|\bminimum of\s*$/i.test(before) ? 'min' : ''
+    out.push({ text: m[0], minutes: Math.round(lo), maxMinutes: Math.round(hi), overnight, upTo, qualifier })
   }
   return out
 }
@@ -84,16 +91,25 @@ const PREP = [
 
 const STORAGE = /\b(store|stored|leftovers?|keeps?|will keep|lasts?)\b/i
 
-/** [{ label, minutes, overnight, step }], longest first, one per kind, at its minimum. */
+/**
+ * [{ label, minutes, maxMinutes, overnight, qualifier, step }] in step order.
+ *
+ * One entry per kind per step — a recipe that chills twice shows both chills,
+ * not just the shorter one — with the recipe's own qualifier, so "no more
+ * than 2 hours" is never shown as "at least".
+ */
 export function leadTimes(recipe) {
-  const found = new Map()
+  const out = []
   ;(recipe?.steps || []).forEach((step, i) => {
+    const seen = new Set()
     // Sentence by sentence, so "Marinate the chicken. Bake for 1 hour" doesn't
     // turn the bake into an hour of marinating.
     for (const sentence of String(step).split(/(?<=[.;!?])\s+/)) {
       // Storing leftovers isn't prep: "Store in the refrigerator for up to 3
       // days" was coming out as "Chill for at least 72 h" before you start.
       if (STORAGE.test(sentence)) continue
+      // "If the dough has chilled longer than 2 hours…" is a condition, not a step.
+      if (/^\s*if\b/i.test(sentence)) continue
       // The first real instruction; later ones are usually "…or 48 hours for
       // best results", and an "up to 3 days" is a limit, not a requirement.
       const d = findDurations(sentence).find(x => !x.upTo)
@@ -101,14 +117,24 @@ export function leadTimes(recipe) {
       for (const [label, rx, min] of PREP) {
         if (!rx.test(sentence)) continue
         if (!d.overnight && d.maxMinutes < min) continue
-        // The least you can get away with: that's what has to be planned for.
-        const prev = found.get(label)
-        if (!prev || d.minutes < prev.minutes) {
-          found.set(label, { label, minutes: d.minutes, overnight: d.overnight, step: i })
+        if (!seen.has(label)) {
+          seen.add(label)
+          out.push({ label, minutes: d.minutes, maxMinutes: d.maxMinutes, overnight: d.overnight, qualifier: d.qualifier, step: i })
         }
         break
       }
     }
   })
-  return [...found.values()].sort((a, b) => b.minutes - a.minutes)
+  return out
+}
+
+const hrs = m => formatDuration(m)
+
+/** "Soak for no more than 2 h", "Ferment for 8 h–10 h", "Marinate for at least 24 h", "Soak overnight". */
+export function describeLead(l) {
+  if (l.overnight) return `${l.label} overnight`
+  if (l.qualifier === 'max') return `${l.label} for no more than ${hrs(l.maxMinutes)}`
+  if (l.qualifier === 'min') return `${l.label} for at least ${hrs(l.minutes)}`
+  if (l.maxMinutes > l.minutes) return `${l.label} for ${hrs(l.minutes)}–${hrs(l.maxMinutes)}`
+  return `${l.label} for ${hrs(l.minutes)}`
 }

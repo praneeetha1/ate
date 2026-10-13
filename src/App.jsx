@@ -43,13 +43,34 @@ export class ErrorBoundary extends Component {
   }
 }
 
-function Splash() {
+/**
+ * The wordmark while sign-in resolves — and, if it never does (a stalled
+ * network, a hung auth request), a way out after a while instead of an
+ * endless "Loading…".
+ */
+export function Splash({ slowAfter = 10000 }) {
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    const id = setTimeout(() => setSlow(true), slowAfter)
+    return () => clearTimeout(id)
+  }, [slowAfter])
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-3" role="status" aria-live="polite">
+    <div className="flex flex-col items-center justify-center min-h-screen gap-3 px-8 text-center" role="status" aria-live="polite">
       <div className="font-display text-[2.4rem] font-semibold text-accent-dk leading-none">
         ate<span className="italic font-normal text-accent">.</span>
       </div>
-      <span className="text-[0.78rem] text-muted tracking-[0.1em] uppercase">Loading…</span>
+      {slow ? (
+        <>
+          <p className="text-[0.95rem] text-ink">This is taking longer than usual.</p>
+          <p className="text-[0.85rem] text-muted">Check your connection, then try again.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 min-h-[48px] bg-accent text-ink border-2 border-ink shadow-pop press font-bold rounded-xl px-6"
+          >Try again</button>
+        </>
+      ) : (
+        <span className="text-[0.78rem] text-muted tracking-[0.1em] uppercase">Loading…</span>
+      )}
     </div>
   )
 }

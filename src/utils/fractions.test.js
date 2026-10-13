@@ -28,7 +28,9 @@ describe('parseFrac', () => {
     expect(parseFrac('2¼')).toBe(2.25)
   })
 
-  it('returns null for nonsense', () => {
+  it('returns null for nonsense and for a range', () => {
+    expect(parseFrac('3-4')).toBeNull()
+    expect(parseFrac('3–4')).toBeNull()
     expect(parseFrac('a pinch')).toBeNull()
     expect(parseFrac('')).toBeNull()
   })

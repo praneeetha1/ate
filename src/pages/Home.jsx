@@ -135,7 +135,9 @@ export default function Home({ onOpen }) {
       )}
 
       {/* Filter bar */}
-      <div className="flex items-center gap-2 px-5 py-3 overflow-x-auto scrollbar-hide border-b border-ink bg-cream sticky-under-header z-[80]">
+      {/* Wraps rather than scrolling sideways: at 320px the scroller hid
+          Surprise me and + My Recipe off-screen with nothing to say they were there. */}
+      <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-b border-ink bg-cream sticky-under-header z-[80]">
         {/* First in the row, ahead of diet and time: it doesn't narrow the
             catalogue the way those do, it changes what the page is showing —
             so it reads as the mode switch it is rather than a third filter. */}
