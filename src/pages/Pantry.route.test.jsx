@@ -37,7 +37,8 @@ function renderApp({ route = '/', signedIn = true, pantry = [], shopping_items =
   )
 }
 
-beforeEach(() => { localStorage.clear() })
+// The welcome card has its own Fridge link; these tests are about the nav.
+beforeEach(() => { localStorage.clear(); localStorage.setItem('ate:guest:seen_welcome', 'true') })
 
 /**
  * The Fridge used to be reached by an icon in the header. It has a nav tab

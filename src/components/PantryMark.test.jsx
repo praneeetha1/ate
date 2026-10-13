@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
 
 const h = vi.hoisted(() => ({ client: null }))
@@ -36,6 +37,7 @@ function renderModal({ signedIn = true, seed = {}, recipe = RECIPE } = {}) {
     ...seed,
   })
   return render(
+    <MemoryRouter>
     <ToastProvider>
       <AuthProvider>
         <AppProvider>
@@ -45,6 +47,7 @@ function renderModal({ signedIn = true, seed = {}, recipe = RECIPE } = {}) {
         </AppProvider>
       </AuthProvider>
     </ToastProvider>
+    </MemoryRouter>
   )
 }
 
@@ -155,5 +158,39 @@ describe('the summary names its assumptions', () => {
     renderModal({ seed: { pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'have' }] } })
     expect(await screen.findByText(/you have everything/i)).toBeInTheDocument()
     expect(screen.getByText(/assumed: kosher salt/i)).toBeInTheDocument()
+  })
+})
+
+describe('adding the recipe to the shopping list', () => {
+  const items = () => (h.client.__db.shopping_items || []).map(r => r.item).sort()
+
+  it('adds what you lack in one tap when there is nothing to decide, leaving assumed salt off', async () => {
+    const user = userEvent.setup()
+    renderModal()
+    await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
+    await user.click(screen.getByRole('button', { name: /add to shopping list/i }))
+    expect(screen.queryByRole('dialog', { name: /add to shopping list/i })).toBeNull()
+    expect(await screen.findByText('Added 1 to your shopping list')).toBeInTheDocument()
+    await waitFor(() => expect(items()).toEqual(['pecorino']))
+  })
+
+  it('asks about a running-low item, and Undo puts the list back', async () => {
+    const user = userEvent.setup()
+    renderModal({ seed: { pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'low' }] } })
+    await waitFor(() => expect(mark('pecorino')).toHaveAccessibleName(/running low/i))
+    await user.click(screen.getByRole('button', { name: /add to shopping list/i }))
+
+    const sheet = await screen.findByRole('dialog', { name: /add to shopping list/i })
+    expect(sheet).toHaveTextContent('Running low')
+    const box = screen.getByRole('checkbox', { name: /pecorino/i })
+    expect(box).not.toBeChecked()
+    expect(screen.getByRole('button', { name: 'Nothing selected' })).toBeDisabled()
+
+    await user.click(box)
+    await user.click(screen.getByRole('button', { name: 'Add 1 to shopping list' }))
+    await waitFor(() => expect(items()).toEqual(['pecorino']))
+
+    await user.click(await screen.findByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(items()).toEqual([]))
   })
 })

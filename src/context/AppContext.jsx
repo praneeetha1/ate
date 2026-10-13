@@ -619,6 +619,44 @@ export function AppProvider({ children }) {
   }
 
   /**
+   * Put exactly these entries on the list for a recipe, replacing whatever it
+   * had there before (other recipes' and hand-added rows are left alone).
+   * Used by the review sheet. Returns an undo that puts every touched row
+   * back as it was.
+   */
+  function setRecipeShopping(key, recipe, entries, scale = 1) {
+    const source = { key: keyToText(key), name: recipe?.name || '', scale }
+    const current = dataRef.current.shoppingItems
+    const before = new Map()                         // item -> row | null
+    const next = new Map()                           // touched rows only
+    for (const [item, row] of current) {
+      const trimmed = withoutRecipe(row, key)
+      if (trimmed !== row) { before.set(item, row); next.set(item, trimmed) }
+    }
+    for (const entry of entries) {
+      if (!before.has(entry.item)) before.set(entry.item, current.get(entry.item) ?? null)
+      const base = next.has(entry.item) ? next.get(entry.item) : current.get(entry.item)
+      next.set(entry.item, mergeItem(base ?? undefined, entry, source))
+    }
+    applyShoppingRows(next)
+    return () => applyShoppingRows(before)
+  }
+
+  /** Write rows by item; a null row deletes it. Shared by the review sheet and its undo. */
+  function applyShoppingRows(rows) {
+    const written = [], gone = []
+    for (const [item, row] of rows) (row ? written : gone).push(row ?? item)
+    commit(d => {
+      const m = new Map(d.shoppingItems)
+      for (const item of gone) m.delete(item)
+      for (const row of written) m.set(row.item, row)
+      return { ...d, shoppingItems: m }
+    })
+    upsertRows(written)
+    deleteRows(gone)
+  }
+
+  /**
    * One ingredient line out of a recipe, for when that's all you're missing.
    * `line` is its index in the recipe, so two butter lines add up instead of
    * the second replacing the first, and tapping the same line twice is a no-op.
@@ -931,7 +969,7 @@ export function AppProvider({ children }) {
       ratings,      setRating,
       notes,        setNote,
       shoppingItems,
-      addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient,
+      addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient, setRecipeShopping,
       addShoppingItem, toggleShopItem, removeShopItem, clearShopping,
       userRecipes,  createUserRecipe, updateUserRecipe, deleteUserRecipe,
       lists,        createList, deleteList, renameList, addToList, removeFromList,

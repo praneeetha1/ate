@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase'
 import { describeError } from '../utils/errors'
 import CreateRecipeModal from '../components/CreateRecipeModal'
 import Icon from '../components/Icon'
+import { resetWelcome } from '../components/WelcomeCard'
 
 const MAX_BIO = 300
 
@@ -139,6 +140,10 @@ export default function Profile({ onOpen }) {
                     onClick={() => signOut().catch(err => { console.error(err); showError('Could not sign out.') })}
                     className={`${smallBtn} border-ink text-muted hover:text-heart hover:border-heart`}
                   >Sign out</button>
+                  <button
+                    onClick={() => { resetWelcome(user?.id); navigate('/') }}
+                    className={`${smallBtn} border-ink text-muted hover:text-ink`}
+                  >Show tips again</button>
                 </div>
               </>
             )}

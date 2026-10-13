@@ -5,8 +5,12 @@ import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId, sourceLabel, scaleStep } from '../utils/recipe'
 import { describeError } from '../utils/errors'
 import { recipeInShopping, recipeShoppingScale } from '../utils/shopping'
+import { planShopping, entriesFor } from '../utils/shoppingPlan'
+import { evaluateRecipe } from '../utils/readiness'
+import ShoppingSheet from './ShoppingSheet'
+import { useNavigate } from 'react-router-dom'
 import { renderRecipeCard } from '../utils/recipeImage'
-import { shoppingName } from '../utils/ingredients'
+import { shoppingName, PANTRY_STAPLES } from '../utils/ingredients'
 import { lineId } from '../utils/registry'
 import { formatRecipeTime } from '../utils/formatTime'
 import { appUrl } from '../lib/supabase'
@@ -22,14 +26,16 @@ import { pantryFit } from '../utils/pantry'
 
 export default function RecipeModal({ recipe, recipeKey, editable = false, onClose }) {
   const { favorites, toggleFav, ratings, setRating, notes, setNote, shoppingItems,
-          addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient,
+          removeRecipeFromShopping, addShoppingIngredient, setRecipeShopping,
           lists, addToList, removeFromList, createList, createUserRecipe, userRecipes } = useApp()
   const { showToast, showError } = useToast()
+  const navigate = useNavigate()
   const { pantryState, pantryEnabled, stateOf } = usePantry()
   const [editing,     setEditing]     = useState(false)
   const [copying,     setCopying]     = useState(false)
   const [sharing,     setSharing]     = useState(false)
   const [cooking,     setCooking]     = useState(false)
+  const [shopPlan,    setShopPlan]    = useState(null)
 
   /**
    * Someone else's recipe, opened from a shared link.
@@ -78,7 +84,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   }
 
   // Stand the trap down while the edit dialog is stacked on top of this one.
-  const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing && !cooking })
+  const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing && !cooking && !shopPlan })
 
   // Opens at the servings an unfinished cook was using, so resuming after a
   // reload doesn't quietly drop back to the original amounts.
@@ -277,6 +283,21 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     }
   }
 
+  /** Put the ticked rows on the list, then say so — with View and Undo. */
+  function commitShopping(rows) {
+    const entries = entriesFor(recipe, rows, scale)
+    const undo = setRecipeShopping(recipeKey, recipe, entries, scale)
+    setShopPlan(null)
+    if (!entries.length) {
+      showToast('Nothing to add — you have everything for this', 'info')
+      return
+    }
+    showToast(`Added ${entries.length} to your shopping list`, 'info', { actions: [
+      { label: 'View', onClick: () => { onClose(); navigate('/pantry') } },
+      { label: 'Undo', onClick: undo },
+    ] })
+  }
+
   if (editing) {
     return (
       <CreateRecipeModal
@@ -291,6 +312,15 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
 
   return (
     <>
+    {shopPlan && (
+      <ShoppingSheet
+        recipe={recipe}
+        servings={recipe.servings ? recipe.servings * scale : null}
+        plan={shopPlan}
+        onAdd={commitShopping}
+        onClose={() => setShopPlan(null)}
+      />
+    )}
     {cooking && (
       <CookMode recipe={recipe} recipeKey={recipeKey} scale={scale} onClose={() => setCooking(false)} />
     )}
@@ -365,18 +395,20 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   inList && listScale === scale ? 'bg-accent text-ink' : 'bg-card text-ink hover:bg-paper'
                 }`}
                 onClick={() => {
-                  const servings = (recipe.servings || 1) * scale
                   if (inList && listScale === scale) {
                     removeRecipeFromShopping(recipeKey)
                     showToast('Removed from shopping list', 'info')
-                  } else {
-                    // Pantry-aware: what you already have goes on ticked, so the
-                    // list shows what's left to buy rather than everything.
-                    addRecipeToShopping(recipeKey, recipe, pantryEnabled ? pantryState : null, scale)
-                    showToast(inList
-                      ? `Shopping list updated for ${servings} serving${servings === 1 ? '' : 's'}`
-                      : 'Added what you need to the shopping list', 'info')
+                    return
                   }
+                  // Only asks when there's a real choice (low, optional, "this
+                  // or that"); otherwise adds what you don't have in one tap.
+                  // A guest has no pantry, but still has salt: shelf staples
+                  // count as assumed for them too, so they aren't put on the list.
+                  const shopFit = pantryEnabled ? fit
+                    : evaluateRecipe(recipe, id => (PANTRY_STAPLES.has(id) ? { state: 'have', assumed: true } : { state: 'unknown', assumed: false }))
+                  const plan = planShopping(recipe, scale, shopFit, shoppingItems, recipeKey)
+                  if (plan.needsSheet) setShopPlan(plan)
+                  else commitShopping(plan.rows)
                 }}
                 aria-pressed={inList && listScale === scale}
               >

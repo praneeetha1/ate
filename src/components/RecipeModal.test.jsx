@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useState } from 'react'
 import { render, screen, act, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
 
 const h = vi.hoisted(() => ({ client: null }))
@@ -49,11 +50,13 @@ function Harness({ recipeKey = 3, onClose, editable = false, recipe = RECIPE }) 
 
 function renderModal(props = {}) {
   return render(
+    <MemoryRouter>
     <ToastProvider>
       <AuthProvider>
         <AppProvider><Harness {...props} /></AppProvider>
       </AuthProvider>
     </ToastProvider>
+    </MemoryRouter>
   )
 }
 

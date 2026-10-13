@@ -10,6 +10,8 @@ import { recipeUses } from '../utils/readiness'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
+import WelcomeCard from '../components/WelcomeCard'
+import { Link } from 'react-router-dom'
 
 const CATEGORIES = [...new Set(VISIBLE_CATALOG.map(({ r }) => r.category))]
 
@@ -171,6 +173,8 @@ export default function Home({ onOpen }) {
         >+ My Recipe</button>
       </div>
 
+      <WelcomeCard onNewRecipe={() => setShowCreateModal(true)} />
+
       {/* What's narrowing the list, each removable without reopening the sheet. */}
       {chips.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 px-5 pt-3" aria-label="Active filters">
@@ -285,9 +289,9 @@ export default function Home({ onOpen }) {
               broken feature unless we say why. */}
           {pantryReady && pantry.size === 0 && (
             <p className="mx-5 mb-3 text-[0.78rem] text-muted italic border-2 border-dashed border-rim rounded-xl px-4 py-3">
-              Nothing in your pantry yet — staples like salt and oil are assumed.
-              Add what you have from the fridge icon at the top, and this list
-              will reorder around it.
+              Nothing in your pantry yet, so this is a guess. Add a few things
+              you have in the <Link to="/pantry" className="font-bold not-italic text-accent-dk underline">Fridge</Link> tab
+              and this list sorts itself around them.
             </p>
           )}
 

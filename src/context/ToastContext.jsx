@@ -15,13 +15,17 @@ export function ToastProvider({ children }) {
     if (timer) { clearTimeout(timer); timersRef.current.delete(id) }
   }, [])
 
-  const showToast = useCallback((message, type = 'error') => {
+  /**
+   * `actions` ([{ label, onClick }]) adds buttons such as View and Undo. A
+   * toast with actions stays up twice as long — long enough to reach for Undo.
+   */
+  const showToast = useCallback((message, type = 'error', { actions } = {}) => {
     const id = ++idRef.current
-    setToasts(prev => [...prev, { id, message, type }])
+    setToasts(prev => [...prev, { id, message, type, actions }])
     const timer = setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
       timersRef.current.delete(id)
-    }, DURATION)
+    }, actions?.length ? DURATION * 2 : DURATION)
     timersRef.current.set(id, timer)
     return id
   }, [])
@@ -45,17 +49,25 @@ export function ToastProvider({ children }) {
         aria-atomic="false"
       >
         {toasts.map(t => (
-          <button
+          <div
             key={t.id}
-            type="button"
-            onClick={() => dismiss(t.id)}
             role={t.type === 'error' ? 'alert' : 'status'}
-            className={`pointer-events-auto w-full text-left px-4 py-2.5 rounded-xl shadow-warm-lg text-[0.82rem] font-medium text-white ${
+            className={`pointer-events-auto w-full flex items-center gap-1 rounded-xl shadow-warm-lg text-[0.82rem] font-medium text-white ${
               t.type === 'error' ? 'bg-[#c0392b]' : 'bg-accent'
             }`}
           >
-            {t.message}
-          </button>
+            <button type="button" onClick={() => dismiss(t.id)} className="flex-1 text-left px-4 py-2.5">
+              {t.message}
+            </button>
+            {t.actions?.map(a => (
+              <button
+                key={a.label}
+                type="button"
+                onClick={() => { a.onClick(); dismiss(t.id) }}
+                className="shrink-0 min-h-[44px] px-3 font-bold underline underline-offset-2"
+              >{a.label}</button>
+            ))}
+          </div>
         ))}
       </div>
     </ToastContext.Provider>
