@@ -25,6 +25,7 @@
 
 import { looksLikeRecipe } from './recipeSignal.ts'
 import { cleanRecipeName } from './recipeName.ts'
+import { extractSteps, type Step } from './stepImages.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -312,6 +313,8 @@ Deno.serve(async req => {
   // A video has a thumbnail but the description never names it, so it comes
   // from the page rather than from anything the model returns.
   let fallbackImage = ''
+  // The page's own steps with their photos, when it publishes any per step.
+  let pageSteps: Step[] | null = null
 
   try {
     if (url) {
@@ -357,6 +360,7 @@ Deno.serve(async req => {
         content = `${video.title}\n\n${video.description}`.slice(0, 12000)
       } else {
         content = pageToText(html)
+        pageSteps = extractSteps(html, sourceUrl)
       }
       if (!content) return bad('Nothing readable on that page.')
     } else if (text) {
@@ -429,6 +433,14 @@ Deno.serve(async req => {
 
     const recipe = normalize(parsed, sourceUrl)
     if (!recipe.image && fallbackImage) recipe.image = fallbackImage
+    // The model rewrites steps, so a photo can't be matched to one of *its*
+    // steps. When the page ties photos to its own steps, those steps are used
+    // as published and each keeps its photo (see stepImages.ts).
+    if (pageSteps) {
+      recipe.steps = pageSteps.map(s => s.text.slice(0, 1000))
+      recipe.stepImages = pageSteps.map(s => s.image)
+      if (!recipe.image) recipe.image = pageSteps.findLast(s => s.image)?.image ?? undefined
+    }
     if (!recipe.ingredients.length && !recipe.steps.length) {
       return bad('No ingredients or steps found there.')
     }

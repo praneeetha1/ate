@@ -110,11 +110,15 @@ describe('PantryMark in a recipe', () => {
     await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
     expect(screen.queryByRole('img', { name: /^water:/i })).toBeNull()
   })
+})
 
-  it('does not disturb the cooking checkboxes', async () => {
+describe('the ingredient list', () => {
+  // Ticking ingredients off belongs to cook mode now; a tick beside the
+  // pantry dot read as "I have this".
+  it('has no tick boxes, only the pantry dot and the cart', async () => {
     renderModal()
     await waitFor(() => expect(mark('pecorino')).toBeInTheDocument())
-    for (const box of screen.getAllByRole('checkbox')) expect(box).not.toBeChecked()
+    expect(screen.queryAllByRole('checkbox')).toEqual([])
   })
 })
 

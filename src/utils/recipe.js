@@ -241,6 +241,7 @@ export function normalizeUserRecipe(r) {
     ...r,
     timeMinutes: r.time_minutes,
     activeMinutes: r.active_minutes ?? r.activeMinutes,
+    stepImages:  r.step_images ?? r.stepImages,
     // Catalog recipes carry `image`/`sourceUrl`; the DB spells them
     // snake_case. Mapping here means everything downstream reads one name.
     image:       r.image_url  ?? r.image,
@@ -266,7 +267,7 @@ export function sourceLabel(sourceUrl) {
 export function toUserRecipeRow(recipe) {
   const {
     id: _id, user_id: _uid, created_at: _created, updated_at: _updated,
-    timeMinutes: _tm, activeMinutes: _am, image: _img, sourceUrl: _src, ...row
+    timeMinutes: _tm, activeMinutes: _am, stepImages: _si, image: _img, sourceUrl: _src, ...row
   } = recipe
   return row
 }

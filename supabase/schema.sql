@@ -193,6 +193,8 @@ create table if not exists public.user_recipes (
   time_minutes integer,
   -- Hands-on part of time_minutes; null when not split. See migration 013.
   active_minutes integer,
+  -- One photo link per step, null where a step has none. See migration 014.
+  step_images  jsonb,
   servings     integer,
   -- Linked, not stored: an imported recipe's photo stays on the publisher's
   -- server, which costs no storage and keeps it where its owner put it.

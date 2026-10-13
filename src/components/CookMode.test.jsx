@@ -128,3 +128,17 @@ describe('cook sessions', () => {
     expect(loadCookSession(7, { ...recipe, steps: [...recipe.steps, 'Serve.'] })).toBeNull()
   })
 })
+
+describe('step photos in cook mode', () => {
+  it('shows the step\'s own photo, and hides one that fails to load', () => {
+    const r = { ...recipe, stepImages: ['https://x.com/1.jpg', null, 'https://x.com/3.jpg'] }
+    render(<CookMode recipe={r} recipeKey={11} onClose={() => {}} />)
+    fireEvent.click(screen.getByRole('button', { name: /start cooking/i }))
+    const img = screen.getByAltText('Step 1')
+    expect(img).toHaveAttribute('src', 'https://x.com/1.jpg')
+    fireEvent.error(img)
+    expect(screen.queryByAltText('Step 1')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /next/i }))
+    expect(screen.queryByAltText('Step 2')).toBeNull()
+  })
+})

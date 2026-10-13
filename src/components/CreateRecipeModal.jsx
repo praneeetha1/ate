@@ -61,6 +61,9 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     recipe?.ingredients?.length ? recipe.ingredients.map(withId) : [emptyIng()],
   )
   const [steps,    setSteps]    = useState(recipe?.steps?.length ? [...recipe.steps] : [''])
+  // One photo link per step, kept in step with `steps` through every add and
+  // remove — an imported page's step photos, or none.
+  const [stepImages, setStepImages] = useState(() => [...(recipe?.stepImages ?? recipe?.step_images ?? [])])
   const [image,    setImage]    = useState(recipe?.image ?? recipe?.image_url ?? '')
   const [source,   setSource]   = useState(recipe?.sourceUrl ?? recipe?.source_url ?? '')
   const [saving,   setSaving]   = useState(false)
@@ -92,6 +95,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
       ? draft.ingredients.map(withId)
       : [emptyIng()])
     setSteps(draft.steps?.length ? [...draft.steps] : [''])
+    setStepImages([...(draft.stepImages ?? [])])
     setImage(draft.image ?? '')
     setSource(draft.sourceUrl ?? '')
   }
@@ -202,8 +206,12 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
   const addIng     = () => setIngs(prev => [...prev, emptyIng()])
   const removeIng  = i => setIngs(prev => prev.filter((_, idx) => idx !== i))
   const updateStep = (i, val) => setSteps(prev => prev.map((s, idx) => idx === i ? val : s))
-  const addStep    = () => setSteps(prev => [...prev, ''])
-  const removeStep = i => setSteps(prev => prev.filter((_, idx) => idx !== i))
+  const addStep    = () => { setSteps(prev => [...prev, '']); setStepImages(prev => { const n = [...prev]; n[steps.length] = null; return n }) }
+  const removeStep = i => {
+    setSteps(prev => prev.filter((_, idx) => idx !== i))
+    setStepImages(prev => prev.filter((_, idx) => idx !== i))
+  }
+  const removeStepImage = i => setStepImages(prev => prev.map((u, idx) => (idx === i ? null : u)))
 
   async function handleSave(e) {
     e.preventDefault()
@@ -223,7 +231,11 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
         ...(ing.alternatives?.length ? { alternatives: ing.alternatives } : {}),
         ...(ing.alsoNeeds?.length ? { alsoNeeds: ing.alsoNeeds } : {}),
       }))
-    const cleanSteps = steps.map(s => s.trim()).filter(Boolean).map(s => s.slice(0, MAX_STEP))
+    // Steps and their photos filtered together, so dropping an empty step
+    // can't shift every later photo onto the wrong instruction.
+    const kept       = steps.map((s, i) => ({ text: s.trim().slice(0, MAX_STEP), image: stepImages[i] || null })).filter(p => p.text)
+    const cleanSteps = kept.map(p => p.text)
+    const cleanImages = kept.map(p => p.image)
 
     if (!cleanName)         { setError('Recipe name is required'); return }
     if (cleanName.length > MAX_NAME) { setError(`Recipe name must be ${MAX_NAME} characters or fewer`); return }
@@ -257,6 +269,9 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
       dietary,
       ingredients:  cleanIngs,
       steps:        cleanSteps,
+      // Only sent when there's a photo to keep (or to clear), so saving keeps
+      // working on a database without migration 014.
+      ...(cleanImages.some(Boolean) || recipe?.step_images ? { step_images: cleanImages.some(Boolean) ? cleanImages : null } : {}),
       time_minutes: positiveInt(time),
       // Only sent when there's something to say (or to clear), so saving keeps
       // working on a database that hasn't had migration 013 yet.
@@ -606,6 +621,22 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     rows={2}
                     className="flex-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent resize-none placeholder:text-muted leading-relaxed"
                   />
+                  {stepImages[i] && (
+                    <div className="relative shrink-0">
+                      <img
+                        src={stepImages[i]}
+                        alt={`Photo for step ${i + 1}`}
+                        referrerPolicy="no-referrer"
+                        className="w-16 h-16 object-cover rounded-xl border-2 border-ink"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeStepImage(i)}
+                        aria-label={`Remove the photo from step ${i + 1}`}
+                        className="absolute -top-2 -right-2 w-7 h-7 grid place-items-center rounded-full bg-card border-2 border-ink text-[0.9rem] leading-none"
+                      >×</button>
+                    </div>
+                  )}
                   {steps.length > 1 && (
                     <button
                       type="button"

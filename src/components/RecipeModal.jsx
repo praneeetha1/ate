@@ -12,6 +12,7 @@ import { formatRecipeTime } from '../utils/formatTime'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
 import CookMode, { PlanAhead, ScaledNote, loadCookSession, clearCookSession } from './CookMode'
+import StepPhoto, { stepImagesOf } from './StepPhoto'
 import { leadTimes } from '../utils/steps'
 import Tag from './Tag'
 import Icon from './Icon'
@@ -60,6 +61,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
         steps:        recipe.steps ?? [],
         time_minutes: recipe.timeMinutes ?? recipe.time_minutes ?? null,
         ...((recipe.activeMinutes ?? recipe.active_minutes) ? { active_minutes: recipe.activeMinutes ?? recipe.active_minutes } : {}),
+        ...((recipe.stepImages ?? recipe.step_images)?.some(Boolean) ? { step_images: recipe.stepImages ?? recipe.step_images } : {}),
         servings:     recipe.servings ?? null,
         image_url:    recipe.image ?? recipe.image_url ?? null,
         // Where it came from, so a copied recipe can still be traced back.
@@ -81,7 +83,6 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   // Opens at the servings an unfinished cook was using, so resuming after a
   // reload doesn't quietly drop back to the original amounts.
   const [scale,       setScale]       = useState(() => loadCookSession(recipeKey, recipe)?.scale || 1)
-  const [checkedIngs, setCheckedIngs] = useState(new Set())
   const [noteText,    setNoteText]    = useState('')
   const [savedHint,   setSavedHint]   = useState(false)
   const [showLists,   setShowLists]   = useState(false)
@@ -134,7 +135,6 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
 
   useEffect(() => {
     setScale(loadCookSession(recipeKey, recipe)?.scale || 1)
-    setCheckedIngs(new Set())
     setNoteText(savedNote)
     setShowLists(false)
     setNewListName('')
@@ -166,14 +166,6 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
   }, [showLists])
-
-  function toggleIng(i) {
-    setCheckedIngs(prev => {
-      const next = new Set(prev)
-      if (next.has(i)) next.delete(i); else next.add(i)
-      return next
-    })
-  }
 
   function handleNoteChange(e) {
     const val = e.target.value
@@ -536,23 +528,16 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           <ul className="list-none mb-5">
             {recipe.ingredients.map((ing, i) => {
               const { measure, item } = ingredientLabel(ing, scale)
-              const checked = checkedIngs.has(i)
+              // No tick box here any more: cook mode's "Get ready" checklist
+              // does that job and remembers it, and a tick beside the pantry
+              // dot read as "I have this", which it never meant.
               return (
-                <li key={i} className={`text-[0.88rem] border-b border-[rgba(200,180,130,0.25)] last:border-0 transition-opacity ${checked ? 'opacity-40' : ''}`}>
-                  {/* The pantry marker is a sibling of the label, not inside
-                      it: nesting a button in a label makes every tap on it
-                      toggle the checkbox too. */}
+                <li key={i} className="text-[0.88rem] border-b border-[rgba(200,180,130,0.25)] last:border-0">
                   <div className="flex items-start gap-2.5 py-[5px]">
-                    <label className="flex items-start gap-2.5 flex-1 min-w-0 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleIng(i)}
-                        className="accent-accent w-[15px] h-[15px] shrink-0 mt-[3px] cursor-pointer"
-                      />
+                    <p className="flex items-start gap-2.5 flex-1 min-w-0">
                       <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
                       <span className="text-ink">{item}</span>
-                    </label>
+                    </p>
                     <button
                       type="button"
                       onClick={() => {
@@ -581,11 +566,14 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                 <span className="bg-accent text-ink border-2 border-ink shadow-pop press w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.72rem] font-bold shrink-0 mt-[1px]" aria-hidden="true">
                   {i + 1}
                 </span>
-                <span className="text-ink">
-                  {scaleStep(step, recipe.ingredients, scale, lineId).map((seg, k) => seg.scaled
-                    ? <mark key={k} className="bg-sun text-ink rounded px-1">{seg.text}</mark>
-                    : <span key={k}>{seg.text}</span>)}
-                </span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-ink">
+                    {scaleStep(step, recipe.ingredients, scale, lineId).map((seg, k) => seg.scaled
+                      ? <mark key={k} className="bg-sun text-ink rounded px-1">{seg.text}</mark>
+                      : <span key={k}>{seg.text}</span>)}
+                  </span>
+                  <StepPhoto src={stepImagesOf(recipe)[i]} step={i + 1} className="mt-2" />
+                </div>
               </li>
             ))}
           </ol>

@@ -5,6 +5,7 @@ import { findDurations, leadTimes, describeLead } from '../utils/steps'
 import { lineId } from '../utils/registry'
 import { formatDuration } from '../utils/formatTime'
 import Icon from './Icon'
+import StepPhoto, { stepImagesOf } from './StepPhoto'
 
 /**
  * One step at a time, readable from across the counter.
@@ -279,6 +280,8 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
                 ))}
               </ul>
             )}
+
+            <StepPhoto src={stepImagesOf(recipe)[index - 1]} step={index} className="mt-5" />
 
             {durations.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-5">

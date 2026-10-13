@@ -218,3 +218,44 @@ describe('what each ingredient counts as', () => {
     expect(h.client.__db.user_recipes[0].ingredients[0]).toMatchObject({ item: 'skinless white urad dal', id: 'urad dal' })
   })
 })
+
+describe('step photos from an imported page', () => {
+  const withPhotos = {
+    ...DRAFT,
+    steps: ['Temper the spices.', 'Add the rice.', 'Squeeze in the lemon.'],
+    stepImages: ['https://example.com/1.jpg', null, 'https://example.com/3.jpg'],
+  }
+
+  it('shows each photo beside its step and saves them in order', async () => {
+    h.importRecipe = vi.fn().mockResolvedValue({ recipe: withPhotos })
+    const user = userEvent.setup()
+    renderModal()
+    await user.type(box(), 'https://example.com/lemon-rice')
+    await user.click(importBtn())
+    expect(await screen.findByAltText('Photo for step 1')).toHaveAttribute('src', 'https://example.com/1.jpg')
+    expect(screen.getByAltText('Photo for step 3')).toBeInTheDocument()
+    expect(screen.queryByAltText('Photo for step 2')).toBeNull()
+
+    // Removing step 1 must not slide the other photos onto the wrong steps.
+    await user.click(screen.getByRole('button', { name: 'Remove step 1' }))
+    expect(screen.getByAltText('Photo for step 2')).toHaveAttribute('src', 'https://example.com/3.jpg')
+
+    await user.click(screen.getByRole('button', { name: /save recipe/i }))
+    await waitFor(() => expect(h.client.__db.user_recipes).toHaveLength(1))
+    expect(h.client.__db.user_recipes[0]).toMatchObject({
+      steps: ['Add the rice.', 'Squeeze in the lemon.'],
+      step_images: [null, 'https://example.com/3.jpg'],
+    })
+  })
+
+  it('sends no step_images at all when there are none', async () => {
+    const user = userEvent.setup()
+    renderModal()
+    await user.type(screen.getByLabelText(/recipe name/i), 'Toast')
+    await user.type(screen.getByLabelText('Ingredient 1 name'), 'bread')
+    await user.type(screen.getByPlaceholderText(/step 1/i), 'Toast it.')
+    await user.click(screen.getByRole('button', { name: /save recipe/i }))
+    await waitFor(() => expect(h.client.__db.user_recipes).toHaveLength(1))
+    expect('step_images' in h.client.__db.user_recipes[0]).toBe(false)
+  })
+})
