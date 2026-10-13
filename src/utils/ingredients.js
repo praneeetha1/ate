@@ -165,16 +165,23 @@ export function shoppingName(raw) {
 
 // Deeper prep and product-state words, stripped only for matching. "unsalted
 // butter" is a real shopping distinction but the same pantry slot as butter.
+//
+// What is NOT here matters as much: dried, frozen, canned, cooked, sweet and
+// pickled change *what the food is*. Stripping them made sweet potato a
+// potato, pickled cucumber a cucumber and dried basil the same jar as a fresh
+// bunch. Where the forms really are one pantry slot (dried oregano, frozen
+// peas) that's an explicit alias below, not a blanket rule.
 const MATCH_ONLY_PREP_WORDS = [
-  'mixed', 'whole', 'ripe', 'dried', 'frozen', 'canned', 'cooked', 'boiling',
+  'mixed', 'whole', 'ripe', 'boiling', 'fresh', 'freshly',
   'raw', 'hot', 'cold', 'warm', 'lukewarm', 'boneless', 'skinless', 'unsalted',
   'salted', 'low-fat', 'fat-free', 'nonfat', 'whole-milk', 'reduced-fat',
-  'light', 'dark', 'sweet', 'plain', 'pickled', 'uncooked',
+  'light', 'uncooked',
 ]
 const MATCH_ONLY_PREP = [
   // "ground" collapses for spices (ground cinnamon *is* cinnamon) but not for
   // meat, where it's the cut: ground beef and beef are not one pantry slot.
-  'ground\\b(?!\\s+(?:beef|pork|lamb|turkey|chicken|veal|sausage|meat))',
+  // Ginger too: ground ginger is a dry spice, fresh ginger a root.
+  'ground\\b(?!\\s+(?:beef|pork|lamb|turkey|chicken|veal|sausage|meat|ginger))',
   ...MATCH_ONLY_PREP_WORDS,
 ].join('|')
 
@@ -229,9 +236,32 @@ export const INGREDIENT_ALIASES = {
   'table salt': 'salt', 'flaky salt': 'salt',
   'fine salt': 'salt', 'fine sea salt': 'salt', 'iodised salt': 'salt', 'iodized salt': 'salt',
   'non-iodised salt': 'salt', 'non-iodized salt': 'salt', 'rock salt': 'salt',
-  'black pepper': 'pepper', 'white pepper': 'pepper', 'peppercorn': 'pepper',
+  // Black pepper, bell pepper and chili are three different foods. Plain
+  // "pepper" in a recipe or a pantry means the spice, so it lands there —
+  // and nothing reaches bell pepper or cayenne by sharing the word.
+  'pepper': 'black pepper', 'ground pepper': 'black pepper', 'peppercorn': 'black pepper',
+  'ground black pepper': 'black pepper', 'coarsely-ground black pepper': 'black pepper',
+  'cracked black pepper': 'black pepper',
+  // Forms that genuinely share a pantry slot, now that dried/frozen/canned/
+  // cooked aren't stripped wholesale.
+  'dried oregano': 'oregano', 'dried thyme': 'thyme', 'dried rosemary': 'rosemary',
+  'dried chickpea': 'chickpea', 'canned chickpea': 'chickpea', 'tinned chickpea': 'chickpea',
+  'frozen pea': 'green pea', 'frozen green pea': 'green pea', 'petits poi': 'green pea', 'petit poi': 'green pea',
+  'frozen petits poi': 'green pea', 'pea': 'green pea',
+  'dried red chili': 'red chili', 'dry red chili': 'red chili',
+  'cooked white rice': 'white rice', 'cooked rice': 'white rice',
+  'cooked white bean': 'white bean', 'canned white bean': 'white bean',
+  'sweet paprika': 'paprika',
+  // "plain" is kept for flour (plain flour is all-purpose, not any flour) and
+  // folded here for the dairy where it just means unflavoured.
+  'plain yogurt': 'yogurt', 'plain greek yogurt': 'greek yogurt',
+  'plain reduced-fat greek yogurt': 'greek yogurt', 'reduced-fat greek yogurt': 'greek yogurt',
+  'dark brown sugar': 'brown sugar', 'light brown sugar': 'brown sugar',
+  'dark chocolate': 'dark chocolate',
   'extra-virgin olive oil': 'olive oil', 'virgin olive oil': 'olive oil',
-  'egg white': 'egg', 'egg yolk': 'egg',
+  // Not folded into egg: whole eggs can give you yolks, but a carton of yolks
+  // can't give you a whole egg. The registry says which way that goes.
+  'extra-large egg yolk': 'egg yolk', 'large egg white': 'egg white', 'large egg yolk': 'egg yolk',
   'granulated sugar': 'sugar', 'white sugar': 'sugar', 'caster sugar': 'sugar',
   'all purpose flour': 'all-purpose flour', 'plain flour': 'all-purpose flour',
   'parmigiano-reggiano': 'parmesan', 'parmesan cheese': 'parmesan',
@@ -404,6 +434,14 @@ function singularize(s) {
 export function canonicalItem(raw) {
   if (!raw) return ''
   let s = shoppingName(raw).toLowerCase()
+    // A count typed into the name — "1 lemon", "ea. eggplant". Needs a space
+    // after the number, so "7-inch" (a size, not a count) is left alone.
+    .replace(/^(?:\d+(?:[./]\d+)?\s+(?:\d+\/\d+\s+)?|ea\.?\s+)/, '')
+    // Hyphen-joined prep ("finely-chopped") isn't caught by the word rules below.
+    .replace(/\b(?:finely|roughly|coarsely|thinly|freshly)-(?:chopped|sliced|diced|minced|grated|ground)\s+/g, '')
+    // Fresh coriander is the leaf; plain "coriander" is the ground seed. Read
+    // before "fresh" is stripped, or the leaf became the spice.
+    .replace(/\bfresh(?:ly)?\s+(?:chopped\s+)?coriander(?:\s+lea(?:f|ves))?\b|\bcoriander\s+lea(?:f|ves)\b/g, 'cilantro')
     .replace(MATCH_PREP_RE, '$1')
     .replace(/\s+/g, ' ')
     .trim()
@@ -485,12 +523,11 @@ export function isNeverShopped(raw) {
  * Canonical names, so they compare against canonicalItem() output directly.
  */
 export const PANTRY_STAPLES = new Set([
-  'salt', 'pepper', 'salt and pepper', 'water', 'ice',
-  'olive oil', 'neutral oil', 'butter', 'ghee',
-  'sugar', 'brown sugar', 'all-purpose flour', 'cornstarch',
-  'egg', 'milk',
-  'baking powder', 'baking soda', 'vanilla extract',
-  'honey', 'soy sauce', 'vinegar',
+  // Shelf-stable only. Eggs, milk, butter and flour used to be here, which
+  // made every baking recipe look one item from ready in a kitchen that had
+  // none of them. Things that go off or run out get marked by the cook.
+  'salt', 'black pepper', 'salt and pepper', 'water', 'ice',
+  'neutral oil', 'sugar', 'ghee',
 
   // Ground spices, and the whole ones used for tempering. Shelf-stable, bought
   // once a year, and present in any kitchen that cooks Indian food at all — the
@@ -528,7 +565,9 @@ export function isStaple(raw) {
  */
 const VARIETAL_HEADS = new Set([
   // produce
-  'mushroom', 'onion', 'tomato', 'potato', 'pepper', 'chili', 'spinach',
+  // Not 'pepper' or 'chili': "red bell pepper" and "cayenne pepper" end in
+  // pepper and are not black pepper, and a green chili is not a chili powder.
+  'mushroom', 'onion', 'tomato', 'potato', 'spinach',
   'lettuce', 'cabbage', 'carrot', 'squash', 'pumpkin', 'apple', 'mango',
   'banana', 'lemon', 'lime', 'orange', 'bean', 'pea', 'lentil',
   // proteins where the generic implies you have some
@@ -703,7 +742,7 @@ export const MAIN_INGREDIENTS = [
  */
 export const COMMON_INGREDIENT_GROUPS = [
   { title: 'Produce',            items: ['garlic', 'onion', 'tomato', 'potato', 'carrot', 'bell pepper', 'spinach', 'cucumber', 'lemon', 'avocado', 'green chili', 'cauliflower', 'okra', 'eggplant', 'green pea', 'coconut'] },
-  { title: 'Dairy & Eggs',       items: ['cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese', 'paneer', 'cream'] },
+  { title: 'Dairy & Eggs',       items: ['egg', 'milk', 'butter', 'cheddar cheese', 'mozzarella cheese', 'parmesan', 'yogurt', 'sour cream', 'cream cheese', 'paneer', 'cream'] },
   { title: 'Meat & Seafood',     items: ['chicken', 'ground beef', 'bacon', 'shrimp', 'lamb'] },
   { title: 'Grains & Bread',     items: ['rice', 'pasta', 'bread', 'tortilla'] },
   { title: 'Herbs & Condiments', items: ['basil', 'cilantro', 'parsley', 'ginger', 'mint', 'curry leaf', 'ketchup', 'mustard', 'mayonnaise'] },
@@ -713,7 +752,7 @@ export const COMMON_INGREDIENT_GROUPS = [
   // really don't, which is exactly what a one-tap grid is for.
   { title: 'Spices & Masalas',   items: ['asafoetida', 'fenugreek seed', 'fenugreek leaf', 'carom seed', 'nigella seed', 'fennel seed', 'poppy seed', 'star anise', 'nutmeg', 'saffron', 'chaat masala', 'sambar powder', 'amchur', 'black salt', 'kashmiri red chili powder'] },
   { title: 'Dals & Legumes',     items: ['toor dal', 'moong dal', 'chana dal', 'urad dal', 'red lentil', 'chickpea', 'kidney bean', 'black-eyed pea'] },
-  { title: 'Flours & Staples',   items: ['gram flour', 'wheat flour', 'semolina', 'flattened rice', 'basmati rice', 'coconut milk', 'tamarind', 'jaggery', 'mustard oil'] },
+  { title: 'Flours & Staples',   items: ['all-purpose flour', 'cornstarch', 'baking powder', 'baking soda', 'olive oil', 'honey', 'soy sauce', 'vinegar', 'gram flour', 'wheat flour', 'semolina', 'flattened rice', 'basmati rice', 'coconut milk', 'tamarind', 'jaggery', 'mustard oil'] },
 ]
 
 /**

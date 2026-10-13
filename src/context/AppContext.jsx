@@ -9,7 +9,8 @@ import {
 import {
   scopeFor, loadSlice, saveSlice, clearScope, migrateLegacyKeys,
 } from '../utils/storage'
-import { canonicalItem, shoppingName, isNeverShopped } from '../utils/ingredients'
+import { shoppingName, isNeverShopped } from '../utils/ingredients'
+import { resolveIngredient } from '../utils/registry'
 import {
   shoppableIngredients, mergeItem, withoutRecipe, itemsToRows, rowsToItems,
 } from '../utils/shopping'
@@ -630,7 +631,7 @@ export function AppProvider({ children }) {
 
   /** Something you just thought of, belonging to no recipe. */
   function addShoppingItem(text) {
-    const item = canonicalItem(text)
+    const item = resolveIngredient(text).id
     if (!item || isNeverShopped(text)) return null
     addIngredientsToShopping(
       [{ item, display: shoppingName(text) || text, amount: '', unit: '' }],

@@ -6,7 +6,8 @@ import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId, sourceLabel,
 import { describeError } from '../utils/errors'
 import { recipeInShopping, recipeShoppingScale } from '../utils/shopping'
 import { renderRecipeCard } from '../utils/recipeImage'
-import { shoppingName, canonicalItem } from '../utils/ingredients'
+import { shoppingName } from '../utils/ingredients'
+import { lineId } from '../utils/registry'
 import { formatRecipeTime } from '../utils/formatTime'
 import { appUrl } from '../lib/supabase'
 import CreateRecipeModal from './CreateRecipeModal'
@@ -23,7 +24,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           addRecipeToShopping, removeRecipeFromShopping, addShoppingIngredient,
           lists, addToList, removeFromList, createList, createUserRecipe, userRecipes } = useApp()
   const { showToast, showError } = useToast()
-  const { pantryState, pantryEnabled, isAssumed } = usePantry()
+  const { pantryState, pantryEnabled, stateOf } = usePantry()
   const [editing,     setEditing]     = useState(false)
   const [copying,     setCopying]     = useState(false)
   const [sharing,     setSharing]     = useState(false)
@@ -93,11 +94,18 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
 
   // Recomputed as marks change, so the summary above the list stays live.
   const fit = useMemo(
-    () => pantryFit(recipe, pantryState, isAssumed),
-    [recipe, pantryState],
+    () => pantryFit(recipe, stateOf),
+    [recipe, stateOf],
   )
 
   const leads   = useMemo(() => leadTimes(recipe), [recipe])
+  // Each line's verdict from the shared evaluator, so the dot beside "sour
+  // cream or plain yogurt" agrees with the summary when only yogurt is in.
+  const needByLine = useMemo(() => {
+    const m = new Map()
+    for (const n of fit.needs || []) for (const l of n.lines) if (!m.has(l)) m.set(l, n)
+    return m
+  }, [fit])
   const keyProp = keyToText(recipeKey)
   // Where cook mode was left, so the button can offer to pick up from there.
   const session = useMemo(
@@ -507,6 +515,14 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               {fit.low.length > 0 && (
                 <span className="text-muted"> · low on {fit.low.join(', ')}</span>
               )}
+              {/* Named, not folded into "have": an assumption is a guess about
+                  your kitchen, and worth a glance before you start. */}
+              {fit.assumed > 0 && (
+                <span className="text-muted"> · assumed: {fit.assumedNames.join(", ")}</span>
+              )}
+              {fit.optionalMissing.length > 0 && (
+                <span className="text-muted"> · optional: {fit.optionalMissing.join(', ')}</span>
+              )}
             </p>
           )}
 
@@ -547,7 +563,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                       title="Add just this to the shopping list"
                       className="shrink-0 grid place-items-center w-11 h-11 -my-2.5 rounded-full text-muted hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     ><Icon name="cart" size={13} /></button>
-                    <PantryMark item={ing.item} className="mt-[2px]" />
+                    <PantryMark item={ing.item} need={needByLine.get(i)} className="mt-[2px]" />
                   </div>
                 </li>
               )
@@ -566,7 +582,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   {i + 1}
                 </span>
                 <span className="text-ink">
-                  {scaleStep(step, recipe.ingredients, scale, ing => canonicalItem(ing.item)).map((seg, k) => seg.scaled
+                  {scaleStep(step, recipe.ingredients, scale, lineId).map((seg, k) => seg.scaled
                     ? <mark key={k} className="bg-sun text-ink rounded px-1">{seg.text}</mark>
                     : <span key={k}>{seg.text}</span>)}
                 </span>

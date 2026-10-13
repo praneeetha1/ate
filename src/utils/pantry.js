@@ -1,4 +1,5 @@
-import { canonicalItem, shoppingName, isNeverShopped } from './ingredients'
+import { shoppingName } from './ingredients'
+import { evaluateRecipe, compareReadiness } from './readiness'
 
 /**
  * Pantry state.
@@ -38,64 +39,49 @@ export function nextPantryState(current, staple = false) {
   return PANTRY_STATES[at + 1]
 }
 
-/** Worse states win when the same item appears twice in one recipe. */
-const RANK = { have: 0, low: 1, unknown: 2, out: 3 }
-
 /**
- * How close a recipe is to being cookable, given a pantry.
+ * How close a recipe is to being cookable, as the cards and the recipe view
+ * show it — a thin wrapper over evaluateRecipe() (readiness.js), which every
+ * screen now shares.
  *
- * `low` counts as present but is reported separately — "you have it, but only
- * just" is different from "you have it", and worth knowing before you commit.
- * `out` and `unknown` both count as missing: an ingredient nobody has answered
- * for still has to be bought.
- *
- * Deduped by canonical item, so a recipe asking for both "Parmigiano-Reggiano"
- * and "parmesan cheese" counts them once. Things you never buy — water, ice —
- * are left out of the reckoning entirely rather than counted as present: you
- * cannot be short of tap water, and listing it as owned is just as misleading
- * as listing it as missing.
+ * Names, not ids, because these are read: "Missing 1 of 8 — pecorino".
+ *   missing / low / have      required needs by status (have includes assumed)
+ *   assumed / assumedNames    how many of `have` are only assumed staples
+ *   optionalMissing           extras you don't have; never count as missing
+ *   missingMain               missing needs that are a main ingredient
+ *   total                     required needs, deduped, water left out
  */
-export function pantryFit(recipe, pantryState, isAssumed = () => false) {
-  const seen = new Map()
-
-  for (const ing of recipe?.ingredients || []) {
-    if (!ing?.item || isNeverShopped(ing.item)) continue
-    const key   = canonicalItem(ing.item)
-    if (!key) continue
-    const state = pantryState(ing.item)
-    const prev  = seen.get(key)
-    if (!prev || RANK[state] > RANK[prev.state]) {
-      seen.set(key, {
-        state,
-        name: shoppingName(ing.item),
-        // Present only because it's an assumed staple, not because anyone said so.
-        assumed: state === 'have' && isAssumed(ing.item),
-      })
-    }
+export function pantryFit(recipe, stateOf) {
+  const ev = evaluateRecipe(recipe, stateOf)
+  const name = n => {
+    const ing = recipe?.ingredients?.[n.lines[0]]
+    return (ing?.item && shoppingName(ing.item)) || n.id
   }
-
-  const missing = [], low = [], have = []
-  let assumed = 0
-  for (const entry of seen.values()) {
-    const { state, name } = entry
-    if (state === 'have') { have.push(name); if (entry.assumed) assumed++ }
-    else if (state === 'low') low.push(name)
-    else missing.push(name)
+  const names = list => list.map(name)
+  return {
+    missing:         names(ev.missing),
+    low:             names(ev.low),
+    have:            names([...ev.have, ...ev.assumed]),
+    assumed:         ev.assumed.length,
+    assumedNames:    names(ev.assumed),
+    optionalMissing: names(ev.optionalMissing),
+    missingMain:     names(ev.missingMain),
+    total:           ev.required,
+    ready:           ev.ready,
+    minutes:         recipe?.activeMinutes || recipe?.timeMinutes || 0,
+    needs:           ev.needs,
   }
-
-  return { missing, low, have, assumed, total: seen.size }
 }
 
 /**
- * Closest-to-cookable first.
- *
- * Never a filter, only an order: a pantry is always incomplete, and with a
- * realistically stocked kitchen only 2 of the catalog's 300 recipes come out
- * fully makeable — so gating on "makeable" shows an empty screen, while
- * ranking surfaces the dozens that are one or two items away.
+ * Closest-to-cookable first. Never a filter, only an order: a pantry is always
+ * incomplete, so gating on "makeable" shows an empty screen while ranking
+ * surfaces what's one or two items away. See compareReadiness() for the order.
  */
 export function compareFit(a, b) {
-  if (a.missing.length !== b.missing.length) return a.missing.length - b.missing.length
-  if (a.low.length !== b.low.length) return a.low.length - b.low.length
-  return a.total - b.total
+  return compareReadiness(
+    { missingMain: a.missingMain || [], missing: a.missing, low: a.low, assumed: { length: a.assumed || 0 } },
+    { missingMain: b.missingMain || [], missing: b.missing, low: b.low, assumed: { length: b.assumed || 0 } },
+    a.minutes || 0, b.minutes || 0,
+  )
 }

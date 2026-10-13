@@ -1,4 +1,5 @@
-import { canonicalItem, shoppingName, isNeverShopped } from './ingredients'
+import { shoppingName, isNeverShopped } from './ingredients'
+import { lineId, BY_ID } from './registry'
 import { keyToText, scaleIngredient } from './recipe'
 import { parseFrac, fmtFrac } from './fractions'
 
@@ -61,8 +62,10 @@ export function shoppableIngredients(recipe, scale = 1) {
   const out = new Map()
   for (const ing of recipe?.ingredients || []) {
     if (!ing?.item || isNeverShopped(ing.item)) continue
-    const item = canonicalItem(ing.item)
-    if (!item) continue
+    // The reviewed registry id when the line has one, so the list, the pantry
+    // and the readiness check all call it the same thing.
+    const item = lineId(ing)
+    if (!item || BY_ID.get(item)?.never) continue
 
     const { amount, unit } = scaleIngredient(ing, scale, { promote: false })
     const entry = { amount: amount || '', unit: unit || '' }

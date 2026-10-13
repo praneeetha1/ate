@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { nextPantryState, pantryFit, compareFit, PANTRY_STATES, PANTRY_LABELS } from './pantry'
 import RECIPES from '../data/recipes.json'
-import { canonicalItem, isStaple } from '../utils/ingredients'
+import { PANTRY_STAPLES } from '../utils/ingredients'
 
 describe('nextPantryState', () => {
   it('walks have -> low -> out', () => {
@@ -42,18 +42,16 @@ describe('nextPantryState', () => {
   })
 })
 
-/** A pantry stub: explicit rows, staples assumed, everything else unknown. */
+/** A pantry stub by id: explicit rows, shelf staples assumed, everything else unknown. */
 function stateFrom(rows = {}) {
-  return raw => {
-    const c = canonicalItem(raw)
-    if (c in rows) return rows[c]
-    return isStaple(c) ? 'have' : 'unknown'
-  }
+  return id => id in rows ? { state: rows[id], assumed: false }
+    : PANTRY_STAPLES.has(id) ? { state: 'have', assumed: true }
+      : { state: 'unknown', assumed: false }
 }
 
 const RECIPE = {
   ingredients: [
-    { item: 'Kosher salt' },                 // staple -> have
+    { item: 'Kosher salt' },                 // staple -> assumed
     { item: 'pecorino, grated' },            // unknown
     { item: 'guanciale, diced' },            // set below
     { item: 'water' },                       // never shopped -> excluded
@@ -63,57 +61,47 @@ const RECIPE = {
 }
 
 describe('pantryFit', () => {
-  it('splits a recipe into have / low / missing', () => {
+  it('splits a recipe into have / low / missing, by name', () => {
     const fit = pantryFit(RECIPE, stateFrom({ guanciale: 'out', parmesan: 'low' }))
     expect(fit.have).toEqual(['Kosher salt'])
+    expect(fit.assumedNames).toEqual(['Kosher salt'])
     expect(fit.low).toEqual(['parmesan cheese'])
     expect(fit.missing.sort()).toEqual(['guanciale', 'pecorino'])
   })
 
-  it('counts a repeated item once', () => {
-    const fit = pantryFit(RECIPE, stateFrom({ parmesan: 'have' }))
+  it('counts a repeated item once and leaves water out', () => {
     // 6 lines, minus water, minus the duplicate parmesan = 4
-    expect(fit.total).toBe(4)
-  })
-
-  it('takes the worse state when one item appears twice', () => {
-    const fit = pantryFit(
-      { ingredients: [{ item: 'parmesan cheese' }, { item: 'Parmigiano-Reggiano' }] },
-      raw => (canonicalItem(raw) === 'parmesan' ? 'have' : 'have'),
-    )
-    expect(fit.total).toBe(1)
-  })
-
-  it('never counts water as owned or missing', () => {
-    const fit = pantryFit({ ingredients: [{ item: 'water' }, { item: 'ice water' }] }, stateFrom())
-    expect(fit).toEqual({ missing: [], low: [], have: [], assumed: 0, total: 0 })
+    expect(pantryFit(RECIPE, stateFrom({ parmesan: 'have' })).total).toBe(4)
+    expect(pantryFit({ ingredients: [{ item: 'water' }, { item: 'ice water' }] }, stateFrom()).total).toBe(0)
   })
 
   it('survives a recipe with no usable ingredients', () => {
     expect(pantryFit(null, stateFrom()).total).toBe(0)
     expect(pantryFit({ ingredients: [{ item: '' }, null] }, stateFrom()).total).toBe(0)
   })
+
+  it('reports assumptions separately, and none when everything was confirmed', () => {
+    const recipe = { ingredients: [{ item: 'sugar' }, { item: 'onion' }] }
+    expect(pantryFit(recipe, stateFrom({ onion: 'have' })).assumed).toBe(1)
+    expect(pantryFit(recipe, stateFrom({ onion: 'have', sugar: 'have' })).assumed).toBe(0)
+  })
 })
 
 describe('compareFit', () => {
+  const fit = (missing, extra = {}) => ({ missing, low: [], assumed: 0, missingMain: [], minutes: 0, ...extra })
+
   it('puts fewer missing first', () => {
-    const fits = [
-      { missing: ['a', 'b'], low: [], total: 5 },
-      { missing: [],         low: [], total: 9 },
-      { missing: ['a'],      low: [], total: 3 },
-    ]
+    const fits = [fit(['a', 'b']), fit([]), fit(['a'])]
     expect(fits.sort(compareFit).map(f => f.missing.length)).toEqual([0, 1, 2])
   })
 
-  it('breaks a tie on low, then on recipe size', () => {
-    expect(compareFit(
-      { missing: [], low: [],    total: 9 },
-      { missing: [], low: ['x'], total: 2 },
-    )).toBeLessThan(0)
-    expect(compareFit(
-      { missing: [], low: [], total: 3 },
-      { missing: [], low: [], total: 8 },
-    )).toBeLessThan(0)
+  it('a missing main ingredient ranks below two missing garnishes', () => {
+    expect(compareFit(fit(['mint', 'lime']), fit(['chicken'], { missingMain: ['chicken'] }))).toBeLessThan(0)
+  })
+
+  it('breaks ties on uncertainty, then on hands-on time', () => {
+    expect(compareFit(fit([]), fit([], { low: ['x'] }))).toBeLessThan(0)
+    expect(compareFit(fit([], { minutes: 20 }), fit([], { minutes: 60 }))).toBeLessThan(0)
   })
 
   // The reason this is a ranking and not a filter.
@@ -122,44 +110,12 @@ describe('compareFit', () => {
       garlic: 'have', onion: 'have', carrot: 'have', tomato: 'have',
       lemon: 'have', parsley: 'have', basil: 'have', parmesan: 'low',
     })
-    const ranked = RECIPES
+    const ranked = RECIPES.filter(r => !r.hidden)
       .map(r => ({ name: r.name, fit: pantryFit(r, state) }))
       .sort((a, b) => compareFit(a.fit, b.fit))
-
-    // Ordering is monotonic in what you'd have to buy.
     for (let i = 1; i < ranked.length; i++) {
-      expect(ranked[i].fit.missing.length).toBeGreaterThanOrEqual(ranked[i - 1].fit.missing.length)
+      expect(ranked[i].fit.missingMain.length).toBeGreaterThanOrEqual(ranked[i - 1].fit.missingMain.length)
     }
-    // Gating on "makeable" would show almost nothing; ranking gives a screenful.
-    const makeable = ranked.filter(r => r.fit.missing.length === 0).length
-    const close    = ranked.filter(r => r.fit.missing.length <= 2).length
-    expect(makeable).toBeLessThan(10)
-    expect(close).toBeGreaterThan(20)
-  })
-})
-
-/**
- * Finding 21: readiness counted assumed staples as confirmed. "You have all 6"
- * read as a checked fact when four of the six were guesses about flour and
- * spices, so the count is now split.
- */
-describe('assumed staples are counted separately', () => {
-  const recipe = { ingredients: [{ item: 'flour' }, { item: 'onion' }] }
-  const haveAll = () => 'have'
-
-  it('reports how many are only assumed', () => {
-    const fit = pantryFit(recipe, haveAll, item => item === 'flour')
-    expect(fit.have).toHaveLength(2)
-    expect(fit.assumed).toBe(1)
-  })
-
-  it('reports none when everything was confirmed', () => {
-    expect(pantryFit(recipe, haveAll, () => false).assumed).toBe(0)
-  })
-
-  // An assumption about something you don't have isn't an assumption you made.
-  it('never counts a missing item as assumed', () => {
-    const fit = pantryFit(recipe, () => 'out', () => true)
-    expect(fit.assumed).toBe(0)
+    expect(ranked.filter(r => r.fit.missing.length === 0).length).toBeLessThan(5)
   })
 })

@@ -184,3 +184,37 @@ describe('importing something you already have', () => {
     expect(screen.queryByRole('alert')).toBeNull()
   })
 })
+
+describe('what each ingredient counts as', () => {
+  const nameBox = i => screen.getByLabelText(`Ingredient ${i} name`)
+
+  it('reads a known ingredient and says so under the line', async () => {
+    const user = userEvent.setup()
+    renderModal()
+    await user.type(nameBox(1), 'skinless white urad dal')
+    expect(screen.getByText(/counts as/i)).toHaveTextContent('Counts as urad dal')
+  })
+
+  it('says plainly when it has never heard of something, and lets you pick', async () => {
+    const user = userEvent.setup()
+    renderModal()
+    await user.type(nameBox(1), 'ragi flour')
+    expect(screen.getByText(/not in the ingredient list yet/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /pick a match/i }))
+    await user.type(screen.getByLabelText(/what ingredient 1 counts as/i), 'whea')
+    await user.click(screen.getByRole('button', { name: 'wheat flour' }))
+    expect(screen.getByText(/counts as/i)).toHaveTextContent('Counts as wheat flour')
+  })
+
+  it('saves the match with the line', async () => {
+    const user = userEvent.setup()
+    renderModal()
+    await user.type(screen.getByLabelText(/recipe name/i), 'Idli')
+    await user.type(nameBox(1), 'skinless white urad dal')
+    await user.type(screen.getByPlaceholderText(/step 1/i), 'Soak and grind.')
+    await user.click(screen.getByRole('button', { name: /save recipe/i }))
+    await waitFor(() => expect(h.client.__db.user_recipes).toHaveLength(1))
+    expect(h.client.__db.user_recipes[0].ingredients[0]).toMatchObject({ item: 'skinless white urad dal', id: 'urad dal' })
+  })
+})

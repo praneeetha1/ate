@@ -5,7 +5,8 @@ import { applyFilters, VISIBLE_CATALOG } from '../utils/recipe'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
 import { pantryFit, compareFit } from '../utils/pantry'
-import { MAIN_INGREDIENTS, canonicalItems, matchesIngredient } from '../utils/ingredients'
+import { MAIN_INGREDIENTS } from '../utils/ingredients'
+import { recipeUses } from '../utils/readiness'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
@@ -20,7 +21,7 @@ export default function Home({ onOpen }) {
   const [catFilter,      setCatFilter]       = useState('')
   const [mustHave,       setMustHave]        = useState('')
   const { userRecipes } = useApp()
-  const { pantryEnabled, pantryReady, pantryState, pantry, isAssumed } = usePantry()
+  const { pantryEnabled, pantryReady, pantryState, pantry, stateOf } = usePantry()
 
   const { diet: dietFilter, time: timeFilter, noPlanAhead } = filters
   const filtered = useMemo(
@@ -55,9 +56,9 @@ export default function Home({ onOpen }) {
     ]
       // `items` is carried alongside the fit so the must-have row can be
       // derived and applied without canonicalising every ingredient again.
-      .map(p => ({ ...p, fit: pantryFit(p.r, pantryState, isAssumed), items: canonicalItems(p.r) }))
+      .map(p => ({ ...p, fit: pantryFit(p.r, stateOf) }))
       .sort((a, b) => compareFit(a.fit, b.fit))
-  }, [pantryEnabled, pantryMode, pantry, filtered, filteredMine, pantryState])
+  }, [pantryEnabled, pantryMode, pantry, filtered, filteredMine, stateOf])
 
   /**
    * The categories actually represented in the ranking, in catalogue order.
@@ -77,8 +78,8 @@ export default function Home({ onOpen }) {
   /**
    * The main ingredients worth offering as a must-have, for this cook.
    *
-   * Two conditions, both necessary: the cook has it (a staple counts, which is
-   * how eggs qualify without ever being tracked), and something in the current
+   * Two conditions, both necessary: the cook said they have it (or a kind of
+   * it — basmati answers rice), and something in the current
    * ranking actually uses it. The second is what keeps a chip from leading to
    * an empty screen, the same reason the course pills are derived from the
    * results rather than from the full category list.
@@ -88,7 +89,7 @@ export default function Home({ onOpen }) {
     return MAIN_INGREDIENTS.filter(m => {
       const state = pantryState(m)
       if (state !== 'have' && state !== 'low') return false
-      return ranked.some(({ items }) => matchesIngredient(items, m))
+      return ranked.some(({ r }) => recipeUses(r, m))
     })
   }, [pantryEnabled, pantryState, ranked])
 
@@ -103,7 +104,7 @@ export default function Home({ onOpen }) {
   // options overall, and its pills aren't on screen to explain a narrowed one.
   const rankedVisible = useMemo(() => {
     let out = catFilter ? ranked.filter(({ r }) => r.category === catFilter) : ranked
-    if (activeMustHave) out = out.filter(({ items }) => matchesIngredient(items, activeMustHave))
+    if (activeMustHave) out = out.filter(({ r }) => recipeUses(r, activeMustHave))
     return out
   }, [ranked, catFilter, activeMustHave])
 

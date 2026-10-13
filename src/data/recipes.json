@@ -4502,52 +4502,65 @@
       {
         "amount": "2",
         "unit": "tablespoon",
-        "item": "olive oil"
+        "item": "olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "red-skinned potato (6 ounces), well scrubbed, halved, and thinly sliced"
+        "item": "red-skinned potato (6 ounces), well scrubbed, halved, and thinly sliced",
+        "id": "red potato"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "garlic cloves, finely chopped"
+        "item": "garlic cloves, finely chopped",
+        "id": "garlic"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "scallions, thinly sliced"
+        "item": "scallions, thinly sliced",
+        "id": "green onion"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Coarse salt and ground pepper"
+        "item": "Coarse salt and ground pepper",
+        "id": "salt",
+        "alsoNeeds": [
+          "black pepper"
+        ]
       },
       {
         "amount": "8",
         "unit": "",
-        "item": "large eggs"
+        "item": "large eggs",
+        "id": "egg"
       },
       {
         "amount": "1 1/4",
         "unit": "cup",
-        "item": "plum tomatoes, coarsely chopped (about 2 tomatoes)"
+        "item": "plum tomatoes, coarsely chopped (about 2 tomatoes)",
+        "id": "plum tomato"
       },
       {
         "amount": "2",
         "unit": "oz",
-        "item": "pepper jack cheese, shredded"
+        "item": "pepper jack cheese, shredded",
+        "id": "pepper jack cheese"
       },
       {
         "amount": "2",
         "unit": "tablespoon",
-        "item": "chopped cilantro"
+        "item": "chopped cilantro",
+        "id": "cilantro"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "fresh lime juice"
+        "item": "fresh lime juice",
+        "id": "lime juice"
       }
     ],
     "steps": [
@@ -4954,42 +4967,50 @@
       {
         "amount": "1 1/2",
         "unit": "cup",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "1 1/2",
         "unit": "tsp",
-        "item": "baking powder"
+        "item": "baking powder",
+        "id": "baking powder"
       },
       {
         "amount": "1",
         "unit": "pinch",
-        "item": "fine salt (Himalayan salt is preferred)"
+        "item": "fine salt (Himalayan salt is preferred)",
+        "id": "salt"
       },
       {
         "amount": "6",
         "unit": "tbsp",
-        "item": "unsalted butter, softened, cut into 12 pieces"
+        "item": "unsalted butter, softened, cut into 12 pieces",
+        "id": "butter"
       },
       {
         "amount": "6",
         "unit": "",
-        "item": "extra-large egg yolks"
+        "item": "extra-large egg yolks",
+        "id": "egg yolk"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "heavy cream"
+        "item": "heavy cream",
+        "id": "heavy cream"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "walnuts, chopped"
+        "item": "walnuts, chopped",
+        "id": "walnut"
       }
     ],
     "steps": [
@@ -7005,67 +7026,80 @@
       {
         "amount": "2",
         "unit": "",
-        "item": "eggs, hard cooked, peeled, and sliced into rounds"
+        "item": "eggs, hard cooked, peeled, and sliced into rounds",
+        "id": "egg"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "fregola sarda pasta"
+        "item": "fregola sarda pasta",
+        "id": "fregola sarda"
       },
       {
         "amount": "3/4",
         "unit": "lb",
-        "item": "broccoli (preferably Italian broccoli), cut into small florets"
+        "item": "broccoli (preferably Italian broccoli), cut into small florets",
+        "id": "broccoli"
       },
       {
         "amount": "1/2",
         "unit": "",
-        "item": "red onion, large diced"
+        "item": "red onion, large diced",
+        "id": "red onion"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "za'atar seasoning"
+        "item": "za'atar seasoning",
+        "id": "za'atar"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "lemon juice"
+        "item": "lemon juice",
+        "id": "lemon juice"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "tahini"
+        "item": "tahini",
+        "id": "tahini"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "water"
+        "item": "water",
+        "id": "water"
       },
       {
         "amount": "1/2",
         "unit": "tbsp",
-        "item": "olive oil"
+        "item": "olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "1",
         "unit": "clove",
-        "item": "garlic, minced"
+        "item": "garlic, minced",
+        "id": "garlic"
       },
       {
         "amount": "3",
         "unit": "tbsp",
-        "item": "sliced almonds, toasted"
+        "item": "sliced almonds, toasted",
+        "id": "almond"
       },
       {
         "amount": "1",
         "unit": "oz",
-        "item": "parmesan cheese, grated"
+        "item": "parmesan cheese, grated",
+        "id": "parmesan"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "fresh mint, leaves picked, roughly torn"
+        "item": "fresh mint, leaves picked, roughly torn",
+        "id": "mint"
       }
     ],
     "steps": [
@@ -8688,62 +8722,77 @@
       {
         "amount": "6",
         "unit": "tablespoon",
-        "item": "unsalted butter"
+        "item": "unsalted butter",
+        "id": "butter"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "small onion, chopped"
+        "item": "small onion, chopped",
+        "id": "onion"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "2",
         "unit": "cup",
-        "item": "half-and-half"
+        "item": "half-and-half",
+        "id": "half-and-half"
       },
       {
         "amount": "3",
         "unit": "cup",
-        "item": "low-sodium chicken broth"
+        "item": "low-sodium chicken broth",
+        "id": "chicken broth"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "bay leaves"
+        "item": "bay leaves",
+        "id": "bay leaf"
       },
       {
         "amount": "1/4",
         "unit": "teaspoon",
-        "item": "nutmeg, freshly grated"
+        "item": "nutmeg, freshly grated",
+        "id": "nutmeg"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Kosher salt and freshly ground pepper"
+        "item": "Kosher salt and freshly ground pepper",
+        "id": "salt",
+        "alsoNeeds": [
+          "black pepper"
+        ]
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "7-inch sourdough bread boules (round loaves)"
+        "item": "7-inch sourdough bread boules (round loaves)",
+        "id": "sourdough bread"
       },
       {
         "amount": "4",
         "unit": "cup",
-        "item": "broccoli florets"
+        "item": "broccoli florets",
+        "id": "broccoli"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large carrot, diced"
+        "item": "large carrot, diced",
+        "id": "carrot"
       },
       {
         "amount": "2 1/2",
         "unit": "cup",
-        "item": "sharp white and yellow cheddar cheese, grated, plus more for garnish"
+        "item": "sharp white and yellow cheddar cheese, grated, plus more for garnish",
+        "id": "cheddar cheese"
       }
     ],
     "steps": [
@@ -8770,82 +8819,99 @@
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "extra-virgin olive oil"
+        "item": "extra-virgin olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "red bell pepper, seeded and finely chopped"
+        "item": "red bell pepper, seeded and finely chopped",
+        "id": "red bell pepper"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "medium yellow onion, finely chopped"
+        "item": "medium yellow onion, finely chopped",
+        "id": "onion"
       },
       {
         "amount": "2",
         "unit": "clove",
-        "item": "garlic, very finely chopped or pressed through a garlic press"
+        "item": "garlic, very finely chopped or pressed through a garlic press",
+        "id": "garlic"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "dry red wine"
+        "item": "dry red wine",
+        "id": "dry red wine"
       },
       {
         "amount": "3",
         "unit": "cup",
-        "item": "butternut squash, in 1-inch cubes"
+        "item": "butternut squash, in 1-inch cubes",
+        "id": "butternut squash"
       },
       {
         "amount": "1 1/2",
         "unit": "cup",
-        "item": "cooked white beans, such as Great Northern (rinsed, if canned)"
+        "item": "cooked white beans, such as Great Northern (rinsed, if canned)",
+        "id": "white bean"
       },
       {
         "amount": "1",
         "unit": "can",
-        "item": "whole tomatoes with juice (14 oz), chopped into 1/2-inch pieces"
+        "item": "whole tomatoes with juice (14 oz), chopped into 1/2-inch pieces",
+        "id": "canned tomato"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "store-bought salsa"
+        "item": "store-bought salsa",
+        "id": "salsa"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "chili powder"
+        "item": "chili powder",
+        "id": "red chili powder"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "ground cumin"
+        "item": "ground cumin",
+        "id": "cumin"
       },
       {
         "amount": "2",
         "unit": "teaspoon",
-        "item": "unsweetened cocoa powder"
+        "item": "unsweetened cocoa powder",
+        "id": "cocoa powder"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "ground cinnamon"
+        "item": "ground cinnamon",
+        "id": "cinnamon"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "cayenne pepper (optional)"
+        "item": "cayenne pepper (optional)",
+        "id": "cayenne pepper",
+        "optional": true
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Plain reduced-fat Greek yogurt"
+        "item": "Plain reduced-fat Greek yogurt",
+        "id": "greek yogurt"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "avocado, halved, pitted and cut into 1/2-inch cubes"
+        "item": "avocado, halved, pitted and cut into 1/2-inch cubes",
+        "id": "avocado"
       }
     ],
     "steps": [
@@ -9882,67 +9948,80 @@
       {
         "amount": "8",
         "unit": "ounce",
-        "item": "rice vermicelli noodles"
+        "item": "rice vermicelli noodles",
+        "id": "rice vermicelli"
       },
       {
         "amount": "6",
         "unit": "tbsp",
-        "item": "lime juice"
+        "item": "lime juice",
+        "id": "lime juice"
       },
       {
         "amount": "3",
         "unit": "tbsp",
-        "item": "soy sauce, low-sodium"
+        "item": "soy sauce, low-sodium",
+        "id": "soy sauce"
       },
       {
         "amount": "3",
         "unit": "tbsp",
-        "item": "peanut butter, creamy"
+        "item": "peanut butter, creamy",
+        "id": "peanut butter"
       },
       {
         "amount": "3",
         "unit": "tbsp",
-        "item": "dark brown sugar"
+        "item": "dark brown sugar",
+        "id": "brown sugar"
       },
       {
         "amount": "3",
         "unit": "tbsp",
-        "item": "vegetable oil"
+        "item": "vegetable oil",
+        "id": "neutral oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "red bell pepper, small and thinly sliced"
+        "item": "red bell pepper, small and thinly sliced",
+        "id": "red bell pepper"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "green onions"
+        "item": "green onions",
+        "id": "green onion"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "basil"
+        "item": "basil",
+        "id": "basil"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "cilantro"
+        "item": "cilantro",
+        "id": "cilantro"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "mint"
+        "item": "mint",
+        "id": "mint"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "kosher salt"
+        "item": "kosher salt",
+        "id": "salt"
       },
       {
         "amount": "1/3",
         "unit": "cup",
-        "item": "roasted peanuts"
+        "item": "roasted peanuts",
+        "id": "peanut"
       }
     ],
     "steps": [
@@ -10780,42 +10859,50 @@
       {
         "amount": "2",
         "unit": "cup",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "2",
         "unit": "teaspoon",
-        "item": "baking powder"
+        "item": "baking powder",
+        "id": "baking powder"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "baking soda"
+        "item": "baking soda",
+        "id": "baking soda"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "3/4",
         "unit": "teaspoon",
-        "item": "fine salt"
+        "item": "fine salt",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "buttermilk, cold"
+        "item": "buttermilk, cold",
+        "id": "buttermilk"
       },
       {
         "amount": "8",
         "unit": "tablespoon",
-        "item": "unsalted butter, melted and cooled slightly (about 5 minutes)"
+        "item": "unsalted butter, melted and cooled slightly (about 5 minutes)",
+        "id": "butter"
       },
       {
         "amount": "2",
         "unit": "tablespoon",
-        "item": "unsalted butter, melted for brushing biscuits"
+        "item": "unsalted butter, melted for brushing biscuits",
+        "id": "butter"
       }
     ],
     "steps": [
@@ -11998,62 +12085,77 @@
       {
         "amount": "5",
         "unit": "",
-        "item": "plum tomatoes, cored and coarsely chopped"
+        "item": "plum tomatoes, cored and coarsely chopped",
+        "id": "plum tomato"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "garlic clove, minced"
+        "item": "garlic clove, minced",
+        "id": "garlic"
       },
       {
         "amount": "1/3",
         "unit": "cup",
-        "item": "white onion, chopped"
+        "item": "white onion, chopped",
+        "id": "onion"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "olive oil"
+        "item": "olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt and freshly ground black pepper"
+        "item": "Salt and freshly ground black pepper",
+        "id": "salt",
+        "alsoNeeds": [
+          "black pepper"
+        ]
       },
       {
         "amount": "1 1/2",
         "unit": "cup",
-        "item": "Monterrey Jack cheese"
+        "item": "Monterrey Jack cheese",
+        "id": "monterey jack cheese"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "dried oregano"
+        "item": "dried oregano",
+        "id": "oregano"
       },
       {
         "amount": "6",
         "unit": "",
-        "item": "poblano chili peppers, charred, seeded, and deveined *see Cook's Note"
+        "item": "poblano chili peppers, charred, seeded, and deveined *see Cook's Note",
+        "id": "poblano pepper"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "egg whites, at room temperature"
+        "item": "egg whites, at room temperature",
+        "id": "egg white"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "egg yolk, at room temperature"
+        "item": "egg yolk, at room temperature",
+        "id": "egg yolk"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "All-purpose flour, for dredging"
+        "item": "All-purpose flour, for dredging",
+        "id": "all-purpose flour"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Vegetable oil, for frying"
+        "item": "Vegetable oil, for frying",
+        "id": "neutral oil"
       }
     ],
     "steps": [
@@ -12520,67 +12622,83 @@
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "olive oil"
+        "item": "olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "medium yellow onion, minced"
+        "item": "medium yellow onion, minced",
+        "id": "onion"
       },
       {
         "amount": "1",
         "unit": "stalk",
-        "item": "celery, chopped"
+        "item": "celery, chopped",
+        "id": "celery"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "carrot, chopped"
+        "item": "carrot, chopped",
+        "id": "carrot"
       },
       {
         "amount": "2",
         "unit": "clove",
-        "item": "garlic, minced"
+        "item": "garlic, minced",
+        "id": "garlic"
       },
       {
         "amount": "4",
         "unit": "oz",
-        "item": "green beans, ends trimmed and cut into 1-inch pieces"
+        "item": "green beans, ends trimmed and cut into 1-inch pieces",
+        "id": "green bean"
       },
       {
         "amount": "1",
         "unit": "can",
-        "item": "chickpeas, drained and rinsed"
+        "item": "chickpeas, drained and rinsed",
+        "id": "chickpea"
       },
       {
         "amount": "1 14.5",
         "unit": "oz",
-        "item": "can diced tomatoes, left undrained"
+        "item": "can diced tomatoes, left undrained",
+        "id": "canned tomato"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "medium zucchini"
+        "item": "medium zucchini",
+        "id": "zucchini"
       },
       {
         "amount": "6",
         "unit": "cup",
-        "item": "vegetable stock"
+        "item": "vegetable stock",
+        "id": "vegetable stock"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt and black pepper"
+        "item": "Salt and black pepper",
+        "id": "salt",
+        "alsoNeeds": [
+          "black pepper"
+        ]
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "dried ditalini"
+        "item": "dried ditalini",
+        "id": "ditalini"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "pesto"
+        "item": "pesto",
+        "id": "pesto"
       }
     ],
     "steps": [
@@ -14761,57 +14879,71 @@
       {
         "amount": "1",
         "unit": "cup",
-        "item": "brown rice (uncooked)"
+        "item": "brown rice (uncooked)",
+        "id": "brown rice"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "quick-cooking oats"
+        "item": "quick-cooking oats",
+        "id": "quick-cooking oat"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "onion, chopped"
+        "item": "onion, chopped",
+        "id": "onion"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "panko"
+        "item": "panko",
+        "id": "panko"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "milk"
+        "item": "milk",
+        "id": "milk"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "italian seasoning"
+        "item": "italian seasoning",
+        "id": "italian seasoning"
       },
       {
         "amount": "1/8",
         "unit": "tsp",
-        "item": "cayenne pepper"
+        "item": "cayenne pepper",
+        "id": "cayenne pepper"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large egg, beaten"
+        "item": "large egg, beaten",
+        "id": "egg"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "salt and pepper"
+        "item": "salt and pepper",
+        "id": "salt",
+        "alsoNeeds": [
+          "black pepper"
+        ]
       },
       {
         "amount": "4",
         "unit": "serving",
-        "item": "marinara sauce"
+        "item": "marinara sauce",
+        "id": "marinara sauce"
       },
       {
         "amount": "2",
         "unit": "servings",
-        "item": "toasted panko breadcrumbs"
+        "item": "toasted panko breadcrumbs",
+        "id": "panko"
       }
     ],
     "steps": [
@@ -15042,52 +15174,65 @@
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "olive oil"
+        "item": "olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "olive oil"
+        "item": "olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "leeks, white and green parts only; sliced into thin half-moons and rinsed well"
+        "item": "leeks, white and green parts only; sliced into thin half-moons and rinsed well",
+        "id": "leek"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "celery stalks, thinly sliced"
+        "item": "celery stalks, thinly sliced",
+        "id": "celery"
       },
       {
         "amount": "18",
         "unit": "oz",
-        "item": "frozen artichoke hearts, thawed, squeezed, and coarsely chopped"
+        "item": "frozen artichoke hearts, thawed, squeezed, and coarsely chopped",
+        "id": "artichoke heart"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "chicken broth"
+        "item": "chicken broth",
+        "id": "chicken broth"
       },
       {
         "amount": "8",
         "unit": "oz",
-        "item": "Neufchatel cheese, room temperature"
+        "item": "Neufchatel cheese, room temperature",
+        "id": "neufchatel cheese"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "lemon juice"
+        "item": "lemon juice",
+        "id": "lemon juice"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "course salt and ground pepper"
+        "item": "course salt and ground pepper",
+        "id": "salt",
+        "alsoNeeds": [
+          "black pepper"
+        ]
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "medium russet potatoes, very thinly sliced"
+        "item": "medium russet potatoes, very thinly sliced",
+        "id": "russet potato"
       }
     ],
     "steps": [
@@ -17192,72 +17337,89 @@
       {
         "amount": "",
         "unit": "",
-        "item": "Vegetable oil, for frying"
+        "item": "Vegetable oil, for frying",
+        "id": "neutral oil"
       },
       {
         "amount": "1/4",
         "unit": "",
-        "item": "red cabbage, thinly sliced (about 1 1/2 cups)"
+        "item": "red cabbage, thinly sliced (about 1 1/2 cups)",
+        "id": "red cabbage"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "fresh cilantro, roughly chopped"
+        "item": "fresh cilantro, roughly chopped",
+        "id": "cilantro"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "lime, juiced, plus wedges for serving"
+        "item": "lime, juiced, plus wedges for serving",
+        "id": "lime"
       },
       {
         "amount": "2",
         "unit": "tablespoon",
-        "item": "honey or agave nectar"
+        "item": "honey or agave nectar",
+        "id": "honey",
+        "alternatives": [
+          "agave nectar"
+        ]
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "mayonnaise"
+        "item": "mayonnaise",
+        "id": "mayonnaise"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Kosher salt"
+        "item": "Kosher salt",
+        "id": "salt"
       },
       {
         "amount": "12",
         "unit": "",
-        "item": "corn tortillas"
+        "item": "corn tortillas",
+        "id": "corn tortilla"
       },
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "chili powder"
+        "item": "chili powder",
+        "id": "red chili powder"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Freshly ground pepper"
+        "item": "Freshly ground pepper",
+        "id": "black pepper"
       },
       {
         "amount": "1 1/4",
         "unit": "pound",
-        "item": "skinless halibut fillet, cut into 2-by-1/2-inch pieces"
+        "item": "skinless halibut fillet, cut into 2-by-1/2-inch pieces",
+        "id": "halibut"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "avocado"
+        "item": "avocado",
+        "id": "avocado"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "fresh salsa"
+        "item": "fresh salsa",
+        "id": "salsa"
       }
     ],
     "steps": [
@@ -17609,42 +17771,50 @@
       {
         "amount": "1",
         "unit": "bunch",
-        "item": "asparagus, trimmed and halved crosswise"
+        "item": "asparagus, trimmed and halved crosswise",
+        "id": "asparagus"
       },
       {
         "amount": "2",
         "unit": "cup",
-        "item": "baby spinach leaves"
+        "item": "baby spinach leaves",
+        "id": "baby spinach"
       },
       {
         "amount": "2",
         "unit": "clove",
-        "item": "garlic"
+        "item": "garlic",
+        "id": "garlic"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "parmesan cheese, freshly grated"
+        "item": "parmesan cheese, freshly grated",
+        "id": "parmesan"
       },
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "pine nuts, toasted"
+        "item": "pine nuts, toasted",
+        "id": "pine nut"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "extra-virgin olive oil, plus more for topping"
+        "item": "extra-virgin olive oil, plus more for topping",
+        "id": "olive oil"
       },
       {
         "amount": "1/2",
         "unit": "",
-        "item": "lemon, juiced"
+        "item": "lemon, juiced",
+        "id": "lemon"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       }
     ],
     "steps": [
@@ -18849,67 +19019,80 @@
       {
         "amount": "3",
         "unit": "",
-        "item": "gyoza (or other small dumpling)"
+        "item": "gyoza (or other small dumpling)",
+        "id": "gyoza"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "sushi rice, cooked"
+        "item": "sushi rice, cooked",
+        "id": "sushi rice"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large eggs"
+        "item": "large eggs",
+        "id": "egg"
       },
       {
         "amount": "3/4",
         "unit": "tsp",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "1/4",
         "unit": "tsp",
-        "item": "mirin"
+        "item": "mirin",
+        "id": "mirin"
       },
       {
         "amount": "1",
         "unit": "pinch",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1/8",
         "unit": "tsp",
-        "item": "soy sauce"
+        "item": "soy sauce",
+        "id": "soy sauce"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "chikuwa, thawed"
+        "item": "chikuwa, thawed",
+        "id": "chikuwa"
       },
       {
         "amount": "1/4",
         "unit": "",
-        "item": "Persian cucumbers, see instructions for prep note"
+        "item": "Persian cucumbers, see instructions for prep note",
+        "id": "persian cucumber"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "broccoli, blanched"
+        "item": "broccoli, blanched",
+        "id": "broccoli"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "grape tomatoes"
+        "item": "grape tomatoes",
+        "id": "grape tomato"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "soy sauce, or other dipping sauce"
+        "item": "soy sauce, or other dipping sauce",
+        "id": "soy sauce"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "furikake"
+        "item": "furikake",
+        "id": "furikake"
       }
     ],
     "steps": [
@@ -19377,47 +19560,56 @@
       {
         "amount": "",
         "unit": "",
-        "item": "Nonstick cooking spray"
+        "item": "Nonstick cooking spray",
+        "id": "neutral oil"
       },
       {
         "amount": "8",
         "unit": "",
-        "item": "chocolate wafer cookies"
+        "item": "chocolate wafer cookies",
+        "id": "chocolate wafer cookie"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "bar (8 ounces) reduced-fat cream cheese"
+        "item": "bar (8 ounces) reduced-fat cream cheese",
+        "id": "cream cheese"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "reduced-fat sour cream"
+        "item": "reduced-fat sour cream",
+        "id": "sour cream"
       },
       {
         "amount": "1/3",
         "unit": "cup",
-        "item": "unsweetened cocoa powder"
+        "item": "unsweetened cocoa powder",
+        "id": "cocoa powder"
       },
       {
         "amount": "2",
         "unit": "tablespoon",
-        "item": "cornstarch"
+        "item": "cornstarch",
+        "id": "cornstarch"
       },
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large whole egg, plus 1 large egg white"
+        "item": "large whole egg, plus 1 large egg white",
+        "id": "egg"
       },
       {
         "amount": "1/3",
         "unit": "cup",
-        "item": "semisweet chocolate chips"
+        "item": "semisweet chocolate chips",
+        "id": "semi-sweet chocolate"
       }
     ],
     "steps": [
@@ -20511,77 +20703,92 @@
       {
         "amount": "1 3/4",
         "unit": "cup",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "fine semolina flour"
+        "item": "fine semolina flour",
+        "id": "semolina"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "baking powder"
+        "item": "baking powder",
+        "id": "baking powder"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "baking soda"
+        "item": "baking soda",
+        "id": "baking soda"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "12",
         "unit": "tablespoon",
-        "item": "unsalted butter, at room temperature"
+        "item": "unsalted butter, at room temperature",
+        "id": "butter"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "2",
         "unit": "tablespoon",
-        "item": "extra-virgin olive oil"
+        "item": "extra-virgin olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large egg"
+        "item": "large egg",
+        "id": "egg"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "egg yolk"
+        "item": "egg yolk",
+        "id": "egg yolk"
       },
       {
         "amount": "3",
         "unit": "tablespoon",
-        "item": "limoncello"
+        "item": "limoncello",
+        "id": "limoncello"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "vanilla extract"
+        "item": "vanilla extract",
+        "id": "vanilla extract"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "lemon, zested and juiced"
+        "item": "lemon, zested and juiced",
+        "id": "lemon"
       },
       {
         "amount": "8",
         "unit": "ounce",
-        "item": "white chocolate, chopped"
+        "item": "white chocolate, chopped",
+        "id": "white chocolate"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "pistachios, finely chopped"
+        "item": "pistachios, finely chopped",
+        "id": "pistachio"
       }
     ],
     "steps": [
@@ -21148,32 +21355,42 @@
       {
         "amount": "1",
         "unit": "",
-        "item": "eggplant (aubergine), about 450 g / 1 pound"
+        "item": "eggplant (aubergine), about 450 g / 1 pound",
+        "id": "eggplant"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "green chillies, as desired"
+        "item": "green chillies, as desired",
+        "id": "green chili"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "fresh ground coconut"
+        "item": "fresh ground coconut",
+        "id": "coconut"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "chopped fresh coriander leaves (cilantro)"
+        "item": "chopped fresh coriander leaves (cilantro)",
+        "id": "cilantro"
       },
       {
         "amount": "2",
         "unit": "cup",
-        "item": "paneer or yoghurt (optional)"
+        "item": "paneer or yoghurt (optional)",
+        "id": "paneer",
+        "alternatives": [
+          "yogurt"
+        ],
+        "optional": true
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt to taste"
+        "item": "Salt to taste",
+        "id": "salt"
       }
     ],
     "steps": [
@@ -21714,77 +21931,92 @@
       {
         "amount": "1",
         "unit": "cup",
-        "item": "besan (chickpea flour)"
+        "item": "besan (chickpea flour)",
+        "id": "gram flour"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Water"
+        "item": "Water",
+        "id": "water"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt"
+        "item": "Salt",
+        "id": "salt"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Turmeric powder"
+        "item": "Turmeric powder",
+        "id": "turmeric"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Vegetable oil"
+        "item": "Vegetable oil",
+        "id": "neutral oil"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "glasses cultured buttermilk"
+        "item": "glasses cultured buttermilk",
+        "id": "buttermilk"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "besan"
+        "item": "besan",
+        "id": "gram flour"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Turmeric powder"
+        "item": "Turmeric powder",
+        "id": "turmeric"
       },
       {
         "amount": "1",
         "unit": "pinch",
-        "item": "asafoetida"
+        "item": "asafoetida",
+        "id": "asafoetida"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt"
+        "item": "Salt",
+        "id": "salt"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Black mustard seeds"
+        "item": "Black mustard seeds",
+        "id": "black mustard seed"
       },
       {
         "amount": "1",
         "unit": "clove",
-        "item": "garlic, minced"
+        "item": "garlic, minced",
+        "id": "garlic"
       },
       {
         "amount": "1/4",
         "unit": "",
-        "item": "inch piece of ginger root, peeled and minced"
+        "item": "inch piece of ginger root, peeled and minced",
+        "id": "ginger"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "kadi patta (curry leaves)"
+        "item": "kadi patta (curry leaves)",
+        "id": "curry leaf"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "small onion, finely chopped"
+        "item": "small onion, finely chopped",
+        "id": "onion"
       }
     ],
     "steps": [
@@ -22294,72 +22526,86 @@
       {
         "amount": "675",
         "unit": "g",
-        "item": "(1.5 lb) skinless and boneless chicken breast, diced into cubes"
+        "item": "(1.5 lb) skinless and boneless chicken breast, diced into cubes",
+        "id": "chicken breast"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "mustard seed oil (see notes)"
+        "item": "mustard seed oil (see notes)",
+        "id": "mustard oil"
       },
       {
         "amount": "50",
         "unit": "ml",
-        "item": "(2 fl oz) milk"
+        "item": "(2 fl oz) milk",
+        "id": "milk"
       },
       {
         "amount": "150",
         "unit": "ml",
-        "item": "(5 fl oz) natural yoghurt"
+        "item": "(5 fl oz) natural yoghurt",
+        "id": "yogurt"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "lemon juice"
+        "item": "lemon juice",
+        "id": "lemon juice"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "tomato paste"
+        "item": "tomato paste",
+        "id": "tomato paste"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "chopped fresh cilantro (coriander leaves)"
+        "item": "chopped fresh cilantro (coriander leaves)",
+        "id": "cilantro"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "large cloves of garlic, finely chopped"
+        "item": "large cloves of garlic, finely chopped",
+        "id": "garlic"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "chopped fresh red chillis (depending on strength of the chillis and the desired strength of the marinade)"
+        "item": "chopped fresh red chillis (depending on strength of the chillis and the desired strength of the marinade)",
+        "id": "fresh red chili"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "paprika"
+        "item": "paprika",
+        "id": "paprika"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "garam masala"
+        "item": "garam masala",
+        "id": "garam masala"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "cumin powder"
+        "item": "cumin powder",
+        "id": "cumin"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "turmeric"
+        "item": "turmeric",
+        "id": "turmeric"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "salt (use rock salt for best results)"
+        "item": "salt (use rock salt for best results)",
+        "id": "salt"
       }
     ],
     "steps": [
@@ -22669,67 +22915,83 @@
       {
         "amount": "250",
         "unit": "g",
-        "item": "dried chickpeas"
+        "item": "dried chickpeas",
+        "id": "chickpea"
       },
       {
         "amount": "500",
         "unit": "ml",
-        "item": "water for cooking"
+        "item": "water for cooking",
+        "id": "water"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt (to taste)"
+        "item": "Salt (to taste)",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "oil"
+        "item": "oil",
+        "id": "neutral oil"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "coriander seeds"
+        "item": "coriander seeds",
+        "id": "coriander seed"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "cumin seeds (optional)"
+        "item": "cumin seeds (optional)",
+        "id": "cumin seed",
+        "optional": true
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "nigella seeds (optional)"
+        "item": "nigella seeds (optional)",
+        "id": "nigella seed",
+        "optional": true
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "onion, sliced"
+        "item": "onion, sliced",
+        "id": "onion"
       },
       {
         "amount": "1",
         "unit": "clove",
-        "item": "garlic, minced"
+        "item": "garlic, minced",
+        "id": "garlic"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "garam masala"
+        "item": "garam masala",
+        "id": "garam masala"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "medium tomatoes, chopped"
+        "item": "medium tomatoes, chopped",
+        "id": "tomato"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "turmeric"
+        "item": "turmeric",
+        "id": "turmeric"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Fresh coriander leaves (as a garnish)"
+        "item": "Fresh coriander leaves (as a garnish)",
+        "id": "cilantro",
+        "optional": true
       }
     ],
     "steps": [
@@ -23888,57 +24150,68 @@
       {
         "amount": "1",
         "unit": "cup",
-        "item": "rice"
+        "item": "rice",
+        "id": "rice"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "skinless black gram (urad dal)"
+        "item": "skinless black gram (urad dal)",
+        "id": "urad dal"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "yogurt"
+        "item": "yogurt",
+        "id": "yogurt"
       },
       {
         "amount": "1 1/2",
         "unit": "cup",
-        "item": "warm water"
+        "item": "warm water",
+        "id": "water"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt to taste"
+        "item": "Salt to taste",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "inch piece of ginger"
+        "item": "inch piece of ginger",
+        "id": "ginger"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "green chillies"
+        "item": "green chillies",
+        "id": "green chili"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "soda bicarbonate (baking soda)"
+        "item": "soda bicarbonate (baking soda)",
+        "id": "baking soda"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "lemon juice"
+        "item": "lemon juice",
+        "id": "lemon juice"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "oil"
+        "item": "oil",
+        "id": "neutral oil"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "finely-chopped coriander leaves"
+        "item": "finely-chopped coriander leaves",
+        "id": "cilantro"
       }
     ],
     "steps": [
@@ -24239,32 +24512,41 @@
       {
         "amount": "1",
         "unit": "cup",
-        "item": "white granulated sugar"
+        "item": "white granulated sugar",
+        "id": "sugar"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "water"
+        "item": "water",
+        "id": "water"
       },
       {
         "amount": "1 3/4",
         "unit": "cup",
-        "item": "(200 grams) plain flour (maida)"
+        "item": "(200 grams) plain flour (maida)",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "(10 grams) arrowroot starch or cornstarch"
+        "item": "(10 grams) arrowroot starch or cornstarch",
+        "id": "arrowroot starch",
+        "alternatives": [
+          "cornstarch"
+        ]
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "melted ghee, cooled"
+        "item": "melted ghee, cooled",
+        "id": "ghee"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "A few drops kewda essence (extract of Pandanus flower)"
+        "item": "A few drops kewda essence (extract of Pandanus flower)",
+        "id": "kewda essence"
       }
     ],
     "steps": [
@@ -24652,32 +24934,39 @@
       {
         "amount": "4",
         "unit": "cup",
-        "item": "parboiled short-grain rice"
+        "item": "parboiled short-grain rice",
+        "id": "parboiled rice"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "skinless white urad dal"
+        "item": "skinless white urad dal",
+        "id": "urad dal"
       },
       {
         "amount": "2",
         "unit": "teaspoon",
-        "item": "non-iodised salt"
+        "item": "non-iodised salt",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "fenugreek seeds (methi)"
+        "item": "fenugreek seeds (methi)",
+        "id": "fenugreek seed"
       },
       {
         "amount": "2",
         "unit": "cup",
-        "item": "chlorine-free water for fermenting (see note)"
+        "item": "chlorine-free water for fermenting (see note)",
+        "id": "water"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Fermentation starter (optional; see note)"
+        "item": "Fermentation starter (optional; see note)",
+        "id": "fermentation starter",
+        "optional": true
       }
     ],
     "steps": [
@@ -25935,77 +26224,96 @@
       {
         "amount": "1/2",
         "unit": "",
-        "item": "coconut, freshly grated"
+        "item": "coconut, freshly grated",
+        "id": "coconut"
       },
       {
         "amount": "1 1/2",
         "unit": "cup",
-        "item": "boiled vegetables (carrots, green beans, potatoes, peas, etc.)"
+        "item": "boiled vegetables (carrots, green beans, potatoes, peas, etc.)",
+        "id": "mixed vegetables"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "oil"
+        "item": "oil",
+        "id": "neutral oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "onion, diced"
+        "item": "onion, diced",
+        "id": "onion"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "very small piece of ginger, chopped"
+        "item": "very small piece of ginger, chopped",
+        "id": "ginger"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "green chillies (as desired), split lengthwise"
+        "item": "green chillies (as desired), split lengthwise",
+        "id": "green chili"
       },
       {
         "amount": "10",
         "unit": "",
-        "item": "curry leaves"
+        "item": "curry leaves",
+        "id": "curry leaf"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "small pieces cinnamon"
+        "item": "small pieces cinnamon",
+        "id": "cinnamon"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "pods green cardamom"
+        "item": "pods green cardamom",
+        "id": "cardamom"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "vinegar"
+        "item": "vinegar",
+        "id": "vinegar"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "flour or rice flour or cornstarch"
+        "item": "flour or rice flour or cornstarch",
+        "id": "all-purpose flour",
+        "alternatives": [
+          "rice flour",
+          "cornstarch"
+        ]
       },
       {
         "amount": "1",
         "unit": "pinch",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "ground black pepper"
+        "item": "ground black pepper",
+        "id": "black pepper"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "mustard seed"
+        "item": "mustard seed",
+        "id": "mustard seed"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "shallot"
+        "item": "shallot",
+        "id": "shallot"
       }
     ],
     "steps": [
@@ -26187,67 +26495,83 @@
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "white rice"
+        "item": "white rice",
+        "id": "white rice"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "moong dhal"
+        "item": "moong dhal",
+        "id": "moong dal"
       },
       {
         "amount": "3",
         "unit": "cup",
-        "item": "water"
+        "item": "water",
+        "id": "water"
       },
       {
         "amount": "1/2",
         "unit": "tablespoon",
-        "item": "turmeric powder"
+        "item": "turmeric powder",
+        "id": "turmeric"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "chopped cashew nuts"
+        "item": "chopped cashew nuts",
+        "id": "cashew"
       },
       {
         "amount": "10",
         "unit": "",
-        "item": "curry leaves"
+        "item": "curry leaves",
+        "id": "curry leaf"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "coarsely-ground black pepper"
+        "item": "coarsely-ground black pepper",
+        "id": "black pepper"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "cumin seeds"
+        "item": "cumin seeds",
+        "id": "cumin seed"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "green chillies, split lengthwise"
+        "item": "green chillies, split lengthwise",
+        "id": "green chili"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "oil"
+        "item": "oil",
+        "id": "neutral oil"
       },
       {
         "amount": "1",
         "unit": "tablespoon",
-        "item": "ghee (or substitute butter)"
+        "item": "ghee (or substitute butter)",
+        "id": "ghee",
+        "alternatives": [
+          "butter"
+        ]
       },
       {
         "amount": "1/2",
         "unit": "tablespoon",
-        "item": "mustard seed"
+        "item": "mustard seed",
+        "id": "mustard seed"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt to taste"
+        "item": "Salt to taste",
+        "id": "salt"
       }
     ],
     "steps": [
@@ -26272,37 +26596,44 @@
       {
         "amount": "1",
         "unit": "l",
-        "item": "(4 cups) milk"
+        "item": "(4 cups) milk",
+        "id": "milk"
       },
       {
         "amount": "250",
         "unit": "ml",
-        "item": "(1 cup) long grain white rice"
+        "item": "(1 cup) long grain white rice",
+        "id": "long grain white rice"
       },
       {
         "amount": "125",
         "unit": "ml",
-        "item": "(1/2 cup) white sugar"
+        "item": "(1/2 cup) white sugar",
+        "id": "sugar"
       },
       {
         "amount": "65",
         "unit": "ml",
-        "item": "(1/4 cup) sultanas (raisins)"
+        "item": "(1/4 cup) sultanas (raisins)",
+        "id": "sultana"
       },
       {
         "amount": "6",
         "unit": "",
-        "item": "cardamom pods"
+        "item": "cardamom pods",
+        "id": "cardamom"
       },
       {
         "amount": "65",
         "unit": "ml",
-        "item": "(1/4 cup) slivered blanched almonds"
+        "item": "(1/4 cup) slivered blanched almonds",
+        "id": "almond"
       },
       {
         "amount": "15",
         "unit": "ml",
-        "item": "(1 tbsp) rosewater"
+        "item": "(1 tbsp) rosewater",
+        "id": "rosewater"
       }
     ],
     "steps": [
@@ -26527,47 +26858,56 @@
       {
         "amount": "12",
         "unit": "",
-        "item": "small lemons (or 6 large), thin skins preferred"
+        "item": "small lemons (or 6 large), thin skins preferred",
+        "id": "lemon"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large lemon (or 2 small), juiced"
+        "item": "large lemon (or 2 small), juiced",
+        "id": "lemon"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "red chile powder"
+        "item": "red chile powder",
+        "id": "red chili powder"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "3",
         "unit": "tsp",
-        "item": "turmeric powder"
+        "item": "turmeric powder",
+        "id": "turmeric"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "fenugreek seed"
+        "item": "fenugreek seed",
+        "id": "fenugreek seed"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "black mustard seed"
+        "item": "black mustard seed",
+        "id": "black mustard seed"
       },
       {
         "amount": "1/4",
         "unit": "tsp",
-        "item": "asafoetida powder (omit for gluten-free version)"
+        "item": "asafoetida powder (omit for gluten-free version)",
+        "id": "asafoetida"
       }
     ],
     "steps": [
@@ -27151,67 +27491,81 @@
       {
         "amount": "8",
         "unit": "",
-        "item": "green chillies, chopped"
+        "item": "green chillies, chopped",
+        "id": "green chili"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "ginger paste"
+        "item": "ginger paste",
+        "id": "ginger paste"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "garlic paste"
+        "item": "garlic paste",
+        "id": "garlic paste"
       },
       {
         "amount": "800",
         "unit": "g",
-        "item": "(1.8 lb / 8 ea.) medium-sized pieces of chicken"
+        "item": "(1.8 lb / 8 ea.) medium-sized pieces of chicken",
+        "id": "chicken"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "oil"
+        "item": "oil",
+        "id": "neutral oil"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "fresh coconut, flesh grated"
+        "item": "fresh coconut, flesh grated",
+        "id": "coconut"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "onions, chopped"
+        "item": "onions, chopped",
+        "id": "onion"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "chilli powder"
+        "item": "chilli powder",
+        "id": "red chili powder"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "turmeric"
+        "item": "turmeric",
+        "id": "turmeric"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "garam masala"
+        "item": "garam masala",
+        "id": "garam masala"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "Malvani Special Masala"
+        "item": "Malvani Special Masala",
+        "id": "malvani masala"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt to taste"
+        "item": "Salt to taste",
+        "id": "salt"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Finely-chopped coriander leaves for garnishing"
+        "item": "Finely-chopped coriander leaves for garnishing",
+        "id": "cilantro",
+        "optional": true
       }
     ],
     "steps": [
@@ -28990,37 +29344,44 @@
       {
         "amount": "1",
         "unit": "",
-        "item": "small onion"
+        "item": "small onion",
+        "id": "onion"
       },
       {
         "amount": "2",
         "unit": "clove",
-        "item": "garlic"
+        "item": "garlic",
+        "id": "garlic"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Olive oil"
+        "item": "Olive oil",
+        "id": "olive oil"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "curry powder"
+        "item": "curry powder",
+        "id": "curry powder"
       },
       {
         "amount": "1",
         "unit": "can",
-        "item": "coconut milk"
+        "item": "coconut milk",
+        "id": "coconut milk"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "potatoes, chopped (Yukon gold are good, but use whatever you like)"
+        "item": "potatoes, chopped (Yukon gold are good, but use whatever you like)",
+        "id": "potato"
       },
       {
         "amount": "1",
         "unit": "can",
-        "item": "chickpeas (unsalted, if available)"
+        "item": "chickpeas (unsalted, if available)",
+        "id": "chickpea"
       }
     ],
     "steps": [
@@ -29226,82 +29587,98 @@
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "split peas"
+        "item": "split peas",
+        "id": "split pea"
       },
       {
         "amount": "1",
         "unit": "tbsp",
-        "item": "coriander seeds"
+        "item": "coriander seeds",
+        "id": "coriander seed"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "fenugreek seeds"
+        "item": "fenugreek seeds",
+        "id": "fenugreek seed"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "dry red chillies"
+        "item": "dry red chillies",
+        "id": "red chili"
       },
       {
         "amount": "4",
         "unit": "cup",
-        "item": "cooked white rice"
+        "item": "cooked white rice",
+        "id": "white rice"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Vegetable oil"
+        "item": "Vegetable oil",
+        "id": "neutral oil"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "mustard seeds"
+        "item": "mustard seeds",
+        "id": "mustard seed"
       },
       {
         "amount": "3",
         "unit": "tbsp",
-        "item": "gingely (sesame) oil (\"Til\" oil in Hindi, \"Nallennai\" in Tamil)"
+        "item": "gingely (sesame) oil (\"Til\" oil in Hindi, \"Nallennai\" in Tamil)",
+        "id": "sesame oil"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "split peas"
+        "item": "split peas",
+        "id": "split pea"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "groundnuts (peanuts)"
+        "item": "groundnuts (peanuts)",
+        "id": "peanut"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "asafoetida (heengh in Hindi, perungayum in Tamil)"
+        "item": "asafoetida (heengh in Hindi, perungayum in Tamil)",
+        "id": "asafoetida"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "dry red chillies"
+        "item": "dry red chillies",
+        "id": "red chili"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "curry leaves"
+        "item": "curry leaves",
+        "id": "curry leaf"
       },
       {
         "amount": "1.5",
         "unit": "tbsp",
-        "item": "tamarind concentrate"
+        "item": "tamarind concentrate",
+        "id": "tamarind"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "turmeric powder"
+        "item": "turmeric powder",
+        "id": "turmeric"
       },
       {
         "amount": "3/4",
         "unit": "tbsp",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       }
     ],
     "steps": [
@@ -29691,37 +30068,47 @@
       {
         "amount": "250",
         "unit": "g",
-        "item": "paneer or chenna (curdled milk)"
+        "item": "paneer or chenna (curdled milk)",
+        "id": "paneer",
+        "alternatives": [
+          "chenna"
+        ]
       },
       {
         "amount": "2 1/2",
         "unit": "tbsp",
-        "item": "refined flour (maida)"
+        "item": "refined flour (maida)",
+        "id": "all-purpose flour"
       },
       {
         "amount": "4",
         "unit": "cup",
-        "item": "white granulated sugar"
+        "item": "white granulated sugar",
+        "id": "sugar"
       },
       {
         "amount": "10",
         "unit": "cup",
-        "item": "milk"
+        "item": "milk",
+        "id": "milk"
       },
       {
         "amount": "1/4",
         "unit": "tsp",
-        "item": "cardamom powder"
+        "item": "cardamom powder",
+        "id": "cardamom"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "almonds"
+        "item": "almonds",
+        "id": "almond"
       },
       {
         "amount": "4",
         "unit": "",
-        "item": "pistachios"
+        "item": "pistachios",
+        "id": "pistachio"
       }
     ],
     "steps": [
@@ -31985,67 +32372,88 @@
       {
         "amount": "425",
         "unit": "ml",
-        "item": "basmati rice"
+        "item": "basmati rice",
+        "id": "basmati rice"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "medium onion or 1/2 large onion, peeled and finely chopped"
+        "item": "medium onion or 1/2 large onion, peeled and finely chopped",
+        "id": "onion"
       },
       {
         "amount": "1",
         "unit": "clove",
-        "item": "garlic"
+        "item": "garlic",
+        "id": "garlic"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Garam masala spice mixture"
+        "item": "Garam masala spice mixture",
+        "id": "garam masala"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "ground cumin"
+        "item": "ground cumin",
+        "id": "cumin"
       },
       {
         "amount": "1 1/2",
         "unit": "tsp",
-        "item": "ground coriander"
+        "item": "ground coriander",
+        "id": "coriander"
       },
       {
         "amount": "250",
         "unit": "g",
-        "item": "minced meat (lamb or mutton are most common, but you could use beef or imitation meat)"
+        "item": "minced meat (lamb or mutton are most common, but you could use beef or imitation meat)",
+        "id": "ground lamb",
+        "alternatives": [
+          "ground beef",
+          "minced meat"
+        ]
       },
       {
         "amount": "400",
         "unit": "g",
-        "item": "tinned chickpeas (240 g drained weight)"
+        "item": "tinned chickpeas (240 g drained weight)",
+        "id": "chickpea"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large tomato, diced, or 1 dozen cherry tomatoes, cut into eighths"
+        "item": "large tomato, diced, or 1 dozen cherry tomatoes, cut into eighths",
+        "id": "tomato",
+        "alternatives": [
+          "cherry tomato"
+        ]
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Frozen petits pois (optional)"
+        "item": "Frozen petits pois (optional)",
+        "id": "green pea",
+        "optional": true
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt"
+        "item": "Salt",
+        "id": "salt"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Oil (use sunflower oil or a similar vegetable oil without a strong taste) or ghee"
+        "item": "Oil (use sunflower oil or a similar vegetable oil without a strong taste) or ghee",
+        "id": "neutral oil"
       },
       {
         "amount": "575",
         "unit": "ml",
-        "item": "water"
+        "item": "water",
+        "id": "water"
       }
     ],
     "steps": [
@@ -32487,62 +32895,74 @@
       {
         "amount": "2",
         "unit": "cup",
-        "item": "chickpea flour (besan)"
+        "item": "chickpea flour (besan)",
+        "id": "gram flour"
       },
       {
         "amount": "1 1/2",
         "unit": "cup",
-        "item": "curds/yogurt (dahi)"
+        "item": "curds/yogurt (dahi)",
+        "id": "yogurt"
       },
       {
         "amount": "1",
         "unit": "tsp",
-        "item": "ginger-green chilli paste"
+        "item": "ginger-green chilli paste",
+        "id": "ginger-green chili paste"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "curry leaves (kadi patta)"
+        "item": "curry leaves (kadi patta)",
+        "id": "curry leaf"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "sugar"
+        "item": "sugar",
+        "id": "sugar"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "Salt to taste"
+        "item": "Salt to taste",
+        "id": "salt"
       },
       {
         "amount": "2",
         "unit": "tsp",
-        "item": "ghee (clarified butter)"
+        "item": "ghee (clarified butter)",
+        "id": "ghee"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "cumin seeds (jeera)"
+        "item": "cumin seeds (jeera)",
+        "id": "cumin seed"
       },
       {
         "amount": "1/2",
         "unit": "tsp",
-        "item": "mustard seeds (rai/sarson)"
+        "item": "mustard seeds (rai/sarson)",
+        "id": "mustard seed"
       },
       {
         "amount": "1",
         "unit": "pinch",
-        "item": "asafoetida (hing)"
+        "item": "asafoetida (hing)",
+        "id": "asafoetida"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "red chilli, broken into pieces"
+        "item": "red chilli, broken into pieces",
+        "id": "red chili"
       },
       {
         "amount": "2",
         "unit": "tbsp",
-        "item": "chopped fresh coriander (dhania)"
+        "item": "chopped fresh coriander (dhania)",
+        "id": "cilantro"
       }
     ],
     "steps": [
@@ -32572,57 +32992,68 @@
       {
         "amount": "2 1/4",
         "unit": "cups",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "baking soda"
+        "item": "baking soda",
+        "id": "baking soda"
       },
       {
         "amount": "1 1/2",
         "unit": "teaspoons",
-        "item": "cornstarch"
+        "item": "cornstarch",
+        "id": "cornstarch"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "unsalted butter, melted and cooled"
+        "item": "unsalted butter, melted and cooled",
+        "id": "butter"
       },
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "light or dark brown sugar, packed"
+        "item": "light or dark brown sugar, packed",
+        "id": "brown sugar"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "granulated sugar"
+        "item": "granulated sugar",
+        "id": "sugar"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "large egg"
+        "item": "large egg",
+        "id": "egg"
       },
       {
         "amount": "1",
         "unit": "",
-        "item": "egg yolk"
+        "item": "egg yolk",
+        "id": "egg yolk"
       },
       {
         "amount": "2",
         "unit": "teaspoons",
-        "item": "vanilla extract"
+        "item": "vanilla extract",
+        "id": "vanilla extract"
       },
       {
         "amount": "1 1/4",
         "unit": "cups",
-        "item": "semi-sweet chocolate chips"
+        "item": "semi-sweet chocolate chips",
+        "id": "semi-sweet chocolate"
       }
     ],
     "steps": [
@@ -32650,47 +33081,56 @@
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "unsalted butter, cut into pieces"
+        "item": "unsalted butter, cut into pieces",
+        "id": "butter"
       },
       {
         "amount": "4",
         "unit": "ounces",
-        "item": "semi-sweet chocolate, chopped (divided)"
+        "item": "semi-sweet chocolate, chopped (divided)",
+        "id": "semi-sweet chocolate"
       },
       {
         "amount": "1 2/3",
         "unit": "cups",
-        "item": "granulated sugar"
+        "item": "granulated sugar",
+        "id": "sugar"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "large eggs, at room temperature"
+        "item": "large eggs, at room temperature",
+        "id": "egg"
       },
       {
         "amount": "2",
         "unit": "teaspoons",
-        "item": "vanilla extract"
+        "item": "vanilla extract",
+        "id": "vanilla extract"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "unsweetened cocoa powder"
+        "item": "unsweetened cocoa powder",
+        "id": "cocoa powder"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "3/4",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "semi-sweet chocolate chips"
+        "item": "semi-sweet chocolate chips",
+        "id": "semi-sweet chocolate"
       }
     ],
     "steps": [
@@ -32718,57 +33158,68 @@
       {
         "amount": "1 3/4",
         "unit": "cups",
-        "item": "cake flour"
+        "item": "cake flour",
+        "id": "cake flour"
       },
       {
         "amount": "3/4",
         "unit": "teaspoon",
-        "item": "baking powder"
+        "item": "baking powder",
+        "id": "baking powder"
       },
       {
         "amount": "1/4",
         "unit": "teaspoon",
-        "item": "baking soda"
+        "item": "baking soda",
+        "id": "baking soda"
       },
       {
         "amount": "1/4",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "unsalted butter, softened"
+        "item": "unsalted butter, softened",
+        "id": "butter"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "granulated sugar"
+        "item": "granulated sugar",
+        "id": "sugar"
       },
       {
         "amount": "3",
         "unit": "",
-        "item": "large egg whites, at room temperature"
+        "item": "large egg whites, at room temperature",
+        "id": "egg white"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "full-fat sour cream, at room temperature"
+        "item": "full-fat sour cream, at room temperature",
+        "id": "sour cream"
       },
       {
         "amount": "2",
         "unit": "teaspoons",
-        "item": "vanilla extract"
+        "item": "vanilla extract",
+        "id": "vanilla extract"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "whole milk, at room temperature"
+        "item": "whole milk, at room temperature",
+        "id": "milk"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "vanilla buttercream, to frost"
+        "item": "vanilla buttercream, to frost",
+        "id": "vanilla buttercream"
       }
     ],
     "steps": [
@@ -32793,97 +33244,124 @@
       {
         "amount": "1 1/3",
         "unit": "cups",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "baking powder"
+        "item": "baking powder",
+        "id": "baking powder"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "baking soda"
+        "item": "baking soda",
+        "id": "baking soda"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "ground cinnamon"
+        "item": "ground cinnamon",
+        "id": "cinnamon"
       },
       {
         "amount": "3/4",
         "unit": "teaspoon",
-        "item": "ground ginger"
+        "item": "ground ginger",
+        "id": "ground ginger"
       },
       {
         "amount": "1/4",
         "unit": "teaspoon",
-        "item": "ground nutmeg"
+        "item": "ground nutmeg",
+        "id": "nutmeg"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "vegetable oil"
+        "item": "vegetable oil",
+        "id": "neutral oil"
       },
       {
         "amount": "1",
         "unit": "cup",
-        "item": "light or dark brown sugar, packed"
+        "item": "light or dark brown sugar, packed",
+        "id": "brown sugar"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "large eggs, at room temperature"
+        "item": "large eggs, at room temperature",
+        "id": "egg"
       },
       {
         "amount": "1/3",
         "unit": "cup",
-        "item": "unsweetened applesauce, sour cream or plain yogurt"
+        "item": "unsweetened applesauce, sour cream or plain yogurt",
+        "id": "unsweetened applesauce",
+        "alternatives": [
+          "sour cream",
+          "yogurt"
+        ]
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "vanilla extract"
+        "item": "vanilla extract",
+        "id": "vanilla extract"
       },
       {
         "amount": "1 1/2",
         "unit": "cups",
-        "item": "carrots, peeled and shredded"
+        "item": "carrots, peeled and shredded",
+        "id": "carrot"
       },
       {
         "amount": "3/4",
         "unit": "cup",
-        "item": "walnuts or pecans, chopped (optional)"
+        "item": "walnuts or pecans, chopped (optional)",
+        "id": "walnut",
+        "alternatives": [
+          "pecan"
+        ],
+        "optional": true
       },
       {
         "amount": "8",
         "unit": "ounces",
-        "item": "full-fat block cream cheese, softened"
+        "item": "full-fat block cream cheese, softened",
+        "id": "cream cheese"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "unsalted butter, softened"
+        "item": "unsalted butter, softened",
+        "id": "butter"
       },
       {
         "amount": "3",
         "unit": "cups",
-        "item": "confectioners' sugar"
+        "item": "confectioners' sugar",
+        "id": "confectioners' sugar"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "vanilla extract, for the frosting"
+        "item": "vanilla extract, for the frosting",
+        "id": "vanilla extract"
       },
       {
         "amount": "1/8",
         "unit": "teaspoon",
-        "item": "salt, for the frosting"
+        "item": "salt, for the frosting",
+        "id": "salt"
       }
     ],
     "steps": [
@@ -32908,102 +33386,126 @@
       {
         "amount": "2",
         "unit": "cups",
-        "item": "all-purpose flour"
+        "item": "all-purpose flour",
+        "id": "all-purpose flour"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "baking soda"
+        "item": "baking soda",
+        "id": "baking soda"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "baking powder"
+        "item": "baking powder",
+        "id": "baking powder"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "ground cinnamon"
+        "item": "ground cinnamon",
+        "id": "cinnamon"
       },
       {
         "amount": "3/4",
         "unit": "teaspoon",
-        "item": "salt"
+        "item": "salt",
+        "id": "salt"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "unsalted butter, softened"
+        "item": "unsalted butter, softened",
+        "id": "butter"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "light or dark brown sugar, packed"
+        "item": "light or dark brown sugar, packed",
+        "id": "brown sugar"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "granulated sugar"
+        "item": "granulated sugar",
+        "id": "sugar"
       },
       {
         "amount": "2",
         "unit": "",
-        "item": "large eggs, at room temperature"
+        "item": "large eggs, at room temperature",
+        "id": "egg"
       },
       {
         "amount": "1/4",
         "unit": "cup",
-        "item": "sour cream or plain yogurt, at room temperature"
+        "item": "sour cream or plain yogurt, at room temperature",
+        "id": "sour cream",
+        "alternatives": [
+          "yogurt"
+        ]
       },
       {
         "amount": "2",
         "unit": "teaspoons",
-        "item": "vanilla extract"
+        "item": "vanilla extract",
+        "id": "vanilla extract"
       },
       {
         "amount": "1 1/2",
         "unit": "cups",
-        "item": "mashed ripe bananas (about 3 large)"
+        "item": "mashed ripe bananas (about 3 large)",
+        "id": "banana"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "buttermilk, at room temperature"
+        "item": "buttermilk, at room temperature",
+        "id": "buttermilk"
       },
       {
         "amount": "8",
         "unit": "ounces",
-        "item": "full-fat block cream cheese, softened"
+        "item": "full-fat block cream cheese, softened",
+        "id": "cream cheese"
       },
       {
         "amount": "1/2",
         "unit": "cup",
-        "item": "unsalted butter, softened, for the frosting"
+        "item": "unsalted butter, softened, for the frosting",
+        "id": "butter"
       },
       {
         "amount": "3",
         "unit": "cups",
-        "item": "confectioners' sugar, plus 1/4 cup more if needed"
+        "item": "confectioners' sugar, plus 1/4 cup more if needed",
+        "id": "confectioners' sugar"
       },
       {
         "amount": "1",
         "unit": "teaspoon",
-        "item": "vanilla extract, for the frosting"
+        "item": "vanilla extract, for the frosting",
+        "id": "vanilla extract"
       },
       {
         "amount": "1/2",
         "unit": "teaspoon",
-        "item": "ground cinnamon, for the frosting"
+        "item": "ground cinnamon, for the frosting",
+        "id": "cinnamon"
       },
       {
         "amount": "1/8",
         "unit": "teaspoon",
-        "item": "salt, for the frosting"
+        "item": "salt, for the frosting",
+        "id": "salt"
       },
       {
         "amount": "",
         "unit": "",
-        "item": "banana slices, to garnish (optional)"
+        "item": "banana slices, to garnish (optional)",
+        "id": "banana",
+        "optional": true
       }
     ],
     "steps": [

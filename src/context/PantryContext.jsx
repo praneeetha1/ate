@@ -2,7 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { supabase } from '../lib/supabase'
 import { useAuth } from './AuthContext'
 import { useToast } from './ToastContext'
-import { canonicalItem, isStaple, varietalHead } from '../utils/ingredients'
+import { PANTRY_STAPLES } from '../utils/ingredients'
+import { resolveIngredient } from '../utils/registry'
+import { matchIngredient, evaluateRecipe } from '../utils/readiness'
 import { nextPantryState } from '../utils/pantry'
 import { describeError } from '../utils/errors'
 
@@ -27,6 +29,8 @@ const PantryContext = createContext(null)
 const ABSENT = {
   pantry:         new Map(),
   pantryState:    () => 'unknown',
+  stateOf:        () => ({ state: 'unknown', assumed: false }),
+  evaluate:       recipe => evaluateRecipe(recipe, () => ({ state: 'unknown', assumed: false })),
   isAssumed:      () => false,
   setPantryState: () => {},
   cyclePantry:    () => {},
@@ -46,12 +50,12 @@ export function normalizePantryRows(rows) {
   const next = new Map()
   const stale = []
   for (const r of rows) {
-    const item = canonicalItem(r.item) || r.item
+    const item = resolveIngredient(r.item).id || r.item
     if (item !== r.item) stale.push(r.item)
     const prev = next.get(item)
     if (!prev || (SCARCITY[r.state] || 0) > (SCARCITY[prev] || 0)) next.set(item, r.state)
   }
-  const renamed = new Set(rows.filter(r => stale.includes(r.item)).map(r => canonicalItem(r.item)))
+  const renamed = new Set(rows.filter(r => stale.includes(r.item)).map(r => resolveIngredient(r.item).id))
   return { next, stale, migrate: [...renamed].map(item => [item, next.get(item)]) }
 }
 
@@ -106,12 +110,21 @@ export function PantryProvider({ children }) {
         // them and a later change or removal reaches them. Best-effort: if it
         // fails, the next load just does it again.
         if (stale.length) {
+          // The old rows are deleted only once the new ones are confirmed
+          // written. supabase-js reports a failed write as { error }, not a
+          // rejection, so an unchecked .then deleted them regardless — losing
+          // the item whenever the upsert failed. On failure nothing changes
+          // and the next load tries again.
           Promise.resolve(supabase.from('pantry').upsert(
             migrate.map(([item, state]) => ({ user_id: uid, item, state, updated_at: new Date().toISOString() })),
             { onConflict: 'user_id,item' },
           ))
-            .then(() => supabase.from('pantry').delete().eq('user_id', uid).in('item', stale))
-            .catch(err => console.error('Could not migrate pantry names:', err))
+            .then(({ error }) => {
+              if (error) throw error
+              return supabase.from('pantry').delete().eq('user_id', uid).in('item', stale)
+            })
+            .then(res => { if (res?.error) throw res.error })
+            .catch(err => console.error('Could not migrate pantry names; old rows kept:', err))
         }
         pantryRef.current = next
         setPantry(next)
@@ -134,24 +147,36 @@ export function PantryProvider({ children }) {
    * what keeps 31% of the catalog's ingredient lines out of the pantry
    * entirely. An explicit row always wins, so marking salt `out` sticks.
    */
-  const pantryState = useCallback(raw => {
-    const item = canonicalItem(raw)
-    if (!item) return 'unknown'
-    if (pantry.has(item)) return pantry.get(item)
-
-    // Falling back to the generic: having "mushrooms" answers for a recipe
-    // asking for button mushrooms, and "chicken" for chicken breast. Scoped to
-    // the heads where the varietal is a cultivar or a cut rather than a
-    // different purchase — see VARIETAL_HEADS. An exact row always wins, so
-    // marking "button mushroom" out still sticks for that one specifically.
-    const head = varietalHead(item)
-    if (head && pantry.has(head)) return pantry.get(head)
-
-    return uid && isStaple(item) ? 'have' : 'unknown'
+  /**
+   * What the pantry says about one exact id, and nothing more:
+   * { state: 'have' | 'low' | 'out' | 'unknown', assumed }.
+   *
+   * A shelf-stable staple (salt, oil, everyday spices) counts as present
+   * without a row, but flagged `assumed` so nothing reports it as confirmed.
+   * An explicit row always wins, so marking salt Out sticks. What can stand
+   * in for what is the evaluator's job (readiness.js), not this one's.
+   */
+  const stateOf = useCallback(id => {
+    if (pantry.has(id)) return { state: pantry.get(id), assumed: false }
+    if (uid && PANTRY_STAPLES.has(id)) return { state: 'have', assumed: true }
+    return { state: 'unknown', assumed: false }
   }, [pantry, uid])
 
+  /** have / low / out / unknown for one ingredient, through everything that can stand in for it. */
+  const pantryState = useCallback(raw => {
+    const id = resolveIngredient(raw).id
+    if (!id) return 'unknown'
+    const m = matchIngredient(id, stateOf)
+    if (m.status === 'have' || m.status === 'assumed') return 'have'
+    if (m.status === 'low') return 'low'
+    return m.via === 'out' ? 'out' : 'unknown'
+  }, [stateOf])
+
+  /** The whole readiness picture for a recipe — see evaluateRecipe(). */
+  const evaluate = useCallback(recipe => evaluateRecipe(recipe, stateOf), [stateOf])
+
   const setPantryState = useCallback((raw, state) => {
-    const item = canonicalItem(raw)
+    const item = resolveIngredient(raw).id
     if (!item || !uid) return
 
     if (state === 'unknown') {
@@ -201,28 +226,27 @@ export function PantryProvider({ children }) {
    * isn't one, so the count can now be split.
    */
   const isAssumed = useCallback(raw => {
-    const item = canonicalItem(raw)
-    if (!item || !uid) return false
-    if (pantry.has(item)) return false
-    const head = varietalHead(item)
-    if (head && pantry.has(head)) return false
-    return isStaple(item)
-  }, [pantry, uid])
+    const id = resolveIngredient(raw).id
+    return !!id && matchIngredient(id, stateOf).status === 'assumed'
+  }, [stateOf])
 
   /** One tap: have -> low -> out -> (unknown, or back to have for a staple). */
   const cyclePantry = useCallback(raw => {
-    const item = canonicalItem(raw)
+    const item = resolveIngredient(raw).id
     if (!item || !uid) return
+    const staple = PANTRY_STAPLES.has(item)
     const current = pantryRef.current.has(item)
       ? pantryRef.current.get(item)
-      : (isStaple(item) ? 'have' : 'unknown')
-    setPantryState(item, nextPantryState(current, isStaple(item)))
+      : (staple ? 'have' : 'unknown')
+    setPantryState(item, nextPantryState(current, staple))
   }, [uid, setPantryState])
 
   return (
     <PantryContext.Provider value={{
       pantry,
       pantryState,
+      stateOf,
+      evaluate,
       isAssumed,
       setPantryState,
       cyclePantry,

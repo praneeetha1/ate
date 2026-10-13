@@ -15,6 +15,9 @@ vi.mock('../lib/supabase', () => ({
 }))
 
 const { default: Home }  = await import('./Home')
+const { default: CATALOG } = await import('../test/catalogFixture')
+const { pantryFit, compareFit } = await import('../utils/pantry')
+const { PANTRY_STAPLES } = await import('../utils/ingredients')
 const { AppProvider }    = await import('../context/AppContext')
 const { PantryProvider } = await import('../context/PantryContext')
 const { AuthProvider }   = await import('../context/AuthContext')
@@ -38,6 +41,20 @@ function renderHome({ signedIn = true, pantry = [] } = {}) {
 }
 
 const toggle = () => screen.getByRole('button', { name: /what can i make/i })
+
+/** Card titles in the ranked grid, top to bottom. */
+const shownOrder = () => [...document.querySelectorAll('.grid > div')]
+  .map(d => d.querySelector('button')?.textContent.trim()).filter(Boolean)
+
+/** The order the shared ranking gives the test catalog for this pantry (staples assumed). */
+function expectedOrder(rows, keep = () => true) {
+  const stateOf = id => id in rows ? { state: rows[id], assumed: false }
+    : PANTRY_STAPLES.has(id) ? { state: 'have', assumed: true } : { state: 'unknown', assumed: false }
+  return CATALOG.filter(keep)
+    .map(r => ({ name: r.name, fit: pantryFit(r, stateOf) }))
+    .sort((a, b) => compareFit(a.fit, b.fit))
+    .map(x => x.name)
+}
 
 beforeEach(() => { localStorage.clear() })
 
@@ -123,10 +140,12 @@ describe('the must-use filter', () => {
   })
 
   // A staple is present without ever being tracked, so it qualifies too.
-  it('offers a staple main the cook was never asked about', async () => {
-    await openRanking([])
-    await waitFor(() => expect(row()).toBeInTheDocument())
-    expect(chip('egg')).toBeInTheDocument()
+  // Eggs used to be assumed and so were offered here unasked. They aren't any
+  // more: a must-use chip is only for a main the cook said they have.
+  it('does not offer eggs nobody said were in the kitchen', async () => {
+    await openRanking([{ user_id: 'user-1', item: 'garlic', state: 'have' }])
+    await screen.findByRole('heading', { name: /closest to ready/i })
+    expect(screen.queryByRole('button', { name: /^egg$/i })).toBeNull()
   })
 
   it('says nothing when the cook has no mains at all', async () => {
@@ -212,17 +231,12 @@ describe('what can I make', () => {
     await user.click(toggle())
     await screen.findByRole('heading', { name: /closest to ready/i })
 
-    // Every card carries a verdict, and they only get worse down the list.
+    // Every card carries a verdict...
     const captions = await screen.findAllByText(/you have all|missing \d+ of \d+/i)
     expect(captions.length).toBeGreaterThan(10)
-
-    const counts = captions.map(el => {
-      const m = el.textContent.match(/missing (\d+) of/i)
-      return m ? Number(m[1]) : 0
-    })
-    for (let i = 1; i < counts.length; i++) {
-      expect(counts[i]).toBeGreaterThanOrEqual(counts[i - 1])
-    }
+    // ...and the order is the shared ranking: missing mains first, then
+    // anything missing, then uncertainty, then hands-on time.
+    expect(shownOrder()).toEqual(expectedOrder({ garlic: 'have' }))
   })
 
   it('reflects a low state in the caption', async () => {
@@ -331,12 +345,7 @@ describe('filtering what I can make by category', () => {
     await user.click(screen.getByRole('button', { name: 'Breakfast' }))
 
     await waitFor(() => expect(titles().length).toBeGreaterThan(2))
-    const missing = [...document.querySelectorAll('.grid > div')]
-      .map(d => d.textContent.match(/Missing (\d+) of/))
-      .map(m => (m ? Number(m[1]) : 0))
-    for (let i = 1; i < missing.length; i++) {
-      expect(missing[i]).toBeGreaterThanOrEqual(missing[i - 1])
-    }
+    expect(titles()).toEqual(expectedOrder({ garlic: 'have' }, r => r.category === 'Breakfast'))
   })
 
   it('goes back to everything on Any course', async () => {

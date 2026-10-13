@@ -69,9 +69,9 @@ describe('canonicalItem', () => {
     expect(canonicalItem('granulated sugar')).toBe('sugar')
   })
 
-  it('folds plurals, egg parts and cheese names', () => {
+  it('folds plurals and cheese names, but keeps egg parts their own thing', () => {
     expect(canonicalItem('eggs')).toBe('egg')
-    expect(canonicalItem('large egg yolk, beaten')).toBe('egg')
+    expect(canonicalItem('large egg yolk, beaten')).toBe('egg yolk')
     expect(canonicalItem('Parmigiano-Reggiano, grated')).toBe('parmesan')
     expect(canonicalItem('scallions, thinly sliced')).toBe('green onion')
   })
@@ -85,7 +85,7 @@ describe('canonicalItem', () => {
 
   it('collapses "ground" for spices but not for meat', () => {
     expect(canonicalItem('ground cinnamon')).toBe('cinnamon')
-    expect(canonicalItem('freshly ground black pepper')).toBe('pepper')
+    expect(canonicalItem('freshly ground black pepper')).toBe('black pepper')
     expect(canonicalItem('ground beef')).toBe('ground beef')
     expect(canonicalItem('ground lamb')).toBe('ground lamb')
   })
@@ -126,10 +126,18 @@ describe('salt and pepper', () => {
 describe('isStaple', () => {
   it('covers the things nobody wants to tick off', () => {
     for (const s of ['Kosher salt', 'freshly ground black pepper', 'water',
-                     'extra-virgin olive oil', 'vegetable oil', 'eggs',
-                     'unsalted butter', 'granulated sugar', 'all-purpose flour',
+                     'vegetable oil', 'granulated sugar',
                      'Kosher salt and freshly ground black pepper']) {
       expect(isStaple(s)).toBe(true)
+    }
+  })
+
+  // These go off or run out, so assuming them made baking recipes look ready
+  // in kitchens that had none of them. The cook marks them instead.
+  it('does not assume anything perishable or that runs out', () => {
+    for (const s of ['eggs', 'milk', 'unsalted butter', 'all-purpose flour',
+                     'extra-virgin olive oil', 'baking powder', 'honey']) {
+      expect(isStaple(s)).toBe(false)
     }
   })
 
@@ -457,7 +465,9 @@ describe('the whole catalog', () => {
     expect(median).toBeLessThanOrEqual(8)
 
     const stapleLines = lines.filter(i => isStaple(i.item)).length
-    expect(stapleLines / lines.length).toBeGreaterThan(0.25)
+    // Lower than before eggs, butter and flour stopped being assumed — still a
+    // fifth of every line the cook is never asked about.
+    expect(stapleLines / lines.length).toBeGreaterThan(0.2)
   })
 
   // Asserted as a ratio, not a count: the catalog grows, and an absolute cap
@@ -507,4 +517,55 @@ describe('pantry misses found in live testing', () => {
     'knows the Indian name %s', name => {
       expect(canonicalItem(name)).not.toBe(name)
     })
+})
+
+/**
+ * The review's acceptance list for "stop incorrect matches". Each of these was
+ * a real wrong answer: having black pepper satisfied a bell pepper recipe,
+ * having potatoes satisfied sweet potato.
+ */
+describe('different foods stay different', () => {
+  it('keeps black pepper, bell pepper and chili apart', () => {
+    expect(canonicalItem('freshly ground pepper')).toBe('black pepper')
+    expect(canonicalItem('red bell pepper, seeded')).toBe('red bell pepper')
+    expect(varietalHead(canonicalItem('red bell pepper'))).toBe('')
+    expect(varietalHead(canonicalItem('cayenne pepper'))).toBe('')
+    expect(varietalHead(canonicalItem('poblano chili pepper'))).toBe('')
+  })
+
+  it('keeps the form when the form is a different food', () => {
+    expect(canonicalItem('sweet potato')).toBe('sweet potato')
+    expect(canonicalItem('pickled cucumber')).toBe('pickled cucumber')
+    expect(canonicalItem('dried basil')).not.toBe(canonicalItem('fresh basil'))
+  })
+
+  it('still folds the forms that are one pantry slot', () => {
+    expect(canonicalItem('dried oregano')).toBe('oregano')
+    expect(canonicalItem('frozen peas')).toBe('green pea')
+    expect(canonicalItem('tinned chickpeas')).toBe('chickpea')
+    expect(canonicalItem('fresh basil')).toBe('basil')
+  })
+
+  it('reads plain flour and all-purpose flour as the same bag', () => {
+    expect(canonicalItem('plain flour')).toBe(canonicalItem('all-purpose flour'))
+    expect(canonicalItem('plain yogurt')).toBe('yogurt')
+  })
+})
+
+describe('coriander', () => {
+  it('reads the fresh leaf as cilantro and the plain word as the ground spice', () => {
+    for (const s of ['chopped fresh coriander (dhania)', 'fresh coriander leaves', 'coriander leaves', 'Fresh coriander leaves (as a garnish)', 'Finely-chopped coriander leaves for garnishing'])
+      expect(canonicalItem(s)).toBe('cilantro')
+    expect(canonicalItem('ground coriander')).toBe('coriander')
+    expect(canonicalItem('coriander seeds')).toBe('coriander seed')
+  })
+})
+
+describe('counts typed into the name', () => {
+  it('drops a leading count or "ea." but keeps a size', () => {
+    expect(canonicalItem('1 lemon')).toBe('lemon')
+    expect(canonicalItem('2 1/2 onions')).toBe('onion')
+    expect(canonicalItem('ea. eggplant')).toBe('eggplant')
+    expect(canonicalItem('7-inch sourdough bread boules')).toBe('7-inch sourdough bread boule')
+  })
 })

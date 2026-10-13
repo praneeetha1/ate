@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, scaleStep } from '../utils/recipe'
 import { findDurations, leadTimes, describeLead } from '../utils/steps'
-import { canonicalItem } from '../utils/ingredients'
+import { lineId } from '../utils/registry'
 import { formatDuration } from '../utils/formatTime'
 import Icon from './Icon'
 
@@ -138,7 +138,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
   useWakeLock()
 
   const labelled = useMemo(
-    () => (recipe.ingredients || []).map((ing, line) => ({ ...ingredientLabel(ing, scale), name: canonicalItem(ing.item), line })),
+    () => (recipe.ingredients || []).map((ing, line) => ({ ...ingredientLabel(ing, scale), name: lineId(ing), line })),
     [recipe, scale],
   )
   const leads = useMemo(() => leadTimes(recipe), [recipe])
@@ -202,7 +202,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
   }
 
   const step       = index >= 1 && index <= steps.length ? steps[index - 1] : null
-  const segments   = step ? scaleStep(step, recipe.ingredients, scale, ing => canonicalItem(ing.item)) : []
+  const segments   = step ? scaleStep(step, recipe.ingredients, scale, lineId) : []
   const pinned     = new Set(segments.filter(s => s.line != null).map(s => s.line))
   const stepIngs   = step ? ingredientsIn(step, labelled, pinned) : []
   const servings   = recipe.servings ? recipe.servings * scale : null

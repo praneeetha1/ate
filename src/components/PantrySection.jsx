@@ -3,11 +3,12 @@ import { VISIBLE_CATALOG } from '../utils/recipe'
 import { usePantry } from '../context/PantryContext'
 import {
   PANTRY_STAPLES, KNOWN_INGREDIENTS, COMMON_INGREDIENT_GROUPS as QUICK_ADD_GROUPS,
-  canonicalItem, isNeverShopped, rankSuggestions,
+  isNeverShopped, rankSuggestions,
 } from '../utils/ingredients'
 import { PANTRY_LABELS } from '../utils/pantry'
 import Highlight from './Highlight'
 import Icon from './Icon'
+import { resolveIngredient, lineId } from '../utils/registry'
 import { Link } from 'react-router-dom'
 
 
@@ -44,7 +45,7 @@ function knownItems() {
     for (const { r } of VISIBLE_CATALOG) {
       for (const ing of r.ingredients) {
         if (!ing.item || isNeverShopped(ing.item)) continue
-        const c = canonicalItem(ing.item)
+        const c = lineId(ing)
         if (c.length > 1) seen.add(c)
       }
     }
@@ -127,7 +128,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
   function onDraftKey(e) {
     if (e.key === 'Escape') { setShowSuggest(false); return }
     if (e.key === 'Enter' && showSuggest && suggestions.length) {
-      const typed = canonicalItem(draft)
+      const typed = resolveIngredient(draft).id
       // Only reach for the top suggestion when what was typed isn't itself a
       // real ingredient. Typing "cream" offered "cream cheese" first and Enter
       // silently added that instead — an exact name must always win over a
@@ -148,7 +149,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
   function addItem(e) {
     e.preventDefault()
     setShowSuggest(false)
-    const item = canonicalItem(draft)
+    const item = resolveIngredient(draft).id
     if (!item) { inputRef.current?.focus(); return }
     if (isNeverShopped(draft)) {
       setNote('No need to track water.')

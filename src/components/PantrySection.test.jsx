@@ -116,8 +116,8 @@ describe('Fridge / Pantry section', () => {
       await renderStocked()
       expect(await screen.findByRole('heading', { name: /assumed present/i })).toBeInTheDocument()
       expect(staple('salt')).toHaveAttribute('aria-pressed', 'true')
-      expect(staple('olive oil')).toHaveAttribute('aria-pressed', 'true')
-      expect(staple('baking powder')).toHaveAttribute('aria-pressed', 'true')
+      expect(staple('black pepper')).toHaveAttribute('aria-pressed', 'true')
+      expect(staple('turmeric')).toHaveAttribute('aria-pressed', 'true')
     })
 
     // You can't run out of tap water, and 'salt and pepper' is a matching
@@ -154,27 +154,27 @@ describe('Fridge / Pantry section', () => {
     })
 
     it('shows a staple in one place only, never twice', async () => {
-      await renderStocked({ pantry: [{ user_id: 'user-1', item: 'olive oil', state: 'out' }] })
+      await renderStocked({ pantry: [{ user_id: 'user-1', item: 'turmeric', state: 'out' }] })
       await screen.findByRole('heading', { name: /assumed present/i })
 
       // It reads as unselected among the staples...
-      expect(staple('olive oil')).toHaveAttribute('aria-pressed', 'false')
+      expect(staple('turmeric')).toHaveAttribute('aria-pressed', 'false')
       // ...and does not also appear as a tracked chip in an Out group.
       expect(screen.queryByRole('heading', { name: /^out/i })).toBeNull()
-      expect(screen.queryByRole('button', { name: /olive oil: out\. change/i })).toBeNull()
+      expect(screen.queryByRole('button', { name: /turmeric: out\. change/i })).toBeNull()
     })
 
     it('keeps an explicitly tracked staple out of the kitchen list', async () => {
       await renderStocked({ pantry: [
-        { user_id: 'user-1', item: 'milk',    state: 'have' },
+        { user_id: 'user-1', item: 'sugar',   state: 'have' },
         { user_id: 'user-1', item: 'chicken', state: 'have' },
       ] })
       const kitchen = await screen.findByRole('heading', { name: /in your kitchen/i })
 
-      // Only the non-staple is counted there; milk belongs to the staples group.
+      // Only the non-staple is counted there; sugar belongs to the staples group.
       expect(kitchen.textContent).toMatch(/\(1\)/)
-      expect(screen.queryByRole('button', { name: /^milk: in your kitchen/i })).toBeNull()
-      expect(staple('milk')).toHaveAttribute('aria-pressed', 'true')
+      expect(screen.queryByRole('button', { name: /^sugar: in your kitchen/i })).toBeNull()
+      expect(staple('sugar')).toHaveAttribute('aria-pressed', 'true')
     })
   })
 
@@ -366,8 +366,12 @@ describe('Fridge / Pantry section', () => {
     it('never offers an assumed staple', async () => {
       await renderStocked()
       await screen.findByRole('heading', { name: /quick add/i })
-      for (const staple of ['salt', 'water', 'sugar', 'egg', 'milk', 'butter']) {
+      for (const staple of ['salt', 'water', 'sugar', 'turmeric']) {
         expect(screen.queryByRole('button', { name: `Add ${staple}` })).toBeNull()
+      }
+      // No longer assumed, so offered: these go off and run out.
+      for (const fresh of ['egg', 'milk', 'butter']) {
+        expect(screen.getByRole('button', { name: `Add ${fresh}` })).toBeInTheDocument()
       }
     })
 
@@ -460,5 +464,25 @@ describe('typing an ingredient you already track', () => {
     await user.keyboard('{Enter}')
 
     expect(screen.queryByRole('button', { name: /^cream cheese:/i })).toBeNull()
+  })
+})
+
+describe('moving old pantry names to current ones', () => {
+  const OLD = [{ user_id: 'user-1', item: 'cornflour', state: 'low' }]
+  const rows = async () => (await h.client.from('pantry').select('item, state').eq('user_id', 'user-1')).data
+    .map(r => `${r.item}:${r.state}`).sort()
+
+  it('moves the row once the new name is safely written', async () => {
+    renderSection({ pantry: OLD })
+    await waitFor(async () => expect(await rows()).toEqual(['cornstarch:low']))
+  })
+
+  it('keeps the old row when writing the new name fails', async () => {
+    renderSection({ pantry: OLD })
+    h.client.__failOn('pantry', 'upsert')
+    await waitFor(() => expect(h.client.__callsTo('pantry', 'upsert')).toHaveLength(1))
+    await new Promise(r => setTimeout(r, 20))
+    expect(await rows()).toEqual(['cornflour:low'])
+    expect(h.client.__callsTo('pantry', 'delete')).toHaveLength(0)
   })
 })

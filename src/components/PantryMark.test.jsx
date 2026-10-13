@@ -145,3 +145,11 @@ describe('the summary above the ingredient list', () => {
     expect(screen.queryByText(/you have/i)).toBeNull()
   })
 })
+
+describe('the summary names its assumptions', () => {
+  it('says which staples it only assumed', async () => {
+    renderModal({ seed: { pantry: [{ user_id: 'user-1', item: 'pecorino', state: 'have' }] } })
+    expect(await screen.findByText(/you have everything/i)).toBeInTheDocument()
+    expect(screen.getByText(/assumed: kosher salt/i)).toBeInTheDocument()
+  })
+})

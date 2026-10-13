@@ -1,5 +1,5 @@
 import { usePantry } from '../context/PantryContext'
-import { canonicalItem, shoppingName, isNeverShopped } from '../utils/ingredients'
+import { shoppingName, isNeverShopped } from '../utils/ingredients'
 import { PANTRY_LABELS } from '../utils/pantry'
 import Icon from './Icon'
 
@@ -14,12 +14,17 @@ import Icon from './Icon'
  * Renders nothing when nobody is signed in (the pantry is server-backed), and
  * nothing for water or ice, which aren't things anyone tracks.
  */
-export default function PantryMark({ item, className = '' }) {
-  const { pantry, pantryState, pantryEnabled } = usePantry()
+export default function PantryMark({ item, need, className = '' }) {
+  const { pantryState, isAssumed, pantryEnabled } = usePantry()
 
   if (!pantryEnabled || isNeverShopped(item)) return null
 
-  const state = pantryState(item)
+  // From the recipe's evaluation when there is one — it knows about listed
+  // alternatives and stand-ins — else from this one ingredient on its own.
+  const state = need
+    ? (need.status === 'have' || need.status === 'assumed' ? 'have'
+      : need.status === 'low' ? 'low' : need.via === 'out' ? 'out' : 'unknown')
+    : pantryState(item)
   // The short name, not the recipe's prep text: a screen reader announcing
   // "pecorino, grated, thinly sliced: not tracked" buries the useful half.
   const name = shoppingName(item)
@@ -27,7 +32,7 @@ export default function PantryMark({ item, className = '' }) {
   // A staple reads as `have` without the user having said so. Showing that at
   // full strength would claim knowledge we don't have, so an assumed state is
   // dimmed and an explicit one isn't.
-  const assumed = state !== 'unknown' && !pantry.has(canonicalItem(item))
+  const assumed = need ? need.status === 'assumed' : isAssumed(item)
 
   const fill =
     state === 'have' ? 'bg-accent text-ink border-ink' :

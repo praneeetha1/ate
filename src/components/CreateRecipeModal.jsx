@@ -3,6 +3,8 @@ import { useApp } from '../context/AppContext'
 import { useDialog } from '../hooks/useDialog'
 import { CATALOG_CATEGORIES } from '../utils/recipe'
 import { importRecipe, looksLikeUrl, findDuplicate } from '../utils/importRecipe'
+import { BY_ID, REGISTRY_NAMES, resolveIngredient } from '../utils/registry'
+import { rankSuggestions } from '../utils/ingredients'
 import { fileToDataUrl, dataUrlBytes, MAX_TOTAL_BYTES } from '../utils/imageFile'
 import Icon from './Icon'
 import { uploadRecipePhoto } from '../utils/photoUpload'
@@ -14,7 +16,18 @@ const MAX_NAME = 200
 const MAX_STEP = 1000
 const MAX_ITEM = 200
 
-const emptyIng = () => ({ amount: '', unit: '', item: '' })
+const emptyIng = () => ({ amount: '', unit: '', item: '', id: '', pinned: false })
+
+/**
+ * An ingredient line as the form holds it: its registry id worked out from the
+ * text, unless one was already chosen (a catalog copy, or picked by hand), in
+ * which case it's pinned and typing won't change it behind your back.
+ */
+function withId(ing) {
+  if (ing.id && BY_ID.has(ing.id)) return { ...emptyIng(), ...ing, pinned: true }
+  const r = resolveIngredient(ing.item)
+  return { ...emptyIng(), ...ing, id: r.known ? r.id : '', pinned: false }
+}
 
 /** Parses a positive-integer field, returning null for blank/invalid input. */
 function positiveInt(value) {
@@ -45,7 +58,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
   const [active,   setActive]   = useState(recipe?.activeMinutes ?? recipe?.active_minutes ?? '')
   const [servings, setServings] = useState(recipe?.servings ?? '')
   const [ings,     setIngs]     = useState(
-    recipe?.ingredients?.length ? recipe.ingredients.map(i => ({ ...emptyIng(), ...i })) : [emptyIng()],
+    recipe?.ingredients?.length ? recipe.ingredients.map(withId) : [emptyIng()],
   )
   const [steps,    setSteps]    = useState(recipe?.steps?.length ? [...recipe.steps] : [''])
   const [image,    setImage]    = useState(recipe?.image ?? recipe?.image_url ?? '')
@@ -76,7 +89,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
     setActive(draft.activeMinutes ?? '')
     setServings(draft.servings ?? '')
     setIngs(draft.ingredients?.length
-      ? draft.ingredients.map(i => ({ ...emptyIng(), ...i }))
+      ? draft.ingredients.map(withId)
       : [emptyIng()])
     setSteps(draft.steps?.length ? [...draft.steps] : [''])
     setImage(draft.image ?? '')
@@ -175,8 +188,16 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
   }
 
   function updateIng(i, field, val) {
-    setIngs(prev => prev.map((ing, idx) => idx === i ? { ...ing, [field]: val } : ing))
+    setIngs(prev => prev.map((ing, idx) => {
+      if (idx !== i) return ing
+      const next = { ...ing, [field]: val }
+      // Re-read the match as the name changes — unless you picked one.
+      return field === 'item' && !ing.pinned ? withId({ ...next, id: '' }) : next
+    }))
   }
+
+  /** Choose what a line counts as, or '' to leave it as a new, unmatched item. */
+  const pickId = (i, id) => setIngs(prev => prev.map((ing, idx) => idx === i ? { ...ing, id, pinned: true } : ing))
 
   const addIng     = () => setIngs(prev => [...prev, emptyIng()])
   const removeIng  = i => setIngs(prev => prev.filter((_, idx) => idx !== i))
@@ -194,6 +215,13 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
         amount: ing.amount.trim(),
         unit:   ing.unit.trim(),
         item:   ing.item.trim().slice(0, MAX_ITEM),
+        // The reviewed identity, so the pantry, search and shopping list all
+        // read this line the same way. Optional and alternatives carry over
+        // from a catalog copy; "optional" in the text counts too.
+        ...(ing.id ? { id: ing.id } : {}),
+        ...(ing.optional || /\boptional\b/i.test(ing.item) ? { optional: true } : {}),
+        ...(ing.alternatives?.length ? { alternatives: ing.alternatives } : {}),
+        ...(ing.alsoNeeds?.length ? { alsoNeeds: ing.alsoNeeds } : {}),
       }))
     const cleanSteps = steps.map(s => s.trim()).filter(Boolean).map(s => s.slice(0, MAX_STEP))
 
@@ -532,6 +560,13 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
                     // input keeps its default intrinsic width and overflows.
                     className="col-span-3 row-start-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1 border-2 border-ink rounded-xl px-2.5 py-2 text-[0.85rem] text-ink bg-paper outline-none focus:border-accent placeholder:text-muted"
                   />
+                  {ing.item.trim() && (
+                    <IngredientMatch
+                      ing={ing}
+                      index={i}
+                      onPick={id => pickId(i, id)}
+                    />
+                  )}
                   {ings.length > 1 && (
                     <button
                       type="button"
@@ -609,5 +644,52 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
         </form>
       </div>
     </div>
+  )
+}
+
+/**
+ * What a line counts as, under its row — "Counts as: urad dal".
+ *
+ * The pantry and shopping list match on this, not on the prose, so it's shown
+ * where you can check it while typing, and changed if it's wrong. Something
+ * the app has never heard of says so plainly instead of guessing.
+ */
+function IngredientMatch({ ing, index, onPick }) {
+  const [picking, setPicking] = useState(false)
+  const [q, setQ] = useState('')
+  const options = rankSuggestions(REGISTRY_NAMES, q, 6)
+
+  if (picking) {
+    return (
+      <div className="col-span-3 sm:col-span-4 border-2 border-ink rounded-xl bg-card p-2 flex flex-col gap-1.5">
+        <input
+          autoFocus
+          value={q}
+          onChange={e => setQ(e.target.value)}
+          placeholder="Search ingredients…"
+          aria-label={`What ingredient ${index + 1} counts as`}
+          className="w-full border-2 border-ink rounded-lg px-2.5 py-2 text-[0.85rem] bg-paper outline-none focus:border-accent"
+        />
+        <div className="flex flex-wrap gap-1.5">
+          {options.map(o => (
+            <button key={o} type="button" onClick={() => { onPick(o); setPicking(false) }}
+              className="min-h-[36px] px-3 rounded-full border-2 border-ink bg-paper text-[0.8rem] font-bold hover:bg-accent">{o}</button>
+          ))}
+          <button type="button" onClick={() => { onPick(''); setPicking(false) }}
+            className="min-h-[36px] px-3 text-[0.8rem] font-bold text-muted underline">Keep as a new item</button>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <p className="col-span-3 sm:col-span-4 -mt-1 text-[0.75rem] text-muted flex items-center gap-1.5 flex-wrap">
+      {ing.id
+        ? <>Counts as <span className="font-bold text-ink">{ing.id}</span></>
+        : <>Not in the ingredient list yet</>}
+      <button type="button" onClick={() => setPicking(true)}
+        className="min-h-[32px] px-1 font-bold text-accent-dk underline underline-offset-2">
+        {ing.id ? 'Change' : 'Pick a match'}
+      </button>
+    </p>
   )
 }

@@ -88,11 +88,12 @@ describe('signed in', () => {
 
   it('assumes staples are present without a row', async () => {
     h.client = createMockSupabase({ ...seedProfile('user-1'), __session: fakeSession('user-1') })
-    renderPantry({ items: ['Kosher salt', 'extra-virgin olive oil', 'eggs', 'pecorino'] })
+    renderPantry({ items: ['Kosher salt', 'vegetable oil', 'eggs', 'pecorino'] })
 
     await waitFor(() => expect(screen.getByTestId('ready')).toHaveTextContent('true'))
+    // Eggs are not assumed: they go off, so only the cook can say they're there.
     expect(screen.getByTestId('states')).toHaveTextContent(
-      'Kosher salt:have extra-virgin olive oil:have eggs:have pecorino:unknown',
+      'Kosher salt:have vegetable oil:have eggs:unknown pecorino:unknown',
     )
     // Assumed state is not stored — no rows were written to say so.
     expect(h.client.__db.pantry).toEqual([])

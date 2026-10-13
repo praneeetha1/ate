@@ -3,7 +3,9 @@ import { VISIBLE_CATALOG } from '../utils/recipe'
 import RecipeCard from '../components/RecipeCard'
 import { useApp } from '../context/AppContext'
 import { usePantry } from '../context/PantryContext'
-import { canonicalItem, matchesIngredient, rankSuggestions, KNOWN_INGREDIENTS } from '../utils/ingredients'
+import { rankSuggestions, KNOWN_INGREDIENTS } from '../utils/ingredients'
+import { recipeIds } from '../utils/readiness'
+import { resolveIngredient, isKindOf, lineId } from '../utils/registry'
 import { pantryFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
 import Highlight from '../components/Highlight'
@@ -24,7 +26,7 @@ const CATALOG_INGREDIENTS = (() => {
   const seen = new Set(KNOWN_INGREDIENTS)
   VISIBLE_CATALOG.forEach(({ r }) => r.ingredients.forEach(ing => {
     if (!ing.item) return
-    const core = canonicalItem(ing.item)
+    const core = lineId(ing)
     if (core.length > 1) seen.add(core)
   }))
   return seen
@@ -50,13 +52,22 @@ const STARTER_QUERIES = (() => {
     .map(([w]) => w)
 })()
 
-function scoreRecipe(canonicalIngredients, selected) {
-  return selected.filter(sel => matchesIngredient(canonicalIngredients, sel)).length
+/**
+ * How many of the picked ingredients a recipe uses — the food itself or a kind
+ * of it, by registry id. "tomato" finds cherry tomatoes but not tomato paste;
+ * "urad dal" finds the skinless white urad dal in idli. This is a search score,
+ * not a readiness one: whether you can cook it is the pantry line under it.
+ */
+function scoreRecipe(ids, selected) {
+  return selected.filter(sel => {
+    const want = resolveIngredient(sel).id
+    return ids.some(id => isKindOf(id, want))
+  }).length
 }
 
 export default function Search({ onOpen }) {
   const { userRecipes } = useApp()
-  const { pantryEnabled, pantryState, pantry, isAssumed } = usePantry()
+  const { pantryEnabled, pantry, stateOf } = usePantry()
 
   const [mode,         setMode]         = useState('name')
   const [nameQuery,    setNameQuery]    = useState('')
@@ -76,7 +87,7 @@ export default function Search({ onOpen }) {
     const seen = new Set(CATALOG_INGREDIENTS)
     userRecipes.forEach(r => (r.ingredients || []).forEach(ing => {
       if (!ing.item) return
-      const core = canonicalItem(ing.item)
+      const core = lineId(ing)
       if (core.length > 1) seen.add(core)
     }))
     return [...seen].sort()
@@ -93,7 +104,7 @@ export default function Search({ onOpen }) {
     if (mode !== 'ingredient') return null
     return new Map(searchable.map(({ r, key }) => [
       key,
-      (r.ingredients || []).map(ing => canonicalItem(ing.item)).filter(Boolean),
+      recipeIds(r),
     ]))
   }, [mode, searchable])
 
@@ -299,7 +310,7 @@ export default function Search({ onOpen }) {
                     captions about the same card contradict each other more
                     often than they help. */}
                 {!matched && pantryEnabled && pantry.size > 0 && (
-                  <PantryFit fit={pantryFit(r, pantryState, isAssumed)} />
+                  <PantryFit fit={pantryFit(r, stateOf)} />
                 )}
               </div>
             )
