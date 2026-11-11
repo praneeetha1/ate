@@ -142,3 +142,34 @@ describe('step photos in cook mode', () => {
     expect(screen.queryByAltText('Step 2')).toBeNull()
   })
 })
+
+describe('CookMode swiping', () => {
+  // jsdom has no PointerEvent; a MouseEvent carries the coordinates we need.
+  if (!window.PointerEvent) window.PointerEvent = class extends MouseEvent {
+    constructor(type, init = {}) { super(type, init); this.pointerId = init.pointerId ?? 1 }
+  }
+  const drag = (el, dx, dy = 0) => {
+    fireEvent.pointerDown(el, { clientX: 200, clientY: 300, pointerId: 1, button: 0 })
+    fireEvent.pointerMove(el, { clientX: 200 + dx / 2, clientY: 300 + dy / 2, pointerId: 1 })
+    fireEvent.pointerMove(el, { clientX: 200 + dx, clientY: 300 + dy, pointerId: 1 })
+    fireEvent.pointerUp(el, { clientX: 200 + dx, clientY: 300 + dy, pointerId: 1 })
+  }
+  const body = () => screen.getByText(/Step \d of 3|Get ready/).closest('[role="dialog"], div.fixed').querySelector('.touch-pan-y')
+
+  it('swipes left for the next step and right for the previous one', () => {
+    render(<CookMode recipe={recipe} recipeKey={9} onClose={() => {}} />)
+    drag(body(), -120)
+    expect(screen.getByText('Step 1 of 3')).toBeInTheDocument()
+    drag(body(), -120)
+    expect(screen.getByText('Step 2 of 3')).toBeInTheDocument()
+    drag(body(), 120)
+    expect(screen.getByText('Step 1 of 3')).toBeInTheDocument()
+  })
+
+  it('ignores a short drag and an up-and-down scroll', () => {
+    render(<CookMode recipe={recipe} recipeKey={9} onClose={() => {}} />)
+    drag(body(), -20)
+    drag(body(), -40, 200)
+    expect(screen.getByText('Get ready')).toBeInTheDocument()
+  })
+})

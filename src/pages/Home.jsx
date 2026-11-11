@@ -11,9 +11,11 @@ import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
 import WelcomeCard from '../components/WelcomeCard'
+import { StarterChoice, StarterPicker, useStarterRecipes } from '../components/StarterRecipes'
 import { Link } from 'react-router-dom'
 
-const CATEGORIES = [...new Set(VISIBLE_CATALOG.map(({ r }) => r.category))]
+// Catalogue order, except Breakfast leads: it's the first meal, and its recipes sit at the end of the file.
+const CATEGORIES = [...new Set(['Breakfast', ...VISIBLE_CATALOG.map(({ r }) => r.category)])]
 
 export default function Home({ onOpen }) {
   const [filters,         setFilters]         = useState({ diet: '', time: '', noPlanAhead: false })
@@ -22,13 +24,15 @@ export default function Home({ onOpen }) {
   const [pantryMode,     setPantryMode]      = useState(false)
   const [catFilter,      setCatFilter]       = useState('')
   const [mustHave,       setMustHave]        = useState('')
+  const [pickStarters,   setPickStarters]    = useState(false)
   const { userRecipes } = useApp()
+  const { chosen: startersChosen, catalog } = useStarterRecipes()
   const { pantryEnabled, pantryReady, pantryState, pantry, stateOf } = usePantry()
 
   const { diet: dietFilter, time: timeFilter, noPlanAhead } = filters
   const filtered = useMemo(
-    () => applyFilters(VISIBLE_CATALOG, dietFilter, timeFilter, { noPlanAhead }),
-    [dietFilter, timeFilter, noPlanAhead],
+    () => applyFilters(catalog, dietFilter, timeFilter, { noPlanAhead }),
+    [catalog, dietFilter, timeFilter, noPlanAhead],
   )
 
   // The same filters now apply to the My Recipes strip, which previously
@@ -173,7 +177,10 @@ export default function Home({ onOpen }) {
         >+ My Recipe</button>
       </div>
 
-      <WelcomeCard onNewRecipe={() => setShowCreateModal(true)} />
+      {startersChosen
+        ? <WelcomeCard onNewRecipe={() => setShowCreateModal(true)} />
+        : <StarterChoice />}
+      {pickStarters && <StarterPicker onClose={() => setPickStarters(false)} />}
 
       {/* What's narrowing the list, each removable without reopening the sheet. */}
       {chips.length > 0 && (
@@ -337,7 +344,7 @@ export default function Home({ onOpen }) {
       <div>
         {visibleCats.length === 0 && filteredMine.length === 0 && (
           <p className="text-center py-[60px] font-display text-[1.1rem] text-muted px-5">
-            No recipes match those filters.
+            {catalog.length ? 'No recipes match those filters.' : 'No starter recipes yet. Add your own with + My Recipe.'}
           </p>
         )}
         {visibleCats.map((cat, ci) => {
@@ -364,6 +371,14 @@ export default function Home({ onOpen }) {
           )
         })}
       </div>
+      {startersChosen && (
+        <div className="text-center pt-2 pb-6">
+          <button
+            onClick={() => setPickStarters(true)}
+            className="text-[0.8rem] font-bold text-accent-dk underline underline-offset-2 min-h-[44px] px-2"
+          >Choose starter recipes</button>
+        </div>
+      )}
       </>
       )}
     </>

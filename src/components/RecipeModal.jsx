@@ -70,7 +70,9 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
         ...((recipe.activeMinutes ?? recipe.active_minutes) ? { active_minutes: recipe.activeMinutes ?? recipe.active_minutes } : {}),
         ...((recipe.stepImages ?? recipe.step_images)?.some(Boolean) ? { step_images: recipe.stepImages ?? recipe.step_images } : {}),
         servings:     recipe.servings ?? null,
-        image_url:    recipe.image ?? recipe.image_url ?? null,
+        // A credited Commons photo can't travel without its credit, and user
+        // recipes have nowhere to keep one, so the copy goes without it.
+        image_url:    recipe.imageCredit ? null : (recipe.image ?? recipe.image_url ?? null),
         // Where it came from, so a copied recipe can still be traced back.
         source_url:   recipe.sourceUrl ?? recipe.source_url ??
                       `${appUrl}?u=${userRecipeId(recipeKey)}`,
@@ -617,27 +619,39 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               recipe wherever it's shown, see LICENSE-DATA.md. Any other
               imported/copied recipe still gets a plain "where this came from"
               credit, since that's the whole point of importing. */}
-          {recipe.sourceUrl && (
-            <p className="mt-4 pt-3 border-t border-dashed border-rim text-[0.72rem] text-muted leading-relaxed">
-              Adapted from{' '}
-              <a
-                href={recipe.sourceUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="underline text-ink hover:text-accent-dk transition-colors"
-              >{recipe.source ?? sourceLabel(recipe.sourceUrl)}</a>
-              {recipe.license && (
-                <>
-                  , used under{' '}
-                  <a
-                    href="https://creativecommons.org/licenses/by-sa/4.0/"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="underline text-ink hover:text-accent-dk transition-colors"
-                  >CC BY-SA 4.0</a>
-                </>
-              )}.
-            </p>
+          {(recipe.sourceUrl || recipe.imageCredit) && (
+            <div className="mt-4 pt-3 border-t border-dashed border-rim text-[0.72rem] text-muted leading-relaxed flex flex-col gap-1">
+              {recipe.sourceUrl && (
+                <p>
+                  Recipe adapted from{' '}
+                  <a href={recipe.sourceUrl} target="_blank" rel="noreferrer noopener" className="underline text-ink hover:text-accent-dk transition-colors"
+                  >{recipe.source ?? sourceLabel(recipe.sourceUrl)}</a>
+                  {recipe.license && (
+                    <>
+                      , used under{' '}
+                      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer noopener" className="underline text-ink hover:text-accent-dk transition-colors"
+                      >CC BY-SA 4.0</a>
+                    </>
+                  )}.
+                  {/* Photos with no credit of their own came from that same page. */}
+                  {(recipe.image || stepImagesOf(recipe).some(Boolean)) && !recipe.imageCredit && (
+                    <> Photos: {recipe.source ?? sourceLabel(recipe.sourceUrl)}.</>
+                  )}
+                </p>
+              )}
+              {/* The photo is a separate Wikimedia Commons file with its own author
+                  and licence. A "similar" one was matched by dish name, so it is
+                  not a picture of this recipe, and says so. */}
+              {recipe.imageCredit && (
+                <p>
+                  {recipe.imageCredit.match === 'similar'
+                    ? 'Photo shows a similar dish, not this exact recipe: '
+                    : 'Photo from the same page: '}
+                  <a href={recipe.imageCredit.fileUrl} target="_blank" rel="noreferrer noopener" className="underline text-ink hover:text-accent-dk transition-colors"
+                  >{recipe.imageCredit.author}</a>, {recipe.imageCredit.license}, via Wikimedia Commons.
+                </p>
+              )}
+            </div>
           )}
 
           {/* Notes & Ratings */}

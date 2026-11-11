@@ -323,3 +323,12 @@ describe('scaleStep', () => {
     expect(join(scaleStep(step1, ings, 1))).toBe(step1)
   })
 })
+
+describe('catalog photos', () => {
+  it('every catalog photo is credited: a Commons file to its author, or the recipe\'s own page', () => {
+    const bad = RECIPES.filter(r => r.image && !(r.imageCredit
+      ? r.imageCredit.author && r.imageCredit.license && r.imageCredit.fileUrl
+      : r.sourceUrl && r.source))
+    expect(bad.map(r => r.name)).toEqual([])
+  })
+})

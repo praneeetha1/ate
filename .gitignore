@@ -11,3 +11,7 @@ src/data/recipes.wikibooks.json
 node_modules
 dist
 rough.md
+
+# LG TV launcher (webos-vibehack clone + local venv), personal, not part of ate.
+lg_tv/
+cytv-src/

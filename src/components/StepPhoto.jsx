@@ -18,7 +18,9 @@ export default function StepPhoto({ src, step, className = '' }) {
       loading="lazy"
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
-      className={`w-full max-h-72 object-cover rounded-xl border-2 border-ink bg-paper ${className}`}
+      // The aspect ratio holds the photo's space while it loads; without it a
+      // pending image is 0px tall and its border draws as a thick black bar.
+      className={`w-full aspect-[4/3] max-h-72 object-cover rounded-xl border-2 border-ink bg-paper ${className}`}
     />
   )
 }

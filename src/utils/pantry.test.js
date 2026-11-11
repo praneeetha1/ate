@@ -52,7 +52,7 @@ function stateFrom(rows = {}) {
 const RECIPE = {
   ingredients: [
     { item: 'Kosher salt' },                 // staple -> assumed
-    { item: 'pecorino, grated' },            // unknown
+    { item: 'nduja, crumbled' },             // unknown
     { item: 'guanciale, diced' },            // set below
     { item: 'water' },                       // never shopped -> excluded
     { item: 'parmesan cheese' },             // same item as the next line
@@ -66,7 +66,7 @@ describe('pantryFit', () => {
     expect(fit.have).toEqual(['Kosher salt'])
     expect(fit.assumedNames).toEqual(['Kosher salt'])
     expect(fit.low).toEqual(['parmesan cheese'])
-    expect(fit.missing.sort()).toEqual(['guanciale', 'pecorino'])
+    expect(fit.missing.sort()).toEqual(['guanciale', 'nduja'])
   })
 
   it('counts a repeated item once and leaves water out', () => {

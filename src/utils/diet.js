@@ -49,7 +49,7 @@ const INNOCENT = new RegExp(
   'butternut|cocoa butter|nut butter|almond butter|eggplants?|eggless|almond flour|rice flour|' +
   'corn ?flour|chickpea flour|gram flour|besan|coconut flour|tapioca flour|buckwheat|' +
   'gluten[- ]free|cornstarch|rice noodles?|vegetable broth|veg(etable)? stock|imitation meat|' +
-  'mock meat|meatless|meat[- ]free|fishless)\\b', 'gi')
+  'mock meat|meatless|meat[- ]free|fishless|idli rava|rice rava)\\b', 'gi')
 
 const clean = s => String(s || '').replace(INNOCENT, ' ')
 

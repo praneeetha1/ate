@@ -62,7 +62,9 @@ describe('the catalog\'s ingredient ids', () => {
   })
 
   it('keeps the reviewed decisions', () => {
-    const find = (recipe, start) => lines.find(l => l.r.startsWith(recipe) && l.item.startsWith(start))
+    // Over every recipe: a reviewed one can be hidden later and still be shown to those who kept it.
+    const all = RECIPES.flatMap(r => r.ingredients.map(i => ({ r: r.name, ...i })))
+    const find = (recipe, start) => all.find(l => l.r.startsWith(recipe) && l.item.startsWith(start))
     expect(find('Idli', 'skinless white urad dal').id).toBe('urad dal')
     expect(find('Idli', 'chlorine-free water').id).toBe('water')
     expect(find('Butternut squash chili', 'cayenne').optional).toBe(true)

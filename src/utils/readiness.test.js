@@ -7,7 +7,7 @@ const pantry = (rows = {}, assumed = []) => id =>
   id in rows ? { state: rows[id], assumed: false }
     : assumed.includes(id) ? { state: 'have', assumed: true }
       : { state: 'unknown', assumed: false }
-const recipe = name => RECIPES.find(r => !r.hidden && r.name.startsWith(name))
+const recipe = name => RECIPES.find(r => r.name.startsWith(name))
 const status = (id, rows, assumed) => matchIngredient(id, pantry(rows, assumed)).status
 
 describe('different foods never stand in for each other', () => {

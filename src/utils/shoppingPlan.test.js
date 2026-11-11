@@ -3,7 +3,7 @@ import RECIPES from '../data/recipes.json'
 import { planShopping, entriesFor } from './shoppingPlan'
 import { evaluateRecipe } from './readiness'
 
-const recipe = name => RECIPES.find(r => !r.hidden && r.name.startsWith(name))
+const recipe = name => RECIPES.find(r => r.name.startsWith(name))
 const pantry = (rows = {}, assumed = []) => id =>
   id in rows ? { state: rows[id], assumed: false }
     : assumed.includes(id) ? { state: 'have', assumed: true } : { state: 'unknown', assumed: false }

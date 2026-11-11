@@ -10,6 +10,7 @@ import { pantryFit } from '../utils/pantry'
 import PantryFit from '../components/PantryFit'
 import Highlight from '../components/Highlight'
 import Icon from '../components/Icon'
+import { useStarterRecipes } from '../components/StarterRecipes'
 
 /**
  * The ingredient names this page offers, in the same canonical vocabulary the
@@ -67,6 +68,7 @@ function scoreRecipe(ids, selected) {
 
 export default function Search({ onOpen }) {
   const { userRecipes } = useApp()
+  const { catalog } = useStarterRecipes()
   const { pantryEnabled, pantry, stateOf } = usePantry()
 
   const [mode,         setMode]         = useState('name')
@@ -79,9 +81,9 @@ export default function Search({ onOpen }) {
   // Search now spans the user's own recipes as well as the catalog — they were
   // previously unreachable from this page entirely.
   const searchable = useMemo(() => [
-    ...VISIBLE_CATALOG.map(({ r, i }) => ({ r, key: i })),
+    ...catalog.map(({ r, i }) => ({ r, key: i })),
     ...userRecipes.map(r => ({ r, key: 'u_' + r.id })),
-  ], [userRecipes])
+  ], [catalog, userRecipes])
 
   const allIngredients = useMemo(() => {
     const seen = new Set(CATALOG_INGREDIENTS)
