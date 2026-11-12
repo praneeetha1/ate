@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ate.</title>
   <link rel="manifest" href="/ate/manifest.json" />
-  <script>try { var t = localStorage.getItem('ate:theme'); if (t) document.documentElement.dataset.theme = t } catch (e) {}</script>
+  <script>try { var d = document.documentElement, t = localStorage.getItem('ate:theme'), z = { small: '93.75%', large: '112.5%', larger: '125%' }[localStorage.getItem('ate:textSize')]; if (t) d.dataset.theme = t; if (z) d.style.fontSize = z } catch (e) {}</script>
   <meta name="theme-color" content="#FAF8F5" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />

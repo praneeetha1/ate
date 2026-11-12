@@ -82,6 +82,25 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── Feeling like an app on a phone (iOS "Add to Home Screen" especially) ──
+   - no grey flash on every tap: buttons have their own pressed state (.press)
+   - taps fire straight away, with no double-tap-to-zoom wait
+   - the page itself doesn't rubber-band; inner scrollers keep their own
+     scroll instead of dragging the page behind a sheet along with them
+   - no long-press callout or text selection on controls and photos */
+html {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior-y: none;
+  -webkit-text-size-adjust: 100%;
+}
+.overflow-y-auto, .overflow-auto { overscroll-behavior: contain; }
+button, a, [role="tab"], nav, label, img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Single source of truth for the two fixed chrome heights. The sticky filter
    bars in Home/Search and body's bottom padding both derive from these, so
    changing the header or nav no longer requires hunting magic numbers. */
@@ -94,6 +113,7 @@ body {
   /* Plain paper: the drawings carry the texture now. */
   background-color: rgb(var(--c-cream));
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;

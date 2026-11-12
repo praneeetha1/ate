@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useDialog } from '../hooks/useDialog'
 import { getTheme, setTheme } from '../utils/theme'
+import { TEXT_SIZES, getTextSize, setTextSize } from '../utils/textSize'
 import { VISIBLE_CATALOG } from '../utils/recipe'
 import { useStarterRecipes } from './StarterRecipes'
 import { resetWelcome } from './Tour'
@@ -21,6 +22,7 @@ export default function SettingsSheet({ onClose, onPickStarters }) {
   const navigate = useNavigate()
   const { catalog } = useStarterRecipes()
   const [theme, pick] = useState(getTheme)
+  const [size, pickSize] = useState(getTextSize)
 
   const section = 'px-5 py-4 border-b border-warm-tan last:border-0'
   const heading = 'text-[0.8rem] font-bold uppercase tracking-[0.06em] text-ink mb-2'
@@ -41,13 +43,31 @@ export default function SettingsSheet({ onClose, onPickStarters }) {
             <legend className={`${heading} float-left w-full`}>Appearance</legend>
             <div className="clear-both flex gap-2" role="radiogroup" aria-label="Appearance">
               {APPEARANCE.map(o => (
-                <label key={o.value} className={`flex-1 min-h-[44px] grid place-items-center rounded-xl border-2 border-ink text-[0.9rem] font-bold cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink ${theme === o.value ? 'bg-accent shadow-pop' : 'bg-card text-muted'}`}>
+                <label key={o.value} className={`flex-1 min-h-[44px] grid place-items-center text-center leading-tight px-1 rounded-xl border-2 border-ink text-[0.9rem] font-bold cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink ${theme === o.value ? 'bg-accent shadow-pop' : 'bg-card text-muted'}`}>
                   <input
                     type="radio" name="theme" value={o.value} className="sr-only"
                     checked={theme === o.value}
                     onChange={() => { pick(o.value); setTheme(o.value) }}
                   />
                   {o.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className={section}>
+            <legend className={`${heading} float-left w-full`}>Text size</legend>
+            <div className="clear-both grid grid-cols-4 gap-2" role="radiogroup" aria-label="Text size">
+              {TEXT_SIZES.map((o, i) => (
+                <label key={o.value} className={`min-h-[52px] flex flex-col items-center justify-center rounded-xl border-2 border-ink font-bold cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ink ${size === o.value ? 'bg-accent shadow-pop' : 'bg-card text-muted'}`}>
+                  <input
+                    type="radio" name="textSize" value={o.value} className="sr-only"
+                    checked={size === o.value}
+                    onChange={() => { pickSize(o.value); setTextSize(o.value) }}
+                  />
+                  {/* A sample "A" at a fixed pixel size, so the row itself doesn't jump. */}
+                  <span aria-hidden="true" className="font-display leading-none" style={{ fontSize: 14 + i * 3 }}>A</span>
+                  <span className="text-[11px] mt-0.5">{o.label}</span>
                 </label>
               ))}
             </div>

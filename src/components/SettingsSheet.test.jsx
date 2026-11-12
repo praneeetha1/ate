@@ -10,7 +10,7 @@ const show = (props = {}) => render(
   <MemoryRouter><SettingsSheet onClose={() => {}} onPickStarters={() => {}} {...props} /></MemoryRouter>,
 )
 
-beforeEach(() => { localStorage.clear(); delete document.documentElement.dataset.theme })
+beforeEach(() => { localStorage.clear(); delete document.documentElement.dataset.theme; document.documentElement.style.fontSize = '' })
 
 describe('settings', () => {
   it('switches to dark, remembers it, and goes back to matching the device', async () => {
@@ -32,5 +32,16 @@ describe('settings', () => {
     await user.click(screen.getByRole('button', { name: 'Choose starter recipes' }))
     expect(onClose).toHaveBeenCalled()
     expect(onPickStarters).toHaveBeenCalled()
+  })
+  it('scales the text, remembers it, and goes back to the default', async () => {
+    const user = userEvent.setup()
+    show()
+    expect(screen.getByRole('radio', { name: /Default/ })).toBeChecked()
+    await user.click(screen.getByRole('radio', { name: /Larger/ }))
+    expect(document.documentElement.style.fontSize).toBe('125%')
+    expect(localStorage.getItem('ate:textSize')).toBe('larger')
+    await user.click(screen.getByRole('radio', { name: /Default/ }))
+    expect(document.documentElement.style.fontSize).toBe('')
+    expect(localStorage.getItem('ate:textSize')).toBeNull()
   })
 })

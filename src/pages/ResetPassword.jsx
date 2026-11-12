@@ -37,7 +37,7 @@ export default function ResetPassword() {
   const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent-dk transition-colors placeholder:text-muted'
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))] flex items-center justify-center px-5 py-10">
+    <div className="min-h-[calc(100dvh-var(--nav-h))] flex items-center justify-center px-5 py-10">
       <div className="w-full max-w-sm bg-card border-2 border-ink rounded-2xl shadow-warm-lg p-6">
         <h1 className="font-display text-[1.3rem] font-semibold text-ink mb-1">Choose a new password</h1>
 

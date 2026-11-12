@@ -363,8 +363,9 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           {/* Actions get their own row: beside the title they squeezed it to
               a few words a line on a phone. A retired recipe offers none of
               them — only close, which stays up top. */}
+          {/* Wraps rather than overflowing off the left edge at large text sizes. */}
           {!recipe.hidden && (
-            <div className="flex items-center justify-end gap-1.5 mt-3">
+            <div className="flex flex-wrap items-center justify-end gap-1.5 mt-3">
               {/* The whole point of a shared link: keeping the recipe, not just
                   reading it once. Labelled rather than an icon, because it's the
                   only thing a visitor can usefully do here. */}

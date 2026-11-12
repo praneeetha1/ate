@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // Hover styles only where there's a real pointer; on a phone they'd stick
+  // after a tap and leave buttons looking pressed.
+  future: { hoverOnlyWhenSupported: true },
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {

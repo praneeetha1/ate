@@ -67,7 +67,7 @@ export default function Auth() {
   const submitLabel = tab === 'login' ? 'Log in' : tab === 'signup' ? 'Create account' : 'Send reset link'
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))] flex items-center justify-center px-5 py-10">
+    <div className="min-h-[calc(100dvh-var(--nav-h))] flex items-center justify-center px-5 py-10">
       <div className="w-full max-w-sm">
 
         <div className="text-center mb-8">
