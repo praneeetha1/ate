@@ -198,7 +198,8 @@ describe('what can I make', () => {
 
     await user.click(toggle())
     await screen.findByRole('heading', { name: /closest to ready/i })
-    await user.click(toggle())
+    // A two-sided switch now: back is the other side.
+    await user.click(screen.getByRole('button', { name: 'All recipes' }))
 
     await waitFor(() => expect(screen.getByRole('heading', { name: 'Main Dish' })).toBeInTheDocument())
     expect(screen.queryByRole('heading', { name: /closest to ready/i })).toBeNull()

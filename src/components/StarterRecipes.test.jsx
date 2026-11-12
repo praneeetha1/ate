@@ -48,4 +48,12 @@ describe('choosing starter recipes', () => {
     render(<Page />)
     expect(screen.getByTestId('count')).toHaveTextContent('0')
   })
+
+  it('can be closed, which keeps every starter recipe', async () => {
+    const user = userEvent.setup()
+    render(<Page />)
+    await user.click(screen.getByRole('button', { name: 'Hide this' }))
+    expect(screen.queryByRole('heading', { name: 'Start with our recipes?' })).toBeNull()
+    expect(screen.getByTestId('count')).toHaveTextContent(String(VISIBLE_CATALOG.length))
+  })
 })

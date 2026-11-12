@@ -142,25 +142,27 @@ export default function Home({ onOpen }) {
         />
       )}
 
-      {/* Filter bar */}
-      {/* Wraps rather than scrolling sideways: at 320px the scroller hid
-          Surprise me and + My Recipe off-screen with nothing to say they were there. */}
-      <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-b border-ink bg-cream sticky-under-header z-[80]">
-        {/* First in the row, ahead of diet and time: it doesn't narrow the
-            catalogue the way those do, it changes what the page is showing —
-            so it reads as the mode switch it is rather than a third filter. */}
+      {/* Toolbar. Signed in, "What can I make" gets a row of its own as a
+          switch between two views of the page: squeezed in beside the other
+          buttons, a phone wrapped them into an accidental second row. The
+          buttons below wrap rather than scroll sideways, so nothing hides
+          off-screen at 320px or at large text sizes. */}
+      <div className="flex flex-col gap-2 px-5 py-3 border-b border-ink bg-cream sticky-under-header z-[80]">
         {pantryEnabled && (
-          <>
+          <div className="grid grid-cols-2 border-2 border-ink rounded-full overflow-hidden" role="group" aria-label="Show">
             <button
-              onClick={() => setPantryMode(p => !p)}
+              onClick={() => setPantryMode(false)}
+              aria-pressed={!pantryMode}
+              className={`min-h-[40px] text-[0.8rem] font-bold transition-colors ${!pantryMode ? 'bg-accent text-ink' : 'bg-card text-muted'}`}
+            >All recipes</button>
+            <button
+              onClick={() => setPantryMode(true)}
               aria-pressed={pantryMode}
-              className={`${pillBase} ${pantryMode ? pillActive : pillInactive}`}
-            >
-              <Icon name="plate" size={13} />What can I make
-            </button>
-            <div className="w-px h-[22px] bg-rim shrink-0 mx-0.5" />
-          </>
+              className={`min-h-[40px] inline-flex items-center justify-center gap-1.5 text-[0.8rem] font-bold border-l-2 border-ink transition-colors ${pantryMode ? 'bg-accent text-ink' : 'bg-card text-muted'}`}
+            ><Icon name="plate" size={13} />What can I make</button>
+          </div>
         )}
+        <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => setShowFilters(true)}
           aria-haspopup="dialog"
@@ -177,6 +179,7 @@ export default function Home({ onOpen }) {
           onClick={() => setShowCreateModal(true)}
           className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 min-h-[40px] whitespace-nowrap hover:bg-accent-dk transition-all"
         >+ My Recipe</button>
+        </div>
       </div>
 
       {startersChosen

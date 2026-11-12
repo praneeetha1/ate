@@ -43,7 +43,13 @@ export function StarterChoice() {
   const [picking, setPicking] = useState(false)
   return (
     <section aria-labelledby="starter-heading" className="mx-5 mt-4 border-[2.5px] border-ink rounded-2xl bg-card shadow-warm px-4 py-3">
-      <h2 id="starter-heading" className="font-display text-[1.15rem] font-semibold text-ink">Start with our recipes?</h2>
+      <div className="flex items-start justify-between gap-2">
+        <h2 id="starter-heading" className="font-display text-[1.15rem] font-semibold text-ink">Start with our recipes?</h2>
+        {/* Closing keeps them all, the same as not answering; Settings can change it. */}
+        <button onClick={() => save([])} aria-label="Hide this" className="w-11 h-11 -mt-2 -mr-2 grid place-items-center rounded-full hover:bg-paper shrink-0">
+          <Icon name="close" size={16} strokeWidth={2.6} />
+        </button>
+      </div>
       <p className="text-[0.9rem] text-ink mt-1">
         ate. comes with {VISIBLE_CATALOG.length} starter recipes. Keep them all, or pick the ones you want. You can change this any time in Settings.
       </p>
