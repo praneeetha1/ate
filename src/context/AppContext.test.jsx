@@ -126,7 +126,8 @@ describe('signing in', () => {
     // Regression: lists had no upload path at all and were silently destroyed.
     const names = h.client.__db.lists.map(l => l.name)
     expect(names).toContain('Weeknights')
-    expect(names).toContain('My Recipes')
+    // Own recipes have their own tab now; nothing is filed into a "My Recipes" list.
+    expect(names).not.toContain('My Recipes')
     const weeknights = h.client.__db.lists.find(l => l.name === 'Weeknights')
     expect(h.client.__db.list_items.filter(i => i.list_id === weeknights.id).map(i => i.recipe_key))
       .toEqual([serverKey])

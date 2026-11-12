@@ -45,7 +45,7 @@ async function pickIngredient(user, typed) {
 }
 
 async function toIngredientMode(user) {
-  await user.click(screen.getByRole('button', { name: /what can i make/i }))
+  await user.click(screen.getByRole('button', { name: /^by ingredient$/i }))
 }
 
 /** Result card titles, which are the only buttons inside the results grid. */
@@ -185,7 +185,7 @@ describe('arriving at search with nothing typed', () => {
   it('points at ingredient search as the other way in', async () => {
     const user = userEvent.setup()
     renderSearch()
-    await user.click(await screen.findByRole('button', { name: /what.s in your kitchen/i }))
+    await user.click(await screen.findByRole('button', { name: /or search by ingredient/i }))
     expect(await screen.findByText(/what have you got in/i)).toBeInTheDocument()
   })
 })

@@ -22,9 +22,11 @@ afterEach(() => vi.useRealTimers())
 
 describe('CookMode', () => {
   it('opens on a get-ready screen with plan-ahead and the scaled ingredients', () => {
-    render(<CookMode recipe={recipe} recipeKey={7} scale={2} onClose={() => {}} />)
+    // Only waits of an hour or more count as plan-ahead.
+    const soaked = { ...recipe, steps: ['Soak the dal for 3 hours, then pressure cook.', ...recipe.steps.slice(1)] }
+    render(<CookMode recipe={soaked} recipeKey={7} scale={2} onClose={() => {}} />)
     expect(screen.getByText('Get ready')).toBeInTheDocument()
-    expect(screen.getByText(/Soak for 30 min/)).toBeInTheDocument()
+    expect(screen.getByText(/Soak for 3 h/)).toBeInTheDocument()
     expect(screen.getByText('2 cup')).toBeInTheDocument()
   })
 

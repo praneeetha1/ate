@@ -80,9 +80,10 @@ export function findDurations(step) {
  * the rest from an hour — a 20-minute rest is part of cooking, not planning.
  */
 const PREP = [
-  ['Marinate', /\bmarinat/i, 30],
-  ['Soak',     /\bsoak/i, 30],
-  ['Ferment',  /\bferment/i, 30],
+  // An hour or more: a 30-minute soak fits inside the cooking, not before it.
+  ['Marinate', /\bmarinat/i, 60],
+  ['Soak',     /\bsoak/i, 60],
+  ['Ferment',  /\bferment/i, 60],
   ['Rise',     /\b(rise|prove|proof)\b/i, 60],
   ['Chill',    /\b(chill|refrigerat|fridge|freeze)/i, 60],
   ['Set',      /\bset\b/i, 60],
@@ -104,7 +105,11 @@ export function leadTimes(recipe) {
     const seen = new Set()
     // Sentence by sentence, so "Marinate the chicken. Bake for 1 hour" doesn't
     // turn the bake into an hour of marinating.
-    for (const sentence of String(step).split(/(?<=[.;!?])\s+/)) {
+    for (const whole of String(step).split(/(?<=[.;!?])\s+/)) {
+      // An alternative or an optional extra isn't something you must plan for:
+      // "set aside while you make the sauce, or refrigerate overnight".
+      const sentence = whole.replace(/,\s*or\b.*$/i, '').replace(/\(\s*optional[^)]*\)/gi, '')
+      if (/^\s*optional\b/i.test(sentence)) continue
       // Storing leftovers isn't prep: "Store in the refrigerator for up to 3
       // days" was coming out as "Chill for at least 72 h" before you start.
       if (STORAGE.test(sentence)) continue

@@ -656,7 +656,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
           </div>
 
           {error && (
-            <p role="alert" className="text-[0.82rem] text-heart bg-[#fde8e8] rounded-xl px-3 py-2">{error}</p>
+            <p role="alert" className="text-[0.82rem] text-heart bg-danger-bg rounded-xl px-3 py-2">{error}</p>
           )}
 
           <div className="flex gap-3 pt-1 border-t border-ink">

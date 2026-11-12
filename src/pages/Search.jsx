@@ -178,7 +178,7 @@ export default function Search({ onOpen }) {
         </div>
         <div className="flex gap-2" role="group" aria-label="Search mode">
           <button onClick={() => setMode('name')}       aria-pressed={mode === 'name'}       className={pillCls(mode === 'name')}>By Recipe Name</button>
-          <button onClick={() => setMode('ingredient')} aria-pressed={mode === 'ingredient'} className={pillCls(mode === 'ingredient')}>What can I make?</button>
+          <button onClick={() => setMode('ingredient')} aria-pressed={mode === 'ingredient'} className={pillCls(mode === 'ingredient')}>By ingredient</button>
         </div>
       </div>
 
@@ -268,7 +268,7 @@ export default function Search({ onOpen }) {
                 <button
                   onClick={() => setMode('ingredient')}
                   className="mt-6 text-[0.82rem] font-bold text-accent-dk underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                >Or search by what&rsquo;s in your kitchen</button>
+                >Or search by ingredient</button>
               </>
             ) : (
               <>

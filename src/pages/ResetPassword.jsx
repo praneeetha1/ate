@@ -43,7 +43,7 @@ export default function ResetPassword() {
 
         {done ? (
           <>
-            <p role="status" className="text-[0.85rem] text-[#2A6035] bg-[#D5EBD8] rounded-xl px-3 py-2 mt-3">
+            <p role="status" className="text-[0.85rem] text-ok bg-ok-bg rounded-xl px-3 py-2 mt-3">
               Password updated.
             </p>
             <button
@@ -88,7 +88,7 @@ export default function ResetPassword() {
               className={inputCls}
             />
 
-            {error && <p role="alert" className="text-[0.8rem] text-heart bg-[#fde8e8] rounded-xl px-3 py-2">{error}</p>}
+            {error && <p role="alert" className="text-[0.8rem] text-heart bg-danger-bg rounded-xl px-3 py-2">{error}</p>}
 
             <button
               type="submit"

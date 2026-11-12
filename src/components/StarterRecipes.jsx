@@ -45,7 +45,7 @@ export function StarterChoice() {
     <section aria-labelledby="starter-heading" className="mx-5 mt-4 border-[2.5px] border-ink rounded-2xl bg-card shadow-warm px-4 py-3">
       <h2 id="starter-heading" className="font-display text-[1.15rem] font-semibold text-ink">Start with our recipes?</h2>
       <p className="text-[0.9rem] text-ink mt-1">
-        ate. comes with {VISIBLE_CATALOG.length} starter recipes. Keep them all, or pick the ones you want. You can change this any time at the bottom of Home.
+        ate. comes with {VISIBLE_CATALOG.length} starter recipes. Keep them all, or pick the ones you want. You can change this any time in Settings.
       </p>
       <div className="flex gap-2 mt-3">
         <button onClick={() => save([])} className="flex-1 min-h-[44px] rounded-xl border-2 border-ink bg-accent font-bold text-ink shadow-pop press">

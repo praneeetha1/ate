@@ -125,6 +125,13 @@ const PATHS = {
     </>
   ),
   check: <path d="m4.6 12.6 4.8 4.8 10-10.8" />,
+  settings: (
+    <>
+      <path d="M3.6 7.2h10.2M18.4 7.2h2M3.6 16.8h4M12.2 16.8h8.2" />
+      <circle cx="16.1" cy="7.2" r="2.3" />
+      <circle cx="9.9" cy="16.8" r="2.3" />
+    </>
+  ),
   plus: <path d="M12 4.8v14.4M4.8 12h14.4" />,
   share: (
     <>

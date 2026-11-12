@@ -64,11 +64,17 @@ describe('reaching the Fridge page', () => {
     expect(await screen.findByRole('heading', { name: /fridge \/ pantry/i })).toBeInTheDocument()
   })
 
-  // Both halves of the page live here now, so the shopping list has to come
-  // with it rather than staying behind on Profile.
-  it('carries the shopping list', async () => {
-    renderApp({ route: '/pantry' })
+  // The bag in the header opens the shopping list; the Fridge tab is the pantry alone.
+  it('serves the shopping list on its own page', async () => {
+    renderApp({ route: '/shopping' })
     expect(await screen.findByRole('region', { name: /shopping list/i })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /fridge \/ pantry/i })).toBeNull()
+  })
+
+  it('keeps the shopping list off the Fridge page', async () => {
+    renderApp({ route: '/pantry' })
+    await screen.findByRole('heading', { name: /fridge \/ pantry/i })
+    expect(screen.queryByRole('region', { name: /shopping list/i })).toBeNull()
   })
 
   /**
@@ -109,7 +115,7 @@ describe('reaching the Fridge page', () => {
       expect(cart()).toHaveAccessibleName('Shopping list')
     })
 
-    it('opens the Fridge page', async () => {
+    it('opens the shopping list', async () => {
       const user = userEvent.setup()
       renderApp({ shopping_items: rows(false) })
       await waitFor(() => expect(cart()).toBeInTheDocument())

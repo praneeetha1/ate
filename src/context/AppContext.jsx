@@ -18,7 +18,13 @@ import { describeError } from '../utils/errors'
 
 const AppContext = createContext(null)
 
-const MY_RECIPES_LIST = 'My Recipes'
+/**
+ * The list every created recipe used to be filed into automatically. Your own
+ * recipes have their own tab now (Saved → My Recipes), so it's left out of the
+ * Lists view rather than shown as a stale copy.
+ */
+export const MY_RECIPES_LIST = 'My Recipes'
+export const userLists = lists => lists.filter(l => l.name !== MY_RECIPES_LIST)
 
 // Move pre-scoping localStorage into the guest scope once, at module load,
 // before any component reads from storage.
@@ -259,7 +265,6 @@ export function AppProvider({ children }) {
         } else if (uploaded?.length) {
           // insert().select() returns rows in the order they were supplied.
           uploaded.forEach((row, i) => localIdMap.set('u_' + fresh[i].id, 'u_' + row.id))
-          if (!await addRecipesToMyRecipesList(ownerId, uploaded)) ok = false
         }
       }
 
@@ -732,56 +737,6 @@ export function AppProvider({ children }) {
   }
 
   // ── user recipes ───────────────────────────────────────────
-  /** Adds recipes to the "My Recipes" system list, creating it on first use. */
-  async function addRecipesToMyRecipesList(ownerId, createdRecipes) {
-    try {
-      let { data: myList, error: findErr } = await supabase
-        .from('lists')
-        .select('id')
-        .eq('user_id', ownerId)
-        .eq('name', MY_RECIPES_LIST)
-        .maybeSingle()
-      if (findErr) throw findErr
-
-      if (!myList) {
-        const { data: newList, error: listErr } = await supabase
-          .from('lists')
-          .insert({ name: MY_RECIPES_LIST, user_id: ownerId })
-          .select('id, name')
-          .single()
-        if (listErr) throw listErr
-        myList = newList
-        commit(d => ({
-          ...d,
-          lists: [{ id: newList.id, name: MY_RECIPES_LIST, items: [] }, ...d.lists],
-        }))
-      }
-
-      const recipeKeys = createdRecipes.map(r => 'u_' + r.id)
-      const { error: itemsErr } = await supabase
-        .from('list_items')
-        .upsert(
-          recipeKeys.map(recipe_key => ({ list_id: myList.id, recipe_key })),
-          { onConflict: 'list_id,recipe_key' },
-        )
-      if (itemsErr) throw itemsErr
-
-      commit(d => ({
-        ...d,
-        lists: d.lists.map(l =>
-          l.id === myList.id
-            ? { ...l, items: [...new Set([...l.items, ...recipeKeys])] }
-            : l
-        ),
-      }))
-      return true
-    } catch (err) {
-      console.error('Failed to add to My Recipes list:', err)
-      showError('Could not add recipe to My Recipes list.')
-      return false
-    }
-  }
-
   async function createUserRecipe(fields) {
     if (uid) {
       const { data: created, error } = await supabase
@@ -793,7 +748,6 @@ export function AppProvider({ children }) {
 
       const normalized = normalizeUserRecipe(created)
       commit(d => ({ ...d, userRecipes: [normalized, ...d.userRecipes] }))
-      await addRecipesToMyRecipesList(uid, [created])
       return normalized
     }
 

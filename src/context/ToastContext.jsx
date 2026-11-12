@@ -52,8 +52,9 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role={t.type === 'error' ? 'alert' : 'status'}
-            className={`pointer-events-auto w-full flex items-center gap-1 rounded-xl shadow-warm-lg text-[0.82rem] font-medium text-white ${
-              t.type === 'error' ? 'bg-[#c0392b]' : 'bg-accent'
+            className={`pointer-events-auto w-full flex items-center gap-1 rounded-xl shadow-warm-lg text-[0.82rem] font-medium ${
+              // Ink on the pale butter; white was unreadable on it.
+              t.type === 'error' ? 'bg-[#c0392b] text-white' : 'bg-accent text-ink border-2 border-ink'
             }`}
           >
             <button type="button" onClick={() => dismiss(t.id)} className="flex-1 text-left px-4 py-2.5">

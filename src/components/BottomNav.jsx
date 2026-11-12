@@ -21,6 +21,7 @@ export default function BottomNav() {
           key={to}
           to={to}
           end={to === '/'}
+          data-tour={to === '/pantry' ? 'fridge' : undefined}
           className={({ isActive }) =>
             `flex-1 flex flex-col items-center justify-center gap-[3px] font-display text-[0.6rem] font-semibold uppercase tracking-[0.07em] transition-colors pb-2 pt-1.5 no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-inset ${
               isActive ? 'text-ink' : 'text-muted'

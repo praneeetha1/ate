@@ -1,9 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useHideOnScroll } from '../hooks/useHideOnScroll'
 import { useApp } from '../context/AppContext'
 import Icon from './Icon'
 import { Logo } from './Sketch'
+import SettingsSheet from './SettingsSheet'
+import { StarterPicker } from './StarterRecipes'
 
 // Read the one source of truth for the header height (--header-h) so the
 // reveal threshold can't drift from the CSS. Cached — getComputedStyle forces
@@ -20,6 +23,8 @@ function headerHeight() {
 export default function Header() {
   const { pathname } = useLocation()
   const hidden = useHideOnScroll({ revealAbove: headerHeight(), resetKey: pathname })
+  const [settings, setSettings] = useState(false)
+  const [starters, setStarters] = useState(false)
 
   // Only what's still outstanding: a list you've ticked your way through
   // shouldn't keep claiming there are twelve things to buy.
@@ -45,6 +50,18 @@ export default function Header() {
         hidden ? '-translate-y-full' : 'translate-y-0'
       }`}
     >
+      <button
+        onClick={() => setSettings(true)}
+        aria-label="Settings"
+        data-tour="settings"
+        title="Settings"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full text-ink hover:text-accent-dk hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+      ><Icon name="settings" size={20} /></button>
+      {/* Portalled: the header's transform (hide on scroll) would otherwise
+          trap these fixed sheets inside its own 72px box. */}
+      {settings && createPortal(<SettingsSheet onClose={() => setSettings(false)} onPickStarters={() => setStarters(true)} />, document.body)}
+      {starters && createPortal(<StarterPicker onClose={() => setStarters(false)} />, document.body)}
+
       <Link to="/" className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded-xl">
         <h1 className="text-ink leading-none">
           <Logo height={34} />
@@ -60,11 +77,12 @@ export default function Header() {
           which a nav tab can't tell you. Without anything outstanding it's a
           plain shortcut and stays quiet. */}
       <NavLink
-        to="/pantry"
+        to="/shopping"
         aria-label={toBuy
           ? `Shopping list, ${toBuy} ${toBuy === 1 ? 'item' : 'items'} to buy`
           : 'Shopping list'}
         title="Shopping list"
+        data-tour="cart"
         className={({ isActive }) =>
           `absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
             isActive

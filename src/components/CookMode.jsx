@@ -323,7 +323,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
             <article
               key={index}
               aria-label={index === 0 ? 'Ingredients' : index === last ? 'Finished' : `Step ${index} card`}
-              className={`absolute inset-0 flex flex-col bg-card border-[3px] border-ink rounded-2xl shadow-[5px_5px_0_#1C1B19] overflow-hidden touch-pan-y ${drag ? 'select-none' : 'transition-transform duration-200'} ${!drag && !fly && enter ? `cook-enter-${enter}` : ''}`}
+              className={`absolute inset-0 flex flex-col bg-card border-[3px] border-ink rounded-2xl shadow-warm-lg overflow-hidden touch-pan-y ${drag ? 'select-none' : 'transition-transform duration-200'} ${!drag && !fly && enter ? `cook-enter-${enter}` : ''}`}
               style={fly
                 ? { transform: 'translateX(-140%) rotate(-18deg)', transition: 'transform 230ms ease-in' }
                 : drag ? { transform: `translateX(${drag}px) rotate(${drag / 20}deg)` } : undefined}
@@ -406,10 +406,11 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
               </div>
 
               {/* Card number along the bottom edge. */}
-              <footer className="flex items-center justify-between gap-3 px-4 py-1.5 border-t-2 border-ink text-[0.75rem] text-muted">
-                <span className="truncate">{recipe.name}</span>
-                {step && <span className="shrink-0 tabular-nums">{index}/{steps.length}</span>}
-              </footer>
+              {step && (
+                <footer className="flex justify-end px-4 py-1.5 border-t-2 border-ink text-[0.75rem] text-muted tabular-nums">
+                  {index}/{steps.length}
+                </footer>
+              )}
             </article>
           </div>
         </div>

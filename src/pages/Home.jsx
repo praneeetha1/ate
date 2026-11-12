@@ -10,12 +10,14 @@ import { recipeUses } from '../utils/readiness'
 import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
-import WelcomeCard from '../components/WelcomeCard'
-import { StarterChoice, StarterPicker, useStarterRecipes } from '../components/StarterRecipes'
+import Tour from '../components/Tour'
+import { StarterChoice, useStarterRecipes } from '../components/StarterRecipes'
 import { Link } from 'react-router-dom'
 
 // Catalogue order, except Breakfast leads: it's the first meal, and its recipes sit at the end of the file.
-const CATEGORIES = [...new Set(['Breakfast', ...VISIBLE_CATALOG.map(({ r }) => r.category)])]
+// Meals in the order of a day, then the extras; anything else after, as found.
+const ORDER = ['Breakfast', 'Quick Meal', 'Main Dish', 'Pasta & Noodles', 'Snack & Appetizer', 'Dessert']
+const CATEGORIES = [...new Set([...ORDER, ...VISIBLE_CATALOG.map(({ r }) => r.category)])]
 
 export default function Home({ onOpen }) {
   const [filters,         setFilters]         = useState({ diet: '', time: '', noPlanAhead: false })
@@ -24,7 +26,6 @@ export default function Home({ onOpen }) {
   const [pantryMode,     setPantryMode]      = useState(false)
   const [catFilter,      setCatFilter]       = useState('')
   const [mustHave,       setMustHave]        = useState('')
-  const [pickStarters,   setPickStarters]    = useState(false)
   const { userRecipes } = useApp()
   const { chosen: startersChosen, catalog } = useStarterRecipes()
   const { pantryEnabled, pantryReady, pantryState, pantry, stateOf } = usePantry()
@@ -172,15 +173,15 @@ export default function Home({ onOpen }) {
           className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 min-h-[40px] inline-flex items-center gap-1.5 whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
         ><Icon name="dice" size={14} />Surprise me</button>
         <button
+          data-tour="add"
           onClick={() => setShowCreateModal(true)}
           className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 min-h-[40px] whitespace-nowrap hover:bg-accent-dk transition-all"
         >+ My Recipe</button>
       </div>
 
       {startersChosen
-        ? <WelcomeCard onNewRecipe={() => setShowCreateModal(true)} />
+        ? <Tour />
         : <StarterChoice />}
-      {pickStarters && <StarterPicker onClose={() => setPickStarters(false)} />}
 
       {/* What's narrowing the list, each removable without reopening the sheet. */}
       {chips.length > 0 && (
@@ -358,9 +359,9 @@ export default function Home({ onOpen }) {
                 </span>
               </div>
               <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
-                {recipes.map(({ r, i }) => (
-                  <div key={i} className="snap-start shrink-0">
-                    <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} />
+                {recipes.map(({ r, i }, n) => (
+                  <div key={i} className="snap-start shrink-0" data-tour={ci === 0 && n === 0 ? 'recipe' : undefined}>
+                    <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} hideCategory />
                   </div>
                 ))}
               </div>
@@ -371,14 +372,6 @@ export default function Home({ onOpen }) {
           )
         })}
       </div>
-      {startersChosen && (
-        <div className="text-center pt-2 pb-6">
-          <button
-            onClick={() => setPickStarters(true)}
-            className="text-[0.8rem] font-bold text-accent-dk underline underline-offset-2 min-h-[44px] px-2"
-          >Choose starter recipes</button>
-        </div>
-      )}
       </>
       )}
     </>

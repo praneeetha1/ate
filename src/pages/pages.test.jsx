@@ -12,8 +12,10 @@ vi.mock('../lib/supabase', () => ({
 }))
 
 const { default: Profile }     = await import('./Profile')
+const { default: MyRecipes }   = await import('../components/MyRecipes')
 const { default: Saved }       = await import('./Saved')
 const { default: Pantry }      = await import('./Pantry')
+const { default: Shopping }    = await import('./Shopping')
 const { AppProvider, useApp }  = await import('../context/AppContext')
 const { AuthProvider }         = await import('../context/AuthContext')
 const { ToastProvider }        = await import('../context/ToastContext')
@@ -61,7 +63,7 @@ beforeEach(() => {
   api = null
 })
 
-describe('Fridge — shopping list', () => {
+describe('Shopping list', () => {
   // One row per ingredient now, not per recipe — so a row carries its own
   // measure and names whatever wanted it.
   const dalRows = checked => [
@@ -77,7 +79,7 @@ describe('Fridge — shopping list', () => {
       shopping_items: dalRows(true),
     }))
 
-    renderPage(<Pantry />)
+    renderPage(<Shopping />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
@@ -100,7 +102,7 @@ describe('Fridge — shopping list', () => {
       shopping_items: dalRows(false),
     }))
 
-    renderPage(<Pantry />)
+    renderPage(<Shopping />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
@@ -115,11 +117,11 @@ describe('Fridge — shopping list', () => {
   })
 })
 
-describe('Profile — deleting a recipe', () => {
+describe('My Recipes — deleting a recipe', () => {
   it('asks for confirmation before deleting', async () => {
     h.client = createMockSupabase(seed({ user_recipes: [USER_RECIPE] }))
 
-    renderPage(<Profile onOpen={() => {}} />)
+    renderPage(<MyRecipes onOpen={() => {}} />)
     await waitFor(() => expect(api).not.toBeNull())
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))

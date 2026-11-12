@@ -318,7 +318,9 @@ describe('lists', () => {
     await act(async () => { h.client.__setSession(fakeSession('user-1')) })
     await waitFor(() => expect(api.syncing).toBe(false))
 
-    await user.click(screen.getByRole('button', { name: 'Add to a list' }))
+    // Saving is the heart; filing into a list is offered in the toast after.
+    await user.click(screen.getByRole('button', { name: /^Save / }))
+    await user.click(await screen.findByRole('button', { name: 'Add to a list' }))
     await user.type(screen.getByLabelText('New list name'), 'Sunday')
     await act(async () => { screen.getByRole('button', { name: 'Add' }).click() })
 

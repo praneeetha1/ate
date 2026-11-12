@@ -6,7 +6,7 @@ import Icon from './Icon'
 import DietMark from './DietMark'
 import { leadTimes } from '../utils/steps'
 
-export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
+export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCategory }) {
   const { favorites, toggleFav, ratings } = useApp()
 
   const isFav        = favorites.has(recipeKey)
@@ -57,7 +57,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill }) {
                 My Recipe
               </span>
             )}
-            <Tag category={recipe.category} />
+            {!hideCategory && <Tag category={recipe.category} />}
             {recipe.timeMinutes > 0 && (
               <span className="flex items-center gap-1 text-[0.7rem] font-bold text-muted">
                 <Icon name="clock" size={13} />{formatRecipeTime(recipe)}

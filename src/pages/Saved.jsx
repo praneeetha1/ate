@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
-import { useApp } from '../context/AppContext'
+import { useApp, userLists } from '../context/AppContext'
+import MyRecipes from '../components/MyRecipes'
 import { useToast } from '../context/ToastContext'
 import { resolveRecipe, keyToText } from '../utils/recipe'
 import { describeError } from '../utils/errors'
@@ -8,10 +9,11 @@ import RecipeListItem from '../components/RecipeListItem'
 import Icon from '../components/Icon'
 
 export default function Saved({ onOpen }) {
-  const { favorites, lists, userRecipes, deleteList, renameList, createList, syncing } = useApp()
+  const { favorites, lists: allLists, userRecipes, deleteList, renameList, createList, syncing } = useApp()
+  const lists = userLists(allLists)
   const { showError } = useToast()
 
-  const [tab,         setTab]         = useState('favorites') // 'favorites' | 'lists'
+  const [tab,         setTab]         = useState('favorites') // 'favorites' | 'mine' | 'lists'
   const [layout,      setLayout]      = useState('grid')
   const [expanded,    setExpanded]    = useState(null)
   const [newListName, setNewListName] = useState('')
@@ -87,6 +89,9 @@ export default function Saved({ onOpen }) {
         <button role="tab" aria-selected={tab === 'favorites'} className={tabCls(tab === 'favorites')} onClick={() => setTab('favorites')}>
           <Icon name="heart" size={15} /> Saved
         </button>
+        <button role="tab" aria-selected={tab === 'mine'} className={tabCls(tab === 'mine')} onClick={() => setTab('mine')}>
+          <Icon name="pencil" size={15} /> My Recipes
+        </button>
         <button role="tab" aria-selected={tab === 'lists'} className={tabCls(tab === 'lists')} onClick={() => setTab('lists')}>
           <Icon name="list" size={15} /> Lists
         </button>
@@ -139,6 +144,9 @@ export default function Saved({ onOpen }) {
           )}
         </>
       )}
+
+      {/* ── My Recipes tab ── */}
+      {tab === 'mine' && <MyRecipes onOpen={onOpen} />}
 
       {/* ── Lists tab ── */}
       {tab === 'lists' && (
@@ -233,7 +241,7 @@ export default function Saved({ onOpen }) {
 
                     {/* Deleting a list throws away its contents, so confirm first. */}
                     {confirmList === list.id && (
-                      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#fde8e8] border-t border-ink">
+                      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-danger-bg border-t border-ink">
                         <span className="text-[0.8rem] text-heart">Delete “{list.name}”?</span>
                         <div className="flex gap-2 shrink-0">
                           <button

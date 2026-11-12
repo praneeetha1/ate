@@ -8,6 +8,7 @@ import Home from './pages/Home'
 import Search from './pages/Search'
 import Saved from './pages/Saved'
 import Pantry from './pages/Pantry'
+import Shopping from './pages/Shopping'
 import Profile from './pages/Profile'
 import Auth from './pages/Auth'
 import ResetPassword from './pages/ResetPassword'
@@ -171,6 +172,7 @@ export default function App() {
           <Route path="/search"         element={<Search      onOpen={openModal} />} />
           <Route path="/saved"          element={<Saved       onOpen={openModal} />} />
           <Route path="/pantry"         element={<Pantry      onOpen={openModal} />} />
+          <Route path="/shopping"       element={<Shopping />} />
           <Route path="/profile"        element={<Profile     onOpen={openModal} />} />
           <Route path="/login"          element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />

@@ -10,7 +10,7 @@ vi.mock('../lib/supabase', () => ({
   appUrl: 'http://localhost:3000/ate/',
 }))
 
-const { default: Pantry }  = await import('./Pantry')
+const { default: Shopping } = await import('./Shopping')
 const { AppProvider }      = await import('../context/AppContext')
 const { PantryProvider }   = await import('../context/PantryContext')
 const { AuthProvider }     = await import('../context/AuthContext')
@@ -40,7 +40,7 @@ function renderPantry({ pantry = [] } = {}) {
     <ToastProvider>
       <AuthProvider>
         <AppProvider>
-          <PantryProvider><Pantry /></PantryProvider>
+          <PantryProvider><Shopping /></PantryProvider>
         </AppProvider>
       </AuthProvider>
     </ToastProvider>

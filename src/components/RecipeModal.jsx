@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useApp } from '../context/AppContext'
+import { useApp, userLists } from '../context/AppContext'
 import { useToast } from '../context/ToastContext'
 import { useDialog } from '../hooks/useDialog'
 import { ingredientLabel, keyToText, isUserRecipeKey, userRecipeId, sourceLabel, scaleStep } from '../utils/recipe'
@@ -296,7 +296,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       return
     }
     showToast(`Added ${entries.length} to your shopping list`, 'info', { actions: [
-      { label: 'View', onClick: () => { onClose(); navigate('/pantry') } },
+      { label: 'View', onClick: () => { onClose(); navigate('/shopping') } },
       { label: 'Undo', onClick: undo },
     ] })
   }
@@ -383,13 +383,67 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   title="Edit recipe"
                 ><Icon name="pencil" size={20} /></button>
               )}
-              <button
-                className={`${iconBtn} ${isFav ? 'text-heart' : 'text-muted hover:text-heart'}`}
-                onClick={() => toggleFav(recipeKey, recipe.name)}
-                aria-pressed={isFav}
-                aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
-                title="Save recipe"
-              ><Icon name="heart" size={22} filled={isFav} /></button>
+              {/* One way to save: the heart. Filing into a list is offered after
+                  saving, so lists stay optional instead of a second save button. */}
+              <div className="relative" ref={listsRef}>
+                <button
+                  className={`${iconBtn} ${isFav ? 'text-heart' : 'text-muted hover:text-heart'}`}
+                  onClick={() => {
+                    const saving = !isFav
+                    toggleFav(recipeKey, recipe.name)
+                    setShowLists(false)
+                    if (saving) showToast('Saved', 'success', { actions: [{ label: 'Add to a list', onClick: () => setShowLists(true) }] })
+                  }}
+                  aria-pressed={isFav}
+                  aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
+                  title="Save recipe"
+                ><Icon name="heart" size={22} filled={isFav} /></button>
+                {showLists && (
+                  <div className="absolute left-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
+                    <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
+                      Add to list
+                    </div>
+                    {userLists(lists).length === 0 && (
+                      <p className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</p>
+                    )}
+                    {userLists(lists).map(l => {
+                      const inL = l.items.includes(recipeKey)
+                      return (
+                        <button
+                          key={l.id}
+                          onClick={() => {
+                            if (inL) removeFromList(l.id, recipeKey)
+                            else addToList(l.id, recipeKey, recipe.name)
+                            showToast(`${inL ? 'Removed from' : 'Added to'} ${l.name}`, 'info')
+                          }}
+                          aria-pressed={inL}
+                          className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
+                        >
+                          <Icon name={inL ? 'check' : 'plus'} size={15} />
+                          <span className="truncate">{l.name}</span>
+                        </button>
+                      )
+                    })}
+                    <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-ink bg-paper">
+                      <input
+                        ref={newListRef}
+                        value={newListName}
+                        onChange={e => setNewListName(e.target.value)}
+                        placeholder="New list…"
+                        aria-label="New list name"
+                        maxLength={60}
+                        className="flex-1 min-w-0 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent-dk text-ink placeholder:text-muted"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors"
+                      >
+                        Add
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </div>
               {/* Labelled, because it's the one action here with a consequence
                   you'd want to read first. Three states: add, update to the
                   servings now picked, or take it off again. */}
@@ -419,60 +473,6 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                 {!inList ? 'Add to shopping list'
                   : listScale === scale ? 'On shopping list' : `Update list to ${(recipe.servings || 1) * scale} servings`}
               </button>
-              <div className="relative" ref={listsRef}>
-                <button
-                  className={`${iconBtn} ${lists.some(l => l.items.includes(recipeKey)) ? 'text-accent-dk' : 'text-muted hover:text-accent-dk'}`}
-                  onClick={() => setShowLists(p => !p)}
-                  aria-expanded={showLists}
-                  aria-label="Add to a list"
-                  title="Add to list"
-                ><Icon name="list" size={20} /></button>
-                {showLists && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
-                    <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
-                      Add to list
-                    </div>
-                    {lists.length === 0 && (
-                      <p className="px-3 py-2 text-[0.8rem] text-muted italic">No lists yet</p>
-                    )}
-                    {lists.map(l => {
-                      const inL = l.items.includes(recipeKey)
-                      return (
-                        <button
-                          key={l.id}
-                          onClick={() => {
-                            if (inL) removeFromList(l.id, recipeKey)
-                            else addToList(l.id, recipeKey, recipe.name)
-                            showToast(`${inL ? 'Removed from' : 'Added to'} ${l.name}`, 'info')
-                          }}
-                          aria-pressed={inL}
-                          className={`w-full text-left px-3 py-2.5 text-[0.86rem] flex items-center gap-2 border-b border-[rgba(200,180,130,0.2)] last:border-0 hover:bg-paper transition-colors ${inL ? 'text-accent-dk font-bold' : 'text-ink'}`}
-                        >
-                          <Icon name={inL ? 'check' : 'plus'} size={15} />
-                          <span className="truncate">{l.name}</span>
-                        </button>
-                      )
-                    })}
-                    <form onSubmit={handleNewList} className="flex gap-1.5 p-2 border-t border-ink bg-paper">
-                      <input
-                        ref={newListRef}
-                        value={newListName}
-                        onChange={e => setNewListName(e.target.value)}
-                        placeholder="New list…"
-                        aria-label="New list name"
-                        maxLength={60}
-                        className="flex-1 text-[0.8rem] border-2 border-ink rounded-xl px-2.5 py-1.5 bg-card outline-none focus:border-accent-dk text-ink placeholder:text-muted"
-                      />
-                      <button
-                        type="submit"
-                        className="bg-accent text-ink border-2 border-ink shadow-pop press text-[0.78rem] font-bold rounded-xl px-2.5 hover:bg-accent-dk transition-colors"
-                      >
-                        Add
-                      </button>
-                    </form>
-                  </div>
-                )}
-              </div>
               <button
                 className={`${iconBtn} text-muted hover:text-accent-dk`}
                 onClick={handleShare}

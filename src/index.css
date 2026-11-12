@@ -15,6 +15,71 @@
   size-adjust: 115%;
 }
 
+/* ── Theme ────────────────────────────────────────────────
+   Colours as space-separated RGB, read by tailwind.config.js. Light is the
+   default; dark applies when chosen in Settings (data-theme="dark"), or when
+   the device is dark and nothing was chosen. In dark the roles hold — ink is
+   still "lines and text", now chalk on a dark board. */
+:root {
+  --c-cream: 250 248 245;
+  --c-paper: 242 239 234;
+  --c-card: 255 255 255;
+  --c-warm-tan: 220 215 207;
+  --c-rim: 28 27 25;
+  --c-ink: 28 27 25;
+  --c-muted: 94 88 82;
+  --c-accent: 246 228 166;
+  --c-accent-dk: 122 95 14;
+  --c-mint: 134 169 138;
+  --c-sun: 245 235 196;
+  --c-heart: 181 103 107;
+  --c-star: 226 199 106;
+  --c-danger-bg: 253 232 232;
+  --c-ok: 42 96 53;
+  --c-ok-bg: 213 235 216;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --c-cream: 26 25 23;
+  --c-paper: 35 33 30;
+  --c-card: 43 41 37;
+  --c-warm-tan: 72 67 60;
+  --c-rim: 237 230 218;
+  --c-ink: 237 230 218;
+  --c-muted: 169 161 150;
+  --c-accent: 107 90 32;
+  --c-accent-dk: 230 203 114;
+  --c-mint: 134 169 138;
+  --c-sun: 58 51 32;
+  --c-heart: 208 140 144;
+  --c-star: 226 199 106;
+  --c-danger-bg: 61 36 38;
+  --c-ok: 163 210 174;
+  --c-ok-bg: 34 54 42;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --c-cream: 26 25 23;
+    --c-paper: 35 33 30;
+    --c-card: 43 41 37;
+    --c-warm-tan: 72 67 60;
+    --c-rim: 237 230 218;
+    --c-ink: 237 230 218;
+    --c-muted: 169 161 150;
+    --c-accent: 107 90 32;
+    --c-accent-dk: 230 203 114;
+    --c-mint: 134 169 138;
+    --c-sun: 58 51 32;
+    --c-heart: 208 140 144;
+    --c-star: 226 199 106;
+    --c-danger-bg: 61 36 38;
+    --c-ok: 163 210 174;
+    --c-ok-bg: 34 54 42;
+    color-scheme: dark;
+  }
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* Single source of truth for the two fixed chrome heights. The sticky filter
@@ -27,12 +92,12 @@
 
 body {
   /* Plain paper: the drawings carry the texture now. */
-  background-color: #FAF8F5;
+  background-color: rgb(var(--c-cream));
   min-height: 100vh;
   overflow-x: hidden;
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
   font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
-  color: #1C1B19;
+  color: rgb(var(--c-ink));
 }
 
 /* ── Sticker components ─────────────────────────────────────
@@ -40,17 +105,17 @@ body {
    shadow, and the shadow collapses when you press. Anything
    tappable gets .press so the whole app feels physical. */
 .sticker {
-  border: 2.5px solid #1C1B19;
+  border: 2.5px solid rgb(var(--c-ink));
   border-radius: 6px;
-  background: #FFFFFF;
-  box-shadow: 3px 3px 0 #1C1B19;
+  background: rgb(var(--c-card));
+  box-shadow: 3px 3px 0 rgb(var(--c-ink));
 }
 .press {
   transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
 }
 .press:active {
   transform: translate(3px, 3px);
-  box-shadow: 0 0 0 #1C1B19 !important;
+  box-shadow: 0 0 0 rgb(var(--c-ink)) !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .press, .press:active { transition: none; transform: none; }
