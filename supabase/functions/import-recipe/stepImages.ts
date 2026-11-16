@@ -43,6 +43,9 @@ function absolute(src: unknown, base: string): string | null {
   if (typeof src !== 'string' || !src.trim() || src.startsWith('data:')) return null
   try {
     const u = new URL(src.trim(), base)
+    // Sites still write http:// into lazy-load attributes; the app is served
+    // over https, where an http image is mixed content.
+    if (u.protocol === 'http:' && base.startsWith('https:')) u.protocol = 'https:'
     return /^https?:$/.test(u.protocol) ? u.toString() : null
   } catch { return null }
 }
@@ -108,7 +111,7 @@ function imgSrc(tag: string, base: string): string | null {
     const u = absolute(attr(name), base)
     if (u) return u
   }
-  const set = attr('data-srcset') ?? attr('srcset')
+  const set = attr('data-lazy-srcset') ?? attr('data-srcset') ?? attr('srcset')
   return set ? absolute(set.split(',')[0].trim().split(/\s+/)[0], base) : null
 }
 
@@ -144,6 +147,17 @@ function fromArticle(html: string, base: string): Step[] | null {
       current = { text: numbered[2], image: null }
       steps.push(current)
     } else if (m[2] !== undefined) {
+      // A list before any numbered step, its items carrying photos, *is* the
+      // method: one step per <li> (Hebbar's Kitchen publishes it this way).
+      const lis = [...m[3].matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)].map(li => li[1])
+      if (!current && lis.some(li => /<img\b/i.test(li))) {
+        for (const li of lis) {
+          const img = li.match(/<img\b[^>]*>/i)?.[0]
+          const text = decode(li)
+          if (text) steps.push({ text, image: img ? imgSrc(img, base) : null })
+        }
+        break
+      }
       // A list under a step ("1. Prepare the following:") belongs to it.
       if (current && !current.image) {
         const items = [...m[3].matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)].map(li => decode(li[1])).filter(Boolean)

@@ -87,6 +87,18 @@ describe('stepwise photos in the article', () => {
     ])
   })
 
+  it('reads a list whose items are the steps, each with a lazy-loaded photo', () => {
+    const img = n => `<br><picture><img src="data:image/svg+xml,x" data-lazy-srcset="https://x.com/${n}-1024.jpg 1024w, https://x.com/${n}-300.jpg 300w"></picture>`
+    const html = `<h2>How to Make Shrikhand with step-by-step Photos</h2>
+      <ol><li>Firstly, place a sieve.${img(1)}</li><li>Add the curd.${img(2)}</li><li>Chill and serve.</li></ol>
+      <h2>Notes</h2>`
+    expect(extractSteps(html, URL_)).toEqual([
+      { text: 'Firstly, place a sieve.', image: 'https://x.com/1-1024.jpg' },
+      { text: 'Add the curd.', image: 'https://x.com/2-1024.jpg' },
+      { text: 'Chill and serve.', image: null },
+    ])
+  })
+
   it('stops when the numbering restarts for a second recipe', () => {
     const steps = extractSteps(article('<p>1. Recipe two begins.</p><img src="https://x.com/r2.jpg">'), URL_)
     expect(steps?.map(s => s.text)).not.toContain('Recipe two begins.')
