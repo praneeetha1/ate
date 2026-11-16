@@ -6,7 +6,8 @@ import Icon from './Icon'
 import DietMark from './DietMark'
 import { leadTimes } from '../utils/steps'
 
-export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCategory }) {
+/** `children` is a footer line (a pantry caption) drawn inside the card's border. */
+export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCategory, children }) {
   const { favorites, toggleFav, ratings } = useApp()
 
   const isFav        = favorites.has(recipeKey)
@@ -16,7 +17,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCatego
 
   return (
     <div
-      className={`group relative bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-x-[2px] hover:-translate-y-[2px] flex flex-col overflow-hidden ${fill ? 'w-full' : 'w-[240px]'}`}
+      className={`group relative bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-x-[2px] hover:-translate-y-[2px] flex flex-col overflow-hidden ${fill ? 'w-full h-full' : 'w-[240px]'}`}
     >
       {/* Only when there is one. Most of the catalog has no photo, and a grid
           of grey placeholders reads worse than a grid of clean text cards, so
@@ -85,17 +86,8 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCatego
           <Icon name="heart" size={19} filled={isFav} />
         </button>
       </div>
-      {/* Hover-only, so it only takes up room where there's a hover to reveal
-          it — on a phone it was a permanent blank band under every card. */}
-      <button
-        type="button"
-        onClick={() => onOpen(recipeKey)}
-        tabIndex={-1}
-        aria-hidden="true"
-        className="hidden [@media(hover:hover)]:block font-display text-[0.72rem] font-semibold text-ink bg-sun border-t-2.5 border-ink px-4 py-[7px] text-left opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <span className="inline-flex items-center gap-1.5">{"Let's cook"}<Icon name="arrowRight" size={13} /></span>
-      </button>
+      {/* mt-auto pins the caption to the bottom, so cards in a row line up. */}
+      {children && <div className="mt-auto">{children}</div>}
     </div>
   )
 }

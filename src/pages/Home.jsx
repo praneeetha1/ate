@@ -221,8 +221,7 @@ export default function Home({ onOpen }) {
           <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
             {ranked.slice(0, 8).map(({ r, i, fit }) => (
               <div key={i} className="snap-start shrink-0 w-[240px]">
-                <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill />
-                <PantryFit fit={fit} />
+                <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill><PantryFit fit={fit} /></RecipeCard>
               </div>
             ))}
           </div>
@@ -314,8 +313,7 @@ export default function Home({ onOpen }) {
             <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 px-5 pb-6">
               {rankedVisible.map(({ r, i, fit }) => (
                 <div key={i}>
-                  <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill />
-                  <PantryFit fit={fit} />
+                  <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill><PantryFit fit={fit} /></RecipeCard>
                 </div>
               ))}
             </div>

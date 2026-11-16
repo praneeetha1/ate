@@ -301,9 +301,9 @@ export default function Search({ onOpen }) {
             const matched = mode === 'ingredient' && matchCount > 0
             return (
               <div key={key}>
-                <RecipeCard recipe={r} recipeKey={key} onOpen={onOpen} fill />
+                <RecipeCard recipe={r} recipeKey={key} onOpen={onOpen} fill>
                 {matched && (
-                  <p className="text-[0.72rem] text-accent-dk bg-paper border border-t-0 border-ink rounded-b-xl px-4 py-1.5 font-bold -mt-1">
+                  <p className="text-[0.72rem] text-accent-dk bg-paper border-t-2 border-ink px-4 py-1.5 font-bold">
                     <Icon name="check" size={13} className="inline align-[-2px] mr-1" /> uses {matchCount} of your {total} ingredient{total !== 1 ? 's' : ''}
                   </p>
                 )}
@@ -314,6 +314,7 @@ export default function Search({ onOpen }) {
                 {!matched && pantryEnabled && pantry.size > 0 && (
                   <PantryFit fit={pantryFit(r, stateOf)} />
                 )}
+                </RecipeCard>
               </div>
             )
           })

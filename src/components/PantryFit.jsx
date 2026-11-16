@@ -22,7 +22,7 @@ export default function PantryFit({ fit }) {
 
   return (
     <p
-      className={`text-[0.72rem] border border-t-0 border-ink rounded-b-xl px-4 py-1.5 font-bold -mt-1 ${
+      className={`text-[0.72rem] border-t-2 border-ink px-4 py-1.5 font-bold ${
         ready ? 'text-accent-dk bg-paper' : 'text-muted bg-card'
       }`}
     >
@@ -32,9 +32,9 @@ export default function PantryFit({ fit }) {
           {/* Assumptions are named rather than folded into the total: four of
               six being guesses about flour and spices is worth knowing before
               you start cooking. */}
-          {assumed > 0
-            ? <>You have {total - assumed} of {total}<span className="font-normal"> · {assumed} assumed</span></>
-            : <>You have all {total}</>}
+          {/* "You have 1 of 3" read as short of two; it's all there. */}
+          You have all {total}
+          {assumed > 0 && <span className="font-normal"> · {assumed} assumed</span>}
         </>
       ) : (
         <>

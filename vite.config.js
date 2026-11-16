@@ -79,5 +79,13 @@ export default defineConfig({
      */
     testTimeout: 30000,
     hookTimeout: 30000,
+    // Node 25+ ships its own `localStorage` global, which shadows jsdom's and
+    // is undefined without --localstorage-file. Older Node (CI is on 20)
+    // rejects the flag, so only pass it where it exists.
+    poolOptions: {
+      forks: {
+        execArgv: Number(process.versions.node.split('.')[0]) >= 25 ? ['--no-experimental-webstorage'] : [],
+      },
+    },
   },
 })
