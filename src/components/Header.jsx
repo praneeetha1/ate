@@ -6,6 +6,7 @@ import { useApp } from '../context/AppContext'
 import Icon from './Icon'
 import { Logo } from './Sketch'
 import SettingsSheet from './SettingsSheet'
+import { isDemo } from '../lib/demo'
 import { StarterPicker } from './StarterRecipes'
 
 // Read the one source of truth for the header height (--header-h) so the
@@ -66,6 +67,8 @@ export default function Header() {
         <h1 className="text-ink leading-none">
           <Logo height={34} />
         </h1>
+        {/* So a demo session is never mistaken for a real account. */}
+        {isDemo && <span className="absolute left-1/2 -translate-x-1/2 bottom-1 text-[0.6rem] font-bold tracking-[0.1em] text-heart">DEMO · ?demo=off to leave</span>}
       </Link>
 
       {/* Absolutely positioned so the wordmark stays optically centred and the

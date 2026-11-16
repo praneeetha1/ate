@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { isDemo, createDemoSupabase } from './demo'
 
 const SUPABASE_URL      = import.meta.env.VITE_SUPABASE_URL
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -17,7 +18,12 @@ export const configError = !SUPABASE_URL
 // the Vite base so local dev returns to localhost instead of production.
 export const appUrl = window.location.origin + import.meta.env.BASE_URL
 
-export const supabase = configError
+// Dev server only: ?demo runs the app signed in against an in-memory database
+// (lib/demo.js). DEV is false in production builds, so this branch and the
+// demo module are dropped from the published site.
+export const supabase = isDemo
+  ? createDemoSupabase()
+  : configError
   ? null
   : createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {

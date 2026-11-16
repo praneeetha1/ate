@@ -328,10 +328,10 @@ export default function Home({ onOpen }) {
         <section className="mb-2" aria-labelledby="my-recipes-heading">
           <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
             <h2 id="my-recipes-heading" className="font-display text-[1.1rem] font-semibold text-ink">My Recipes</h2>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="text-[0.72rem] font-bold text-ink border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[3px] hover:bg-accent hover:text-ink transition-all"
-            >+ New</button>
+            {/* A count like every other section; adding is "+ My Recipe" just above. */}
+            <span className="text-[0.72rem] text-muted">
+              {filteredMine.length} recipe{filteredMine.length !== 1 ? 's' : ''}
+            </span>
           </div>
           <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
             {filteredMine.map(r => (
