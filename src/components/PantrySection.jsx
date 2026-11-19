@@ -431,7 +431,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
             <button
               type="button"
               onClick={() => setShowStock(v => !v)}
-              aria-expanded={!!showStock}
+              aria-expanded={showStock ?? undefined}
               aria-controls="stock-kitchen"
               className="w-full flex items-center gap-3 text-left px-3.5 py-2.5 rounded-xl border-2 border-ink bg-card shadow-pop press focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
             >

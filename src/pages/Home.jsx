@@ -257,7 +257,7 @@ export default function Home({ onOpen }) {
               {/* "Any course", not "All" — the diet row above already has an
                   All pill, and two identically named buttons on one screen is
                   ambiguous in the UI and indistinguishable to a screen
-                  reader. Matches the existing "Any time" wording. */}
+                  reader. */}
               <button
                 onClick={() => setCatFilter('')}
                 aria-pressed={catFilter === ''}
