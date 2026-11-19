@@ -60,7 +60,7 @@ export default function HomeHero({ recipes, onOpen, action }) {
       {pick && (
       <div className="relative mt-4 mb-2">
         {/* The recipe's course doodle, stuck on the corner of the card like a sticker. */}
-        <span key={i} aria-hidden="true" className="absolute -top-6 -right-1 z-20 rotate-12">
+        <span key={`doodle-${i}`} aria-hidden="true" className="absolute -top-6 -right-1 z-20 rotate-12">
           <CategoryDoodle category={r.category} fallback="cat-main" size={56} className="doodle-wiggle" />
         </span>
         {/* A strip of tape holding the card down. Decoration only. */}
