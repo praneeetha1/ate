@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, Component } from 'react'
+import { useState, useEffect, useCallback, useRef, Component } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -16,6 +16,7 @@ import { useApp } from './context/AppContext'
 import { useAuth } from './context/AuthContext'
 import { useToast } from './context/ToastContext'
 import { supabase } from './lib/supabase'
+import { authArrival } from './lib/arrival'
 import { resolveRecipe, isCatalogKey, normalizeUserRecipe } from './utils/recipe'
 
 export class ErrorBoundary extends Component {
@@ -86,7 +87,7 @@ export default function App() {
 
   const { userRecipes } = useApp()
   const { user, profile, loading: authLoading } = useAuth()
-  const { showError } = useToast()
+  const { showError, showToast } = useToast()
   const navigate = useNavigate()
 
   const openModal  = useCallback((key, recipe) => {
@@ -149,6 +150,38 @@ export default function App() {
     })
     return () => subscription.unsubscribe()
   }, [navigate])
+
+  /**
+   * Say what happened on arrival, once sign-in has settled. Without this an
+   * expired email link, a confirmation link opened on another device, or a
+   * session that quietly ran out all looked the same: the home page, signed
+   * out, with no hint why.
+   */
+  const arrivalHandled = useRef(false)
+  useEffect(() => {
+    if (authLoading || arrivalHandled.current) return
+    arrivalHandled.current = true
+    const { code, error, errorCode, hadSession } = authArrival
+    if (code) {
+      const route = window.location.hash.startsWith('#/') ? window.location.hash : '#/'
+      window.history.replaceState({}, '', window.location.pathname + route)
+    }
+    if (error) {
+      showError(errorCode === 'otp_expired'
+        ? 'That email link has expired or was already used. Log in, or ask for a new link.'
+        : `Couldn’t sign you in: ${error}`)
+      if (!user) navigate('/login')
+    } else if (code && !user) {
+      // The link confirmed the email, but this browser couldn't finish signing
+      // in — usually because it was opened on a different device.
+      showToast('Your email is confirmed. Log in to continue.', 'info')
+      navigate('/login')
+    } else if (hadSession && !user && navigator.onLine) {
+      showToast('You were signed out. Log in again to see your recipes.', 'info', {
+        actions: [{ label: 'Log in', onClick: () => navigate('/login') }],
+      })
+    }
+  }, [authLoading, user, navigate, showError, showToast])
 
   if (authLoading) return <Splash />
 

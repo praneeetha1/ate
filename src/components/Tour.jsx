@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useAuth } from '../context/AuthContext'
 import { useDialog } from '../hooks/useDialog'
 import { loadSlice, saveSlice, scopeFor } from '../utils/storage'
+import { isReturning } from './StarterRecipes'
 
 const KEY = 'seen_welcome'
 const EVENT = 'ate:tour'
@@ -27,7 +28,7 @@ export function resetWelcome(uid) {
 function stops(signedIn) {
   return [
     { at: 'recipe',   title: 'Recipes',       text: 'Tap a card to open it. Start cooking then takes you through it one card at a time, with timers.' },
-    { at: 'add',      title: '+ My Recipe',   text: 'Add your own, or paste a link and it’s imported for you, step photos and all.' },
+    { at: 'add',      title: 'Your recipes',  text: 'Add your own, or paste a link and it’s imported for you, step photos and all.' },
     { at: 'fridge',   title: 'Fridge',        text: signedIn
       ? 'Mark what you have, and recipes show what you’re missing.'
       : 'Sign in, mark what you have, and recipes show what you’re missing.' },
@@ -44,8 +45,10 @@ const target = at => document.querySelector(`[data-tour="${at}"]`)
  * every stop; stops whose control isn't on screen are left out.
  */
 export default function Tour() {
-  const uid = useAuth().user?.id
-  const [open, setOpen] = useState(() => !hasSeenWelcome(uid))
+  const { user } = useAuth()
+  const uid = user?.id
+  // A returning account has seen it, just not on this device.
+  const [open, setOpen] = useState(() => !hasSeenWelcome(uid) && !isReturning(user))
   const [steps, setSteps] = useState([])
   const [i, setI] = useState(0)
   const [rect, setRect] = useState(null)

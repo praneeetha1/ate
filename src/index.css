@@ -110,6 +110,10 @@ button, a, [role="tab"], nav, label, img {
 :root {
   --header-h: 72px;
   --nav-h:    62px;
+  /* Room under the bottom bar for the phone's home-swipe strip. Needs
+     viewport-fit=cover (index.html) for iOS to report it at all; the 10px
+     floor lifts the bar on phones that report none. */
+  --safe-b: max(env(safe-area-inset-bottom, 0px), 10px);
 }
 
 body {
@@ -118,7 +122,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
-  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(var(--nav-h) + var(--safe-b));
   font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
   color: rgb(var(--c-ink));
 }
@@ -324,7 +328,7 @@ input[type="checkbox"]:disabled { cursor: not-allowed; }
 .snap-start { scroll-snap-align: start; }
 
 /* iOS safe-area padding for bottom sheets and the fixed nav. */
-.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pb-safe { padding-bottom: var(--safe-b); }
 
 /* Sticks directly below the sticky app header. When the header has scrolled
    away (quick-return, see useHideOnScroll) these bars take its place at the

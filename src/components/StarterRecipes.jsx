@@ -41,6 +41,14 @@ export function useStarterRecipes() {
   }
 }
 
+/**
+ * An account more than a day old: someone coming back, perhaps on a new
+ * phone, not a newcomer. The starter question and the tour are remembered per
+ * device, so without this a returning cook was greeted like a stranger.
+ */
+export const isReturning = user =>
+  !!user?.created_at && Date.now() - Date.parse(user.created_at) > 864e5
+
 /** The first-visit question: keep every starter recipe, or pick some. */
 export function StarterChoice() {
   const { save } = useStarterRecipes()

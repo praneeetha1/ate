@@ -247,6 +247,7 @@ export function createFakeSupabase(seed = {}, spy = f => f) {
       signUp: spy(() => Promise.resolve({ error: null })),
       signInWithOAuth: spy(() => Promise.resolve({ error: null })),
       resetPasswordForEmail: spy(() => Promise.resolve({ error: null })),
+      resend: spy(() => Promise.resolve({ error: null })),
       updateUser: spy(() => Promise.resolve({ error: null })),
       signOut: spy(() => { client.__setSession(null); return Promise.resolve({ error: null }) }),
     },

@@ -169,7 +169,11 @@ const SKETCH = {
 const FILLED = { heart: 'heart-filled', star: 'star-filled' }
 const KEEPS_COLOUR = new Set(['star-filled'])
 
-export const sketchUrl = file => `${import.meta.env.BASE_URL}sketch/${file}.png`
+// Bump when a drawing is replaced under the same name: browsers and the
+// service worker cache sketches hard, and an old line file over a new colour
+// file looks broken.
+const SKETCH_VERSION = 2
+export const sketchUrl = file => `${import.meta.env.BASE_URL}sketch/${file}.png?v=${SKETCH_VERSION}`
 
 /** One sketch image as a recolourable stencil. Shared by icons, marks and digits. */
 export function Stencil({ file, width, height, className = '', style, ...rest }) {

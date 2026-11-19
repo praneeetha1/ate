@@ -77,14 +77,25 @@ export function AuthProvider({ children }) {
     return () => { active = false; subscription.unsubscribe() }
   }, [fetchProfile])
 
+  /** Returns 'signed-in', 'confirm' (check your email) or 'exists'. */
   async function signUp(email, password) {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       // Derived from the Vite base so confirming from local dev returns to
       // localhost instead of bouncing the developer to production.
       options: { emailRedirectTo: appUrl },
     })
+    if (error) throw error
+    if (data?.session) return 'signed-in'
+    // With email confirmation on, Supabase answers an existing address with a
+    // user that has no identities (and sends no email) rather than an error.
+    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) return 'exists'
+    return 'confirm'
+  }
+
+  async function resendConfirmation(email) {
+    const { error } = await supabase.auth.resend({ type: 'signup', email, options: { emailRedirectTo: appUrl } })
     if (error) throw error
   }
 
@@ -131,7 +142,7 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{
       user, profile, loading,
-      signUp, signIn, signInWithGoogle, signOut,
+      signUp, signIn, signInWithGoogle, signOut, resendConfirmation,
       sendPasswordReset, updatePassword,
       updateProfile,
     }}>

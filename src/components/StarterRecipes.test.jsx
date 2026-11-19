@@ -15,6 +15,15 @@ function Page() {
 
 beforeEach(() => { localStorage.clear(); auth.user = null })
 
+describe('a returning account', () => {
+  it('is one more than a day old; a new one, or a guest, is not', async () => {
+    const { isReturning } = await import('./StarterRecipes')
+    expect(isReturning({ created_at: new Date(Date.now() - 3 * 864e5).toISOString() })).toBe(true)
+    expect(isReturning({ created_at: new Date().toISOString() })).toBe(false)
+    expect(isReturning(null)).toBe(false)
+  })
+})
+
 describe('choosing starter recipes', () => {
   it('asks once, and "Keep all" keeps every starter recipe', async () => {
     const user = userEvent.setup()

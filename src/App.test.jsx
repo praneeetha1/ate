@@ -1,15 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, act, waitFor } from '@testing-library/react'
+import { render, screen, act, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { createMockSupabase, fakeSession } from './test/supabaseMock'
 import RECIPES from './data/recipes.json'
 
-const h = vi.hoisted(() => ({ client: null }))
+const h = vi.hoisted(() => ({ client: null, arrival: {} }))
 vi.mock('./lib/supabase', () => ({
   get supabase() { return h.client },
   configError: null,
   appUrl: 'http://localhost:3000/ate/',
 }))
+vi.mock('./lib/arrival', () => ({ get authArrival() { return h.arrival } }))
 
 const { default: App }   = await import('./App')
 const { AppProvider }    = await import('./context/AppContext')
@@ -37,6 +38,7 @@ function setQuery(search) {
 beforeEach(() => {
   localStorage.clear()
   setQuery('')
+  h.arrival = {}
   h.client = createMockSupabase({
     profiles: [{ id: 'user-1', username: 'cook', username_set: true, is_private: false }],
   })
@@ -158,6 +160,52 @@ describe('routing', () => {
   it('exposes the reset-password route', async () => {
     renderApp({ route: '/reset-password' })
     expect(await screen.findByRole('heading', { name: 'Choose a new password' })).toBeTruthy()
+  })
+})
+
+describe('signing in, the edges', () => {
+  it('sends a signed-in visitor on from the login page', async () => {
+    h.client = createMockSupabase({ __session: fakeSession('user-1'), profiles: [{ id: 'user-1', username: 'cook', username_set: true }] })
+    renderApp({ route: '/login' })
+    expect(await screen.findByRole('button', { name: /Surprise me/ })).toBeTruthy()
+    expect(screen.queryByRole('tab', { name: 'Sign up' })).toBeNull()
+  })
+
+  // These used to land on the home page with no word about what happened.
+  it('explains an expired email link and offers the login page', async () => {
+    h.arrival = { error: 'Email link is invalid or has expired', errorCode: 'otp_expired' }
+    renderApp()
+    expect(await screen.findByText(/email link has expired or was already used/i)).toBeTruthy()
+    expect(await screen.findByRole('tab', { name: 'Log in' })).toBeTruthy()
+  })
+
+  it('says the email is confirmed when the link could not sign this browser in', async () => {
+    h.arrival = { code: true }
+    renderApp()
+    expect(await screen.findByText(/your email is confirmed/i)).toBeTruthy()
+  })
+
+  it('says so when a saved session has run out', async () => {
+    h.arrival = { hadSession: true }
+    renderApp()
+    expect(await screen.findByText(/you were signed out/i)).toBeTruthy()
+  })
+
+  it('stays quiet for someone who simply never signed in', async () => {
+    renderApp()
+    await screen.findByRole('button', { name: /Surprise me/ })
+    expect(screen.queryByText(/signed out|email is confirmed|expired/i)).toBeNull()
+  })
+
+  it('tells a sign-up with a taken email to log in instead', async () => {
+    h.client.auth.signUp = vi.fn(() => Promise.resolve({ data: { user: { identities: [] }, session: null }, error: null }))
+    renderApp({ route: '/login' })
+    ;(await screen.findByRole('tab', { name: 'Sign up' })).click()
+    const email = await screen.findByRole('textbox', { name: 'Email' })
+    fireEvent.change(email, { target: { value: 'cook@example.com' } })
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'secret1' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Create account' }))
+    expect(await screen.findByText(/already has an account/i)).toBeTruthy()
   })
 })
 

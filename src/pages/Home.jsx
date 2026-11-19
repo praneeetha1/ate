@@ -11,7 +11,8 @@ import PantryFit from '../components/PantryFit'
 import Icon from '../components/Icon'
 import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
 import Tour from '../components/Tour'
-import { StarterChoice, useStarterRecipes } from '../components/StarterRecipes'
+import { StarterChoice, useStarterRecipes, isReturning } from '../components/StarterRecipes'
+import { useAuth } from '../context/AuthContext'
 import { Link } from 'react-router-dom'
 import HomeHero, { CategoryJump, courseId } from '../components/HomeHero'
 import { CategoryDoodle } from '../components/Sketch'
@@ -30,6 +31,7 @@ export default function Home({ onOpen }) {
   const [mustHave,       setMustHave]        = useState('')
   const { userRecipes } = useApp()
   const { chosen: startersChosen, catalog } = useStarterRecipes()
+  const returning = isReturning(useAuth()?.user)
   const { pantryEnabled, pantryReady, pantryState, pantry, stateOf } = usePantry()
 
   const { diet: dietFilter, time: timeFilter, noPlanAhead } = filters
@@ -166,7 +168,7 @@ export default function Home({ onOpen }) {
         </div>
       )}
 
-      {startersChosen
+      {startersChosen || returning
         ? <Tour />
         : <StarterChoice />}
 

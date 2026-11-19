@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Logo } from '../components/Sketch'
 import { useAuth } from '../context/AuthContext'
 
 export default function Auth() {
@@ -11,7 +12,9 @@ export default function Auth() {
   const [success,  setSuccess]  = useState('')
   const [loading,  setLoading]  = useState(false)
 
-  const { signIn, signUp, signInWithGoogle, sendPasswordReset } = useAuth()
+  const { user, signIn, signUp, signInWithGoogle, sendPasswordReset, resendConfirmation } = useAuth()
+  // Set when logging in fails only because the email isn't confirmed yet.
+  const [unconfirmed, setUnconfirmed] = useState(false)
   const navigate = useNavigate()
   // Where to go back to after signing in, e.g. the Fridge page that sent you
   // here. Only an in-app path: never a full URL someone could put in a link.
@@ -22,27 +25,54 @@ export default function Auth() {
     setTab(next)
     setError('')
     setSuccess('')
+    setUnconfirmed(false)
+  }
+
+  async function resend() {
+    setError('')
+    try {
+      await resendConfirmation(email)
+      setUnconfirmed(false)
+      setSuccess('Sent. Check your inbox (and spam) for the confirmation link.')
+    } catch (err) {
+      setError(err.message)
+    }
   }
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setSuccess('')
+    setUnconfirmed(false)
     setLoading(true)
     try {
       if (tab === 'login') {
         await signIn(email, password)
         navigate(next)
       } else if (tab === 'signup') {
-        await signUp(email, password)
-        setSuccess('Check your email to confirm your account, then log in.')
+        const outcome = await signUp(email, password)
+        if (outcome === 'signed-in') navigate(next)
+        else if (outcome === 'exists') {
+          setTab('login')
+          setError('That email already has an account. Log in instead, or reset your password.')
+        } else {
+          setSuccess(`We sent a confirmation link to ${email}. Open it on this device, then log in here. Check spam if it doesn’t arrive.`)
+        }
       } else {
         // Password reset had no entry point at all before this.
         await sendPasswordReset(email)
         setSuccess('If that email has an account, a reset link is on its way.')
       }
     } catch (err) {
-      setError(err.message)
+      // Supabase's wording, made plainer for the two everyone hits.
+      if (/email not confirmed/i.test(err.message)) {
+        setUnconfirmed(true)
+        setError('Confirm your email first: open the link we sent you.')
+      } else if (/invalid login credentials/i.test(err.message)) {
+        setError('That email and password don’t match. Try again, or reset your password.')
+      } else {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -59,31 +89,30 @@ export default function Auth() {
   }
 
   const inputCls = 'w-full border-2 border-ink rounded-xl px-4 py-3 text-[0.92rem] text-ink bg-paper outline-none focus:border-accent-dk transition-colors placeholder:text-muted font-sans'
-  const tabCls   = active =>
-    `flex-1 py-2.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
-      active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
-    }`
 
   const submitLabel = tab === 'login' ? 'Log in' : tab === 'signup' ? 'Create account' : 'Send reset link'
+
+  // Already signed in (a bookmark, or Back after logging in): nothing to do here.
+  if (user) return <Navigate to={next} replace />
 
   return (
     <div className="min-h-[calc(100dvh-var(--nav-h))] flex items-center justify-center px-5 py-10">
       <div className="w-full max-w-sm">
 
         <div className="text-center mb-8">
-          <div className="font-display text-[2.4rem] font-semibold text-accent-dk leading-none">
-            ate<span className="italic font-normal text-accent-dk">.</span>
-          </div>
-          <p className="text-[0.75rem] text-muted tracking-[0.12em] uppercase mt-1">
+          <Logo height={52} className="mx-auto text-ink" />
+          <p className="text-[0.9rem] text-muted mt-2">
             Your cozy recipe companion
           </p>
         </div>
 
         <div className="bg-card border-2 border-ink rounded-2xl shadow-warm-lg overflow-hidden">
 
-          <div className="flex border-b border-ink bg-paper" role="tablist">
-            <button role="tab" aria-selected={tab === 'login'}  className={tabCls(tab === 'login')}  onClick={() => switchTab('login')}>Log in</button>
-            <button role="tab" aria-selected={tab === 'signup'} className={tabCls(tab === 'signup')} onClick={() => switchTab('signup')}>Sign up</button>
+          <div className="px-6 pt-5">
+            <div className="seg" role="tablist">
+              <button role="tab" aria-selected={tab === 'login'}  onClick={() => switchTab('login')}>Log in</button>
+              <button role="tab" aria-selected={tab === 'signup'} onClick={() => switchTab('signup')}>Sign up</button>
+            </div>
           </div>
 
           <div className="p-6">
@@ -104,7 +133,7 @@ export default function Auth() {
 
                 <div className="flex items-center gap-3 mb-5">
                   <div className="flex-1 h-px bg-rim" />
-                  <span className="text-[0.72rem] text-muted uppercase tracking-[0.08em]">or</span>
+                  <span className="text-[0.8rem] text-muted">or</span>
                   <div className="flex-1 h-px bg-rim" />
                 </div>
               </>
@@ -142,6 +171,11 @@ export default function Auth() {
               )}
 
               {error   && <p role="alert" className="text-[0.8rem] text-heart bg-danger-bg rounded-xl px-3 py-2">{error}</p>}
+              {unconfirmed && (
+                <button type="button" onClick={resend} className="self-start text-[0.8rem] font-bold text-ink underline underline-offset-2 min-h-[36px]">
+                  Send the confirmation email again
+                </button>
+              )}
               {success && <p role="status" className="text-[0.8rem] text-ok bg-ok-bg rounded-xl px-3 py-2">{success}</p>}
 
               <button

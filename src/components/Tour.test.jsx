@@ -34,7 +34,7 @@ describe('the tour', () => {
     const { unmount } = page()
     expect(title()).toBe('Recipes')
     expect(screen.getByText('1 of 5')).toBeInTheDocument()
-    for (const next of ['+ My Recipe', 'Fridge', 'Shopping list', 'Settings']) {
+    for (const next of ['Your recipes', 'Fridge', 'Shopping list', 'Settings']) {
       await user.click(screen.getByRole('button', { name: 'Next' }))
       expect(title()).toBe(next)
     }
