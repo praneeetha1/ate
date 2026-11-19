@@ -24,16 +24,22 @@ export function resetWelcome(uid) {
   window.dispatchEvent(new Event(EVENT))
 }
 
-/** Each stop points at a real control, marked with data-tour="…". */
+/**
+ * Each stop points at a real control, marked with data-tour="…", in the order
+ * they sit on the home screen, top to bottom, then the always-there chrome.
+ */
 function stops(signedIn) {
   return [
+    { at: 'pick',     title: 'Today’s pick',  text: 'A recipe for this time of day. Tap it to open, or roll the dice for another.' },
+    // Only when there's no pick card to explain opening a recipe instead.
     { at: 'recipe',   title: 'Recipes',       text: 'Tap a card to open it. Start cooking then takes you through it one card at a time, with timers.' },
+    { at: 'filters',  title: 'Filters',       text: 'Narrow everything down: veg, quick to make, or nothing to plan ahead.' },
     { at: 'add',      title: 'Your recipes',  text: 'Add your own, or paste a link and it’s imported for you, step photos and all.' },
     { at: 'fridge',   title: 'Fridge',        text: signedIn
-      ? 'Mark what you have, and recipes show what you’re missing.'
+      ? 'Mark what you have. Home then shows what you can make, and what you’re out of goes on your list in a tap.'
       : 'Sign in, mark what you have, and recipes show what you’re missing.' },
-    { at: 'cart',     title: 'Shopping list', text: 'What a recipe is missing goes here, in one tap.' },
-    { at: 'settings', title: 'Settings',      text: 'Dark mode, which starter recipes you see, and this tour again.' },
+    { at: 'cart',     title: 'Shopping list', text: 'What a recipe is missing goes here in one tap. Tick things off and they’re back in your fridge.' },
+    { at: 'settings', title: 'Settings',      text: 'Dark mode, text size, which starter recipes you see, and this tour again.' },
   ]
 }
 
@@ -61,7 +67,10 @@ export default function Tour() {
 
   // Which stops exist on this screen, worked out once the page has rendered.
   useEffect(() => {
-    if (open) setSteps(stops(!!uid).filter(s => target(s.at)))
+    if (open) {
+      const here = stops(!!uid).filter(s => target(s.at))
+      setSteps(here.some(s => s.at === 'pick') ? here.filter(s => s.at !== 'recipe') : here)
+    }
   }, [open, uid])
 
   const step = steps[i]

@@ -125,6 +125,7 @@ export default function Home({ onOpen }) {
 
   const filterBtn = (
     <button
+      data-tour="filters"
       onClick={() => setShowFilters(true)}
       aria-haspopup="dialog"
       aria-label={`Filters${chips.length ? ` · ${chips.length}` : ''}`}

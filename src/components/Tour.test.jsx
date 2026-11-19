@@ -11,7 +11,9 @@ const page = (extra = null) => render(
   <>
     <button data-tour="settings">Settings</button>
     <a data-tour="cart" href="#">Bag</a>
-    <button data-tour="add">+ My Recipe</button>
+    <article data-tour="pick">Shakshuka</article>
+    <button data-tour="filters">Filters</button>
+    <button data-tour="add">Add a recipe</button>
     <div data-tour="recipe">Idli</div>
     <a data-tour="fridge" href="#">Fridge</a>
     {extra}
@@ -32,9 +34,10 @@ describe('the tour', () => {
   it('walks a first-time visitor through each control, once', async () => {
     const user = userEvent.setup()
     const { unmount } = page()
-    expect(title()).toBe('Recipes')
-    expect(screen.getByText('1 of 5')).toBeInTheDocument()
-    for (const next of ['Your recipes', 'Fridge', 'Shopping list', 'Settings']) {
+    expect(title()).toBe('Today’s pick')
+    // The pick card explains opening a recipe, so the plain card stop drops out.
+    expect(screen.getByText('1 of 6')).toBeInTheDocument()
+    for (const next of ['Filters', 'Your recipes', 'Fridge', 'Shopping list', 'Settings']) {
       await user.click(screen.getByRole('button', { name: 'Next' }))
       expect(title()).toBe(next)
     }
@@ -60,7 +63,7 @@ describe('the tour', () => {
     page()
     await user.click(screen.getByRole('button', { name: 'Skip tour' }))
     act(() => resetWelcome(null))
-    expect(title()).toBe('Recipes')
+    expect(title()).toBe('Today’s pick')
   })
 
   it('leaves out stops whose control is not on screen', () => {
@@ -70,14 +73,13 @@ describe('the tour', () => {
 
   it('tells a guest to sign in for the Fridge, and a signed-in cook not to', async () => {
     const user = userEvent.setup()
+    const toFridge = async () => { for (let n = 0; n < 3; n++) await user.click(screen.getByRole('button', { name: 'Next' })) }
     const { unmount } = page()
-    await user.click(screen.getByRole('button', { name: 'Next' }))
-    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await toFridge()
     expect(screen.getByText(/^Sign in, mark what you have/)).toBeInTheDocument()
     unmount(); localStorage.clear(); auth.user = { id: 'u1' }
     page()
-    await user.click(screen.getByRole('button', { name: 'Next' }))
-    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await toFridge()
     expect(screen.getByText(/^Mark what you have/)).toBeInTheDocument()
   })
 

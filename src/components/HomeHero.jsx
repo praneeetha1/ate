@@ -67,6 +67,7 @@ export default function HomeHero({ recipes, onOpen, action }) {
         <span aria-hidden="true" className="absolute -top-2.5 left-1/2 -translate-x-1/2 -rotate-3 z-10 w-20 h-5 bg-accent/80 border-[1.5px] border-ink/30" />
         <article
           key={i}
+          data-tour="pick"
           className="deal-in relative bg-card border-2.5 border-ink rounded-2xl shadow-warm-lg overflow-hidden -rotate-1 transition-transform hover:rotate-0 active:scale-[0.99] active:shadow-warm"
         >
           {r.image && (
