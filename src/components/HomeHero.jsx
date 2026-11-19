@@ -7,10 +7,10 @@ import { CategoryDoodle } from './Sketch'
 
 /** What the clock says you're probably about to cook. */
 function mealNow(hour) {
-  if (hour >= 5 && hour < 11)  return { hello: 'Good morning',   ask: 'Something for breakfast?', doodle: 'Breakfast', cats: ['Breakfast'] }
-  if (hour >= 11 && hour < 16) return { hello: 'Good afternoon', ask: 'Lunch, maybe this?',      doodle: 'Pasta & Noodles', cats: ['Quick Meal', 'Main Dish', 'Pasta & Noodles'] }
-  if (hour >= 16 && hour < 22) return { hello: 'Good evening',   ask: 'How about this for dinner?', doodle: 'Main Dish', cats: ['Main Dish', 'Pasta & Noodles', 'Quick Meal'] }
-  return { hello: 'Hello, night owl', ask: 'A late bite?', doodle: 'Dessert', cats: ['Snack & Appetizer', 'Dessert', 'Quick Meal'] }
+  if (hour >= 5 && hour < 11)  return { hello: 'Good morning',   ask: 'Something for breakfast?', cats: ['Breakfast'] }
+  if (hour >= 11 && hour < 16) return { hello: 'Good afternoon', ask: 'Lunch, maybe this?',      cats: ['Quick Meal', 'Main Dish', 'Pasta & Noodles'] }
+  if (hour >= 16 && hour < 22) return { hello: 'Good evening',   ask: 'How about this for dinner?', cats: ['Main Dish', 'Pasta & Noodles', 'Quick Meal'] }
+  return { hello: 'Hello, night owl', ask: 'A late bite?', cats: ['Snack & Appetizer', 'Dessert', 'Quick Meal'] }
 }
 
 /** Local day number, so the pick changes at your midnight, not UTC's. */
@@ -59,9 +59,9 @@ export default function HomeHero({ recipes, onOpen, action }) {
 
       {pick && (
       <div className="relative mt-4 mb-2">
-        {/* The meal's doodle, stuck on the corner of the card like a sticker. */}
-        <span aria-hidden="true" className="absolute -top-6 -right-1 z-20 rotate-12">
-          <CategoryDoodle category={meal.doodle} size={56} className="doodle-wiggle" />
+        {/* The recipe's course doodle, stuck on the corner of the card like a sticker. */}
+        <span key={i} aria-hidden="true" className="absolute -top-6 -right-1 z-20 rotate-12">
+          <CategoryDoodle category={r.category} fallback="cat-main" size={56} className="doodle-wiggle" />
         </span>
         {/* A strip of tape holding the card down. Decoration only. */}
         <span aria-hidden="true" className="absolute -top-2.5 left-1/2 -translate-x-1/2 -rotate-3 z-10 w-20 h-5 bg-accent/80 border-[1.5px] border-ink/30" />
