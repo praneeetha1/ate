@@ -141,6 +141,7 @@ const PATHS = {
   ),
   arrowRight: <path d="M4.4 12h15.2M13.6 6l6 6-6 6" />,
   arrowDown: <path d="M12 4.4v15.2M6 13.6l6 6 6-6" />,
+  chevron: <path d="M6 9.5l6 6 6-6" />,
   plug: (
     <>
       <path d="M9 2.8v5.4M15 2.8v5.4" />

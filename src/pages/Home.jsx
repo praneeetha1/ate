@@ -13,6 +13,8 @@ import FilterSheet, { activeFilterChips } from '../components/FilterSheet'
 import Tour from '../components/Tour'
 import { StarterChoice, useStarterRecipes } from '../components/StarterRecipes'
 import { Link } from 'react-router-dom'
+import HomeHero, { CategoryJump, courseId } from '../components/HomeHero'
+import { CategoryDoodle } from '../components/Sketch'
 
 // Catalogue order, except Breakfast leads: it's the first meal, and its recipes sit at the end of the file.
 // Meals in the order of a day, then the extras; anything else after, as found.
@@ -115,12 +117,6 @@ export default function Home({ onOpen }) {
     return out
   }, [ranked, catFilter, activeMustHave])
 
-  function surprise() {
-    if (!filtered.length) return
-    const { i } = filtered[Math.floor(Math.random() * filtered.length)]
-    onOpen(i)
-  }
-
   const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.8rem] font-bold px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
   const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
   const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
@@ -151,16 +147,14 @@ export default function Home({ onOpen }) {
           off-screen at 320px or at large text sizes. */}
       <div className="flex flex-col gap-2 px-5 py-3 border-b border-ink bg-cream sticky-under-header z-[80]">
         {pantryEnabled && (
-          <div className="grid grid-cols-2 border-2 border-ink rounded-full overflow-hidden" role="group" aria-label="Show">
+          <div className="seg" role="group" aria-label="Show">
             <button
               onClick={() => setPantryMode(false)}
               aria-pressed={!pantryMode}
-              className={`min-h-[40px] text-[0.8rem] font-bold transition-colors ${!pantryMode ? 'bg-accent text-ink' : 'bg-card text-muted'}`}
             >All recipes</button>
             <button
               onClick={() => setPantryMode(true)}
               aria-pressed={pantryMode}
-              className={`min-h-[40px] inline-flex items-center justify-center gap-1.5 text-[0.8rem] font-bold border-l-2 border-ink transition-colors ${pantryMode ? 'bg-accent text-ink' : 'bg-card text-muted'}`}
             ><Icon name="plate" size={13} />What can I make</button>
           </div>
         )}
@@ -173,13 +167,9 @@ export default function Home({ onOpen }) {
           <Icon name="menu" size={13} />Filters{chips.length > 0 && ` · ${chips.length}`}
         </button>
         <button
-          onClick={surprise}
-          className={`${pillBase} ${pillIdle} ml-auto`}
-        ><Icon name="dice" size={14} />Surprise me</button>
-        <button
           data-tour="add"
           onClick={() => setShowCreateModal(true)}
-          className={`${pillBase} ${pillActive} press`}
+          className={`${pillBase} ${pillActive} press ml-auto`}
         ><Icon name="plus" size={13} strokeWidth={3} />My Recipe</button>
         </div>
       </div>
@@ -206,6 +196,11 @@ export default function Home({ onOpen }) {
         </div>
       )}
 
+      {!pantryMode && <>
+        <HomeHero recipes={filtered} onOpen={onOpen} />
+        <CategoryJump cats={visibleCats.map(name => ({ name, count: filtered.filter(({ r }) => r.category === name).length }))} />
+      </>}
+
       {/* Once the pantry knows anything, the payoff comes to the user rather
           than waiting behind the toggle. Capped at eight: a strip, not a
           replacement for the catalogue. */}
@@ -220,7 +215,7 @@ export default function Home({ onOpen }) {
               className="text-[0.72rem] font-bold text-accent-dk border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[3px] hover:bg-accent hover:text-ink transition-all"
             >See all</button>
           </div>
-          <div className="flex items-start gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
+          <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
             {ranked.slice(0, 8).map(({ r, i, fit }) => (
               <div key={i} className="snap-start shrink-0 w-[240px]">
                 <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill><PantryFit fit={fit} /></RecipeCard>
@@ -354,9 +349,11 @@ export default function Home({ onOpen }) {
         {visibleCats.map((cat, ci) => {
           const recipes = filtered.filter(({ r }) => r.category === cat)
           return (
-            <section key={cat} className="mb-2">
+            <section key={cat} id={courseId(cat)} className="mb-2 scroll-mt-32">
               <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
-                <h2 className="font-display text-[1.1rem] font-semibold text-ink">{cat}</h2>
+                <h2 className="font-display text-[1.2rem] font-semibold text-ink flex items-center gap-2">
+                  <CategoryDoodle category={cat} size={22} />{cat}
+                </h2>
                 <span className="text-[0.72rem] text-muted">
                   {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
                 </span>

@@ -127,13 +127,14 @@ export default function Profile() {
                 on this flag, so it genuinely hides content rather than only
                 hiding the profile page. */}
             <div className="w-full mt-3 pt-3 border-t border-ink">
-              <label className={`flex items-start gap-3 ${privacySupported ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
+              <label className={`flex items-start justify-between gap-4 ${privacySupported ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
                 <input
                   type="checkbox"
+                  role="switch"
                   checked={!!profile?.is_private}
                   onChange={handleTogglePrivacy}
                   disabled={savingPriv || !privacySupported}
-                  className="accent-ink w-[16px] h-[16px] shrink-0 mt-[2px]"
+                  className="order-last mt-0.5"
                 />
                 <span>
                   <span className="block text-[0.82rem] font-bold text-ink">Private recipes</span>

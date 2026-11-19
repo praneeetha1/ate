@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { VISIBLE_CATALOG } from '../utils/recipe'
 import { usePantry } from '../context/PantryContext'
 import {
@@ -9,7 +9,10 @@ import { PANTRY_LABELS } from '../utils/pantry'
 import Highlight from './Highlight'
 import Icon from './Icon'
 import { resolveIngredient, lineId } from '../utils/registry'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { Doodle } from './Sketch'
+import { useApp } from '../context/AppContext'
+import { useToast } from '../context/ToastContext'
 
 
 /**
@@ -68,8 +71,21 @@ function knownItems() {
 
 const GROUPS = [
   { state: 'have', title: 'In your kitchen', chip: 'bg-accent border-ink text-ink' },
-  { state: 'low',  title: 'Running low',     chip: 'bg-sun border-ink text-ink' },
+  { state: 'low',  title: 'Running low',     chip: 'bg-card border-ink border-dashed text-ink' },
   { state: 'out',  title: 'Out',             chip: 'bg-card border-heart text-heart' },
+]
+
+/** The drawing for each quick-add group, shown beside its heading. */
+const GROUP_DOODLE = {
+  'Produce': 'grp-produce', 'Dairy & Eggs': 'grp-dairy', 'Meat & Seafood': 'grp-meat',
+  'Grains & Bread': 'grp-grains', 'Herbs & Condiments': 'grp-herbs', 'Spices & Masalas': 'grp-spices',
+  'Dals & Legumes': 'grp-dals', 'Flours & Staples': 'grp-flours',
+}
+
+const OPTIONS = [
+  { state: 'have', label: 'Have' },
+  { state: 'low',  label: 'Running low' },
+  { state: 'out',  label: 'Out' },
 ]
 
 /** The same marker shape used on ingredient rows, so the two surfaces agree. */
@@ -89,13 +105,42 @@ function StateDot({ state }) {
 }
 
 export default function PantrySection({ headingId = 'pantry-heading' }) {
-  const { pantry, setPantryState, cyclePantry, pantryEnabled, pantryReady } = usePantry()
+  const { pantry, setPantryState, pantryEnabled, pantryReady } = usePantry()
   const [draft, setDraft] = useState('')
   const [note,  setNote]  = useState('')
   const [showSuggest, setShowSuggest] = useState(false)
-  // Collapsed by default: stocking up is a first-run job, not a daily one.
-  const [showStock,   setShowStock]   = useState(false)
+  // Stocking up is a first-run job, not a daily one: open for a near-empty
+  // kitchen, folded once there's something to manage. Decided once, when the
+  // pantry loads, so it doesn't snap shut mid-way through quick-adding.
+  const [showStock,   setShowStock]   = useState(null)
+  useEffect(() => {
+    if (pantryReady && showStock === null) setShowStock(pantry.size < 5)
+  }, [pantryReady, showStock, pantry.size])
+  // The chip whose Have / Low / Out / Remove options are showing.
+  const [open, setOpen] = useState(null)
   const inputRef = useRef(null)
+  const { shoppingItems, addShoppingItem, toggleShopItem } = useApp()
+  const { showToast } = useToast()
+  const navigate = useNavigate()
+
+  const onList = item => { const row = shoppingItems.get(item); return !!row && !row.checked }
+
+  /** Out or low, so onto the list: re-opens a ticked row rather than duplicating it. */
+  function addToList(items) {
+    const adding = items.filter(i => !onList(i))
+    for (const item of adding) {
+      if (shoppingItems.has(item)) toggleShopItem(item)
+      else addShoppingItem(item)
+    }
+    showToast(`Added ${adding.length} to your shopping list`, 'info', { actions: [
+      { label: 'View', onClick: () => navigate('/shopping') },
+    ] })
+  }
+
+  function choose(item, state) {
+    setPantryState(item, state)
+    setOpen(null)
+  }
 
   /**
    * A short, ranked list rather than the whole vocabulary.
@@ -304,44 +349,56 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
             const items = grouped[state]
             if (!items.length) return null
             return (
-              <div key={state} className="mb-3.5 last:mb-0">
-                <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink mb-2 flex items-center gap-1.5">
-                  <StateDot state={state} />{title}
-                  <span className="text-muted font-normal">({items.length})</span>
-                </h3>
-                <ul className="flex flex-wrap gap-1.5 list-none">
+              <div key={state} className="mb-4 last:mb-0">
+                <div className="flex items-center justify-between gap-2 mb-2 min-h-[32px]">
+                  <h3 className="text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink flex items-center gap-1.5">
+                    <StateDot state={state} />{title}
+                    <span className="text-muted font-normal">({items.length})</span>
+                  </h3>
+                  {state !== 'have' && (items.some(i => !onList(i)) ? (
+                    <button
+                      type="button"
+                      onClick={() => addToList(items)}
+                      className="shrink-0 inline-flex items-center gap-1.5 min-h-[32px] px-3 rounded-full border-2 border-ink bg-card text-ink text-[0.78rem] font-bold shadow-pop press focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+                    ><Icon name="cart" size={14} />Add {items.every(i => !onList(i)) && items.length > 1 ? 'all' : items.filter(i => !onList(i)).length} to list</button>
+                  ) : (
+                    <span className="shrink-0 inline-flex items-center gap-1 text-[0.75rem] font-bold text-accent-dk">
+                      <Icon name="check" size={13} strokeWidth={3} />On your list
+                    </span>
+                  ))}
+                </div>
+                <ul className="flex flex-wrap gap-2 list-none">
                   {items.map(item => (
-                    // Two sibling buttons styled as one chip. Nesting the
-                    // remove control inside the cycle button would make every
-                    // tap on it do both things.
-                    <li
-                      key={item}
-                      className={`inline-flex items-center border-2 rounded-full overflow-hidden ${chip}`}
-                    >
+                    <li key={item} className={open === item ? 'contents' : undefined}>
                       <button
                         type="button"
-                        onClick={() => cyclePantry(item)}
+                        onClick={() => setOpen(o => o === item ? null : item)}
+                        aria-expanded={open === item}
                         aria-label={`${item}: ${PANTRY_LABELS[state]}. Change what you have.`}
-                        title="Change what you have"
-                        className="pl-3 pr-2 py-[3px] text-[0.8rem] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-inset"
+                        className={`inline-flex items-center gap-1 min-h-[36px] pl-3 pr-2 border-2 rounded-full text-[0.82rem] font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${chip} ${open === item ? 'shadow-pop -translate-y-[1px]' : ''}`}
                       >
                         {item}
+                        <Icon name="chevron" size={12} strokeWidth={3} className={`opacity-60 transition-transform ${open === item ? 'rotate-180' : ''}`} />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setPantryState(item, 'unknown')}
-                        aria-label={`Stop tracking ${item}`}
-                        title={`Stop tracking ${item}`}
-                        /*
-                         * The button itself is the tap target. A ::before
-                         * extending it can't work here: the chip's
-                         * overflow-hidden clips hit-testing too, and without
-                         * it the extension would overlap neighbouring chips.
-                         */
-                        className="grid place-items-center w-11 h-11 rounded-full opacity-75 hover:opacity-100 hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-inset"
-                      >
-                        <Icon name="close" size={14} strokeWidth={3} />
-                      </button>
+                      {open === item && (
+                        <div role="group" aria-label={`Change ${item}`} className="chip-options basis-full flex flex-wrap items-center gap-1.5 p-2 rounded-xl border-2 border-dashed border-ink bg-paper">
+                          {OPTIONS.map(o => (
+                            <button
+                              key={o.state}
+                              type="button"
+                              onClick={() => choose(item, o.state)}
+                              aria-pressed={state === o.state}
+                              className={`inline-flex items-center gap-1.5 min-h-[36px] px-3 rounded-full border-2 border-ink text-[0.8rem] font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${state === o.state ? 'bg-accent text-ink' : 'bg-card text-ink'}`}
+                            ><StateDot state={o.state} />{o.label}</button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => choose(item, 'unknown')}
+                            aria-label={`Stop tracking ${item}`}
+                            className="ml-auto inline-flex items-center gap-1 min-h-[36px] px-3 rounded-full text-[0.8rem] font-bold text-heart hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+                          ><Icon name="close" size={12} strokeWidth={3} />Remove</button>
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -354,19 +411,22 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
               several phone screens — and they're setup UI: you use them when
               first filling the kitchen, then almost never again. Leaving them
               open permanently pushed everything below off the page. */}
-          <div className="mt-4 pt-3.5 border-t border-dashed border-rim">
+          <div className="mt-5">
             <button
               type="button"
               onClick={() => setShowStock(v => !v)}
-              aria-expanded={showStock}
+              aria-expanded={!!showStock}
               aria-controls="stock-kitchen"
-              className="w-full flex items-center gap-1.5 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-ink hover:text-accent-dk transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded py-1.5"
+              className="w-full flex items-center gap-3 text-left px-3.5 py-2.5 rounded-xl border-2 border-ink bg-card shadow-pop press focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
             >
-              <Icon name="plus" size={13} strokeWidth={3} />
-              Stock my kitchen
-              <span className="ml-auto text-accent-dk font-bold normal-case tracking-normal underline underline-offset-2">
-                {showStock ? 'Hide' : 'Show'}
+              <span className="w-8 h-8 shrink-0 grid place-items-center rounded-circle border-2 border-ink bg-accent text-ink">
+                <Icon name="plus" size={14} strokeWidth={3} />
               </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-[0.9rem] font-bold text-ink">Stock my kitchen</span>
+                <span className="block text-[0.75rem] text-muted">Tap common things to add them, and mark staples you’re out of</span>
+              </span>
+              <Icon name="chevron" size={16} strokeWidth={2.6} className={`shrink-0 text-ink transition-transform ${showStock ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
@@ -377,8 +437,9 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                 <Icon name="plus" size={13} strokeWidth={3} />Quick add
               </h3>
               {quickAddGroups.map(({ title, items }) => (
-                <div key={title} className="mb-2.5 last:mb-0">
-                  <h4 className="text-[0.68rem] font-bold uppercase tracking-[0.07em] text-muted mb-1.5">
+                <div key={title} className="mb-4 last:mb-0">
+                  <h4 className="flex items-center gap-2.5 font-display text-[1.05rem] font-semibold text-ink mb-2">
+                    {GROUP_DOODLE[title] && <Doodle file={GROUP_DOODLE[title]} size={44} />}
                     {title}
                   </h4>
                   <ul className="flex flex-wrap gap-1.5 list-none">

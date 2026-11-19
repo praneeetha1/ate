@@ -311,7 +311,9 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     )
   }
 
-  const iconBtn = 'transition-all hover:scale-[1.15] p-2.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
+  const iconBtn = 'shrink-0 w-11 h-11 grid place-items-center rounded-circle border-2 border-ink bg-card shadow-pop press transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
+  // Nothing to buy: the list button steps back instead of leading the row.
+  const haveAll = pantryEnabled && fit.total > 0 && fit.missing.length === 0
 
   return (
     <>
@@ -332,15 +334,33 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       {...backdropProps}
     >
       <div
-        className="bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
+        className="relative bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
         {...panelProps}
       >
+        <button
+          className="absolute top-3 right-3 z-20 bg-card border-2 border-ink rounded-circle w-11 h-11 text-ink grid place-items-center shadow-pop press hover:bg-paper focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
+          onClick={onClose}
+          aria-label="Close recipe"
+          title="Close"
+        ><Icon name="close" size={17} strokeWidth={2.6} /></button>
+
+        {recipe.image && !recipe.hidden && (
+          <div className="relative border-b-[3px] border-ink bg-paper rounded-t-[13px]">
+            <img
+              src={recipe.image}
+              alt=""
+              className="block w-full h-[210px] sm:h-[260px] object-cover rounded-t-[13px]"
+              onError={e => { e.currentTarget.parentElement.style.display = 'none' }}
+            />
+            <span aria-hidden="true" className="absolute -bottom-3 left-6 -rotate-3 w-20 h-5 bg-accent/80 border-[1.5px] border-ink/30" />
+          </div>
+        )}
 
         {/* ── Header ── */}
         <div className="px-5 pt-5 pb-[14px] border-b border-ink">
           <div className="flex items-start gap-3.5">
-            <div className="flex-1 min-w-0">
-              <h2 id={titleId} className="font-display text-[1.4rem] font-semibold text-ink leading-tight mb-2.5">
+            <div className={`flex-1 min-w-0 ${recipe.image && !recipe.hidden ? '' : 'pr-12'}`}>
+              <h2 id={titleId} className="font-display text-[1.55rem] font-semibold text-ink leading-tight mb-2">
                 {recipe.name}
               </h2>
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -353,19 +373,13 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                 )}
               </div>
             </div>
-            <button
-              className="shrink-0 bg-paper border-2 border-ink rounded-full w-11 h-11 -mt-1.5 -mr-1.5 text-ink flex items-center justify-center hover:bg-heart transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
-              onClick={onClose}
-              aria-label="Close recipe"
-              title="Close"
-            ><Icon name="close" size={17} strokeWidth={2.6} /></button>
           </div>
           {/* Actions get their own row: beside the title they squeezed it to
               a few words a line on a phone. A retired recipe offers none of
               them — only close, which stays up top. */}
           {/* Wraps rather than overflowing off the left edge at large text sizes. */}
           {!recipe.hidden && (
-            <div className="flex flex-wrap items-center justify-end gap-1.5 mt-3">
+            <div className="flex flex-wrap items-center gap-2 mt-3.5">
               {/* The whole point of a shared link: keeping the recipe, not just
                   reading it once. Labelled rather than an icon, because it's the
                   only thing a visitor can usefully do here. */}
@@ -378,7 +392,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               )}
               {editable && (
                 <button
-                  className={`${iconBtn} text-muted hover:text-accent-dk`}
+                  className={`${iconBtn} text-ink`}
                   onClick={() => setEditing(true)}
                   aria-label={`Edit ${recipe.name}`}
                   title="Edit recipe"
@@ -388,7 +402,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   saving, so lists stay optional instead of a second save button. */}
               <div className="relative" ref={listsRef}>
                 <button
-                  className={`${iconBtn} ${isFav ? 'text-heart' : 'text-muted hover:text-heart'}`}
+                  className={`${iconBtn} ${isFav ? 'text-heart' : 'text-ink hover:text-heart'}`}
                   onClick={() => {
                     const saving = !isFav
                     toggleFav(recipeKey, recipe.name)
@@ -398,9 +412,9 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   aria-pressed={isFav}
                   aria-label={isFav ? `Remove ${recipe.name} from saved` : `Save ${recipe.name}`}
                   title="Save recipe"
-                ><Icon name="heart" size={22} filled={isFav} /></button>
+                ><span key={String(isFav)} className={`relative block ${isFav ? 'heart-pop' : ''}`}><Icon name="heart" size={20} filled={isFav} /></span></button>
                 {showLists && (
-                  <div className="absolute left-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
+                  <div className="absolute right-0 top-[calc(100%+6px)] w-[220px] bg-card border-2 border-ink rounded-xl shadow-warm-lg z-50 overflow-hidden">
                     <div className="px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.08em] text-muted border-b border-ink bg-paper">
                       Add to list
                     </div>
@@ -449,8 +463,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                   you'd want to read first. Three states: add, update to the
                   servings now picked, or take it off again. */}
               <button
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap min-h-[44px] px-3 rounded-full border-2 border-ink text-[0.82rem] font-bold shadow-pop press transition-colors ${
-                  inList && listScale === scale ? 'bg-accent text-ink' : 'bg-card text-ink hover:bg-paper'
+                className={`order-first flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 whitespace-nowrap min-h-[44px] px-4 rounded-full border-2 border-ink text-[0.85rem] font-bold shadow-pop press transition-colors ${
+                  !inList && !haveAll ? 'bg-accent text-ink' : 'bg-card text-ink hover:bg-paper'
                 }`}
                 onClick={() => {
                   if (inList && listScale === scale) {
@@ -470,12 +484,12 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                 }}
                 aria-pressed={inList && listScale === scale}
               >
-                <Icon name="cart" size={18} />
+                <Icon name={inList && listScale === scale ? 'check' : 'cart'} size={inList && listScale === scale ? 15 : 18} strokeWidth={3} />
                 {!inList ? 'Add to shopping list'
                   : listScale === scale ? 'On shopping list' : `Update list to ${(recipe.servings || 1) * scale} servings`}
               </button>
               <button
-                className={`${iconBtn} text-muted hover:text-accent-dk`}
+                className={`${iconBtn} text-ink`}
                 onClick={handleShare}
                 aria-label={`Share ${recipe.name}`}
                 title="Share recipe"
@@ -497,11 +511,13 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           {leads.length > 0 && <PlanAhead leads={leads} />}
 
           {/* Ingredients header + scale */}
-          <div className="flex flex-wrap items-center justify-between mb-2.5 pb-1 border-b border-dashed border-ink gap-x-3 gap-y-2">
-            <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk">
+          <div className="flex flex-wrap items-center justify-between mb-3 pb-2 border-b border-dashed border-ink gap-x-3 gap-y-2">
+            <h3 className="font-display text-[1.25rem] font-semibold text-ink">
               Ingredients
             </h3>
-            <div className="flex flex-wrap gap-1.5 items-center" role="group" aria-label="Scale ingredients">
+            <div className="flex items-center gap-2" role="group" aria-label="Scale ingredients">
+              <span className="text-[0.75rem] text-muted" aria-hidden="true">Serves</span>
+              <div className="flex border-2 border-ink rounded-full overflow-hidden bg-card">
               {/* Half only where it gives a whole number of servings. */}
               {[0.5, 1, 2, 3].filter(s => s >= 1 || (recipe.servings || 1) % 2 === 0).map(s => {
                 const base  = recipe.servings || 1
@@ -512,14 +528,14 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                     key={s}
                     onClick={() => setScale(s)}
                     aria-pressed={scale === s}
-                    className={`whitespace-nowrap rounded-full px-3 min-h-[36px] text-[0.78rem] font-bold transition-all border-2 ${
-                      scale === s
-                        ? 'bg-accent border-ink text-ink shadow-pop'
-                        : 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
+                    aria-label={label}
+                    className={`min-w-[40px] min-h-[36px] px-2 text-[0.85rem] font-bold tabular-nums transition-colors border-l-2 border-ink first:border-l-0 ${
+                      scale === s ? 'bg-accent text-ink' : 'text-muted hover:bg-paper hover:text-ink'
                     }`}
-                  >{label}</button>
+                  >{total}</button>
                 )
               })}
+              </div>
             </div>
           </div>
 
@@ -545,13 +561,19 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               )}
               {/* Named, not folded into "have": an assumption is a guess about
                   your kitchen, and worth a glance before you start. */}
-              {fit.assumed > 0 && (
-                <span className="text-muted"> · assumed: {fit.assumedNames.join(", ")}</span>
-              )}
               {fit.optionalMissing.length > 0 && (
                 <span className="text-muted"> · optional: {fit.optionalMissing.join(', ')}</span>
               )}
             </p>
+          )}
+          {pantryEnabled && fit.assumed > 0 && (
+            <details className="group text-[0.78rem] text-muted mb-2">
+              <summary className="inline-flex items-center gap-1 cursor-pointer list-none [&::-webkit-details-marker]:hidden underline underline-offset-2 decoration-dotted">
+                {fit.assumed} kitchen basic{fit.assumed === 1 ? '' : 's'} assumed
+                <Icon name="chevron" size={12} strokeWidth={3} className="transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="mt-1">{fit.assumedNames.join(', ')}</p>
+            </details>
           )}
 
           {scale !== 1 && (
@@ -568,12 +590,15 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
               // does that job and remembers it, and a tick beside the pantry
               // dot read as "I have this", which it never meant.
               return (
-                <li key={i} className="text-[0.88rem] border-b border-[rgba(200,180,130,0.25)] last:border-0">
-                  <div className="flex items-start gap-2.5 py-[5px]">
+                <li key={i} className="text-[0.92rem] border-b border-ink/10 last:border-0">
+                  <div className="flex items-start gap-2.5 py-2">
                     <p className="flex items-start gap-2.5 flex-1 min-w-0">
                       <span className="text-accent-dk font-bold min-w-[60px] shrink-0">{measure}</span>
                       <span className="text-ink">{item}</span>
                     </p>
+                    {/* Only on lines you might need to buy: a cart on all twenty
+                        rows, beside oil and salt you already have, was noise. */}
+                    {(!pantryEnabled || !['have', 'assumed'].includes(needByLine.get(i)?.status)) && (
                     <button
                       type="button"
                       onClick={() => {
@@ -583,7 +608,8 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
                       aria-label={`Add ${shoppingName(ing.item)} to shopping list`}
                       title="Add just this to the shopping list"
                       className="shrink-0 grid place-items-center w-11 h-11 -my-2.5 rounded-full text-muted hover:text-accent-dk hover:bg-paper transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
-                    ><Icon name="cart" size={13} /></button>
+                    ><Icon name="cart" size={14} /></button>
+                    )}
                     <PantryMark item={ing.item} need={needByLine.get(i)} className="mt-[2px]" />
                   </div>
                 </li>
@@ -592,7 +618,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           </ul>
 
           {/* Steps */}
-          <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-ink">
+          <h3 className="font-display text-[1.25rem] font-semibold text-ink mb-3 pb-2 border-b border-dashed border-ink">
             Steps
           </h3>
           {scale !== 1 && <ScaledNote recipe={recipe} servings={recipe.servings ? recipe.servings * scale : null} />}
@@ -657,7 +683,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
 
           {/* Notes & Ratings */}
           <div className="mt-5 pt-4 border-t border-dashed border-ink">
-            <h3 className="font-display text-[0.85rem] font-semibold tracking-[0.1em] uppercase text-accent-dk mb-2.5 pb-1 border-b border-dashed border-ink">
+            <h3 className="font-display text-[1.25rem] font-semibold text-ink mb-3 pb-2 border-b border-dashed border-ink">
               Your Notes
             </h3>
             <div className="flex items-center gap-0.5 mb-3" role="group" aria-label="Your rating">

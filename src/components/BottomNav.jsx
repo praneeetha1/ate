@@ -34,7 +34,7 @@ export default function BottomNav() {
                   same ink-outline rule as every other tappable thing. */}
               <span
                 className={`w-7 h-7 grid place-items-center rounded-circle transition-all ${
-                  isActive ? 'border-2 border-ink bg-accent shadow-pop -translate-y-[1px]' : ''
+                  isActive ? 'nav-pop border-2 border-ink bg-accent shadow-pop -translate-y-[1px]' : ''
                 }`}
               >
                 <Icon name={icon} size={17} filled={isActive && icon === 'heart'} />

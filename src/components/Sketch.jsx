@@ -1,4 +1,4 @@
-import { Stencil } from './Icon'
+import { Stencil, sketchUrl } from './Icon'
 
 /**
  * Pieces of the hand-drawn sheet that aren't icons: the wordmark, the
@@ -34,8 +34,48 @@ const CATEGORY_DOODLE = {
   'Main Dish': 'cat-main', 'Breakfast': 'cat-breakfast', 'Dessert': 'cat-dessert',
   'Soup & Stew': 'cat-soup', 'Vegetarian': 'cat-veg', 'Salad': 'cat-veg',
   'Drink': 'cat-drink', 'Bread & Baking': 'cat-bread', 'Pasta & Noodles': 'cat-pasta',
+  'Quick Meal': 'cat-quick', 'Snack & Appetizer': 'cat-snack',
 }
-export function CategoryDoodle({ category, size = 16, className = '' }) {
-  const file = CATEGORY_DOODLE[category]
-  return file ? <Stencil file={file} width={size} height={size} aria-hidden="true" className={className} /> : null
+
+/**
+ * Doodles drawn in colour come as two files: `name.png`, the lines (a stencil,
+ * so they turn cream in dark mode like every other drawing), and
+ * `name-fill.png`, the colour that sits underneath. One without a fill file
+ * is drawn in ink alone.
+ */
+const HAS_FILL = new Set([
+  'cat-breakfast', 'cat-main', 'cat-quick', 'cat-snack', 'cat-veg',
+  'grp-produce', 'grp-dairy', 'grp-meat', 'grp-grains', 'grp-herbs',
+  'grp-spices', 'grp-dals', 'grp-flours',
+])
+
+/**
+ * A food doodle, in colour when it has one and `colour` allows it.
+ *
+ * A coloured one keeps its black lines in both themes, as drawn; in dark mode
+ * it gets a cut-out sticker edge instead (see .doodle-sticker in index.css),
+ * so it sits on the dark page like a sticker rather than losing its outline.
+ */
+export function Doodle({ file, size = 32, colour = true, className = '' }) {
+  if (!colour || !HAS_FILL.has(file)) {
+    return <Stencil file={file} width={size} height={size} aria-hidden="true" className={className} />
+  }
+  return (
+    <span
+      aria-hidden="true"
+      className={`doodle-sticker relative inline-block shrink-0 ${className}`}
+      style={{ width: size, height: size, '--stk': `${Math.max(1, Math.round(size / 26))}px` }}
+    >
+      <img src={sketchUrl(`${file}-fill`)} alt="" draggable="false" className="absolute inset-0 w-full h-full" />
+      <Stencil file={file} width={size} height={size} className="absolute inset-0" style={{ backgroundColor: 'rgb(28 27 25)' }} />
+    </span>
+  )
+}
+
+/** Whether a course's doodle is drawn in colour (so it can be shown at full strength). */
+export const doodleInColour = (category, fallback) => HAS_FILL.has(CATEGORY_DOODLE[category] || fallback)
+export function CategoryDoodle({ category, size = 16, className = '', fallback }) {
+  const file = CATEGORY_DOODLE[category] || fallback
+  // Colour needs room: on a 14px tag it turns to mud, so small ones stay ink.
+  return file ? <Doodle file={file} size={size} colour={size >= 20} className={className} /> : null
 }

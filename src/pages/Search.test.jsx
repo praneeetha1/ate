@@ -51,7 +51,7 @@ async function toIngredientMode(user) {
 /** Result card titles, which are the only buttons inside the results grid. */
 const resultTitles = () =>
   [...document.querySelectorAll('.grid > div')]
-    .map(d => d.querySelector('button')?.textContent.trim())
+    .map(d => d.querySelector('button:not([aria-hidden])')?.textContent.trim())
     .filter(Boolean)
 
 beforeEach(() => { localStorage.clear() })

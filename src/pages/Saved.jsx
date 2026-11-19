@@ -77,25 +77,21 @@ export default function Saved({ onOpen }) {
     setRenaming(null)
   }
 
-  const tabCls = active =>
-    `flex-1 py-2.5 inline-flex items-center justify-center gap-1.5 text-[0.85rem] font-bold transition-colors border-b-2 ${
-      active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
-    }`
 
   return (
     <>
       {/* Tab bar */}
-      <div className="flex border-b border-ink bg-paper" role="tablist">
-        <button role="tab" aria-selected={tab === 'favorites'} className={tabCls(tab === 'favorites')} onClick={() => setTab('favorites')}>
+      <div className="px-5 pt-4"><div className="seg" role="tablist">
+        <button role="tab" aria-selected={tab === 'favorites'} onClick={() => setTab('favorites')}>
           <Icon name="heart" size={15} /> Saved
         </button>
-        <button role="tab" aria-selected={tab === 'mine'} className={tabCls(tab === 'mine')} onClick={() => setTab('mine')}>
+        <button role="tab" aria-selected={tab === 'mine'} onClick={() => setTab('mine')}>
           <Icon name="pencil" size={15} /> My Recipes
         </button>
-        <button role="tab" aria-selected={tab === 'lists'} className={tabCls(tab === 'lists')} onClick={() => setTab('lists')}>
+        <button role="tab" aria-selected={tab === 'lists'} onClick={() => setTab('lists')}>
           <Icon name="list" size={15} /> Lists
         </button>
-      </div>
+      </div></div>
 
       {syncing && (
         <p className="text-center py-2 text-[0.75rem] text-muted" role="status">Syncing…</p>

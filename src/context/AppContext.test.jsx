@@ -472,3 +472,21 @@ describe('duplicate uploads', () => {
   })
 })
 
+
+describe('clearing the shopping list', () => {
+  it('can be undone, putting every row back', async () => {
+    h.client = createMockSupabase()
+    renderApp()
+    await waitFor(() => expect(api).not.toBeNull())
+
+    act(() => { api.addShoppingItem('onion'); api.addShoppingItem('milk') })
+    expect(screen.getByTestId('shopping').textContent).toBe('milk,onion')
+
+    let undo
+    act(() => { undo = api.clearShopping() })
+    expect(screen.getByTestId('shopping').textContent).toBe('')
+
+    act(() => undo())
+    expect(screen.getByTestId('shopping').textContent).toBe('milk,onion')
+  })
+})

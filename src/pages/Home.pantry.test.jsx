@@ -47,7 +47,7 @@ const toggle = () => screen.getByRole('button', { name: /what can i make/i })
 
 /** Card titles in the ranked grid, top to bottom. */
 const shownOrder = () => [...document.querySelectorAll('.grid > div')]
-  .map(d => d.querySelector('button')?.textContent.trim()).filter(Boolean)
+  .map(d => d.querySelector('button:not([aria-hidden])')?.textContent.trim()).filter(Boolean)
 
 /** The order the shared ranking gives the test catalog for this pantry (staples assumed). */
 function expectedOrder(rows, keep = () => true) {
@@ -309,7 +309,7 @@ describe('filtering what I can make by category', () => {
   const catGroup = () => screen.getByRole('group', { name: /filter by category/i })
   const count = () => Number(screen.getByText(/\d+ recipes/).textContent.match(/\d+/)[0])
   const titles = () => [...document.querySelectorAll('.grid > div')]
-    .map(d => d.querySelector('button')?.textContent.trim()).filter(Boolean)
+    .map(d => d.querySelector('button:not([aria-hidden])')?.textContent.trim()).filter(Boolean)
 
   async function openMode(user) {
     await user.click(await screen.findByRole('button', { name: /what can i make/i }))
@@ -400,10 +400,11 @@ describe('the filter sheet', () => {
     await user.click(screen.getByRole('button', { name: /^show \d+ recipe/i }))
 
     // Both are tagged "vegetarian"; only one is veg on an Indian menu.
-    expect(screen.getByRole('button', { name: 'Paneer curry' })).toBeInTheDocument()
+    // (All, not one: a recipe can also be today's pick at the top of Home.)
+    expect(screen.getAllByRole('button', { name: 'Paneer curry' }).length).toBeGreaterThan(0)
     expect(screen.queryByRole('button', { name: 'Masala omelette' })).toBeNull()
 
     await user.click(screen.getByRole('button', { name: 'Remove filter: Veg' }))
-    expect(screen.getByRole('button', { name: 'Masala omelette' })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Masala omelette' }).length).toBeGreaterThan(0)
   })
 })

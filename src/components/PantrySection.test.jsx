@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { createMockSupabase, fakeSession } from '../test/supabaseMock'
@@ -19,6 +19,7 @@ vi.mock('../lib/supabase', () => ({
 const { default: PantrySection } = await import('./PantrySection')
 const { PantryProvider }         = await import('../context/PantryContext')
 const { AuthProvider }           = await import('../context/AuthContext')
+const { AppProvider }            = await import('../context/AppContext')
 const { ToastProvider }          = await import('../context/ToastContext')
 
 function renderSection({ signedIn = true, pantry = [] } = {}) {
@@ -31,7 +32,7 @@ function renderSection({ signedIn = true, pantry = [] } = {}) {
     <MemoryRouter>
       <ToastProvider>
         <AuthProvider>
-          <PantryProvider><PantrySection /></PantryProvider>
+          <AppProvider><PantryProvider><PantrySection /></PantryProvider></AppProvider>
         </AuthProvider>
       </ToastProvider>
     </MemoryRouter>
@@ -46,7 +47,10 @@ function renderSection({ signedIn = true, pantry = [] } = {}) {
 async function renderStocked(opts) {
   const user = userEvent.setup()
   renderSection(opts)
-  await user.click(await screen.findByRole('button', { name: /stock my kitchen/i }))
+  // Starts open for a near-empty kitchen; open it only if it isn't already.
+  const toggle = await screen.findByRole('button', { name: /stock my kitchen/i })
+  await waitFor(() => expect(toggle).toHaveAttribute('aria-expanded'))
+  if (toggle.getAttribute('aria-expanded') !== 'true') await user.click(toggle)
   return user
 }
 
@@ -79,12 +83,14 @@ describe('Fridge / Pantry section', () => {
     expect(screen.queryByRole('heading', { name: /^out/i })).toBeNull()
   })
 
-  it('cycles an item from its chip', async () => {
+  it('changes an item from the options under its chip', async () => {
     const user = userEvent.setup()
     renderSection({ pantry: [ROWS[0]] })
 
     const chip = await screen.findByRole('button', { name: /^garlic: in your kitchen/i })
     await user.click(chip)
+    expect(chip).toHaveAttribute('aria-expanded', 'true')
+    await user.click(screen.getByRole('button', { name: /running low/i }))
 
     await waitFor(() => expect(h.client.__db.pantry[0]).toEqual(
       expect.objectContaining({ item: 'garlic', state: 'low' }),
@@ -95,8 +101,8 @@ describe('Fridge / Pantry section', () => {
     const user = userEvent.setup()
     renderSection({ pantry: [ROWS[0]] })
 
-    const remove = await screen.findByRole('button', { name: /stop tracking garlic/i })
-    await user.click(remove)
+    await user.click(await screen.findByRole('button', { name: /^garlic: in your kitchen/i }))
+    await user.click(screen.getByRole('button', { name: /stop tracking garlic/i }))
 
     // Regression guard: the remove control used to sit inside the cycle
     // button, so one tap did both.
@@ -484,5 +490,19 @@ describe('moving old pantry names to current ones', () => {
     await new Promise(r => setTimeout(r, 20))
     expect(await rows()).toEqual(['cornflour:low'])
     expect(h.client.__callsTo('pantry', 'delete')).toHaveLength(0)
+  })
+})
+
+describe('from the kitchen to the shopping list', () => {
+  it('puts what you are out of on the list in one tap', async () => {
+    const user = userEvent.setup()
+    renderSection({ pantry: ROWS })
+
+    const out = (await screen.findByRole('heading', { name: /^out/i })).parentElement
+    await user.click(within(out).getByRole('button', { name: /add 1 to list/i }))
+
+    await waitFor(() => expect(h.client.__db.shopping_items.map(r => r.item)).toEqual(['pecorino']))
+    // Once there, the group says so instead of offering it again.
+    expect(out.textContent).toMatch(/on your list/i)
   })
 })

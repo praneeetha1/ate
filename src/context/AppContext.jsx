@@ -727,13 +727,15 @@ export function AppProvider({ children }) {
     deleteRows([item])
   }
 
+  /** Empties the list. Returns an undo that puts every row back as it was. */
   function clearShopping() {
+    const before = new Map(dataRef.current.shoppingItems)
     commit(d => ({ ...d, shoppingItems: new Map() }))
-    if (!uid) return
-    run(
+    if (uid) run(
       supabase.from('shopping_items').delete().eq('user_id', uid),
       'Could not clear shopping list.',
     )
+    return () => applyShoppingRows(before)
   }
 
   // ── user recipes ───────────────────────────────────────────

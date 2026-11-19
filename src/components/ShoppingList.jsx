@@ -110,7 +110,10 @@ export default function ShoppingList() {
               ><Icon name="share" size={15} /></button>
             )}
             <button
-              onClick={clearShopping}
+              onClick={() => {
+                const undo = clearShopping()
+                showToast('Shopping list cleared', 'info', { actions: [{ label: 'Undo', onClick: undo }] })
+              }}
               className="text-[0.78rem] font-bold border-2 rounded-full px-3 py-[5px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink border-ink text-muted hover:text-heart hover:border-heart"
             >Clear all</button>
           </div>
@@ -159,13 +162,13 @@ export default function ShoppingList() {
                   key={row.item}
                   className={`flex items-start gap-2 border-b border-[rgba(200,180,130,0.25)] last:border-0 transition-all hover:bg-paper ${row.checked ? 'opacity-45' : ''}`}
                 >
-                  <label className="flex items-start gap-2.5 px-3.5 py-2.5 cursor-pointer flex-1 min-w-0">
+                  <label className="flex items-start gap-3 px-3.5 py-3 cursor-pointer flex-1 min-w-0">
                     <input
                       type="checkbox"
                       checked={row.checked}
                       onChange={() => handleToggle(row)}
                       aria-label={row.display}
-                      className="accent-ink w-[15px] h-[15px] shrink-0 mt-[3px]"
+                      className="mt-px"
                     />
                     <span className="min-w-0">
                       <span className={`block text-[0.88rem] text-ink ${row.checked ? 'line-through' : ''}`}>

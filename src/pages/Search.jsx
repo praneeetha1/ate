@@ -155,11 +155,6 @@ export default function Search({ onOpen }) {
   }
 
   const results = mode === 'name' ? nameResults : ingResults
-  const pillCls = active =>
-    `text-[0.78rem] font-bold tracking-[0.06em] px-4 py-1.5 rounded-full border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${
-      active ? 'bg-accent border-ink text-ink shadow-pop' : 'bg-card border-ink text-muted hover:bg-paper'
-    }`
-
   return (
     <>
       {/* Search header */}
@@ -176,9 +171,9 @@ export default function Search({ onOpen }) {
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" ><Icon name="search" size={17} /></span>
         </div>
-        <div className="flex gap-2" role="group" aria-label="Search mode">
-          <button onClick={() => setMode('name')}       aria-pressed={mode === 'name'}       className={pillCls(mode === 'name')}>By Recipe Name</button>
-          <button onClick={() => setMode('ingredient')} aria-pressed={mode === 'ingredient'} className={pillCls(mode === 'ingredient')}>By ingredient</button>
+        <div className="seg" role="group" aria-label="Search mode">
+          <button onClick={() => setMode('name')}       aria-pressed={mode === 'name'}>By name</button>
+          <button onClick={() => setMode('ingredient')} aria-pressed={mode === 'ingredient'}>By ingredient</button>
         </div>
       </div>
 

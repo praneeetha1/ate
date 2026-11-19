@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { createMockSupabase } from '../test/supabaseMock'
 
 const h = vi.hoisted(() => ({ client: null }))
@@ -50,25 +50,23 @@ describe('the card photo', () => {
     expect(img).toHaveAttribute('src', 'https://example.com/lemon-rice.jpg')
   })
 
-  /**
-   * Most of the catalog has no photo, and a grid of grey placeholders reads
-   * worse than a grid of clean text cards — so the no-image card is unchanged
-   * rather than reserving empty space.
-   */
-  it('renders no frame at all without one', () => {
+  // Same picture area either way, so cards in a row line up: without a
+  // photo it's the course doodle, never an empty grey frame.
+  it('draws the course doodle without one', () => {
     renderCard(BASE)
-    // The photo is the decorative (alt="") image; the veg mark is labelled.
-    expect(document.querySelector('img[alt=""]')).toBeNull()
+    // No photo (the only lazy-loaded image); the doodle stands in.
+    expect(document.querySelector('img[loading="lazy"]')).toBeNull()
+    expect(screen.getByTestId('card-doodle')).toBeInTheDocument()
     expect(screen.getByText('Lemon Rice')).toBeInTheDocument()
   })
 
   // Linked images belong to someone else's server, so they go dead. A
   // broken-image glyph looks worse than no photo.
-  it('hides the frame if the link is dead', () => {
+  it('swaps a dead link for the doodle', () => {
     renderCard({ ...BASE, image: 'https://example.com/gone.jpg' })
-    const img = document.querySelector('img')
-    img.dispatchEvent(new Event('error'))
-    expect(img.parentElement.style.display).toBe('none')
+    fireEvent.error(document.querySelector('img[loading="lazy"]'))
+    expect(document.querySelector('img[loading="lazy"]')).toBeNull()
+    expect(screen.getByTestId('card-doodle')).toBeInTheDocument()
   })
 
   it('leaves the image out of the accessible name', () => {
