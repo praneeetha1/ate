@@ -341,3 +341,37 @@ describe('retired recipe', () => {
     expect(screen.queryByRole('button', { name: /shopping list/i })).toBeNull()
   })
 })
+
+describe('pulling the card down', () => {
+  const touch = y => ({ touches: [{ clientY: y }] })
+
+  it('closes it from the top of the recipe', async () => {
+    const onClose = vi.fn()
+    renderModal({ onClose })
+    const card = screen.getByRole('dialog')
+    fireEvent.touchStart(card, touch(100))
+    fireEvent.touchMove(card, touch(300))
+    fireEvent.touchEnd(card)
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('springs back from a short pull', async () => {
+    const onClose = vi.fn()
+    renderModal({ onClose })
+    const card = screen.getByRole('dialog')
+    fireEvent.touchStart(card, touch(100))
+    fireEvent.touchMove(card, touch(140))
+    fireEvent.touchEnd(card)
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('leaves an ordinary upward scroll alone', async () => {
+    const onClose = vi.fn()
+    renderModal({ onClose })
+    const card = screen.getByRole('dialog')
+    fireEvent.touchStart(card, touch(400))
+    fireEvent.touchMove(card, touch(100))
+    fireEvent.touchEnd(card)
+    expect(onClose).not.toHaveBeenCalled()
+  })
+})

@@ -89,6 +89,34 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
   // Stand the trap down while the edit dialog is stacked on top of this one.
   const { titleId, backdropProps, panelProps } = useDialog({ onClose, enabled: !editing && !cooking && !shopPlan })
 
+  /**
+   * Pull down to close, like a sheet: at the top of the recipe, dragging down
+   * moves the card with your finger, and letting go far enough closes it.
+   * Anywhere else, or dragging up, it's an ordinary scroll. Touches from cook
+   * mode and the other overlays (React bubbles them through portals) are
+   * ignored: only ones that start inside this card count.
+   */
+  const pullFrom = useRef(null)
+  const [pullY, setPullY] = useState(0)
+  const atTop = el => el.parentElement.scrollTop <= 0
+  const pullProps = {
+    onTouchStart: e => {
+      const inCard = e.currentTarget.contains(e.target)
+      pullFrom.current = inCard && atTop(e.currentTarget) ? e.touches[0].clientY : null
+    },
+    onTouchMove: e => {
+      if (pullFrom.current === null) return
+      const dy = e.touches[0].clientY - pullFrom.current
+      if (dy <= 0 || !atTop(e.currentTarget)) { pullFrom.current = null; setPullY(0); return }
+      setPullY(dy * 0.6)   // a little resistance, so it feels attached
+    },
+    onTouchEnd: () => {
+      if (pullFrom.current !== null && pullY > 90) onClose()
+      pullFrom.current = null
+      setPullY(0)
+    },
+  }
+
   // Opens at the servings an unfinished cook was using, so resuming after a
   // reload doesn't quietly drop back to the original amounts.
   const [scale,       setScale]       = useState(() => loadCookSession(recipeKey, recipe)?.scale || 1)
@@ -331,12 +359,21 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
     )}
     <div
       className="fixed inset-0 bg-[rgba(60,35,15,0.55)] backdrop-blur-[3px] z-[500] flex items-start justify-center p-4 sm:p-8 overflow-y-auto"
+      // No rubber-band at the top: the pull-to-close gesture owns that drag.
+      style={{ overscrollBehaviorY: 'none' }}
       {...backdropProps}
     >
       <div
         className="relative bg-card border-3 border-ink rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
+        style={{
+          transform: pullY ? `translateY(${pullY}px)` : undefined,
+          transition: pullFrom.current !== null ? 'none' : 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
         {...panelProps}
+        {...pullProps}
       >
+        {/* The grab handle: says the card can be pulled down to close. */}
+        <span aria-hidden="true" className="absolute top-2 left-1/2 -translate-x-1/2 z-20 w-10 h-1.5 rounded-full bg-card/90 border border-ink/40 shadow-pop" />
         <button
           className="absolute top-3 right-3 z-20 bg-card border-2 border-ink rounded-circle w-11 h-11 text-ink grid place-items-center shadow-pop press hover:bg-paper focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
           onClick={onClose}
