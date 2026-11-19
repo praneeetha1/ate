@@ -54,7 +54,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCatego
           </button>
           <div className="flex items-center gap-[7px] flex-wrap">
             {isUserRecipe && (
-              <span className="inline-block text-[0.63rem] font-extrabold tracking-[0.06em] uppercase px-2.5 py-[1px] rounded-full border-2 border-ink bg-accent text-ink">
+              <span className="inline-block text-[0.7rem] font-bold px-1.5 py-[1px] rounded border-[1.5px] border-ink bg-accent text-ink">
                 My Recipe
               </span>
             )}
@@ -66,7 +66,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCatego
             )}
             <DietMark recipe={recipe} />
             {planAhead && (
-              <span className="text-[0.66rem] font-extrabold uppercase tracking-[0.05em] px-2 py-[1px] rounded-full border-2 border-ink bg-sun text-ink">Plan ahead</span>
+              <span className="text-[0.7rem] font-bold px-1.5 py-[1px] rounded border-[1.5px] border-ink bg-sun text-ink">Plan ahead</span>
             )}
             {rating > 0 && (
               <span className="flex items-center gap-[1px] text-star" aria-label={`Rated ${rating} out of 5`}>

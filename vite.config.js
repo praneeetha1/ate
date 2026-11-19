@@ -57,7 +57,9 @@ function stripHiddenRecipes() {
 
 export default defineConfig({
   plugins: [react(), stripHiddenRecipes()],
-  base: '/ate/',
+  // Vercel serves from the domain root and sets VERCEL=1 while building;
+  // GitHub Pages serves from /ate/.
+  base: process.env.VERCEL ? '/' : '/ate/',
   test: {
     environment: 'jsdom',
     globals: true,

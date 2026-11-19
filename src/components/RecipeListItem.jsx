@@ -22,7 +22,7 @@ export default function RecipeListItem({ recipe, recipeKey, onOpen }) {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {isUserRecipeKey(recipeKey) && (
-            <span className="inline-block text-[0.6rem] font-extrabold tracking-[0.06em] uppercase px-2 py-[1px] rounded-full border-2 border-ink bg-accent text-ink">
+            <span className="inline-block text-[0.7rem] font-bold px-1.5 py-[1px] rounded border-[1.5px] border-ink bg-accent text-ink">
               My Recipe
             </span>
           )}

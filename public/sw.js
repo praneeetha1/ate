@@ -1,9 +1,9 @@
 const CACHE = "ate-v7";   // v7: hand-drawn icons — evicts the cached old ones
 const STATIC = [
-  "/ate/icons/icon-192.png",
-  "/ate/icons/icon-512.png",
-  "/ate/icons/apple-touch-icon.png",
-  "/ate/icons/favicon.png",
+  "icons/icon-192.png",
+  "icons/icon-512.png",
+  "icons/apple-touch-icon.png",
+  "icons/favicon.png",
 ];
 
 self.addEventListener("install", e => {
@@ -30,10 +30,12 @@ self.addEventListener("fetch", e => {
   // Only handle same-origin requests (don't intercept Supabase API)
   if (url.origin !== self.location.origin) return;
 
-  // Never cache HTML or JS/CSS — always network-first so Vite asset hashes stay fresh
+  // Never cache HTML or JS/CSS — always network-first so Vite asset hashes stay fresh.
+  // The root comes from the scope, so this works under /ate/ and under /.
+  const root = new URL(self.registration.scope).pathname;
   if (
-    url.pathname === "/ate/" ||
-    url.pathname === "/ate/index.html" ||
+    url.pathname === root ||
+    url.pathname === root + "index.html" ||
     url.pathname.endsWith(".js") ||
     url.pathname.endsWith(".css")
   ) {

@@ -121,9 +121,11 @@ export default function Home({ onOpen }) {
     onOpen(i)
   }
 
-  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.75rem] font-bold tracking-[0.06em] uppercase px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
+  const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.8rem] font-bold px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
   const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
   const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
+  // An action rather than an unselected choice, so full ink, not muted.
+  const pillIdle     = 'bg-card border-ink text-ink hover:bg-paper'
 
   return (
     <>
@@ -166,19 +168,19 @@ export default function Home({ onOpen }) {
         <button
           onClick={() => setShowFilters(true)}
           aria-haspopup="dialog"
-          className={`${pillBase} ${chips.length ? pillActive : pillInactive}`}
+          className={`${pillBase} ${chips.length ? pillActive : pillIdle}`}
         >
           <Icon name="menu" size={13} />Filters{chips.length > 0 && ` · ${chips.length}`}
         </button>
         <button
           onClick={surprise}
-          className="shrink-0 ml-auto text-[0.75rem] font-bold text-accent-dk bg-paper border-2 border-ink rounded-full px-3.5 min-h-[40px] inline-flex items-center gap-1.5 whitespace-nowrap hover:bg-accent hover:text-ink transition-all"
+          className={`${pillBase} ${pillIdle} ml-auto`}
         ><Icon name="dice" size={14} />Surprise me</button>
         <button
           data-tour="add"
           onClick={() => setShowCreateModal(true)}
-          className="shrink-0 text-[0.75rem] font-bold text-ink bg-accent border-2 border-ink shadow-pop press rounded-full px-3.5 min-h-[40px] whitespace-nowrap hover:bg-accent-dk transition-all"
-        >+ My Recipe</button>
+          className={`${pillBase} ${pillActive} press`}
+        ><Icon name="plus" size={13} strokeWidth={3} />My Recipe</button>
         </div>
       </div>
 
@@ -218,7 +220,7 @@ export default function Home({ onOpen }) {
               className="text-[0.72rem] font-bold text-accent-dk border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[3px] hover:bg-accent hover:text-ink transition-all"
             >See all</button>
           </div>
-          <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
+          <div className="flex items-start gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
             {ranked.slice(0, 8).map(({ r, i, fit }) => (
               <div key={i} className="snap-start shrink-0 w-[240px]">
                 <RecipeCard recipe={r} recipeKey={i} onOpen={onOpen} fill><PantryFit fit={fit} /></RecipeCard>

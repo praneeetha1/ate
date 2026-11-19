@@ -78,7 +78,7 @@ export default function Saved({ onOpen }) {
   }
 
   const tabCls = active =>
-    `flex-1 py-2.5 inline-flex items-center justify-center gap-1.5 text-[0.8rem] font-bold tracking-[0.06em] uppercase transition-colors border-b-2 ${
+    `flex-1 py-2.5 inline-flex items-center justify-center gap-1.5 text-[0.85rem] font-bold transition-colors border-b-2 ${
       active ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink'
     }`
 

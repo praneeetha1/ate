@@ -7,7 +7,7 @@ import { CategoryDoodle } from './Sketch'
  */
 export default function Tag({ category }) {
   return (
-    <span className="inline-flex items-center gap-1 text-[0.63rem] font-extrabold tracking-[0.06em] uppercase px-2 py-[1px] rounded border-[1.5px] border-ink bg-card text-ink">
+    <span className="inline-flex items-center gap-1 text-[0.7rem] font-bold px-1.5 py-[1px] rounded border-[1.5px] border-ink bg-card text-ink">
       <CategoryDoodle category={category} size={14} />
       {category}
     </span>

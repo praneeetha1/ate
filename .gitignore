@@ -12,3 +12,6 @@ node_modules
 dist
 rough.md
 
+
+# Claude Code skills/settings, local only.
+.claude/

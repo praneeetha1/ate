@@ -378,7 +378,7 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
               </h3>
               {quickAddGroups.map(({ title, items }) => (
                 <div key={title} className="mb-2.5 last:mb-0">
-                  <h4 className="text-[0.68rem] font-bold uppercase tracking-[0.07em] text-warm-tan mb-1.5">
+                  <h4 className="text-[0.68rem] font-bold uppercase tracking-[0.07em] text-muted mb-1.5">
                     {title}
                   </h4>
                   <ul className="flex flex-wrap gap-1.5 list-none">
