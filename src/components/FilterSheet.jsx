@@ -42,7 +42,7 @@ export default function FilterSheet({ filters, onChange, count, onClose }) {
   return (
     <div className="fixed inset-0 z-[500] bg-[rgba(60,35,15,0.55)] flex items-end sm:items-center justify-center" {...backdropProps}>
       <div
-        className="bg-card border-[3px] border-ink rounded-t-2xl sm:rounded-2xl shadow-warm-xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto pb-[env(safe-area-inset-bottom,0px)]"
+        className="bg-card border-3 border-ink rounded-t-2xl sm:rounded-2xl shadow-warm-xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto pb-[env(safe-area-inset-bottom,0px)]"
         {...panelProps}
       >
         <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-ink">
@@ -96,7 +96,7 @@ export default function FilterSheet({ filters, onChange, count, onClose }) {
           >Clear</button>
           <button
             onClick={onClose}
-            className="flex-1 min-h-[48px] rounded-xl border-[2.5px] border-ink bg-accent text-ink font-display font-semibold text-[1rem] shadow-pop press"
+            className="flex-1 min-h-[48px] rounded-xl border-2.5 border-ink bg-accent text-ink font-display font-semibold text-[1rem] shadow-pop press"
           >Show {count} recipe{count === 1 ? '' : 's'}</button>
         </div>
       </div>

@@ -29,7 +29,7 @@ export default function ShoppingSheet({ recipe, servings, plan, onAdd, onClose }
   return (
     <div className="fixed inset-0 z-[600] bg-[rgba(60,35,15,0.55)] flex items-end sm:items-center justify-center" {...backdropProps}>
       <div
-        className="bg-card border-[3px] border-ink rounded-t-2xl sm:rounded-2xl shadow-warm-xl w-full max-w-[520px] max-h-[90vh] flex flex-col"
+        className="bg-card border-3 border-ink rounded-t-2xl sm:rounded-2xl shadow-warm-xl w-full max-w-[520px] max-h-[90vh] flex flex-col"
         {...panelProps}
       >
         <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-ink">
@@ -120,7 +120,7 @@ export default function ShoppingSheet({ recipe, servings, plan, onAdd, onClose }
           <button
             onClick={() => onAdd(rows)}
             disabled={!count}
-            className="flex-1 min-h-[48px] rounded-xl border-[2.5px] border-ink bg-accent text-ink font-display font-semibold text-[1rem] shadow-pop press disabled:opacity-40"
+            className="flex-1 min-h-[48px] rounded-xl border-2.5 border-ink bg-accent text-ink font-display font-semibold text-[1rem] shadow-pop press disabled:opacity-40"
           >{count ? `Add ${count} to shopping list` : 'Nothing selected'}</button>
         </div>
       </div>

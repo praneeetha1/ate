@@ -120,8 +120,21 @@ export default function Home({ onOpen }) {
   const pillBase     = 'shrink-0 inline-flex items-center gap-1.5 text-[0.8rem] font-bold px-3.5 min-h-[40px] rounded-full border-2 transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-ink'
   const pillActive   = 'bg-accent border-ink text-ink shadow-pop'
   const pillInactive = 'bg-card border-ink text-muted hover:bg-paper hover:text-accent-dk'
-  // An action rather than an unselected choice, so full ink, not muted.
-  const pillIdle     = 'bg-card border-ink text-ink hover:bg-paper'
+
+  const filterBtn = (
+    <button
+      onClick={() => setShowFilters(true)}
+      aria-haspopup="dialog"
+      aria-label={`Filters${chips.length ? ` · ${chips.length}` : ''}`}
+      title="Filters"
+      className={`relative shrink-0 w-11 h-11 grid place-items-center rounded-circle border-2 border-ink shadow-pop press focus:outline-none focus-visible:ring-2 focus-visible:ring-ink ${chips.length ? 'bg-accent text-ink' : 'bg-card text-ink'}`}
+    >
+      <Icon name="menu" size={17} />
+      {chips.length > 0 && (
+        <span aria-hidden="true" className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center rounded-circle bg-ink text-card text-[0.65rem] font-extrabold">{chips.length}</span>
+      )}
+    </button>
+  )
 
   return (
     <>
@@ -140,39 +153,18 @@ export default function Home({ onOpen }) {
         />
       )}
 
-      {/* Toolbar. Signed in, "What can I make" gets a row of its own as a
-          switch between two views of the page: squeezed in beside the other
-          buttons, a phone wrapped them into an accidental second row. The
-          buttons below wrap rather than scroll sideways, so nothing hides
-          off-screen at 320px or at large text sizes. */}
-      <div className="flex flex-col gap-2 px-5 py-3 border-b border-ink bg-cream sticky-under-header z-[80]">
-        {pantryEnabled && (
-          <div className="seg" role="group" aria-label="Show">
-            <button
-              onClick={() => setPantryMode(false)}
-              aria-pressed={!pantryMode}
-            >All recipes</button>
-            <button
-              onClick={() => setPantryMode(true)}
-              aria-pressed={pantryMode}
-            ><Icon name="plate" size={13} />What can I make</button>
+      {/* The two views, only once you're in the ranked one: the home feed
+          reaches it from "What can I make" on the Closest to ready row, so
+          a permanent switch at the top was just one more loud bar. */}
+      {pantryMode && (
+        <div className="flex items-center gap-2 px-5 pt-4">
+          <div className="seg flex-1" role="group" aria-label="Show">
+            <button onClick={() => setPantryMode(false)} aria-pressed={!pantryMode}>All recipes</button>
+            <button onClick={() => setPantryMode(true)} aria-pressed={pantryMode}><Icon name="plate" size={13} />What can I make</button>
           </div>
-        )}
-        <div className="flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => setShowFilters(true)}
-          aria-haspopup="dialog"
-          className={`${pillBase} ${chips.length ? pillActive : pillIdle}`}
-        >
-          <Icon name="menu" size={13} />Filters{chips.length > 0 && ` · ${chips.length}`}
-        </button>
-        <button
-          data-tour="add"
-          onClick={() => setShowCreateModal(true)}
-          className={`${pillBase} ${pillActive} press ml-auto`}
-        ><Icon name="plus" size={13} strokeWidth={3} />My Recipe</button>
+          {filterBtn}
         </div>
-      </div>
+      )}
 
       {startersChosen
         ? <Tour />
@@ -197,7 +189,7 @@ export default function Home({ onOpen }) {
       )}
 
       {!pantryMode && <>
-        <HomeHero recipes={filtered} onOpen={onOpen} />
+        <HomeHero recipes={filtered} onOpen={onOpen} action={filterBtn} />
         <CategoryJump cats={visibleCats.map(name => ({ name, count: filtered.filter(({ r }) => r.category === name).length }))} />
       </>}
 
@@ -212,8 +204,8 @@ export default function Home({ onOpen }) {
             </h2>
             <button
               onClick={() => setPantryMode(true)}
-              className="text-[0.72rem] font-bold text-accent-dk border-2 border-ink bg-card shadow-pop press rounded-full px-3 py-[3px] hover:bg-accent hover:text-ink transition-all"
-            >See all</button>
+              className="inline-flex items-center gap-1 text-[0.8rem] font-bold text-ink underline underline-offset-4 decoration-accent-dk decoration-2 min-h-[36px]"
+            >What can I make<Icon name="arrowRight" size={14} /></button>
           </div>
           <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
             {ranked.slice(0, 8).map(({ r, i, fit }) => (
@@ -223,6 +215,22 @@ export default function Home({ onOpen }) {
             ))}
           </div>
           <div className="h-px bg-warm-tan opacity-60 mx-5" />
+        </section>
+      )}
+
+      {/* Signed in with an empty fridge: say what the fridge is for, rather
+          than hiding the feature until someone stumbles on it. */}
+      {!pantryMode && pantryEnabled && pantryReady && pantry.size === 0 && (
+        <section aria-labelledby="cook-with-heading" className="mx-5 mt-3 mb-2 flex items-center gap-3 rounded-2xl border-2 border-dashed border-ink bg-paper px-4 py-3">
+          <Icon name="fridge" size={30} className="shrink-0" />
+          <div className="flex-1 min-w-0">
+            <h2 id="cook-with-heading" className="font-display text-[1.05rem] font-semibold text-ink">Cook with what you have</h2>
+            <p className="text-[0.8rem] text-muted">Tell <Link to="/pantry" className="font-bold text-ink underline underline-offset-2">your fridge</Link> what’s in it, and see what you can make.</p>
+          </div>
+          <button
+            onClick={() => setPantryMode(true)}
+            className="shrink-0 min-h-[40px] px-3 rounded-full border-2 border-ink bg-card text-ink text-[0.8rem] font-bold shadow-pop press"
+          >What can I make</button>
         </section>
       )}
 
@@ -318,32 +326,43 @@ export default function Home({ onOpen }) {
         </section>
       ) : (
       <>
-      {/* My Recipes section */}
-      {filteredMine.length > 0 && (
-        <section className="mb-2" aria-labelledby="my-recipes-heading">
-          <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
-            <h2 id="my-recipes-heading" className="font-display text-[1.1rem] font-semibold text-ink">My Recipes</h2>
-            {/* A count like every other section; adding is "+ My Recipe" just above. */}
+      {/* My Recipes: always here, led by a card to add one, so adding your
+          own lives with your own recipes instead of in a toolbar. */}
+      <section className="mb-2" aria-labelledby="my-recipes-heading">
+        <div className="flex items-baseline justify-between px-5 pt-[18px] pb-2.5">
+          <h2 id="my-recipes-heading" className="font-display text-[1.2rem] font-semibold text-ink">My Recipes</h2>
+          {filteredMine.length > 0 && (
             <span className="text-[0.72rem] text-muted">
               {filteredMine.length} recipe{filteredMine.length !== 1 ? 's' : ''}
             </span>
+          )}
+        </div>
+        <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
+          <div className="snap-start shrink-0">
+            <button
+              data-tour="add"
+              onClick={() => setShowCreateModal(true)}
+              className={`h-full ${filteredMine.length ? 'w-[150px] min-h-[220px]' : 'w-[240px] min-h-[120px]'} flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ink bg-paper text-ink px-4 press hover:bg-card transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ink`}
+            >
+              <span className="w-11 h-11 grid place-items-center rounded-circle border-2 border-ink bg-accent shadow-pop"><Icon name="plus" size={18} strokeWidth={2.6} /></span>
+              <span className="font-display font-semibold text-[1rem]">Add a recipe</span>
+              <span className="text-[0.75rem] text-muted text-center">Write one, or paste a link</span>
+            </button>
           </div>
-          <div className="flex gap-3.5 overflow-x-auto px-5 pb-4 scrollbar-hide snap-x-mandatory">
-            {filteredMine.map(r => (
-              <div key={r.id} className="snap-start shrink-0">
-                <RecipeCard recipe={r} recipeKey={'u_' + r.id} onOpen={onOpen} />
-              </div>
-            ))}
-          </div>
-          <div className="h-px bg-warm-tan opacity-60 mx-5" />
-        </section>
-      )}
+          {filteredMine.map(r => (
+            <div key={r.id} className="snap-start shrink-0">
+              <RecipeCard recipe={r} recipeKey={'u_' + r.id} onOpen={onOpen} />
+            </div>
+          ))}
+        </div>
+        <div className="h-px bg-warm-tan opacity-60 mx-5" />
+      </section>
 
       {/* Category sections */}
       <div>
-        {visibleCats.length === 0 && filteredMine.length === 0 && (
+        {visibleCats.length === 0 && (
           <p className="text-center py-[60px] font-display text-[1.1rem] text-muted px-5">
-            {catalog.length ? 'No recipes match those filters.' : 'No starter recipes yet. Add your own with + My Recipe.'}
+            {catalog.length ? 'No recipes match those filters.' : 'No starter recipes yet. Add your own under My Recipes.'}
           </p>
         )}
         {visibleCats.map((cat, ci) => {

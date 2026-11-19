@@ -334,7 +334,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
       {...backdropProps}
     >
       <div
-        className="relative bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
+        className="relative bg-card border-3 border-ink rounded-2xl shadow-warm-xl w-full max-w-[640px] mx-auto my-auto modal-animate"
         {...panelProps}
       >
         <button
@@ -345,7 +345,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
         ><Icon name="close" size={17} strokeWidth={2.6} /></button>
 
         {recipe.image && !recipe.hidden && (
-          <div className="relative border-b-[3px] border-ink bg-paper rounded-t-[13px]">
+          <div className="relative border-b-3 border-ink bg-paper rounded-t-[13px]">
             <img
               src={recipe.image}
               alt=""
@@ -726,7 +726,7 @@ export default function RecipeModal({ recipe, recipeKey, editable = false, onClo
           <div className="sticky -bottom-4 sm:-bottom-8 px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] bg-card border-t-2 border-ink rounded-b-2xl">
             <button
               onClick={() => setCooking(true)}
-              className="w-full min-h-[52px] bg-accent text-ink border-[2.5px] border-ink shadow-pop press rounded-xl font-display font-semibold text-[1.05rem] flex items-center justify-center gap-2"
+              className="w-full min-h-[52px] bg-accent text-ink border-2.5 border-ink shadow-pop press rounded-xl font-display font-semibold text-[1.05rem] flex items-center justify-center gap-2"
             >
               <Icon name="pan" size={20} />
               {resumeAt > 0 ? `Resume cooking · step ${Math.min(resumeAt, recipe.steps.length)}` : 'Start cooking'}

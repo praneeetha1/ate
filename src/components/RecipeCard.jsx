@@ -24,7 +24,7 @@ export default function RecipeCard({ recipe, recipeKey, onOpen, fill, hideCatego
 
   return (
     <div
-      className={`group relative bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-x-[2px] hover:-translate-y-[2px] hover:-rotate-[0.6deg] active:translate-x-[2px] active:translate-y-[2px] active:shadow-pop flex flex-col overflow-hidden h-full ${fill ? 'w-full' : 'w-[240px]'}`}
+      className={`group relative bg-card border-2.5 border-ink rounded-xl shadow-warm transition-all hover:shadow-warm-lg hover:-translate-y-[2px] active:scale-[0.98] active:shadow-pop flex flex-col overflow-hidden h-full ${fill ? 'w-full' : 'w-[240px]'}`}
     >
       {/* Every card gets the same picture area, so a row of cards lines up:
           the photo when there is one, otherwise the course's doodle on paper

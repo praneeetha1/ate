@@ -273,12 +273,12 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
         .filter(d => !d.overnight && d.minutes <= 12 * 60)
         .filter((d, i, all) => all.findIndex(x => x.minutes === d.minutes) === i)
     : []
-  const bigBtn     = 'min-h-[56px] rounded-xl border-[2.5px] border-ink font-display font-semibold text-[1.05rem] press flex items-center justify-center gap-2 px-4'
+  const bigBtn     = 'min-h-[56px] rounded-xl border-2.5 border-ink font-display font-semibold text-[1.05rem] press flex items-center justify-center gap-2 px-4'
 
   return (
     <div className="fixed inset-0 z-[600] bg-cream flex flex-col" {...panelProps}>
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-2 px-3 py-2 bg-paper border-b-[2.5px] border-ink">
+      <div className="flex items-center gap-2 px-3 py-2 bg-paper border-b-2.5 border-ink">
         <button
           onClick={onClose}
           aria-label="Leave cooking mode"
@@ -316,14 +316,14 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
           <div className="relative w-full max-w-[400px] h-full max-h-[640px]">
             {index < last && (
               <>
-                <div aria-hidden="true" className="absolute inset-0 bg-card border-[3px] border-ink rounded-2xl translate-x-2 translate-y-3 rotate-[2.5deg]" />
-                <div aria-hidden="true" className="absolute inset-0 bg-card border-[3px] border-ink rounded-2xl translate-x-1 translate-y-1.5 rotate-[1deg]" />
+                <div aria-hidden="true" className="absolute inset-0 bg-card border-3 border-ink rounded-2xl translate-x-2 translate-y-3 rotate-[2.5deg]" />
+                <div aria-hidden="true" className="absolute inset-0 bg-card border-3 border-ink rounded-2xl translate-x-1 translate-y-1.5 rotate-[1deg]" />
               </>
             )}
             <article
               key={index}
               aria-label={index === 0 ? 'Ingredients' : index === last ? 'Finished' : `Step ${index} card`}
-              className={`absolute inset-0 flex flex-col bg-card border-[3px] border-ink rounded-2xl shadow-warm-lg overflow-hidden touch-pan-y ${drag ? 'select-none' : 'transition-transform duration-200'} ${!drag && !fly && enter ? `cook-enter-${enter}` : ''}`}
+              className={`absolute inset-0 flex flex-col bg-card border-3 border-ink rounded-2xl shadow-warm-lg overflow-hidden touch-pan-y ${drag ? 'select-none' : 'transition-transform duration-200'} ${!drag && !fly && enter ? `cook-enter-${enter}` : ''}`}
               style={fly
                 ? { transform: 'translateX(-140%) rotate(-18deg)', transition: 'transform 230ms ease-in' }
                 : drag ? { transform: `translateX(${drag}px) rotate(${drag / 20}deg)` } : undefined}
@@ -331,7 +331,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
               {...swipe}
             >
               {/* Name bar, where a trading card has its name and HP. */}
-              <header className="flex items-center justify-between gap-2 px-4 py-2 bg-accent border-b-[3px] border-ink">
+              <header className="flex items-center justify-between gap-2 px-4 py-2 bg-accent border-b-3 border-ink">
                 <span className="font-display font-semibold text-[1.3rem] text-ink">
                   {index === 0 ? 'Ingredients' : index === last ? 'Enjoy!' : `Step ${index}`}
                 </span>
@@ -395,7 +395,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
                             <button
                               key={i}
                               onClick={() => startTimer(d, index)}
-                              className="min-h-[48px] inline-flex items-center gap-2 bg-sun border-[2.5px] border-ink rounded-xl px-4 font-bold text-[1rem] shadow-pop press"
+                              className="min-h-[48px] inline-flex items-center gap-2 bg-sun border-2.5 border-ink rounded-xl px-4 font-bold text-[1rem] shadow-pop press"
                             ><Icon name="clock" size={18} />Start {formatDuration(d.minutes)} timer</button>
                           ))}
                         </div>
@@ -442,7 +442,7 @@ export default function CookMode({ recipe, recipeKey, scale = 1, onClose }) {
       )}
 
       {/* ── Back / Next, at thumb height ── */}
-      <div className="grid grid-cols-[1fr_2fr] gap-3 px-3 pt-2 pb-[calc(12px+env(safe-area-inset-bottom,0px))] border-t-[2.5px] border-ink bg-paper">
+      <div className="grid grid-cols-[1fr_2fr] gap-3 px-3 pt-2 pb-[calc(12px+env(safe-area-inset-bottom,0px))] border-t-2.5 border-ink bg-paper">
         <button onClick={() => turn(-1)} disabled={index === 0} className={`${bigBtn} bg-card shadow-pop disabled:opacity-40`}>
           <Icon name="arrowRight" size={18} className="rotate-180" />Back
         </button>

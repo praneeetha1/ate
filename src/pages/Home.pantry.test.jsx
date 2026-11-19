@@ -159,15 +159,16 @@ describe('the must-use filter', () => {
 })
 
 describe('what can I make', () => {
-  // It changes what the page shows rather than narrowing the catalogue, so it
-  // leads the row instead of sitting behind diet and time.
-  it('puts the toggle before the filters', async () => {
+  // Reached from the feed, not a switch pinned to the top of every visit:
+  // the two-sided switch only appears once you're in the ranked view.
+  it('is an entry on the feed, with the switch only inside the ranked view', async () => {
+    const user = userEvent.setup()
     renderHome()
     await waitFor(() => expect(toggle()).toBeInTheDocument())
+    expect(screen.queryByRole('group', { name: 'Show' })).toBeNull()
 
-    const diet = screen.getByRole('button', { name: /^filters/i })
-    const after = toggle().compareDocumentPosition(diet) & Node.DOCUMENT_POSITION_FOLLOWING
-    expect(after).toBeTruthy()
+    await user.click(toggle())
+    expect(screen.getByRole('group', { name: 'Show' })).toBeInTheDocument()
   })
 
   it('is offered only to signed-in users', async () => {
@@ -294,11 +295,11 @@ describe('the Closest to ready strip', () => {
     expect(screen.queryByRole('heading', { name: /closest to ready/i })).toBeNull()
   })
 
-  it('opens the full ranking from See all', async () => {
+  it('opens the full ranking from its What can I make link', async () => {
     const user = userEvent.setup()
     renderHome({ pantry: [{ user_id: 'user-1', item: 'garlic', state: 'have' }] })
 
-    await user.click(await screen.findByRole('button', { name: /see all/i }))
+    await user.click(await screen.findByRole('button', { name: /what can i make/i }))
 
     await waitFor(() => expect(screen.queryByRole('heading', { name: 'Main Dish' })).toBeNull())
     expect(toggle()).toHaveAttribute('aria-pressed', 'true')

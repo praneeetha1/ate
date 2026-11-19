@@ -30,7 +30,7 @@ export default function SettingsSheet({ onClose, onPickStarters }) {
 
   return (
     <div className="fixed inset-0 z-[600] bg-[rgba(60,35,15,0.55)] flex items-end sm:items-center justify-center" {...backdropProps}>
-      <div className="bg-card border-[3px] border-ink rounded-t-2xl sm:rounded-2xl shadow-warm-xl w-full max-w-[480px] max-h-[90vh] flex flex-col" {...panelProps}>
+      <div className="bg-card border-3 border-ink rounded-t-2xl sm:rounded-2xl shadow-warm-xl w-full max-w-[480px] max-h-[90vh] flex flex-col" {...panelProps}>
         <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3 border-b border-ink">
           <h2 id={titleId} className="font-display text-[1.3rem] font-semibold text-ink">Settings</h2>
           <button onClick={onClose} aria-label="Close" className="w-11 h-11 -mr-2 grid place-items-center rounded-full hover:bg-paper">

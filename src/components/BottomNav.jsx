@@ -13,7 +13,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Main"
-      className="fixed bottom-0 left-0 right-0 bg-card border-t-[2.5px] border-ink flex z-[300] pb-safe"
+      className="fixed bottom-0 left-0 right-0 bg-card border-t-2.5 border-ink flex z-[300] pb-safe"
       style={{ height: 'calc(var(--nav-h) + env(safe-area-inset-bottom, 0px))' }}
     >
       {TABS.map(({ to, icon, label }) => (

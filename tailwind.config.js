@@ -16,30 +16,34 @@ export default {
         display: ['AteHand', 'Kalam', 'system-ui', 'sans-serif'],
         sans:    ['Nunito', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      // Thin pen lines: the notebook look. border-2 is overridden too, so
+      // every outline in the app follows from these three.
       borderWidth: {
         DEFAULT: '1px',
-        '2.5':   '2.5px',
-        '3':     '3px',
+        '2':     '1.5px',
+        '2.5':   '1.5px',
+        '3':     '2px',
       },
       borderRadius: {
         // Squarer everywhere, to sit with hand-drawn lines. `full` is a soft
         // square too; real circles (dots, avatar, badges) use `circle`.
-        DEFAULT: '3px',
-        md:   '4px',
-        lg:   '4px',
-        xl:   '6px',
-        '2xl': '8px',
-        full: '6px',
+        DEFAULT: '4px',
+        md:   '6px',
+        lg:   '8px',
+        xl:   '10px',
+        '2xl': '14px',
+        full: '9999px',
         circle: '9999px',
       },
+      // Soft, offset-down shadows in --c-shadow (near-black in both themes,
+      // so dark mode gets depth rather than a cream glow). The hard offset
+      // "sticker" shadows were retired for a softer, notebook look.
       boxShadow: {
-        // Hard offset, no blur. This is the whole look — if you change
-        // one thing back, don't change this.
-        pop:       '2px 2px 0 rgb(var(--c-ink))',
-        warm:      '3px 3px 0 rgb(var(--c-ink))',
-        'warm-lg': '5px 5px 0 rgb(var(--c-ink))',
-        'warm-xl': '7px 7px 0 rgb(var(--c-ink))',
-        'pop-mint':'3px 3px 0 rgb(var(--c-mint)), 3px 3px 0 1.5px rgb(var(--c-ink))',
+        pop:       '0 1px 2px rgb(var(--c-shadow) / 0.10), 0 1px 1px rgb(var(--c-shadow) / 0.06)',
+        warm:      '0 2px 6px rgb(var(--c-shadow) / 0.10), 0 1px 2px rgb(var(--c-shadow) / 0.06)',
+        'warm-lg': '0 6px 16px rgb(var(--c-shadow) / 0.12), 0 2px 4px rgb(var(--c-shadow) / 0.06)',
+        'warm-xl': '0 14px 36px rgb(var(--c-shadow) / 0.20), 0 4px 10px rgb(var(--c-shadow) / 0.08)',
+        'pop-mint':'0 2px 6px rgb(var(--c-shadow) / 0.10)',
       },
     },
   },

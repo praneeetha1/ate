@@ -21,7 +21,7 @@ const today = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60
  * The pick is stable for the day (no reshuffle on every visit); the dice
  * deals another one in place, so you can see it before committing to it.
  */
-export default function HomeHero({ recipes, onOpen }) {
+export default function HomeHero({ recipes, onOpen, action }) {
   const profile = useAuth()?.profile
   const meal = mealNow(new Date().getHours())
 
@@ -35,8 +35,8 @@ export default function HomeHero({ recipes, onOpen }) {
 
   const [shift, setShift] = useState(0)
   const [rolls, setRolls] = useState(0)
-  if (!pool.length) return null
-  const { r, i } = pool[(today() + shift) % pool.length]
+  const pick = pool.length ? pool[(today() + shift) % pool.length] : null
+  const { r, i } = pick ?? {}
   const name = profile?.username_set && profile.username
 
   function deal() {
@@ -47,22 +47,27 @@ export default function HomeHero({ recipes, onOpen }) {
 
   return (
     <section aria-labelledby="hero-heading" className="px-5 pt-5 pb-2">
-      <div className="flex items-end justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 id="hero-heading" className="font-display text-[1.6rem] leading-tight font-semibold text-ink">
             {meal.hello}{name ? `, ${name}` : ''}
           </h2>
           <p className="text-[0.9rem] text-muted mt-0.5">{meal.ask}</p>
         </div>
-        <CategoryDoodle category={meal.doodle} size={44} className="text-ink shrink-0 doodle-wiggle mb-1" />
+        {action}
       </div>
 
+      {pick && (
       <div className="relative mt-4 mb-2">
+        {/* The meal's doodle, stuck on the corner of the card like a sticker. */}
+        <span aria-hidden="true" className="absolute -top-6 -right-1 z-20 rotate-12">
+          <CategoryDoodle category={meal.doodle} size={56} className="doodle-wiggle" />
+        </span>
         {/* A strip of tape holding the card down. Decoration only. */}
         <span aria-hidden="true" className="absolute -top-2.5 left-1/2 -translate-x-1/2 -rotate-3 z-10 w-20 h-5 bg-accent/80 border-[1.5px] border-ink/30" />
         <article
           key={i}
-          className="deal-in relative bg-card border-2.5 border-ink rounded-2xl shadow-warm-lg overflow-hidden -rotate-1 transition-transform hover:rotate-0 active:translate-x-[3px] active:translate-y-[3px] active:shadow-warm"
+          className="deal-in relative bg-card border-2.5 border-ink rounded-2xl shadow-warm-lg overflow-hidden -rotate-1 transition-transform hover:rotate-0 active:scale-[0.99] active:shadow-warm"
         >
           {r.image && (
             <img
@@ -100,6 +105,7 @@ export default function HomeHero({ recipes, onOpen }) {
           </div>
         </article>
       </div>
+      )}
     </section>
   )
 }

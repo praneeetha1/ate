@@ -37,6 +37,7 @@
   --c-danger-bg: 253 232 232;
   --c-ok: 42 96 53;
   --c-ok-bg: 213 235 216;
+  --c-shadow: 60 45 30;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -56,6 +57,7 @@
   --c-danger-bg: 61 36 38;
   --c-ok: 163 210 174;
   --c-ok-bg: 34 54 42;
+  --c-shadow: 0 0 0;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -76,6 +78,7 @@
     --c-danger-bg: 61 36 38;
     --c-ok: 163 210 174;
     --c-ok-bg: 34 54 42;
+    --c-shadow: 0 0 0;
     color-scheme: dark;
   }
 }
@@ -120,22 +123,21 @@ body {
   color: rgb(var(--c-ink));
 }
 
-/* ── Sticker components ─────────────────────────────────────
-   The look is one rule repeated: ink outline + hard offset
-   shadow, and the shadow collapses when you press. Anything
-   tappable gets .press so the whole app feels physical. */
+/* ── Notebook components ────────────────────────────────────
+   Thin ink outline, soft shadow. Anything tappable gets .press:
+   it gives a little under your thumb, so the app feels physical. */
 .sticker {
-  border: 2.5px solid rgb(var(--c-ink));
-  border-radius: 6px;
+  border: 1.5px solid rgb(var(--c-ink));
+  border-radius: 10px;
   background: rgb(var(--c-card));
-  box-shadow: 3px 3px 0 rgb(var(--c-ink));
+  box-shadow: 0 2px 6px rgb(var(--c-shadow) / 0.10);
 }
 .press {
-  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+  transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s ease-out;
 }
 .press:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 rgb(var(--c-ink)) !important;
+  transform: scale(0.96);
+  box-shadow: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .press, .press:active { transition: none; transform: none; }
@@ -160,6 +162,8 @@ body {
 
 /* ── Browser surfaces, in the app's own ink ─────────────────── */
 ::selection { background: rgb(var(--c-accent)); color: rgb(var(--c-ink)); }
+/* The browser's blue focus ring, in ink instead (only for keyboard focus). */
+:focus-visible { outline: 2px solid rgb(var(--c-ink)); outline-offset: 2px; }
 input, textarea { caret-color: rgb(var(--c-accent-dk)); }
 
 /* Checkboxes: an ink box, filled and ticked when on. Every checkbox in the
@@ -170,8 +174,8 @@ input[type="checkbox"]:not([role="switch"]) {
   -webkit-appearance: none;
   width: 22px; height: 22px;
   flex-shrink: 0;
-  border: 2px solid rgb(var(--c-ink));
-  border-radius: 5px;
+  border: 1.5px solid rgb(var(--c-ink));
+  border-radius: 6px;
   background: rgb(var(--c-card)) center / 16px no-repeat;
   cursor: pointer;
   transition: background-color 0.15s;
@@ -197,9 +201,9 @@ input[type="checkbox"][role="switch"] {
   -webkit-appearance: none;
   width: 46px; height: 28px;
   flex-shrink: 0;
-  border: 2px solid rgb(var(--c-ink));
+  border: 1.5px solid rgb(var(--c-ink));
   border-radius: 9999px;
-  box-shadow: 2px 2px 0 rgb(var(--c-ink));
+  box-shadow: inset 0 1px 2px rgb(var(--c-shadow) / 0.12);
   background: rgb(var(--c-card)) radial-gradient(circle, rgb(var(--c-ink)) 0 8px, transparent 8.5px) no-repeat;
   background-size: 24px 24px;
   background-position: 0 50%;
@@ -217,7 +221,7 @@ input[type="checkbox"]:disabled { cursor: not-allowed; }
    (Home, Search, Saved), so they all look and behave the same. */
 .seg {
   display: flex;
-  border: 2px solid rgb(var(--c-ink));
+  border: 1.5px solid rgb(var(--c-ink));
   border-radius: 9999px;
   overflow: hidden;
   background: rgb(var(--c-card));
@@ -229,7 +233,7 @@ input[type="checkbox"]:disabled { cursor: not-allowed; }
   padding: 0 10px;
   font-size: 0.82rem; font-weight: 700;
   color: rgb(var(--c-muted));
-  border-left: 2px solid rgb(var(--c-ink));
+  border-left: 1.5px solid rgb(var(--c-ink));
   transition: background-color 0.15s, color 0.15s;
 }
 .seg > :first-child { border-left: 0; }

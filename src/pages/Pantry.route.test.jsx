@@ -46,7 +46,7 @@ beforeEach(() => { localStorage.clear(); localStorage.setItem('ate:guest:seen_we
  * needs, so the icon is gone.
  */
 describe('reaching the Fridge page', () => {
-  const tab = () => screen.getByRole('link', { name: /fridge/i })
+  const tab = () => screen.getByRole('link', { name: /^fridge$/i })
 
   it('opens from the Fridge tab', async () => {
     const user = userEvent.setup()

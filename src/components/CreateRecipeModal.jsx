@@ -310,7 +310,7 @@ export default function CreateRecipeModal({ recipe, onClose, onCreated, onSaved 
       {...backdropProps}
     >
       <div
-        className="bg-card border-[3px] border-ink rounded-2xl shadow-warm-xl w-full max-w-[600px] mx-auto my-4"
+        className="bg-card border-3 border-ink rounded-2xl shadow-warm-xl w-full max-w-[600px] mx-auto my-4"
         {...panelProps}
       >
 

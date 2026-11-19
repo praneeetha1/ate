@@ -113,7 +113,7 @@ function Stop({ step, n, count, rect, onNext, onFinish }) {
           do nothing during the tour, so it can't navigate away underneath. */}
       <div
         aria-hidden="true"
-        className="fixed rounded-xl border-[3px] border-accent pointer-events-none transition-all duration-200 motion-reduce:transition-none"
+        className="fixed rounded-xl border-3 border-accent pointer-events-none transition-all duration-200 motion-reduce:transition-none"
         style={{
           top: rect.top - pad, left: rect.left - pad,
           width: rect.width + pad * 2, height: rect.height + pad * 2,
@@ -121,7 +121,7 @@ function Stop({ step, n, count, rect, onNext, onFinish }) {
         }}
       />
       <div
-        className="fixed bg-card border-[3px] border-ink rounded-2xl shadow-warm-lg px-4 pt-3 pb-3"
+        className="fixed bg-card border-3 border-ink rounded-2xl shadow-warm-lg px-4 pt-3 pb-3"
         style={{ width, left, ...(below ? { top: rect.bottom + pad + 10 } : { bottom: vh - rect.top + pad + 10 }) }}
         {...panelProps}
       >
