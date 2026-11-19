@@ -137,6 +137,15 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
     ] })
   }
 
+  /** Stop tracking a whole group at once, with an undo in case it was a slip. */
+  function clearGroup(items, state) {
+    for (const item of items) setPantryState(item, 'unknown')
+    setOpen(null)
+    showToast(`Cleared ${items.length} from your kitchen`, 'info', { actions: [
+      { label: 'Undo', onClick: () => items.forEach(item => setPantryState(item, state)) },
+    ] })
+  }
+
   function choose(item, state) {
     setPantryState(item, state)
     setOpen(null)
@@ -355,6 +364,13 @@ export default function PantrySection({ headingId = 'pantry-heading' }) {
                     <StateDot state={state} />{title}
                     <span className="text-muted font-normal">({items.length})</span>
                   </h3>
+                  {state === 'have' && items.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => clearGroup(items, state)}
+                      className="shrink-0 inline-flex items-center gap-1 min-h-[32px] px-2 text-[0.78rem] font-bold text-muted underline underline-offset-2 hover:text-heart focus:outline-none focus-visible:ring-2 focus-visible:ring-ink rounded"
+                    >Clear all</button>
+                  )}
                   {state !== 'have' && (items.some(i => !onList(i)) ? (
                     <button
                       type="button"

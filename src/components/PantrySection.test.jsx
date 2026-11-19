@@ -506,3 +506,18 @@ describe('from the kitchen to the shopping list', () => {
     expect(out.textContent).toMatch(/on your list/i)
   })
 })
+
+describe('clearing what you have', () => {
+  it('stops tracking everything in your kitchen in one tap, and can be undone', async () => {
+    const user = userEvent.setup()
+    renderSection({ pantry: ROWS })
+    const kitchen = (await screen.findByRole('heading', { name: /in your kitchen/i })).parentElement
+    await user.click(within(kitchen).getByRole('button', { name: 'Clear all' }))
+
+    // garlic and carrot gone; the low and out groups are untouched.
+    await waitFor(() => expect(h.client.__db.pantry.map(r => r.item).sort()).toEqual(['basil', 'pecorino']))
+
+    await user.click(await screen.findByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(h.client.__db.pantry.map(r => r.item).sort()).toEqual(['basil', 'carrot', 'garlic', 'pecorino']))
+  })
+})
